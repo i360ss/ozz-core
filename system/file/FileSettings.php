@@ -1,0 +1,308 @@
+<?php
+/**
+* Ozz micro framework
+* Author: Shakir
+* Contact: shakeerwahid@gmail.com
+*/
+
+namespace Ozz\core\system\file;
+
+use Ozz\core\Err;
+
+trait FileSettings {
+
+  # ---------------------------------------
+  // Upload each image
+  # ---------------------------------------
+  /**
+   * @param string $img Image
+   * @param string $tmp Temp name
+   * @param string $dir Directory
+   * @param int $qlt Quality
+   * @param array $copies Copies settings
+   */
+  private static function uploadEachImage($img, $tmp=null, $dir=null, $qlt=null, $copies=false){
+    $ext = strtolower(pathinfo($img, PATHINFO_EXTENSION));
+    switch ($ext) {
+      case 'gif':
+        $im = @imagecreatefromgif($tmp);
+        !$copies ? $image = @imagegif($im, $dir, $qlt) : false;
+        break;
+      case 'jpg':
+      case 'jpeg':
+        $im = @imagecreatefromjpeg($tmp);
+        !$copies ? $image = @imagejpeg($im, $dir, $qlt) : false;
+        break;
+      case 'png':
+        $im = @imagecreatefrompng($tmp);
+        !$copies ? $image = @imagepng($im, $dir) : false;
+        break;
+      case 'bmp':
+        $im = @imagecreatefrombmp($tmp);
+        !$copies ? $image = @imagebmp($im, $dir, $qlt) : false;
+        break;
+      case 'webp':
+        $im = @imagecreatefromwebp($tmp);
+        !$copies ? $image = @imagewebp($im, $dir, $qlt) : false;
+        break;
+    }
+
+    if (isset($copies) && $copies === true) {
+      return $im;
+    }
+    else {
+      // imagedestroy($im);
+      return $image ? true : false;
+    }
+  }
+
+
+
+  # ---------------------------------------
+  // Set Up File Name
+  # ---------------------------------------
+  /**
+   * @param $setts Settings to get rename options
+   * @param $name Current name
+   */
+  private static function setName($setts, $name){
+    if(isset($setts['rename']) && $setts['rename'] !== ''){
+      $newName = ($setts['rename']=='rand' || $setts['rename'] == 'random') ? rand(1000, time()) : $setts['rename'];
+      return (isset($setts['prefix'])) 
+        ? $setts['prefix'].$newName.'.'.pathinfo($name, PATHINFO_EXTENSION)
+        : $newName.'.'.pathinfo($name, PATHINFO_EXTENSION);
+    }
+    elseif(isset($setts['prefix'])) {
+      return $setts['prefix'].$name;
+    }
+    else{
+      return $name;
+    }
+  }
+
+
+
+  # ---------------------------------------
+  // Image Manipulation and Upload Settings
+  # ---------------------------------------
+  /**
+   * @param int $ky Image key for multiple image upload
+   */
+  private static function imageSettings($ky=null){
+    
+    $img = self::$thisFiles;
+    $imgName = isset($ky) ? $img['name'][$ky] : $img['name'];
+    $imgTmp = isset($ky) ? $img['tmp_name'][$ky] : $img['tmp_name'];
+
+    $ext = strtolower(pathinfo($imgName, PATHINFO_EXTENSION));
+
+    $finalOut['image']['url'] = false;
+    $finalOut['image']['error'] = false;
+    $finalOut['copies'] = null;
+
+    // Upload Original Image 
+    ////////////////////////////////
+    if(isset(self::$settings['ignore_source']) && self::$settings['ignore_source'] === true){
+      // No required Parameters provided
+      if(!isset(self::$settings['copies'])){
+        $finalOut['image']['error'] = MEDIA_ERR['commenError'];
+        DEBUG ? Err::paramsRequiredForUploadSettings('File::upload() settings') : false;
+      }
+    }
+    else{
+      $name = self::setName(self::$settings, $imgName);
+      if(isset(self::$settings['mkdir']) && self::$settings['mkdir'] === true){
+        !is_dir(self::$moveTo) ? mkdir(self::$moveTo, 0777, true) : false; // Make directory if not exist
+      }
+      else{
+        if(!is_dir(self::$moveTo)){
+          if (DEBUG) :
+            return  Err::notDir(self::$moveTo);
+          else:
+            $finalOut['image']['error'] = MEDIA_ERR['commenError'];
+          endif;
+        }
+      }
+
+      $dir = self::$moveTo.basename($name);
+      $quality = isset(self::$settings['quality']) && self::$settings['quality'] !=='' ? self::$settings['quality'] : -1;
+      
+      if(file_exists($dir)){
+        $finalOut['image']['error'] = MEDIA_ERR['imageAlreadyExist'];
+      }
+      else{
+        // Make Image and Upload
+        if(self::uploadEachImage($name, $imgTmp, $dir, $quality)){
+          $finalOut['image']['url'] = self::$uploadedTo . $name;
+        }
+        else {
+          $finalOut['image']['url'] = null;
+        }
+      }
+    }
+    
+
+    // Create and Upload Copies
+    //////////////////////////////////////
+    if(isset(self::$settings['copies']) && !empty(self::$settings['copies'])){
+      foreach (self::$settings['copies'] as $key => $copy) {
+
+        $finalOut['copies']['url'][$key] = null;
+        $finalOut['copies']['error'] = false;
+
+        // Manipulate image
+        $gdImage = self::uploadEachImage($imgName, $imgTmp, null, null, true); // GDimage
+        list($origWidth, $origHeight, $type) = getimagesize($imgTmp);
+
+        // Image Resizing
+        $newWidth = $origWidth;
+        $newHeight = $origHeight;
+
+        if(isset($copy['width']) && $copy['width'] !== ''){
+          $ratio = $copy['width'] / $origWidth;
+          $newWidth = $copy['width'];
+          $newHeight = $origHeight * $ratio;
+        }
+
+        if(isset($copy['height']) && $copy['height'] !== ''){
+          if($newHeight > $copy['height']){
+            $ratio = $copy['height'] / $origHeight;
+            $newHeight = $copy['height'];
+            $newWidth = $origWidth * $ratio;
+          }
+        }
+
+        // Image Crop Properties
+        $dstX = 0;
+        $dstY = 0;
+        $srcX = 0;
+        $srcY = 0;
+
+        if(isset($copy['crop']) && !empty($copy['crop'])){
+          $dstX = $copy['crop']['dx'] ? $copy['crop']['dx'] : 0;
+          $dstY = $copy['crop']['dy'] ? $copy['crop']['dy'] : 0;
+          $srcX = $copy['crop']['sx'] ? $copy['crop']['sx'] : 0;
+          $srcY = $copy['crop']['sy'] ? $copy['crop']['sy'] : 0;
+        }
+
+        // Rename the Copy (with prefix)
+        $nameSize = '-'.round($newWidth).'x'.round($newHeight);
+        $prifix = isset(self::$settings['prefix']) ? self::$settings['prefix'] : '';
+        
+        if((isset($copy['rename']) &&  $copy['rename'] !== '')){
+          $newName = ($copy['rename']=='rand' || $copy['rename'] == 'random') ? rand(1000, time()) : $copy['rename'];
+          $fileName = $prifix.$newName.$nameSize.'.'.pathinfo($imgName, PATHINFO_EXTENSION);
+        }
+        else{
+          $prifix.pathinfo($imgName, PATHINFO_FILENAME).$nameSize.pathinfo($imgName, PATHINFO_EXTENSION);
+        }
+
+        // Final Copy DIR + NAME
+        $copyDir = isset($copy['dir']) ? UPLOAD_TO.$copy['dir'].$fileName : UPLOAD_TO.$fileName;
+
+        // Make Copy
+        if($gdImage){
+          $newCopy = imagecreatetruecolor($newWidth, $newHeight);
+          imagecopyresampled($newCopy, $gdImage, $dstX, $dstY, $srcX, $srcY, $newWidth, $newHeight, $origWidth, $origHeight);
+          
+          $qlt = $copy['quality'] ?? 100;
+
+          switch ($ext) {
+            case 'gif':
+              $finalCopy = @imagegif($newCopy, $copyDir, $qlt);
+              break;
+            case 'jpg':
+            case 'jpeg':
+              $finalCopy = @imagejpeg($newCopy, $copyDir, $qlt);
+              break;
+            case 'png':
+              $finalCopy = @imagepng($newCopy, $copyDir);
+              break;
+            case 'bmp':
+              $finalCopy = @imagebmp($newCopy, $copyDir, $qlt);
+              break;
+            case 'webp':
+              $finalCopy = @imagewebp($newCopy, $copyDir, $qlt);
+              break;
+          }
+        }
+        
+        // Copies Response
+        if($finalCopy){
+          $imgurl = isset($copy['dir']) ? $copy['dir'].$fileName : $fileName;
+          $finalOut['copies']['url'][$key] = 'uploads/'.$imgurl;
+        }
+        else{
+          $finalOut['copies']['error'] = 1;
+        }
+      }
+    }
+
+    return $finalOut;
+  }
+
+
+
+  # ---------------------------------------
+  // Document/Font settings and upload
+  # ---------------------------------------
+  /**
+   * Valid Settings (Rename, Prefix, mkdir)
+   * @param int $ky File key for multiple file upload
+   */
+  private static function commenSettings($ky=null){
+
+    $doc = self::$thisFiles;
+    $docName = isset($ky) ? $doc['name'][$ky] : $doc['name'];
+    $docTmp = isset($ky) ? $doc['tmp_name'][$ky] : $doc['tmp_name'];
+
+    $docFinalName = self::setName(self::$settings, $docName);
+
+    $response = [
+      'error' => 1,
+      'message' => MEDIA_ERR['commenError'],
+      'uploaded' => null
+    ];
+
+    if(is_dir(self::$moveTo)){
+      if(file_exists(self::$moveTo.$docFinalName)){
+        $response['message'] = MEDIA_ERR['imageAlreadyExist'];
+      }
+      elseif (move_uploaded_file($docTmp, self::$moveTo.$docFinalName)) {
+        $response = [
+          'error' => 0,
+          'message' => MEDIA_ERR['fileUploadSuccess'],
+          'uploaded' => self::$uploadedTo.$docFinalName
+        ];
+      }
+      else {
+        $response['message'] = MEDIA_ERR['commenError'];
+      }
+    }
+    elseif(isset(self::$settings['mkdir']) && self::$settings['mkdir'] === true){
+      mkdir(self::$moveTo, 0777, true); // Make directory if not exist
+
+      if (move_uploaded_file($docTmp, self::$moveTo.$docFinalName)) {
+        $response = [
+          'error' => 0,
+          'message' => MEDIA_ERR['fileUploadSuccess'],
+          'uploaded' => self::$uploadedTo.$docFinalName
+        ];
+      }
+      else {
+        $response['message'] = MEDIA_ERR['commenError'];
+      }
+    }
+    else{
+      if (DEBUG) :
+        return  Err::notDir(self::$moveTo);
+      else:
+        $response['message'] = MEDIA_ERR['commenError'];
+      endif;
+    }
+
+    return $response;
+  }
+
+  
+}
