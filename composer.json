@@ -1,0 +1,19 @@
+{
+    "name": "ozz/core",
+    "description": "Core of the Ozz Micro Framework",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Ozz\\Core\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Shakir",
+            "email": "shakeerwahid@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
