@@ -5,12 +5,12 @@
 * Contact: shakeerwahid@gmail.com
 */
 
-namespace Ozz\core\system\migration;
+namespace Ozz\Core\system\migration;
 
 use \PDO;
-use Ozz\core\system\cli\CliUtils;
-use Ozz\core\system\log\Ozz_log_data;
-use Ozz\core\system\Ozz_CLI_Connection;
+use Ozz\Core\system\cli\CliUtils;
+use Ozz\Core\system\log\Ozz_log_data;
+use Ozz\Core\system\Ozz_CLI_Connection;
 
 class Migrate extends Schema {
 

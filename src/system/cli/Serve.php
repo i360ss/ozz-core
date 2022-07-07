@@ -5,9 +5,9 @@
 * Contact: shakeerwahid@gmail.com
 */
 
-namespace Ozz\core\system\cli;
+namespace Ozz\Core\system\cli;
 
-use Ozz\core\system\cli\CliUtils;
+use Ozz\Core\system\cli\CliUtils;
 
 class Serve {
   public function index($com){

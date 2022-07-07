@@ -5,11 +5,11 @@
  * Contact: shakeerwahid@gmail.com
  */
 
-namespace Ozz\core;
+namespace Ozz\Core;
 
 use Ozz\app\Validator;
-use Ozz\core\Err;
-use Ozz\core\system\file\FileSettings;
+use Ozz\Core\Err;
+use Ozz\Core\system\file\FileSettings;
 
 class File {
 

@@ -5,7 +5,7 @@
 * Contact: shakeerwahid@gmail.com
 */
 
-namespace Ozz\core\system\migration;
+namespace Ozz\Core\system\migration;
 
 class CreateMigration {
   
@@ -67,7 +67,7 @@ class CreateMigration {
   private function newMigratorContent($migrationName){
     return "<?php
 // Run: [ php ozz -h migration ] to more info
-use Ozz\core\system\migration\Schema;
+use Ozz\Core\system\migration\Schema;
 
 class $migrationName {
   
@@ -97,7 +97,7 @@ class $migrationName {
   # -------------------------------------------
   private function updateMigratorContent($migrationName){
 return "<?php
-use Ozz\core\system\migration\Schema;
+use Ozz\Core\system\migration\Schema;
 
 class Update_$migrationName {
   

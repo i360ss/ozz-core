@@ -5,11 +5,11 @@
 * Contact: shakeerwahid@gmail.com
 */
 
-namespace Ozz\core;
+namespace Ozz\Core;
 
 # CSS JS Minify
 use MatthiasMullie\Minify;
-use Ozz\core\system\SubHelp;
+use Ozz\Core\system\SubHelp;
 
 # ----------------------------------
 // Application Helper

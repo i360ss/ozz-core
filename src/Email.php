@@ -5,7 +5,7 @@
  * Contact: shakeerwahid@gmail.com
  */
 
-namespace Ozz\core;
+namespace Ozz\Core;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;

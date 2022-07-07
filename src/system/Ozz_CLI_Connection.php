@@ -1,5 +1,5 @@
 <?php
-namespace Ozz\core\system;
+namespace Ozz\Core\system;
 
 if(APP_ENV !== 'local'){
   exit('Unauthorized');

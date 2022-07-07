@@ -5,10 +5,10 @@
 * Contact: shakeerwahid@gmail.com
 */
 
-namespace Ozz\core;
+namespace Ozz\Core;
 
-use Ozz\core\Request;
-use Ozz\core\Sanitize;
+use Ozz\Core\Request;
+use Ozz\Core\Sanitize;
 
 class Router extends Appinit {
   

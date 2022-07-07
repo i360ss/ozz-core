@@ -5,9 +5,9 @@
 * Contact: shakeerwahid@gmail.com
 */
 
-namespace Ozz\core\system\log;
+namespace Ozz\Core\system\log;
 
-use Ozz\core\system\Ozz_CLI_Connection;
+use Ozz\Core\system\Ozz_CLI_Connection;
 
 trait Ozz_log_data {
 

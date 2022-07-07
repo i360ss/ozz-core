@@ -1,5 +1,5 @@
 <?php
-namespace Ozz\core\system;
+namespace Ozz\Core\system;
 
 class SubHelp {
   

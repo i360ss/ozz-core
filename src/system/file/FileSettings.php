@@ -5,9 +5,9 @@
 * Contact: shakeerwahid@gmail.com
 */
 
-namespace Ozz\core\system\file;
+namespace Ozz\Core\system\file;
 
-use Ozz\core\Err;
+use Ozz\Core\Err;
 
 trait FileSettings {
 

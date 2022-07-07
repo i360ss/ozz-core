@@ -5,7 +5,7 @@
 * Contact: shakeerwahid@gmail.com
 */
 
-namespace Ozz\core;
+namespace Ozz\Core;
 
 class Request extends Router {
   

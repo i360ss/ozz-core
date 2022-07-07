@@ -8,8 +8,8 @@
 */
 
 // Used Classes
-use Ozz\core\Router;
-use Ozz\core\Help;
+use Ozz\Core\Router;
+use Ozz\Core\Help;
 
 # ----------------------------------------------------
 // Ozz escaping functions

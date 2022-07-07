@@ -5,7 +5,7 @@
 * Contact: shakeerwahid@gmail.com
 */
 
-namespace Ozz\core\system\cli;
+namespace Ozz\Core\system\cli;
 
 class CliUtils {
   

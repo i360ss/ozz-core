@@ -5,7 +5,7 @@
 * Contact: shakeerwahid@gmail.com
 */
 
-namespace Ozz\core\system\migration;
+namespace Ozz\Core\system\migration;
 
 class Schema extends GenerateSql {
   

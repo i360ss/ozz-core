@@ -1,5 +1,5 @@
 <?php
-use Ozz\core\system\cli\CliUtils;
+use Ozz\Core\system\cli\CliUtils;
 
 if(APP_ENV !== 'local'){
   exit('Unauthorized');

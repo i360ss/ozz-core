@@ -5,9 +5,9 @@
 * Contact: shakeerwahid@gmail.com
 */
 
-namespace Ozz\core;
+namespace Ozz\Core;
 
-use Ozz\core\Sanitize;
+use Ozz\Core\Sanitize;
 
 class Templating extends Appinit {
   
