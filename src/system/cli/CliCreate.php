@@ -9,7 +9,7 @@ namespace Ozz\Core\system\cli;
 
 class CliCreate {
   
-  private $createTo = __DIR__ . '/../../../app/';
+  private $createTo = __DIR__ . SPC_BACK['core_2'].'app/';
   
   public function index($com){
     extract($com);
@@ -307,8 +307,8 @@ class CliCreate {
     $dirArr = array_slice($dirName, 0, -1);
     $dir = implode($DS, $dirArr);
 
-    if(!is_dir('src/'.$dir)){
-      mkdir('src/'.$dir, 0777, true);
+    if(!is_dir($dir)){
+      mkdir($dir, 0777, true);
     }
     
     if($typ == "controller" || $typ == "model" || $typ == "middleware"){

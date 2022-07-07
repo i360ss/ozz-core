@@ -14,7 +14,7 @@ class Serve {
     $utils = new CliUtils;
     extract($utils->styles);
     
-    $conf = parse_ini_file(__DIR__ . '/../../../../env.ini', true);
+    $conf = parse_ini_file(__DIR__.SPC_BACK['core_2'].'env.ini', true);
     $url = $conf['app']['APP_URL'].':'.$conf['app']['LOCAL_PORT'];
 
     $utils->console_return('Ozz development server started', 'white', 'green', 1, true);

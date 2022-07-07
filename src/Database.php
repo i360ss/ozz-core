@@ -24,7 +24,7 @@ class Database {
   // Make Database Connection
   #---------------------------------------------------------------------
   public function __construct(){
-    $this->DBconfig = parse_ini_file(__DIR__.'/../../env.ini', true);
+    $this->DBconfig = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
     $this->db_host = $this->DBconfig['mysql']['DB_HOST'];
     $this->db_user = $this->DBconfig['mysql']['DB_USERNAME'];
     $this->db_pass = $this->DBconfig['mysql']['DB_PASSWORD'];

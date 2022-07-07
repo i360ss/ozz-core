@@ -16,7 +16,7 @@ class Email extends Appinit {
   private static $conf;
 
   private static function index(){
-    self::$conf = parse_ini_file(__DIR__ . '/../../env.ini', true);
+    self::$conf = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
   }
 
 

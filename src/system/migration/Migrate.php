@@ -17,7 +17,7 @@ class Migrate extends Schema {
   use Ozz_log_data;
   use Ozz_CLI_Connection;
   
-  private $mgDir = __DIR__ . '/../../../database/migration/'; // Migrations Directory
+  private $mgDir = __DIR__.SPC_BACK['core_2'].'database/migration/'; // Migrations Directory
   private $vals;
   private $dbCred; // DB Cred
   private $conn; // DB Connection

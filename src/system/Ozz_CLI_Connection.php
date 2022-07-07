@@ -15,7 +15,7 @@ trait Ozz_CLI_Connection {
    * Get Config data
    */
   private function init() {
-    $this->config = parse_ini_file(__DIR__ . '/../../../env.ini', true);
+    $this->config = parse_ini_file(__DIR__.SPC_BACK['core_1'].'env.ini', true);
   }
 
 

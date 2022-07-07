@@ -15,8 +15,8 @@ class Appinit {
 
   
   public function __construct() {
-    
-    $this->config = parse_ini_file(__DIR__.'/../../env.ini', true);
+
+    $this->config = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
     
     // # App session Setup
     if (session_status() == PHP_SESSION_NONE) {
@@ -30,7 +30,7 @@ class Appinit {
     $nonce = base64_encode($unique);
     defined('CSP_NONCE') || define('CSP_NONCE', $nonce);
     
-    $this->csp = parse_ini_file(__DIR__.'/../../csp.ini', true); // Get CSP Values
+    $this->csp = parse_ini_file(__DIR__.SPC_BACK['core'].'csp.ini', true); // Get CSP Values
     if($this->csp['CSP']['USE_CSP'] == 1){
       $csp = $this->csp['CSP'];
       header("Content-Security-Policy: base-uri ".$csp['base-uri']."; default-src ".$csp['default-src']."; style-src ".$csp['style-src']." 'nonce-".$nonce."'; font-src ".$csp['font-src']."; script-src ".$csp['script-src']." 'nonce-" . $nonce . "'; img-src ".$csp['img-src']."; connect-src ".$csp['connect-src']."; object-src ".$csp['object-src']."; media-src ".$csp['media-src']."; child-src ".$csp['child-src']."; report-uri ".$csp['report-uri']."; form-action ".$csp['form-action']."; frame-ancestors ".$csp['frame-ancestors']."; worker-src ".$csp['worker-src']."; ");
@@ -71,9 +71,9 @@ class Appinit {
 
     # Config Directories
     defined('ROOT') || define('ROOT', $_SERVER['DOCUMENT_ROOT'] . DS);
-    defined('VIEW') || define('VIEW', __DIR__ . '/../app/view/');
+    defined('VIEW') || define('VIEW', __DIR__.SPC_BACK['core'].'app/view/');
     defined('ASSETS') || define('ASSETS', BASE_URL . "assets".DS);
-    defined('UPLOAD_TO') || define('UPLOAD_TO', __DIR__.'/../../'.$this->config['app']['PUBLIC_DIR'].'/uploads/');
+    defined('UPLOAD_TO') || define('UPLOAD_TO', '../'.$this->config['app']['PUBLIC_DIR'].'/uploads/');
     defined('UPLOADS') || define('UPLOADS', BASE_URL.'uploads/');
     defined('CSS') || define('CSS', ASSETS . 'css'.DS);
     defined('JS') || define('JS', ASSETS . 'js'.DS);
