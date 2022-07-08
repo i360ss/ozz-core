@@ -7,7 +7,7 @@
 
 namespace Ozz\Core;
 
-use Ozz\app\Validator;
+use App\Validator;
 use Ozz\Core\Err;
 use Ozz\Core\system\file\FileSettings;
 

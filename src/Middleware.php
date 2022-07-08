@@ -7,7 +7,7 @@
 
 namespace Ozz\Core;
 
-use Ozz\app\RegisterMiddleware;
+use App\RegisterMiddleware;
 
 class Middleware {
   
