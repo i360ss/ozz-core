@@ -69,7 +69,7 @@ class CliCreate {
     }
     
     $fileName = $this->createTo.'controller/' .$name.'.php';
-    $namespace = self::SetNamespace($fileName);
+    $namespace = self::SetNamespace('App\controller\\'.$name);
     $nameFinal = explode("/", $name);
     
     if(!file_exists($fileName)){
@@ -137,7 +137,7 @@ class CliCreate {
     }
     
     $fileName = $this->createTo.'model/' .$name.'.php';
-    $namespace = self::SetNamespace($fileName);
+    $namespace = self::SetNamespace('App\model\\'.$name);
     $nameFinal = explode("/", $name);
     
     if(!file_exists($fileName)){
@@ -171,7 +171,7 @@ class CliCreate {
     }
     
     $fileName = $this->createTo.'middleware/' .$name.'.php';
-    $namespace = self::SetNamespace($fileName);
+    $namespace = self::SetNamespace('App\middleware\\'.$name);
     $nameFinal = explode("/", $name);
     
     if(!file_exists($fileName)){
@@ -342,9 +342,11 @@ class CliCreate {
   # ------------------------------------
   private static function SetNamespace($fullName){
     $namespace = explode("/", $fullName);
-    unset($namespace[0], $namespace[1], $namespace[2], $namespace[3]);
+    if (count($namespace) < 2) {
+      $namespace = explode("\\", $namespace[0]);
+    }
     array_pop($namespace);
-    $namespace = 'Ozz\\'.join("\\", $namespace);
+    $namespace = join("\\", $namespace);
     return $namespace;
   }
   
