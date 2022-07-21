@@ -16,6 +16,12 @@ class Appinit {
   
   public function __construct() {
 
+    define('SPC_BACK', [
+      'core' => '/../../../../',
+      'core_1' => '/../../../../../',
+      'core_2' => '/../../../../../../',
+    ]);
+
     $this->config = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
     
     // # App session Setup
