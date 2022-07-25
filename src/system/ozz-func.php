@@ -8,6 +8,7 @@
 */
 
 // Used Classes
+use Ozz\Core\Errors;
 use Ozz\Core\Router;
 use Ozz\Core\Help;
 
@@ -400,4 +401,41 @@ function ozz_dump($arg) {
 
 function _dump($arg) {
   return ozz_dump($arg);
+}
+
+
+
+# ----------------------------------------------------
+// Short functions for Error handling
+# ----------------------------------------------------
+/**
+ * Returns all current errors
+ */
+function errors() {
+  global $errors;
+  return $errors->all;
+}
+
+/**
+ * Returns Boolean
+ */
+function has_error($key='') {
+  global $errors;
+  return $errors->has($key);
+}
+
+/**
+ * Return only required error
+ */
+function get_error($key='') {
+  global $errors;
+  return $errors->get($key);
+}
+
+/**
+ * Set new error
+ */
+function set_error($k, $v) {
+  global $errors;
+  $errors->set($k, $v);
 }

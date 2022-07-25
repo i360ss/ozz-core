@@ -126,6 +126,15 @@ class Err {
     ]);
   }
 
+  // Invalid Array Key
+  public static function invalidArrayKey($i){
+    return self::renderErr([
+      "msg" => "[ $i ] is Not a valid array key",
+      "info" => "More information about the issue and how to fix it",
+      "note" => "Additional Notes"
+    ]);
+  }
+
   // File Handling Exceptions
   ///////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////
