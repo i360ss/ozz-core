@@ -222,7 +222,7 @@ function _esc_url($url) {
  * @param string $start // Left side string
  * @param string $end   // Right side string
  * 
- * returns a string
+ * @return string
  */
 function str_between($str, $start, $end) {
   if (preg_match("/$start(.*?)$end/", $str, $match) == 1) {
@@ -246,7 +246,7 @@ function _str_between($str, $start, $end) {
  * @param string $start // Left side string
  * @param string $end   // Right side string
  * 
- * returns an array
+ * @return array|bool
  */
 function str_between_all($str, $start, $end) {
   if (preg_match_all("/$start(.*?)$end/", $str, $match)) {
@@ -264,6 +264,54 @@ function _str_between_all($str, $start, $end) {
   }
   else {
     return false;
+  }
+}
+
+
+
+/**
+ * Find value in array by provided key
+ * @param string $key Array key to find by
+ * @param array $array The array to find from
+ * 
+ * @return array|string|bool
+ */
+function find_in_array($key, $array) {
+  if (array_key_exists($key, $array)) {
+    return $array[$key];
+  } else {
+    foreach ($array as $k => $val) {
+      if (is_array($val)) {
+        return find_in_array($key, $val);
+      } else {
+        return false;
+      }
+    }
+  }
+}
+
+
+
+/**
+ * Search [key => value] in array by provided value
+ * @param string $value Value to search by
+ * @param array $array Array to search from
+ * @param bool $getOnlyKey If it is true function will only return the key of the value
+ * 
+ * @return array|bool
+ */
+function search_in_array($value, $array, $getOnlyKey=false) {
+  $arrKey = array_search($value, $array);
+  if ($arrKey) {
+    return $getOnlyKey ? $arrKey : [$arrKey => $array[$arrKey] ];
+  } else {
+    foreach ($array as $k => $val) {
+      if (is_array($val)) {
+        return search_in_array($value, $val, $getOnlyKey);
+      } else {
+        return false;
+      }
+    }
   }
 }
 
