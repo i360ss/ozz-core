@@ -57,7 +57,13 @@ class Err {
       echo self::$eachContainerEnd;
     }
   }
-  
+
+
+  // Custom Exception
+  public static function custom($i) {
+    return self::renderErr($i);
+  }
+
 
   // Commen Exceptions
   ///////////////////////////////////////////////////////////////////////
