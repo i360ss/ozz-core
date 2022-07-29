@@ -7,22 +7,18 @@
 
 namespace Ozz\Core;
 
+use Ozz\Core\Session;
+
 class Errors {
   
   public $all = [];
 
   
-  public function __construct() {
-    return $this->all();
-  }
-
-
-
   /**
    * Return all current errors
    */
-  public function all() {
-    return $this->all;
+  public static function all() {
+    return Session::has('errors') ? Session::get('errors') : false;
   }
 
 
@@ -31,13 +27,16 @@ class Errors {
    * Check Error key exist
    * @param string $key Error key to check if exist
    */
-  public function has($key='') {
-    if ($key == '') {
-      return count($this->all) > 0 ? true : false;
-    } elseif (empty($this->all) || !isset($this->all)) {
-      return false;
-    } else {
-      return array_key_exists($key, $this->all);
+  public static function has($key='') {
+    if ( Session::has('errors') ) {
+      $all = Session::get('errors');
+      if ($key == '') {
+        return count($all) > 0 ? true : false;
+      } elseif (empty($all) || !isset($all)) {
+        return false;
+      } else {
+        return array_key_exists($key, $all);
+      }
     }
   }
 
@@ -47,17 +46,20 @@ class Errors {
    * Get One Error by key
    * @param string $key Key of the required error
    */
-  public function get(string $key='') {
-    if ($key !== '') {
-      if (array_key_exists($key, $this->all)) {
-        return $this->all[$key];
-      } else {
-        if (DEBUG) {
-          return ERR::invalidArrayKey($key);
+  public static function get(string $key='') {
+    if ( Session::has('errors') ) {
+      $all = Session::get('errors');
+      if ($key !== '') {
+        if (array_key_exists($key, $all)) {
+          return $all[$key];
+        } else {
+          if (DEBUG) {
+            return ERR::invalidArrayKey($key);
+          }
         }
+      } else {
+        return $all;
       }
-    } else {
-      return $this->all;
     }
   }
 
@@ -68,8 +70,42 @@ class Errors {
    * @param string $key key of the Error
    * @param string|array|object|bool $value the error message and/or any additional info
    */
-  public function set(string $key, $value) : void {
-    $this->all[$key] = $value;
+  public static function set(string $key, $value) : void {
+    if (Session::has('errors')) {
+      $current_errs = Session::get('errors');
+      $current_errs[$key] = $value;
+      Session::set('errors', $current_errs);
+    } else {
+      Session::set('errors', [ $key => $value ]);
+    }
   }
-  
+
+
+
+  /**
+   * Remove Error
+   * @param string $key error key to remove
+   * @param bool Optional (Return new errors if this is true)
+   * @return bool|array
+   */
+  public static function remove($key, $return=false) {
+    if (Session::has('errors')) {
+      $all = Session::get('errors');
+      unset($all[$key]);
+      Session::set('errors', $all);
+      return $return ? $all : true;
+    }
+  }
+
+
+
+  /**
+   * Clear All Errors
+   */
+  public static function clear() {
+    if (Session::has('errors')) {
+      Session::remove('errors');
+    }
+  }
+ 
 }

@@ -460,30 +460,40 @@ function _dump($arg) {
  * Returns all current errors
  */
 function errors() {
-  global $errors;
-  return $errors->all;
+  return Errors::all();
 }
 
 /**
  * Returns Boolean
  */
 function has_error($key='') {
-  global $errors;
-  return $errors->has($key);
+  return Errors::has($key);
 }
 
 /**
  * Return only required error
  */
 function get_error($key='') {
-  global $errors;
-  return $errors->get($key);
+  return Errors::get($key);
 }
 
 /**
  * Set new error
  */
 function set_error($k, $v) {
-  global $errors;
-  $errors->set($k, $v);
+  return Errors::set($k, $v);
+}
+
+/**
+ * Remove Error
+ */
+function remove_error($k) {
+  return Errors::remove($k);
+}
+
+/**
+ * Clear All Errors
+ */
+function clear_error() {
+  return Errors::clear();
 }
