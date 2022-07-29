@@ -176,11 +176,9 @@ class Router extends Appinit {
   # Header Redirect
   # ----------------------------------
   public static function redirect($to, $status=301){
-    if(Help::getPath() !== '/'.$to){
-      Help::statusCode($status);
-      header("location: $to");
-      exit;   
-    }
+    Help::statusCode($status);
+    header("Location: $to");
+    exit;
   }
   
 }
