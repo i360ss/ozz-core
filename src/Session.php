@@ -9,6 +9,38 @@ namespace Ozz\Core;
 
 class Session {
 
+  private static $refresh_after;
+
+
+  /**
+   * Initialize Application Session
+   */
+  public static function init($config) {
+    self::$refresh_after = $config['app']['REFRESH_SESSION_ID'];
+
+    if (session_status() == PHP_SESSION_NONE) {
+      session_start();
+    }
+
+    if (!isset($_SESSION['INIT_TIME'])) {
+      $_SESSION['INIT_TIME'] = time();
+    } elseif (time() - $_SESSION['INIT_TIME'] > self::$refresh_after) {
+      self::re_generate_id();
+    }
+  }
+
+
+
+  /**
+   * Re Generate Session ID
+   */
+  public static function re_generate_id() {
+    session_regenerate_id(true);
+    $_SESSION['INIT_TIME'] = time();
+  }
+
+
+  
   /**
    * Set New session value
    * @param string $k Key of the session
@@ -112,10 +144,29 @@ class Session {
 
 
   /**
+   * Session Flash
+   * Store session for oonly one request and unset
+   * @param string $k Sesion key
+   * @param string|array|object|int $v Session value
+   * @param bool $force overwrite existing value (default: true)
+   */
+  public static function flash(string $k, $v, $force=true) {
+    $_SESSION['ozz__flash'][$k] = $v;
+
+    if ($force) {
+      $_SESSION[$k] = $v;
+    } else {
+      !array_key_exists($k, $_SESSION) ? $_SESSION[$k] = $v : false;
+    }
+  }
+
+
+
+  /**
    * Clear Session variable
    */
   public static function clear() {
-    $_SESSION = [];
+    $_SESSION = false;
   }
 
 
@@ -124,7 +175,7 @@ class Session {
    * Destroy Session variable
    */
   public static function destroy() {
-    $_SESSION = [];
+    $_SESSION = false;
     session_destroy();
   }
 

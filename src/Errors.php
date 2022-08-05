@@ -11,14 +11,13 @@ use Ozz\Core\Session;
 
 class Errors {
   
-  public $all = [];
-
-  
   /**
    * Return all current errors
    */
   public static function all() {
-    return Session::has('errors') ? Session::get('errors') : false;
+    return (isset($_SESSION['ozz__flash']) && !empty($_SESSION['ozz__flash'])) 
+      ? $_SESSION['ozz__flash'] 
+      : false;
   }
 
 
@@ -27,9 +26,9 @@ class Errors {
    * Check Error key exist
    * @param string $key Error key to check if exist
    */
-  public static function has($key='') {
-    if ( Session::has('errors') ) {
-      $all = Session::get('errors');
+  public static function has(string $key='') {
+    if ( Session::has('ozz__flash') ) {
+      $all = Session::get('ozz__flash');
       if ($key == '') {
         return count($all) > 0 ? true : false;
       } elseif (empty($all) || !isset($all)) {
@@ -37,6 +36,8 @@ class Errors {
       } else {
         return array_key_exists($key, $all);
       }
+    } else {
+      return false;
     }
   }
 
@@ -47,14 +48,16 @@ class Errors {
    * @param string $key Key of the required error
    */
   public static function get(string $key='') {
-    if ( Session::has('errors') ) {
-      $all = Session::get('errors');
+    if ( Session::has('ozz__flash') ) {
+      $all = Session::get('ozz__flash');
       if ($key !== '') {
         if (array_key_exists($key, $all)) {
           return $all[$key];
         } else {
           if (DEBUG) {
             return ERR::invalidArrayKey($key);
+          } else {
+            return false;
           }
         }
       } else {
@@ -71,13 +74,7 @@ class Errors {
    * @param string|array|object|bool $value the error message and/or any additional info
    */
   public static function set(string $key, $value) : void {
-    if (Session::has('errors')) {
-      $current_errs = Session::get('errors');
-      $current_errs[$key] = $value;
-      Session::set('errors', $current_errs);
-    } else {
-      Session::set('errors', [ $key => $value ]);
-    }
+    Session::flash($key, $value);
   }
 
 
@@ -88,12 +85,14 @@ class Errors {
    * @param bool Optional (Return new errors if this is true)
    * @return bool|array
    */
-  public static function remove($key, $return=false) {
-    if (Session::has('errors')) {
-      $all = Session::get('errors');
+  public static function remove(string $key, $return=false) {
+    if ( Session::has('ozz__flash') ) {
+      $all = Session::get('ozz__flash');
       unset($all[$key]);
-      Session::set('errors', $all);
+      Session::set('ozz__flash', $all);
       return $return ? $all : true;
+    } else {
+      return false;
     }
   }
 
@@ -103,9 +102,9 @@ class Errors {
    * Clear All Errors
    */
   public static function clear() {
-    if (Session::has('errors')) {
-      Session::remove('errors');
+    if (Session::has('ozz__flash')) {
+      Session::remove('ozz__flash');
     }
   }
- 
+  
 }

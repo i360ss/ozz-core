@@ -7,6 +7,8 @@
 
 namespace Ozz\Core;
 
+use Ozz\Core\Session;
+
 class Appinit {
   
   private $SSL;      // Check (http or https)
@@ -32,10 +34,7 @@ class Appinit {
     /**
      * App session start
      */
-    if (session_status() == PHP_SESSION_NONE) {
-      session_set_cookie_params(time()+600, '/', '', false, true);
-      session_start();
-    }
+    Session::init($this->config);
     
 
     /**
@@ -201,6 +200,9 @@ class Appinit {
     else{
       echo $out;
     }
+
+    $afterReq = new AfterRequest;
+    $afterReq->run();
   }
   
 }
