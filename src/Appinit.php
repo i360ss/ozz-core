@@ -171,6 +171,12 @@ class Appinit {
 
 
     /**
+     * Enable/Disable Debug bar, defined in env.ini
+     */
+    defined('SHOW_DEBUG_BAR') || define('SHOW_DEBUG_BAR', $this->config['app']['SHOW_DEBUG_BAR'] == 1 ? true : false);
+
+
+    /**
      * Minify HTML, defined in env.ini
      */
     defined('MINIFY_HTML') || define('MINIFY_HTML', $this->config['app']['MINIFY_HTML'] == 1 ? true : false);
