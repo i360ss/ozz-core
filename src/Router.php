@@ -167,6 +167,7 @@ class Router extends Appinit {
   # Render View
   # ----------------------------------
   public static function view($vv, $data=[], $basetemp=''){
+    new Request;
     return Templating::render($vv, $data, $basetemp, self::$template);
   }  
   

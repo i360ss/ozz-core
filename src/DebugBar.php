@@ -10,8 +10,19 @@ namespace Ozz\Core;
 
 class DebugBar {
 
-  protected $debug_info;
+  protected $debug_info = [];
   
+
+  /**
+   * Construct the instance
+   */
+  public function __construct() {
+    $this->debug_info['ozz_message'] = [];
+    $this->debug_info['ozz_request'] = [];
+    $this->debug_info['ozz_sql_queries'] = [];
+  }
+
+
 
   /**
    * Log debug information to display on debug bar
@@ -30,7 +41,11 @@ class DebugBar {
    * @return array|string|int ill return the debug infor
    */
   public function get($key=null) {
-    return $key ? $this->debug_info[$key] : $this->debug_info;
+    if (isset($key) && array_key_exists($key, $this->debug_info)) {
+      return $this->debug_info[$key];
+    } else {
+      return $this->debug_info;
+    }
   }
 
 
@@ -39,6 +54,14 @@ class DebugBar {
    * Set and Display/Render the debug bar
    */
   public function show() {
+    // Remove Duplicates on ozz_messages
+    $msg = $this->debug_info['ozz_message'];
+    if (!empty($msg) && count($msg) > 1) {
+      $this->debug_info['ozz_message'] = array_chunk($msg, ceil(count($msg) / 2))[0];
+    }
+
+    // Render Debug Bar / Generate DOM
+    ///////////////////////
     echo '<h4>Ozz Debug Bar</h4>';
     dump( $this->get() );
   }

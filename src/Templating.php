@@ -12,6 +12,7 @@ use Ozz\Core\Sanitize;
 class Templating extends Appinit {
   
   protected static $cdt=[]; // Current Data to load on view
+  private static $debug_view = [];
   
   # ----------------------------------
   # Render Template
@@ -27,11 +28,17 @@ class Templating extends Appinit {
    * $basetemp will be used over $basetemp_from_router if it is not empty
    */
   public static function render($vv, $data, $basetemp, $basetemp_from_router){
+
+    global $DEBUG_BAR;
+    DEBUG ? self::$debug_view['view_data'] = $data : false; // Log to debug bar
+
     $regComps = [];
     $context = Sanitize::tempContext($data);
     self::$cdt = [$context, json_encode($context, JSON_FORCE_OBJECT)];
 
     if(file_exists(VIEW . $vv . '.phtml')){
+      DEBUG ? self::$debug_view['view_file'] = "view/$vv.phtml" : false; // Log to debug bar
+
       $viewContent = self::setView($vv)[0];
       $vars = self::setView($vv)[1];
       
@@ -80,6 +87,9 @@ class Templating extends Appinit {
         foreach ($viewComp as $k => $v) {
           $baselay = str_replace("{% $k %}", $v, $baselay);
         }
+        
+        // Set view info to debug bar
+        DEBUG ? $DEBUG_BAR->set('ozz_view', self::$debug_view) : false;
         return $baselay;
       }
     }
@@ -96,8 +106,14 @@ class Templating extends Appinit {
     $data = self::$cdt[0];
     $data_json = self::$cdt[1];
     $temp = ($temp == '') ? 'base/layout' : $temp;
-    if(file_exists(VIEW . $temp . '.phtml')){ require VIEW . $temp.'.phtml'; }
-    else{ return Err::baseTemplateNotFound(VIEW . $temp . '.phtml'); }
+
+    if(file_exists(VIEW . $temp . '.phtml')){
+      require VIEW . $temp.'.phtml';
+      DEBUG ? self::$debug_view['base_file'] = "view/$temp.phtml" : false; // Log to debug bar
+    } else{
+      return Err::baseTemplateNotFound(VIEW . $temp . '.phtml');
+    }
+
     $lay = ob_get_contents();
     ob_end_clean();
     return $lay;
@@ -122,10 +138,12 @@ class Templating extends Appinit {
     preg_match_all("~\{\:\s*(.*?)\s*\:\}~", $view, $comps);
 
     // Set All Components
-    foreach ($comps[1] as $c) {
+    foreach ($comps[1] as $k => $c) {
       $parts = array_map('trim', explode('|', $c));
 
       if(file_exists(VIEW.'components/'.$parts[0].'.phtml')){
+        DEBUG ? self::$debug_view['components'][$k]['file'] = "view/components/$parts[0].phtml" : false; // Log to debug bar
+
         ob_start();
         
         // Setup arguments to component
@@ -155,6 +173,8 @@ class Templating extends Appinit {
           $args = false;
         }
 
+        DEBUG ? self::$debug_view['components'][$k]['args'] = $args : false; // Log to debug bar
+
         $args && is_array($args) ? extract($args) : false; // Extract args
         include VIEW.'components/'.$parts[0].'.phtml';
         $component = ob_get_contents();
@@ -162,6 +182,7 @@ class Templating extends Appinit {
       }
       elseif(file_exists(VIEW.'components/'.$parts[0].'.html')){
         $component = file_get_contents(VIEW.'components/'.$parts[0].'.html'); 
+        DEBUG ? self::$debug_view['components'][$k]['file'] = "view/components/$parts[0].html" : false; // Log to debug bar
       }
       else{ 
         Err::componentNotFound($parts[0]);
