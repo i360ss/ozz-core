@@ -110,6 +110,7 @@ class Router extends Appinit {
   # Resolve
   # ----------------------------------
   protected static function resolve(){
+    global $DEBUG_BAR;
     
     $path = Help::getPath();
     $method = Help::getMethod();
@@ -157,6 +158,11 @@ class Router extends Appinit {
     // Load Class
     if(is_array($callback)){
       $callback[0] = new $callback[0];
+      // Log to debug bar
+      DEBUG ? $DEBUG_BAR->set('ozz_controller', [
+        'controller' => get_class($callback[0]),
+        'method' => $callback[1]
+      ]) : false;
     }
     return call_user_func($callback, new Request); // Execute
   }
