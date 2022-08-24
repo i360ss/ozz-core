@@ -169,4 +169,12 @@ class Request extends Router {
     return $_SERVER['REQUEST_URI'] ?? null;
   }
   
+
+  /**
+   * Log Request info to Debug bar
+   */
+  public function __destruct() {
+    global $DEBUG_BAR;
+    $DEBUG_BAR->set('ozz_request', $this->fullRequest);
+  }
 }

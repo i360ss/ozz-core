@@ -57,7 +57,8 @@ class Database {
         ],
         'command' => [
           'SET SQL_MODE=ANSI_QUOTES'
-        ]
+        ],
+        'logging' => DEBUG ? true : false,
       ]);
       return $this->connect;
     }
@@ -73,9 +74,20 @@ class Database {
     $db = $dbName !== null ? $dbName : $this->DBconfig['sqlite']['DB_NAME'];
     $sqliteDB = new Medoo([
       'database_type' => 'sqlite',
-      'database_file' => __DIR__ . '/../database/sqlite/'.$db
+      'database_file' => __DIR__ . '/../database/sqlite/'.$db,
+      'logging' => DEBUG ? true : false,
     ]);
     return $sqliteDB;
+  }
+
+
+
+  /**
+   * Log SQL queries to debug bar info
+   */
+  public function __destruct() {
+    global $DEBUG_BAR;
+    $DEBUG_BAR->set('ozz_sql_queries', $this->DB->log());
   }
 
 
