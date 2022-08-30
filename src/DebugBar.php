@@ -8,6 +8,8 @@
 namespace Ozz\Core;
 
 
+use Ozz\Core\system\SubHelp;
+
 class DebugBar {
 
   protected $debug_info = [];
@@ -54,16 +56,8 @@ class DebugBar {
    * Set and Display/Render the debug bar
    */
   public function show() {
-    // Remove Duplicates on ozz_messages
-    $msg = $this->debug_info['ozz_message'];
-    if (!empty($msg) && count($msg) > 1) {
-      $this->debug_info['ozz_message'] = array_chunk($msg, ceil(count($msg) / 2))[0];
-    }
-
-    // Render Debug Bar / Generate DOM
-    ///////////////////////
-    echo '<h4>Ozz Debug Bar</h4>';
-    dump( $this->get() );
+    $subHelp = new SubHelp();
+    $subHelp->renderDebugBar( $this->get() );
   }
   
 }
