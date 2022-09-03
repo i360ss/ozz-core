@@ -99,6 +99,13 @@ class Appinit {
      * App Language defined in env.ini
      */
     defined('APP_LANG') || define('APP_LANG', $this->config['app']['APP_LANG']);
+
+
+    /**
+     * App Charset defined in env.ini
+     */
+    defined('CHARSET') || define('CHARSET', $this->config['app']['CHARSET']);
+    
     
 
     /**
