@@ -56,10 +56,20 @@ class Sanitize {
     return $arr;
   }
 
+
+
+  /**
+   * Used to prevent template injection
+   */
   public static function tempContext($arr){
-    foreach ($arr as $k => $v) {
-      (is_array($v)) ? $arr[$k] = self::tempContext($v) : $arr[$k] = self::regExps($v);
+    if (is_array($arr) || is_object($arr)) {
+      foreach ($arr as $k => $v) {
+        (is_array($v)) ? $arr[$k] = self::tempContext($v) : $arr[$k] = self::regExps($v);
+      }
+    } else {
+      $arr = self::regExps($arr);
     }
+    
     return $arr;
   }
 
