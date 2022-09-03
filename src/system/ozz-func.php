@@ -214,7 +214,7 @@ function _esc_url($url) {
 
 
 # ----------------------------------------------------
-// Var, Array and Object manipulations
+// Var, Array, JSON and Object manipulations
 # ----------------------------------------------------
 /**
  * Returns string between 2 strings
@@ -315,6 +315,15 @@ function search_in_array($value, $array, $getOnlyKey=false) {
   }
 }
 
+
+/**
+ * Check string is JSON or not
+ * @param string @str
+ * @return bool
+ */
+function isJSON($str){
+  return is_string($str) && is_array(json_decode($str, true)) ? true : false;
+}
 
 
 # ----------------------------------------------------
