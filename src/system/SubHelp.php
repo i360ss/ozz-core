@@ -120,11 +120,48 @@ class SubHelp {
 
 
   /**
+   * JSON Pretty Dumper
+   * @param string JSON string to be dumped
+   * @param int $id ID of the dump DOM
+   * @return html DOM
+   */
+  public static function jsonDumper($id, $jsonString, $bg_padd=true) {
+    include 'vendor/pretty-json/pretty-json.php';
+    $styl = $bg_padd ? 'style="background: #fff;padding: 20px;"' : '';
+
+    return '<style nonce="'.CSP_NONCE.'">'.$pretty_json_style.'</style><script type="text/javascript" nonce="'.CSP_NONCE.'">'.$pretty_json_script.'</script><div '.$styl.'>
+      <button id="ozz_debugbar__collapseBtn_'.$id.'" class="ozz_debugbar__collapse_btn active">Collapse</button>
+      <div id="ozz_debugbar__jsonDump_'.$id.'"></div>
+      <script type="text/javascript" nonce="'.CSP_NONCE.'">
+        var ozz_debug_jsondump'.$id.' = new JSONViewer();
+        document.querySelector("#ozz_debugbar__jsonDump_'.$id.'").appendChild(ozz_debug_jsondump'.$id.'.getContainer());
+        ozz_debug_jsondump'.$id.'.showJSON('.$jsonString.');
+
+        var collapseBtn = document.getElementById("ozz_debugbar__collapseBtn_'.$id.'");
+        collapseBtn.addEventListener("click", function(e) {
+          e.preventDefault();
+          if (collapseBtn.classList.contains("active")) {
+            ozz_debug_jsondump'.$id.'.showJSON('.$jsonString.');
+            collapseBtn.classList.remove("active");
+            this.innerHTML="Collapse";
+          } else {
+            ozz_debug_jsondump'.$id.'.showJSON('.$jsonString.', null, 0);
+            collapseBtn.classList.add("active")
+            this.innerHTML="Expand";
+          }
+        });
+      </script>
+    </div>';
+  }
+
+
+
+  /**
    * Highlight SQL syntax
    * @param string $string the sql string
    * @return html wrapped html
    */
-  public function sqlHighlight($string) {
+  public static function sqlDumper($string, $inlineStyle=true) {
     $sqlKeyords = [
       'ADD',
       'EXTERNAL',
@@ -319,7 +356,12 @@ class SubHelp {
       $string = str_replace($val, "<span class='high-txt'>$val</span>", $string);
     }
 
-    return $string;
+    if ($inlineStyle) {
+      $style = "<div class='ozz-debug-sqldumper'><style nonce='".CSP_NONCE."'>.ozz-debug-sqldumper {color:#18171B;} .ozz-debug-sqldumper span.high-txt { color: #2e86de; }</style>";
+      return $style.$string.'</div>';
+    } else {
+      return $string;
+    }
   }
 
 
@@ -327,10 +369,9 @@ class SubHelp {
   /**
    * Get Set and Render Debug Bar
    */
-  public function renderDebugBar($data) {
-    dump($data); echo '<br><br><br><br><br><br><br>';
-    ?>
-    <!-- // Ozz Debug Bar Styles -->
+  public function renderDebugBar($data) { ?>
+    <div class="ozz__debugbar">
+    <!-- Ozz Debug Bar Styles -->
     <style nonce="<?=CSP_NONCE?>">
       :root {
         --ozz-white: #ffffff;
@@ -508,10 +549,14 @@ class SubHelp {
       }
 
       .ozz-fw-debug-bar-tab__message-controller span,
-      .ozz-fw-debug-bar-tab__message-view span,
       .ozz-fw-debug-bar-tab__message-request span {
         text-align: left !important;
         float: left !important;
+        color: var(--ozz-dark);
+        font-size: 14px;
+      }
+
+      .ozz-fw-debug-bar-tab__message-view span {
         color: var(--ozz-dark);
         font-size: 14px;
       }
@@ -557,9 +602,21 @@ class SubHelp {
       .ozz-fw-debug-bar-tab__message.w::before { background: var(--ozz-warn); }
       .ozz-fw-debug-bar-tab__message.e::before { background: var(--ozz-error); }
       .ozz-fw-debug-bar-tab__message.i::before { background: var(--ozz-info); }
+
+      /* Pretty JSON */
+      .ozz-fw-debug-bar .json-viewer {
+        margin: 5px 0 0;
+      }
+
+      .ozz_debugbar__collapse_btn {
+        padding: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        background-color: var(--ozz-dark1);
+      }
     </style>
 
-    <!-- // Ozz Debug Bar -->
+    <!-- Ozz Debug Bar -->
     <div class="ozz-fw-debug-bar">
       <div class="ozz-fw-debug-bar__nav">
         <button class="ozz-fw-debug-bar__nav item" data-item="console">Console <span class="count"><?= count($data['ozz_message']) ?></span></button>
@@ -589,7 +646,7 @@ class SubHelp {
                 </pre>
               <?php } elseif (isJSON($value['args'][0])) { ?>
                 <pre class="ozz-fw-debug-bar-tab__message <?=$class?>">
-                  <span><pre><?= json_encode(json_decode($value['args'][0]), JSON_PRETTY_PRINT) ?></pre></span>
+                  <div><?= self::jsonDumper($key, $value['args'][0], false)?></div>
                   <span style="color: var(--ozz-dark2)"><?=$value['file'].' | ln: '.$value['line']?></span>
                 </pre>
               <?php
@@ -628,12 +685,12 @@ class SubHelp {
         </div>
 
 
-        <div class="ozz-fw-debug-bar__body tab-body Queries">
+        <div class="ozz-fw-debug-bar__body tab-body queries">
           <?php if (count($data['ozz_sql_queries']) < 1) : ?>
             <pre class="ozz-fw-debug-bar-tab__empty">No Queries</pre>
           <?php else: ?>
             <?php foreach ($data['ozz_sql_queries'] as $key => $value) : ?>
-              <pre class="ozz-fw-debug-bar-tab__message-queries"><?=$this->sqlHighlight($value)?></pre>
+              <pre class="ozz-fw-debug-bar-tab__message-queries"><?=self::sqlDumper($value, false)?></pre>
             <?php endforeach; ?>
           <?php endif; ?>
         </div>
@@ -662,7 +719,7 @@ class SubHelp {
               <?php if (is_array($view['view_data']) || is_object($view['view_data'])) {?>
                 <span class="ozz-fw-debug-bar-array"><?php self::varDump($view['view_data'], '', false, true)?></span>
               <?php } elseif (isJSON($view['view_data'])) { ?>
-                <span><pre><?= json_encode(json_decode($view['view_data']), JSON_PRETTY_PRINT) ?></pre></span>
+                <div><?= self::jsonDumper('view_data', $view['view_data'], false)?></div>
               <?php } else { ?>
                 <span><?= is_string($view['view_data']) ? $view['view_data'] : false; ?></span>
               <?php } ?>
@@ -673,22 +730,26 @@ class SubHelp {
 
 
         <div class="ozz-fw-debug-bar__body tab-body controller">
-          <?php if (count($data['ozz_controller']) < 1) { ?>
-            <pre class="ozz-fw-debug-bar-tab__empty">No Controller</pre>
-          <?php 
+          <?php
+          if (isset($data['ozz_controller'])) { 
+            if (count($data['ozz_controller']) < 1) {
+              echo '<pre class="ozz-fw-debug-bar-tab__empty">No Controller</pre>';
             } else {
-              $ctl = $data['ozz_controller'];
-          ?>
-            <div class="ozz-fw-debug-bar-tab__message-controller">
-              <span class="label">Controller:</span>
-              <span><?=$ctl['controller']?></span>
-            </div>
+              $ctl = $data['ozz_controller']; ?>
+              <div class="ozz-fw-debug-bar-tab__message-controller">
+                <span class="label">Controller:</span>
+                <span><?=$ctl['controller']?></span>
+              </div>
 
-            <div class="ozz-fw-debug-bar-tab__message-controller">
-              <span class="label">Method:</span>
-              <span><?=$ctl['method']?></span>
-            </div>
-          <?php } ?>
+              <div class="ozz-fw-debug-bar-tab__message-controller">
+                <span class="label">Method:</span>
+                <span><?=$ctl['method']?></span>
+              </div>
+            <?php
+            }
+          } else {
+            echo '<pre class="ozz-fw-debug-bar-tab__empty">No Controller</pre>';
+          } ?>
         </div>
 
 
@@ -698,7 +759,7 @@ class SubHelp {
       </div>
     </div>
 
-    <!-- // Ozz Debug Bar Script -->
+    <!-- Ozz Debug Bar Script -->
     <script type="text/javascript" nonce="<?=CSP_NONCE?>">
       var ozzdebugbar__container = document.querySelector('.ozz-fw-debug-bar');
       var ozzdebugbar__nav_item = document.querySelectorAll('.ozz-fw-debug-bar__nav.item');
@@ -731,6 +792,7 @@ class SubHelp {
         });
       });
     </script>
+    </div>
     <?php
   }
 }
