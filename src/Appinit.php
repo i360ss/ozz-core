@@ -208,10 +208,13 @@ class Appinit {
       $search = array('/(\n|^)(\x20+|\t)/', '/(\n|^)\/\/(.*?)(\n|$)/', '/\n/', '/\<\!--.*?-->/', '/(\x20+|\t)/', '/\>\s+\</', '/(\"|\')\s+\>/', '/=\s+(\"|\')/');
       $replace = array("\n", "\n", " ", "", " ", "><", "$1>", "=$1");
       $out = preg_replace($search,$replace,$out);
-      echo $out;
     }
-    else{
-      echo $out;
+
+    echo $out;
+
+    if(DEBUG && SHOW_DEBUG_BAR){
+      global $DEBUG_BAR;
+      $DEBUG_BAR->show();
     }
 
     $afterReq = new AfterRequest;
