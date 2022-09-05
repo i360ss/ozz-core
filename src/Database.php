@@ -8,7 +8,7 @@
 namespace Ozz\Core;
 
 use PDO;
-use Medoo\Medoo;
+use Ozz\Core\Medoo;
 
 class Database {
   

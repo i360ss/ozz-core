@@ -176,10 +176,8 @@ class SubHelp {
       'FILLFACTOR',
       'READ',
       'ANY',
-      'FOR',
-      'READTEXT',
-      'AS',
       'FOREIGN',
+      'READTEXT',
       'RECONFIGURE',
       'ASC',
       'FREETEXT',
@@ -224,7 +222,6 @@ class SubHelp {
       'IF',
       'SCHEMA',
       'CLUSTERED',
-      'IN',
       'SECURITYAUDIT',
       'COALESCE',
       'INDEX',
@@ -242,13 +239,10 @@ class SubHelp {
       'INTO',
       'SESSION_USER',
       'CONSTRAINT',
-      'IS',
-      'SET',
       'CONTAINS',
       'JOIN',
       'SETUSER',
       'CONTAINSTABLE',
-      'KEY',
       'SHUTDOWN',
       'CONTINUE',
       'KILL',
@@ -273,10 +267,8 @@ class SubHelp {
       'THEN',
       'CURRENT_TIMESTAMP',
       'NOCHECK',
-      'TO',
       'CURRENT_USER',
       'NONCLUSTERED',
-      'TOP',
       'CURSOR',
       'NOT',
       'TRAN',
@@ -287,16 +279,13 @@ class SubHelp {
       'NULLIF',
       'TRIGGER',
       'DEALLOCATE',
-      'OF',
       'TRUNCATE',
       'DECLARE',
-      'OFF',
       'TRY_CONVERT',
       'DEFAULT',
       'OFFSETS',
       'TSEQUAL',
       'DELETE',
-      'ON',
       'UNION',
       'DENY',
       'OPEN',
@@ -312,12 +301,10 @@ class SubHelp {
       'UPDATETEXT',
       'DISTRIBUTED',
       'OPENXML',
-      'USE',
       'DOUBLE',
       'OPTION',
       'USER',
       'DROP',
-      'OR',
       'VALUES',
       'DUMP',
       'ORDER',
@@ -325,7 +312,6 @@ class SubHelp {
       'ELSE',
       'OUTER',
       'VIEW',
-      'END',
       'OVER',
       'WAITFOR',
       'ERRLVL',
@@ -348,12 +334,26 @@ class SubHelp {
       'WRITETEXT',
       'EXIT',
       'PROC',
+      'IN',
+      'AS',
+      'FOR',
+      'IS',
+      'END',
+      'OR',
+      'USE',
+      'ON',
+      'OFF',
+      'OF',
+      'TOP',
+      'TO',
+      'KEY',
+      'SET',
     ];
 
     $pattern = '/\b(' . implode ('|', $sqlKeyords) . ')/i';
     preg_match_all($pattern, $string, $matches);
-    foreach ($matches[1] as $val) {
-      $string = str_replace($val, "<span class='high-txt'>$val</span>", $string);
+    foreach ($matches[0] as $val) {
+      $string = str_ireplace("$val ", "<span class='high-txt'>$val</span> ", $string);
     }
 
     if ($inlineStyle) {
@@ -371,6 +371,7 @@ class SubHelp {
    */
   public function renderDebugBar($data) { ?>
     <div class="ozz__debugbar">
+      <?php dump($data); ?>
     <!-- Ozz Debug Bar Styles -->
     <style nonce="<?=CSP_NONCE?>">
       :root {
@@ -529,10 +530,16 @@ class SubHelp {
         padding: 10px 5px 10px 24px;
         position:relative;
         color: var(--ozz-dark1);
+        display: grid;
+        grid-template-columns: 1fr 100px;
       }
 
       .ozz-fw-debug-bar-tab__message-queries span.high-txt {
         color: var(--ozz-info);
+      }
+
+      .ozz-fw-debug-bar-tab__message-queries span:nth-child(1) {
+
       }
 
       .ozz-fw-debug-bar-tab__message-controller,
@@ -690,7 +697,10 @@ class SubHelp {
             <pre class="ozz-fw-debug-bar-tab__empty">No Queries</pre>
           <?php else: ?>
             <?php foreach ($data['ozz_sql_queries'] as $key => $value) : ?>
-              <pre class="ozz-fw-debug-bar-tab__message-queries"><?=self::sqlDumper($value, false)?></pre>
+              <div class="ozz-fw-debug-bar-tab__message-queries">
+                <span><?=self::sqlDumper($value[1], false)?></span>
+                <span><?=number_format($value[0]*1000, 3)?> ms</span>
+            </div>
             <?php endforeach; ?>
           <?php endif; ?>
         </div>
@@ -754,7 +764,19 @@ class SubHelp {
 
 
         <div class="ozz-fw-debug-bar__body tab-body session">
-          session
+            <?php foreach ($_SESSION as $key => $value) { ?>
+              <div class="ozz-fw-debug-bar-tab__message-view">
+              <span class="label"><?=$key?></span>
+              <?php if (is_array($value) || is_object($value)) { ?>
+                <span class="ozz-fw-debug-bar-array"><?=self::varDump($value, '', false, true)?></span>
+              <?php } elseif (isJSON($value)) { ?>
+                <span><?= self::jsonDumper('jid_'.rand(), $value, false)?></span>
+              <?php } else { ?>
+                <span><?=$value?></span>
+              <?php } ?>
+              </div>
+            <?php } ?>
+          </div>
         </div>
       </div>
     </div>
