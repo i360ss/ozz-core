@@ -427,7 +427,7 @@ class SubHelp {
         color: var(--ozz-dark1);
         cursor: pointer;
         font-family: sans-serif;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 500;
         margin: 0;
         padding: 6px 10px;
@@ -484,7 +484,7 @@ class SubHelp {
         font-size: 13px;
         grid-template-columns: 1fr auto;
         margin: 0;
-        padding: 5px 5px 5px 24px;
+        padding: 5px 5px 5px 20px;
         position:relative;
       }
 
@@ -527,7 +527,7 @@ class SubHelp {
         border-bottom: 1px solid var(--ozz-light2);
         font-size: 13px;
         margin: 0;
-        padding: 10px 5px 10px 24px;
+        padding: 10px 5px 10px 20px;
         position:relative;
         color: var(--ozz-dark1);
         display: grid;
@@ -538,17 +538,73 @@ class SubHelp {
         color: var(--ozz-info);
       }
 
-      .ozz-fw-debug-bar-tab__message-queries span:nth-child(1) {
+      /* Used on View Tab */
+      .ozz__dbg_view-comp-wrapper {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        grid-gap: 30px;
+      }
 
+      .ozz__dbg_view-comp-wrapper .ozz__dbg_view-info {
+        border-right: 1px solid var(--ozz-light1);
+        height: 100%;
+        min-height: 280px;
+      }
+
+      .ozz-fw-debug-bar-tab__message-view-head {
+        padding: 10px 20px;
+        background: var(--ozz-light1);
+        display: grid;
+        grid-template-columns: auto auto 1fr;
+        grid-gap: 30px;
+        font-size: 13px;
+      }
+
+      .ozz-fw-debug-bar-tab__message-view-component {
+        border-bottom: 1px solid var(--ozz-light1);
+        padding: 25px 0;
+      }
+
+      .ozz-fw-debug-bar-tab__message-view-component span.green {
+        color: var(--ozz-dark1);
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .ozz__dbg_component-info .dumpr small {
+        display: none;
+      }
+
+      .ozz__dbg_component-info .dumpr,
+      .ozz__dbg_component-info .dumpr pre,
+      .ozz__dbg_component-info .dumpr div {
+        border: none;
+        padding: 0;
+        background: transparent;
+      }
+
+      .ozz-fw-debug-bar-tab__message-view pre {
+        white-space: pre-wrap;
+        white-space: -moz-pre-wrap;
+        white-space: -pre-wrap;
+        white-space: -o-pre-wrap;
+        word-wrap: break-word;
+      }
+
+      .ozz-fw-debug-bar-tab__message-view {
+        border-bottom: 1px solid var(--ozz-light2);
+        font-size: 13px;
+        margin: 0;
+        padding: 10px 5px 10px 20px;
+        color: var(--ozz-dark1);
       }
 
       .ozz-fw-debug-bar-tab__message-controller,
-      .ozz-fw-debug-bar-tab__message-view,
       .ozz-fw-debug-bar-tab__message-request {
         border-bottom: 1px solid var(--ozz-light2);
         font-size: 13px;
         margin: 0;
-        padding: 10px 5px 10px 24px;
+        padding: 10px 5px 10px 20px;
         position:relative;
         display: grid;
         grid-template-columns: 130px 1fr;
@@ -560,17 +616,16 @@ class SubHelp {
         text-align: left !important;
         float: left !important;
         color: var(--ozz-dark);
-        font-size: 14px;
+        font-size: 13px;
       }
 
       .ozz-fw-debug-bar-tab__message-view span {
         color: var(--ozz-dark);
-        font-size: 14px;
+        font-size: 13px;
       }
 
       .ozz-fw-debug-bar-tab__message:hover, 
       .ozz-fw-debug-bar-tab__message-controller:hover,
-      .ozz-fw-debug-bar-tab__message-view:hover,
       .ozz-fw-debug-bar-tab__message-queries:hover,
       .ozz-fw-debug-bar-tab__message-request:hover {
         background: var(--ozz-light1);
@@ -617,7 +672,7 @@ class SubHelp {
 
       .ozz_debugbar__collapse_btn {
         padding: 5px;
-        font-size: 14px;
+        font-size: 13px;
         cursor: pointer;
         background-color: var(--ozz-dark1);
       }
@@ -714,25 +769,48 @@ class SubHelp {
               $view = $data['ozz_view'];
             ?>
 
-            <div class="ozz-fw-debug-bar-tab__message-view">
-              <span class="label">View File</span>
-              <span><?=$view['view_file']?></span>
+            <div class="ozz-fw-debug-bar-tab__message-view-head">
+              <span><strong>View File:</strong> <?=$view['view_file']?></span>
+              <span><strong>Base Layout:</strong> <?=$view['base_file']?></span>
             </div>
 
-            <div class="ozz-fw-debug-bar-tab__message-view">
-              <span class="label">Base View File</span>
-              <span><?=$view['base_file']?></span>
-            </div>
+            <div class="ozz__dbg_view-comp-wrapper">
+              <div class="ozz__dbg_view-info">
+                <div class="ozz-fw-debug-bar-tab__message-view">
+                  <span class="label">View Data</span><br><br>
+                  <?php if (is_array($view['view_data']) || is_object($view['view_data'])) {?>
+                    <span class="ozz-fw-debug-bar-array"><?php self::varDump($view['view_data'], '', false, true)?></span>
+                  <?php } elseif (isJSON($view['view_data'])) { ?>
+                    <div><?= self::jsonDumper('view_data', $view['view_data'], false)?></div>
+                  <?php } else { ?>
+                    <span><?= is_string($view['view_data']) ? $view['view_data'] : false; ?></span>
+                  <?php } ?>
+                </div>
+              </div>
 
-            <div class="ozz-fw-debug-bar-tab__message-view">
-              <span class="label">View Data</span>
-              <?php if (is_array($view['view_data']) || is_object($view['view_data'])) {?>
-                <span class="ozz-fw-debug-bar-array"><?php self::varDump($view['view_data'], '', false, true)?></span>
-              <?php } elseif (isJSON($view['view_data'])) { ?>
-                <div><?= self::jsonDumper('view_data', $view['view_data'], false)?></div>
-              <?php } else { ?>
-                <span><?= is_string($view['view_data']) ? $view['view_data'] : false; ?></span>
-              <?php } ?>
+
+              <div class="ozz__dbg_component-info">
+                <div class="ozz-fw-debug-bar-tab__message-view">
+                  <span class="label">Components</span><br><br>
+                  <?php
+                  if (isset($view['components'])) {
+                    foreach ($view['components'] as $key => $value) {
+                      echo '<div class="ozz-fw-debug-bar-tab__message-view-component">';
+                      echo '<div><strong>Component: </strong><span class="green">'.$value['file'].'</span></div>';
+
+                      if (isJSON($value['args'])) {
+                        echo '<div><pre>'.json_encode($value['args'], JSON_PRETTY_PRINT).'</pre></div><br>';
+                      } elseif (is_array($value['args']) || is_object($value['args'])) {
+                        echo '<div>'.self::varDump($value['args'], '', false, true).'</div><br>';
+                      } else {
+                        echo '<div>'.$value['args'].'</div>';
+                      }
+                      echo '</div>';
+                    }
+                  }
+                  ?>
+                </div>
+              </div>
             </div>
 
           <?php endif; ?>
@@ -764,6 +842,7 @@ class SubHelp {
 
 
         <div class="ozz-fw-debug-bar__body tab-body session">
+          <?php if (isset($_SESSION) && !empty($_SESSION)) { ?>
             <?php foreach ($_SESSION as $key => $value) { ?>
               <div class="ozz-fw-debug-bar-tab__message-view">
               <span class="label"><?=$key?></span>
@@ -776,6 +855,7 @@ class SubHelp {
               <?php } ?>
               </div>
             <?php } ?>
+          <?php } ?>
           </div>
         </div>
       </div>
@@ -783,6 +863,7 @@ class SubHelp {
 
     <!-- Ozz Debug Bar Script -->
     <script type="text/javascript" nonce="<?=CSP_NONCE?>">
+    (function() {
       var ozzdebugbar__container = document.querySelector('.ozz-fw-debug-bar');
       var ozzdebugbar__nav_item = document.querySelectorAll('.ozz-fw-debug-bar__nav.item');
       var ozzdebugbar__tab_bodies = document.querySelectorAll('.ozz-fw-debug-bar__body.tab-body');
@@ -813,6 +894,7 @@ class SubHelp {
           ozzdebugbar__tempTabName = tabName;
         });
       });
+    })()
     </script>
     </div>
     <?php
