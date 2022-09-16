@@ -123,6 +123,18 @@ class Session {
 
 
   /**
+   * Set Session only if not set already
+   * @param string $k Key of the session
+   * @param string|array|object|int|bool $v session value to store
+   * @param bool $force overwrite existing value (default: true)
+   */
+  public static function set_if_not($k, $v, $force=true) {
+    !self::has($k) ? self::set($k, $v, $force) : true;
+  }
+
+
+
+  /**
    * Check if session exist
    * @param string $k session key
    * @return bool
