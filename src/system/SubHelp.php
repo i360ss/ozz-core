@@ -748,7 +748,7 @@ class SubHelp {
 
 
         <div class="ozz-fw-debug-bar__body tab-body queries">
-          <?php if (count($data['ozz_sql_queries']) < 1) : ?>
+          <?php if (isset($data['ozz_sql_queries']) && count($data['ozz_sql_queries']) < 1) : ?>
             <pre class="ozz-fw-debug-bar-tab__empty">No Queries</pre>
           <?php else: ?>
             <?php foreach ($data['ozz_sql_queries'] as $key => $value) : ?>
@@ -762,12 +762,10 @@ class SubHelp {
 
 
         <div class="ozz-fw-debug-bar__body tab-body view">
-          <?php if (count($data['ozz_view']) < 1) : ?>
+          <?php if (!isset($data['ozz_view']) || count($data['ozz_view']) < 1) : ?>
             <pre class="ozz-fw-debug-bar-tab__empty">No View Files</pre>
-          <?php else: ?>
-            <?php
-              $view = $data['ozz_view'];
-            ?>
+          <?php elseif (isset($data['ozz_view'])) : ?>
+            <?php $view = $data['ozz_view']; ?>
 
             <div class="ozz-fw-debug-bar-tab__message-view-head">
               <span><strong>View File:</strong> <?=$view['view_file']?></span>
