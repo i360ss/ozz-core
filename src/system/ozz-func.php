@@ -11,6 +11,7 @@
 use Ozz\Core\Errors;
 use Ozz\Core\Router;
 use Ozz\Core\Help;
+use Ozz\Core\system\SubHelp;
 
 # ----------------------------------------------------
 // Ozz escaping functions
@@ -268,6 +269,15 @@ function _str_between_all($str, $start, $end) {
 }
 
 
+/**
+ * Camel case to snake case
+ * This will convert camelcase to snake case
+ * @param string $str string to convert
+ */
+function to_snakecase($str) {
+  return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $str));
+}
+
 
 /**
  * Find value in array by provided key
@@ -288,6 +298,19 @@ function find_in_array($key, $array) {
       }
     }
   }
+}
+
+
+/**
+ * Get sub-classes of a class
+ * @param object $parent
+ */
+function get_sub_classes($parent) {
+  $result = array();
+  foreach (get_declared_classes() as $class) {
+    is_subclass_of($class, $parent) ? $result[] = $class : false;
+  }
+  return $result;
 }
 
 
@@ -323,6 +346,26 @@ function search_in_array($value, $array, $getOnlyKey=false) {
  */
 function isJSON($str){
   return is_string($str) && is_array(json_decode($str, true)) ? true : false;
+}
+
+
+/**
+ * Pretty Dumper for JSON
+ * @param string The json string to dump
+ * @return html dumped DOM
+ */
+function json_dump($str) {
+  $id = 'jd_'.rand(0, 10);
+  return SubHelp::jsonDumper($id, $str);
+}
+
+
+/**
+ * Pretty SQL Dumper
+ * @param string SQL string to highlight with colors
+ */
+function sql_dumper($str) {
+  return SubHelp::sqlDumper($str);
 }
 
 
