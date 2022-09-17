@@ -10,15 +10,18 @@ namespace Ozz\Core;
 use PDO;
 use Ozz\Core\Medoo;
 
-class Database {
-  
+abstract class Model {
+
   private $DBconfig;
   private $db_host;
   private $db_user;
   private $db_pass;
   private $db_base;
+  private $db_prefix;
   private $connect;
   protected $DB;
+  protected $table_name;
+  
   
   #---------------------------------------------------------------------
   // Make Database Connection
@@ -29,11 +32,14 @@ class Database {
     $this->db_user = $this->DBconfig['mysql']['DB_USERNAME'];
     $this->db_pass = $this->DBconfig['mysql']['DB_PASSWORD'];
     $this->db_port = $this->DBconfig['mysql']['DB_PORT'];
+    $this->db_prefix = $this->DBconfig['mysql']['DB_PREFIX'];
 
     // Return Primary DB Connection
     $this->DB = $this->DBconfig['db']['PRIMARY_DB'] == 'mysql' 
     ? $this->mysql() 
     : $this->sqlite();
+
+    $this->table_name = $this->getTable();
   }
 
 
@@ -59,7 +65,9 @@ class Database {
           'SET SQL_MODE=ANSI_QUOTES'
         ],
         'logging' => DEBUG ? true : false,
+        'prefix' => $this->db_prefix !== '' ? $this->db_prefix : false,
       ]);
+      
       return $this->connect;
     }
   }
@@ -72,12 +80,37 @@ class Database {
    */
   protected function sqlite($dbName=null){
     $db = $dbName !== null ? $dbName : $this->DBconfig['sqlite']['DB_NAME'];
+    $prefix = $this->DBconfig['sqlite']['DB_PREFIX'] !== '' ? $this->DBconfig['sqlite']['DB_PREFIX'] : false;
     $sqliteDB = new Medoo([
       'database_type' => 'sqlite',
       'database_file' => __DIR__ . '/../database/sqlite/'.$db,
       'logging' => DEBUG ? true : false,
+      'prefix' => $prefix,
     ]);
+
     return $sqliteDB;
+  }
+
+
+
+  /**
+   * Set table name
+   * Use defined name from called model if defined
+   * or use the called model name as the table name
+   */
+  public function getTable() {
+    $this_model = get_sub_classes(Model::class);
+    $table_from_class = explode('\\', end($this_model));
+    return $this->table ?? to_snakecase(end($table_from_class));
+  }
+
+
+
+  /**
+   * Get All values from the table
+   */
+  public function all() {
+    return $this->DB->select($this->table_name, '*',);
   }
 
 
@@ -89,6 +122,5 @@ class Database {
     global $DEBUG_BAR;
     $DEBUG_BAR->set('ozz_sql_queries', $this->DB->log());
   }
-
 
 }
