@@ -7,6 +7,8 @@
 
 namespace Ozz\Core\system;
 
+use Ozz\Core\Help;
+
 class SubHelp {
 
   /**
@@ -37,7 +39,7 @@ class SubHelp {
     $c = preg_replace("/(string\([0-9]+\) )\"(.*?)\"\n/sim", "$1<span class=\"string\">\"$2\"</span>\n", $c);
     
     $regex = array(
-      // Numberrs
+      // Numbers
       'numbers' => array('/(^|] = )(array|float|int|string|resource|object\(.*\)|\&amp;object\(.*\))\(([0-9\.]+)\)/i', '$1$2(<span class="number">$3</span>)'),
       // Keywords
       'null' => array('/(^|] = )(null)/i', '$1<span class="keyword">$2</span>'),
@@ -371,9 +373,9 @@ class SubHelp {
    */
   public function renderDebugBar($data) { ?>
     <div class="ozz__debugbar">
-      <?php dump($data); ?>
     <!-- Ozz Debug Bar Styles -->
     <style nonce="<?=CSP_NONCE?>">
+    <?php $ozz_debugbar_css = "
       :root {
         --ozz-white: #ffffff;
         --ozz-green: #88bf3d;
@@ -676,6 +678,10 @@ class SubHelp {
         cursor: pointer;
         background-color: var(--ozz-dark1);
       }
+      ";
+    
+    echo Help::minifyCSS($ozz_debugbar_css);
+    ?>
     </style>
 
     <!-- Ozz Debug Bar -->

@@ -146,7 +146,7 @@ class Session {
       return DEBUG 
         ? Err::custom([
           'msg' => 'Key not provided for <strong>Session::has()</strong>',
-          'info' => '[ Session::has() ] method required a valid key parameter to check the value existance',
+          'info' => '[ Session::has() ] method required a valid key parameter to check the value existence',
           'note' => 'Try dump( Session::get() ) to see all available session keys and values',
         ])
         : false;
@@ -157,8 +157,8 @@ class Session {
 
   /**
    * Session Flash
-   * Store session for oonly one request and unset
-   * @param string $k Sesion key
+   * Store session for only one request and unset
+   * @param string $k Session key
    * @param string|array|object|int $v Session value
    * @param bool $force overwrite existing value (default: true)
    */

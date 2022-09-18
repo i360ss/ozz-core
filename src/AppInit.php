@@ -9,7 +9,7 @@ namespace Ozz\Core;
 
 use Ozz\Core\Session;
 
-class Appinit {
+class AppInit {
   
   private $SSL;      // Check (http or https)
   private $config;   // Config App
@@ -205,9 +205,7 @@ class Appinit {
      */
     $out = Router::resolve();
     if(MINIFY_HTML){
-      $search = array('/(\n|^)(\x20+|\t)/', '/(\n|^)\/\/(.*?)(\n|$)/', '/\n/', '/\<\!--.*?-->/', '/(\x20+|\t)/', '/\>\s+\</', '/(\"|\')\s+\>/', '/=\s+(\"|\')/');
-      $replace = array("\n", "\n", " ", "", " ", "><", "$1>", "=$1");
-      $out = preg_replace($search,$replace,$out);
+      $out = Help::minifyHTML($out);
     }
 
     echo $out;

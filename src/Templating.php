@@ -9,7 +9,7 @@ namespace Ozz\Core;
 
 use Ozz\Core\Sanitize;
 
-class Templating extends Appinit {
+class Templating extends AppInit {
   
   protected static $cdt=[]; // Current Data to load on view
   private static $debug_view = [];

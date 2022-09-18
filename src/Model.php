@@ -23,9 +23,9 @@ abstract class Model {
   protected $table_name;
   
   
-  #---------------------------------------------------------------------
-  // Make Database Connection
-  #---------------------------------------------------------------------
+  /**
+   * Make Database Connection
+   */
   public function __construct(){
     $this->DBconfig = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
     $this->db_host = $this->DBconfig['mysql']['DB_HOST'];

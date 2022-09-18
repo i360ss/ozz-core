@@ -10,7 +10,7 @@ namespace Ozz\Core;
 use Ozz\Core\Session;
 
 class AfterRequest {
-  
+
   private $flash_keys;
 
 
@@ -20,11 +20,11 @@ class AfterRequest {
   public function run() {
     $this->session_flash_out();
   }  
-  
+
 
 
   /**
-   * Excecute this after all request
+   * Execute this after all request
    */
   private function session_flash_out() {
     if ( isset($_SESSION['ozz__flash']) && !empty($_SESSION['ozz__flash']) ) {
@@ -33,7 +33,7 @@ class AfterRequest {
       foreach ($this->flash_keys as $key) {
         Session::remove($key);
       }
-
+      
       // Clear flash session log
       $_SESSION['ozz__flash'] = false;
     }

@@ -11,7 +11,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-class Email extends Appinit {
+class Email extends AppInit {
 
   private static $conf;
 

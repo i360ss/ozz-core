@@ -10,7 +10,7 @@ namespace Ozz\Core;
 use Ozz\Core\Request;
 use Ozz\Core\Sanitize;
 
-class Router extends Appinit {
+class Router extends AppInit {
   
   protected static $ValidRoutes=[];
   protected static $template; // Base Template for view
