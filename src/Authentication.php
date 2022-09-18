@@ -7,7 +7,7 @@
 
 namespace Ozz\Core;
 
-class Authentication extends Database {
+class Authentication extends Model {
   
   protected static $validUserRoles = []; // This will return all the registered user roles
   protected static $response = [];
@@ -58,7 +58,7 @@ class Authentication extends Database {
       # ------------------------------------ 
       if(self::$response['error'] == 0){
         // Connect to Database
-        $DB = new Database();
+        $DB = new Model();
         switch (self::$db_type) {
           case 'mysql':
             $DB = $DB->mysql();
