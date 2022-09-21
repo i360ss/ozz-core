@@ -157,14 +157,38 @@ class Router extends AppInit {
     }
     // Load Class
     if(is_array($callback)){
-      $callback[0] = new $callback[0];
-      // Log to debug bar
-      DEBUG ? $DEBUG_BAR->set('ozz_controller', [
-        'controller' => get_class($callback[0]),
-        'method' => $callback[1]
-      ]) : false;
+      if(!isset($callback[1])){
+        $callback[1] = 'index';
+      }
+
+      if(class_exists($callback[0])){
+        $callback[0] = new $callback[0];
+        // Log to debug bar
+        DEBUG ? $DEBUG_BAR->set('ozz_controller', [
+          'controller' => get_class($callback[0]),
+          'method' => $callback[1]
+        ]) : false;
+      } else {
+        DEBUG ? $DEBUG_BAR->set('ozz_controller', [
+          'controller' => $callback[0] . '<f style="color:red;"> Not Found</f>',
+          'method' => $callback[1]
+        ]) : false;
+      }
+    } else {
+      return call_user_func($callback, new Request); // Execute
     }
-    return call_user_func($callback, new Request); // Execute
+
+    if(method_exists($callback[0], $callback[1]) && is_callable($callback)){
+      return call_user_func($callback, new Request); // Execute
+    } else {
+      if(is_string($callback[0])) {
+        DEBUG ? Err::custom([
+          'msg' => "Class [ $callback[0] ] Not found",
+          'info' => "Please check the class name in your route for any spelling mistakes. If you don't have a class already, please create it first",
+          'note' => "Command to create a class [ php ozz c:c className ]"
+        ]) : false;
+      }
+    }
   }
   
   
