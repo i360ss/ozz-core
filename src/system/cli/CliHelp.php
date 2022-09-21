@@ -51,12 +51,13 @@ All available commands
     // migration commands here
     print($yellow."Migration Options ".$br);
     print($green." migrate                     ".$wt."Run Migration (will execute all available migrations)".$br);
-    print($green." migrate:drop                ".$wt."Delete one specific table (provide table name) ".$br);
+    print($green." migrate [Migration Name]    ".$wt."Execute only the provided migration".$br);
+    print($green." migrate:drop [Table Name]   ".$wt."Delete one specific table (provide table name) ".$br);
     print($green." migrate:clear               ".$wt."Drop All Tables ".$br);
     print($green." migrate:reset               ".$wt."Reset All Migrations ".$br.$br);
 
     // create commands here
-    print($yellow."Create Options ".$br);
+    print($yellow."Create Options (Must provide the name as argument) ".$br);
     print($green." c:mvc                       ".$wt."Create a new model view & controller ".$br);
     print($green." c:controller                ".$wt."Create a new controller ".$br);
     print($green." c:model                     ".$wt."Create a new model ".$br);

@@ -18,13 +18,13 @@ class CreateMigration {
     $r2 = ucwords($r2);
     
     // Set Up Migration Type (New / Update)
-    if($r1 == 'c:migration'){
+    if($r1 == 'c:migration' || $r1 == 'create:migration' || $r1 == 'create:mig' || $r1 == 'c:mig' || $r1 == 'make:mig' || $r1 == 'make:migration'){
       // Default Create New Migration Generating Content
       $content = $this->newMigratorContent($r2);
       $newFile = $this->mgDir.'mg_'.date('d_m_Y_').$r2.'.php';
       $extName = '';
     }
-    elseif($r1 == 'u:migration'){
+    elseif($r1 == 'u:migration' || $r1 == 'u:mig' || $r1 == 'update:migration' || $r1 == 'update:mig'){
       // Default Update Table Migration Generating Content
       $content = $this->updateMigratorContent($r2);
       $newFile = $this->mgDir.'mg_'.date('d_m_Y_').'Update_'.$r2.'.php';

@@ -78,9 +78,11 @@ class Migrate extends Schema {
       if(file_exists($this->mgDir.$v) && is_file($this->mgDir.$v)){
         require_once $this->mgDir.$v;
         
-        $class = substr(substr($v, 14), 0, -4);
-        $class = new $class;
-        $class->up();
+        if ($v !== '.gitkeep') {
+          $class = substr(substr($v, 14), 0, -4);
+          $class = new $class;
+          $class->up();
+        }
       }
     }
     

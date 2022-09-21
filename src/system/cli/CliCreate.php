@@ -42,7 +42,7 @@ class CliCreate {
     elseif($r1 == 'c:middleware' || $r1 == 'c:md' || $r1 == 'create:middleware' || $r1 == 'make:middleware'){
       $this->createMiddleware($r2);
     }
-    elseif($r1 == 'c:et' || $r1 == 'c:email_temp' || $r1 == 'c:email_template' || $r1 == 'create:email_template' || $r1 == 'create:email_temp' || $r1 == 'make:email_template' || $r1 == 'make:email_temp'){
+    elseif($r1 == 'c:et' || $r1 == 'c:email-temp' || $r1 == 'c:email-template' || $r1 == 'create:email-template' || $r1 == 'create:email-temp' || $r1 == 'make:email-template' || $r1 == 'make:email-temp' || $r1 == 'c:email-view'){
       $this->createEmailTemplate($r2);
     }
     elseif($r1 == 'c:layout' || $r1 == 'c:lay' || $r1 == 'c:base-layout'){

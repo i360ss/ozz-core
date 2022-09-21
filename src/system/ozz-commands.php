@@ -18,7 +18,7 @@ function ozz_console_error($message) {
 // Print warning on console
 function ozz_console_warn($message) {
   global $utils;
-  $utils->console_return($message, 'yellow', 'yellow', true, true);
+  $utils->console_return($message, 'white', 'yellow', true, true);
 }
 
 // Print success on console
@@ -123,12 +123,13 @@ elseif(count($com) == 3){
     case 'c:model':
 
     case 'c:et':
-    case 'c:email_temp':
-    case 'c:email_template':
-    case 'make:email_template':
-    case 'make:email_temp':
-    case 'create:email_template':
-    case 'create:email_temp':
+    case 'c:email-view':
+    case 'c:email-temp':
+    case 'c:email-template':
+    case 'make:email-template':
+    case 'make:email-temp':
+    case 'create:email-template':
+    case 'create:email-temp':
 
     case 'c:layout':
     case 'c:lay':
@@ -155,10 +156,16 @@ elseif(count($com) == 3){
 
     // Create Migration
     case 'c:migration':
+    case 'c:mig':
+    case 'make:mig':
     case 'create:migration':
+    case 'create:mig':
     case 'make:migration':
     
     case 'u:migration': // Update Table
+    case 'u:mig':
+    case 'update:migration':
+    case 'update:mig':
       $class = "migration/CreateMigration";
       break;
 
