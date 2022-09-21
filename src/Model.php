@@ -13,7 +13,6 @@ class Model {
   use DB;
 
 
-
   function __construct() {
     $this->table = $this->get_table();
   }
@@ -32,4 +31,22 @@ class Model {
   }
 
 
+
+  /**
+   * A simple method for select from current table
+   * @param array|string $what Items to be selected eg: '*' | 'address' | ['email', 'name'] ect.
+   * @param array|string $where and all the other parameters of Medoo query
+   */
+  protected function get($what, $where) {
+    return $this->DB()->select($this->table, $what, $where);
+  }
+
+
+
+  /**
+   * A simple method for select all from current table
+   */
+  protected function all() {
+    return $this->DB()->select($this->table, '*');
+  }
 }
