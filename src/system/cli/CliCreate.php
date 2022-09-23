@@ -9,7 +9,7 @@ namespace Ozz\Core\system\cli;
 
 class CliCreate {
   
-  private $createTo = __DIR__ . SPC_BACK['core_2'].'app/';
+  private $createTo = SPC_BACK['core_2'].'app/';
   
   public function index($com){
     extract($com);
@@ -73,7 +73,7 @@ class CliCreate {
     $nameFinal = explode("/", $name);
     
     if(!file_exists($fileName)){
-      require_once $this->createTo.'GenerateContent.php'; // Generating Contents
+      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
       $content = Content('controller', [
         'namespace' => $namespace,
         'class' => end($nameFinal)
@@ -107,7 +107,7 @@ class CliCreate {
     $nameFinal = explode("/", $name);
     
     if(!file_exists($fileName)){
-      require_once $this->createTo.'GenerateContent.php'; // Generating Contents
+      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
       $content = Content('view', [
         'name' => end($nameFinal),
         'path' => 'view/'.$name
@@ -141,7 +141,7 @@ class CliCreate {
     $nameFinal = explode("/", $name);
     
     if(!file_exists($fileName)){
-      require_once $this->createTo.'GenerateContent.php'; // Generating Contents
+      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
       $content = Content('model', [
         'namespace' => $namespace,
         'class' => end($nameFinal)
@@ -175,7 +175,7 @@ class CliCreate {
     $nameFinal = explode("/", $name);
     
     if(!file_exists($fileName)){
-      require_once $this->createTo.'GenerateContent.php'; // Generating Contents
+      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
       $content = Content('middleware', [
         'namespace' => $namespace,
         'class' => end($nameFinal)
@@ -207,7 +207,7 @@ class CliCreate {
     $fileName = $this->createTo.'email_template/'.$name.'.html';
     
     if(!file_exists($fileName)){
-      require_once $this->createTo.'GenerateContent.php'; // Generating Contents
+      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
       $content = Content('email_template', false); // Generating Contents
       
       if(self::Create('email_template', $fileName, $content)){
@@ -236,7 +236,7 @@ class CliCreate {
     $fileName = $this->createTo.'view/base/'.$name.'.phtml';
     
     if(!file_exists($fileName)){
-      require_once $this->createTo.'GenerateContent.php'; // Generating Contents
+      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
       $content = Content('layout', false); // Generating Contents
       
       if(self::Create('layout', $fileName, $content)){
@@ -266,7 +266,7 @@ class CliCreate {
     $nameFinal = explode("/", $name);
     
     if(!file_exists($fileName)){
-      require_once $this->createTo.'GenerateContent.php'; // Generating Contents
+      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
       $content = Content('component', [
         'path' => 'view/components/'.$name,
         'name' => end($nameFinal)
@@ -302,13 +302,18 @@ class CliCreate {
     
     $DS = DIRECTORY_SEPARATOR;
     $dirName = explode("/", $fullName);
-    unset($dirName[0], $dirName[1], $dirName[2], $dirName[3]);
     
     $dirArr = array_slice($dirName, 0, -1);
     $dir = implode($DS, $dirArr);
 
-    if(!is_dir($dir)){
-      mkdir($dir, 0777, true);
+    if(PHP_OS == 'WIN32' || PHP_OS == 'Windows' || PHP_OS == 'WINNT'){
+      if(!is_dir(__DIR__.$DS.$dir)){
+        mkdir(__DIR__.$DS.$dir, 0777, true);
+      }
+    } else if (PHP_OS == 'Linux' || PHP_OS == 'Unix'){
+      if(!file_exists(__DIR__.$DS.$dir)){
+        mkdir(__DIR__.$DS.$dir, 0755, true);
+      }
     }
     
     if($typ == "controller" || $typ == "model" || $typ == "middleware"){
@@ -325,7 +330,7 @@ class CliCreate {
     }
     
     // Create File
-    $fl = fopen($fileFinalPath, 'w');
+    $fl = fopen(__DIR__.$fileFinalPath, 'w');
     fwrite($fl, $content."\n");
     if(fclose($fl)){
       return true;
