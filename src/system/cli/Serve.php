@@ -18,6 +18,7 @@ class Serve {
     $url = $conf['app']['APP_URL'].':'.$conf['app']['LOCAL_PORT'];
 
     $utils->console_return('Ozz development server started', 'white', 'green', 1, true);
+    $utils->console_return('Press Ctrl+C to stop the server', 'brown', false, 2);
     exec( sprintf('start %s', 'http://'.$url) ); // Open on default browser
     exec('php -S '.$url.' -t '.$conf['app']['PUBLIC_DIR']);
     die;
