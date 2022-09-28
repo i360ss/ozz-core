@@ -12,6 +12,7 @@ use Ozz\Core\Errors;
 use Ozz\Core\Router;
 use Ozz\Core\Help;
 use Ozz\Core\system\SubHelp;
+use Ozz\Core\Err;
 
 # ----------------------------------------------------
 // Ozz escaping functions
@@ -487,6 +488,42 @@ function _random_str($n=10, $type=null) {
  */
 function view($view, $data=[]) {
   return Router::view($view, $data);
+}
+
+
+
+/**
+ * Render component with parameters
+ * @param string $component Component name
+ * @param array|string|object $args Parameters
+ */
+function component($component, $args=null) {
+  $dom = '';
+
+  if(file_exists(VIEW.'components/'.$component.'.phtml')){
+    if(isset($args) && is_array($args)){
+      extract($args);
+    }
+
+    ob_start();
+    include VIEW.'components/'.$component.'.phtml';
+    $dom = ob_get_contents();
+    ob_end_clean();
+  }
+  elseif(file_exists(VIEW.'components/'.$component.'.html')){
+    $dom = file_get_contents(VIEW.'components/'.$component.'.html'); 
+  }
+  else {
+    return DEBUG
+    ? Err::componentNotFound($component)
+    : false;
+  }
+
+  return $dom;
+}
+
+function _component($component, $args=null) {
+  echo component($component, $args);
 }
 
 
