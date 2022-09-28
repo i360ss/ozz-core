@@ -148,6 +148,12 @@ class Templating extends AppInit {
         
         // Setup arguments to component
         if(count($parts) == 2){
+          // Clear previous component's args and extracted variables
+          if(isset($args) && is_array($args)){
+            foreach ($args as $k => $v) {
+              unset(${$k});
+            }
+          }
           unset($args, $temp);
 
           if(self::is_string($parts[1])){
@@ -155,16 +161,29 @@ class Templating extends AppInit {
             $args = self::trim_string($parts[1]);
           }
           else{
-            // Get the $args as array or variable
+            // Get the $args as array, variable or single string (without quotes)
             $keys = array_map('trim', explode('.', $parts[1]));
-            if(count($keys) > 1){
-              $temp = ${$keys[0]};
-              foreach ($keys as $i => $v) {
-                $i !== 0 ? $temp =& $temp[$v] : false;
+            if(count($keys) > 1){ // if array
+              if(isset(${$keys[0]})){
+                $temp = ${$keys[0]};
+                foreach ($keys as $i => $vl) {
+                  $i !== 0 ? $temp =& $temp[$vl] : false;
+                }
+                $args = !is_null($temp) ? $temp : false;
+              } else {
+                $args = $keys;
               }
-              $args = !is_null($temp) ? $temp : false;
             }
-            else{
+            elseif(count($keys) == 1 && !isset(${$keys[0]})) {
+              if(is_numeric($keys[0])){
+                $args = (int)$keys[0];
+              } elseif(explode(',', $keys[0])){
+                $args = array_map('trim', explode(',', $keys[0])); // return as array if args has comma (,) separations
+              } else {
+                $args = (string)$keys[0];
+              }
+            }
+            else{ // if variable
               $args = !is_null(${$keys[0]}) ? ${$keys[0]} : false;
             }
           }
