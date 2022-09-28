@@ -51,9 +51,9 @@ class Err {
     extract($errData);
     if(DEBUG){
       echo self::$eachContainer;
-      echo self::$errorTmp . '<strong>Error: </strong>' . $msg . self::$errorTmpEnd;
-      echo self::$errInfo . '<strong>Info: </strong>' . $info . self::$errInfoEnd;
-      echo self::$errNote . '<strong>Note: </strong>' . $note . self::$errNoteEnd;
+      echo $msg !== false ? self::$errorTmp . '<strong>Error: </strong>' . $msg . self::$errorTmpEnd : false;
+      echo $info !== false ? self::$errInfo . '<strong>Info: </strong>' . $info . self::$errInfoEnd : false;
+      echo $note !== false ? self::$errNote . '<strong>Note: </strong>' . $note . self::$errNoteEnd : false;
       echo self::$eachContainerEnd;
     }
   }
@@ -73,7 +73,7 @@ class Err {
   public static function baseTemplateNotFound($i){
     return self::renderErr([
       "msg" => "Base Template file not found <br> File Name: $i",
-      "info" => "More information about the issue and how to fix it",
+      "info" => "Please create your base template first <br> Run [ php ozz c:lay layout_name ]",
       "note" => "Additional Notes"
     ]);
   }
@@ -82,17 +82,17 @@ class Err {
   public static function viewNotFound($i){
     return self::renderErr([
       "msg" => "View file not found <br> File Name: $i",
-      "info" => "More information about the issue and how to fix it",
-      "note" => "Additional Notes"
+      "info" => "Please create your view file [ php ozz c:v view_name ]",
+      "note" => "View directory should contain only PHTML or HTML files"
     ]);
   }
   
   // Component name
   public static function componentNotFound($i){
     return self::renderErr([
-      "msg" => "(".$i.") Component file Not found",
-      "info" => "More information about the issue and how to fix it",
-      "note" => "Additional Notes"
+      "msg" => "Component (".$i.") Not found",
+      "info" => "Please create your component first. Run [ php ozz c:comp component_name ]",
+      "note" => "Your component must be a PHTML or HTML file"
     ]);
   }
   
