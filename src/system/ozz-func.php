@@ -58,6 +58,23 @@ $ozz_htmlSpecialChar = [
 
 
 /**
+ * Get .env values
+ * @param string $key the key of .env value
+ */
+function env($key=null, $key2=null){
+  $env = parse_ini_file(__DIR__.SPC_BACK['core_1'].'env.ini', true);
+  if($key !== null && $key2 !== null){
+    return $env[$key][$key2];
+  } elseif($key !== null){
+    return $env[$key];
+  } else {
+    return $env;
+  }
+}
+
+
+
+/**
  * Escape HTML
  * @param string $str
  */

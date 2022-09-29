@@ -70,9 +70,9 @@ trait DB {
    * @return object Database connection
    */
   public function DB($db=null) {
-    $this->DBconfig = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
+    $this->DBconfig = env();
     
-    $connection = 'primary_db';
+    $connection = $this->DBconfig['app']['PRIMARY_DB'];
     $dbName = false;
     
     if ($db !== null && isset($this->DBconfig[$db])) {

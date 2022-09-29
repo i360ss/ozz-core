@@ -15,7 +15,7 @@ trait Ozz_CLI_Connection {
    * Get Config data
    */
   private function init() {
-    $this->config = parse_ini_file(__DIR__.SPC_BACK['core_1'].'env.ini', true);
+    $this->config = env();
   }
 
 
@@ -26,7 +26,8 @@ trait Ozz_CLI_Connection {
    */
   private function mysql() {
     $this->init();
-    extract($this->config['mysql']);
+    $primary_db = $this->config['app']['PRIMARY_DB'];
+    extract($this->config[$primary_db]);
     $this->ozz_cli_DB_Conn = new \PDO("mysql:host=$DB_HOST;dbname=$DB_NAME", $DB_USERNAME, $DB_PASSWORD);
     $this->ozz_cli_DB_Conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     return $this->ozz_cli_DB_Conn;

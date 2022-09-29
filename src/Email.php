@@ -16,7 +16,7 @@ class Email extends AppInit {
   private static $conf;
 
   private static function index(){
-    self::$conf = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
+    self::$conf = env();
   }
 
 
@@ -54,7 +54,7 @@ class Email extends AppInit {
         $mail->Host       = self::$conf['sMTP']['SMTP_HOST'];        // Set the SMTP server to send through
         $mail->Username   = self::$conf['sMTP']['SMTP_USERNAME'];    // SMTP username
         $mail->Password   = self::$conf['sMTP']['SMTP_PASSWORD'];    // SMTP password
-        $mail->Port       = self::$conf['sMTP']['SMTO_PORT'];        // Port
+        $mail->Port       = self::$conf['sMTP']['SMTP_PORT'];        // Port
         $mail->SMTPSecure = self::$conf['sMTP']['SECURE'];           // Secure Connection
       }
 
@@ -85,7 +85,7 @@ class Email extends AppInit {
       $mail->Body = $mailBody;
       $mail->AltBody = strip_tags($alt);
 
-      # Embeded Images
+      # Embedded Images
       if(isset($img) && !empty($img)){
         foreach ($img as $key => $value) {
           $mail->AddEmbeddedImage($value, $key, $value);
