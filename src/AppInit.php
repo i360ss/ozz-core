@@ -52,7 +52,7 @@ class AppInit {
     
 
     /**
-     * Create Commen CSRF Token (For Outside Users)
+     * Create Common CSRF Token (For Outside Users)
      */
     if(empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token'])){
       $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -78,7 +78,7 @@ class AppInit {
 
 
     /**
-     * App envirenment (local, dev, prod)
+     * App environment (local, dev, prod)
      */
     defined('APP_ENV') || define('APP_ENV', $this->config['app']['APP_ENV']);
 
@@ -125,7 +125,7 @@ class AppInit {
     }
     else{
       Help::statusCode(401);
-      exit("Not autherized");
+      exit("Not authorized");
     }
 
 
