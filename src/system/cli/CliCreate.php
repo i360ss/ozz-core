@@ -310,7 +310,7 @@ class CliCreate {
       if(!is_dir(__DIR__.$DS.$dir)){
         mkdir(__DIR__.$DS.$dir, 0777, true);
       }
-    } else if (PHP_OS == 'Linux' || PHP_OS == 'Unix'){
+    } else {
       if(!file_exists(__DIR__.$DS.$dir)){
         mkdir(__DIR__.$DS.$dir, 0755, true);
       }
