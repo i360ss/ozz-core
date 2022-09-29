@@ -150,9 +150,10 @@ class Migrate extends Schema {
   // Clear Migration
   # --------------------------------------
   private function migrateClear(){
-    
-    $getAllMigrations = scandir($this->mgDir);
-    unset($getAllMigrations[0], $getAllMigrations[1]);
+    // Filter and get only php files
+    $getAllMigrations = array_filter(scandir($this->mgDir), function($item) {
+      return $item[0] !== '.' && substr($item, -4) == '.php';
+    });
     
     // Load all Migration files one by one
     foreach ($getAllMigrations as $k => $v) {
@@ -277,12 +278,12 @@ class Migrate extends Schema {
   # --------------------------------------
   // Drop Single Table Migration
   # --------------------------------------
-  private function migrateDrop(){    
+  private function migrateDrop(){
     extract($this->vals);
-    if($this->conn->query('DROP TABLE '.$r2.';')){
+    if($this->conn->query('DROP TABLE IF EXISTS '.$r2.';')){
       
       // Log Migration data history
-      $this->log_migrations([$r2 => 'DROP TABLE '.$r2.';'], 'delete');
+      $this->log_migrations([$r2 => 'DROP TABLE IF EXISTS '.$r2.';'], 'delete');
 
       $this->cli_utils->console_success("Table [ $r2 ] Deleted");
     }
