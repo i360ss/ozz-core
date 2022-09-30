@@ -14,7 +14,7 @@ trait Security {
   #---------------------------------------------------------------------
   protected function isAjax(){
     if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest'){
-      Help::statusCode(405);
+      Request::statusCode(405);
       exit('Not an AJAX request'); // Not a Ajax request
     }
   }
@@ -26,8 +26,8 @@ trait Security {
   #---------------------------------------------------------------------
   protected function isMethod($method){
     if(strtolower($_SERVER['REQUEST_METHOD']) !== strtolower($method)) {
-      Help::statusCode(405);
-      exit('Inalid Request Method');
+      Request::statusCode(405);
+      exit('Invalid Request Method');
     }
   }
   
@@ -48,7 +48,7 @@ trait Security {
       $csrfToken = $_SERVER["HTTP_X_CSRF_TOKEN"];
     }
     else{
-      Help::statusCode(401);
+      Request::statusCode(401);
       exit('Token not found');
     }
     
@@ -62,7 +62,7 @@ trait Security {
         }
       }
       else{
-        Help::statusCode(401);
+        Request::statusCode(401);
         exit('Invalid Token');
       }
     }

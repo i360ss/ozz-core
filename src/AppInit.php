@@ -124,7 +124,7 @@ class AppInit {
       defined('BASE_URL') || define('BASE_URL', $baseURL);
     }
     else{
-      Help::statusCode(401);
+      Request::statusCode(401);
       exit("Not authorized");
     }
 

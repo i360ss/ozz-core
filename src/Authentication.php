@@ -29,7 +29,7 @@ class Authentication extends Model {
         'redirect' => ''
       ];
         
-      $login_credentials = Help::formData(); // Get Login Credentials
+      $login_credentials = Request::input(); // Get Login Credentials
       $validData = Validate::validateForm($login_credentials); // Validate Login Credentials
           
       extract($validData);

@@ -55,9 +55,12 @@ class Router extends AppInit {
   # POST Method Route
   # ----------------------------------
   public static function post($route, $callBack, $middlewares=null, $baseTemplate=null){
-    self::$ValidRoutes['post'][$route]['callback'] = $callBack;
-    self::$ValidRoutes['post'][$route]['middlewares'] = $middlewares;
-    self::$ValidRoutes['post'][$route]['temp'] = $baseTemplate;
+    $finalPath = self::finalizeRoutePath($route);
+    $finalRoute = $finalPath['route'];
+    self::$ValidRoutes['post'][$finalRoute]['urlParam'] = $finalPath['data'];
+    self::$ValidRoutes['post'][$finalRoute]['callback'] = $callBack;
+    self::$ValidRoutes['post'][$finalRoute]['middlewares'] = $middlewares;
+    self::$ValidRoutes['post'][$finalRoute]['temp'] = $baseTemplate;
   }
   
   
@@ -75,7 +78,7 @@ class Router extends AppInit {
       preg_match_all("~\{\s*(.*?)\s*\}~",  $route, $urlPlaceholders);
       
       $realUrlVals['innerRoute'] = explode('/', $route);
-      $realUrlVals['url'] = Help::urlPart();
+      $realUrlVals['url'] = Request::url_part();
       $realUrlVals['final'] = [];
       
       if(count($realUrlVals['innerRoute']) == count($realUrlVals['url'])){
@@ -112,8 +115,8 @@ class Router extends AppInit {
   protected static function resolve(){
     global $DEBUG_BAR;
     
-    $path = Help::getPath();
-    $method = Help::getMethod();
+    $path = Request::getPath();
+    $method = Request::requestMethod();
 
     // Rewrite URL
     if($path != '/'){
@@ -132,7 +135,7 @@ class Router extends AppInit {
     
     // Render 404 if callback is false
     if($callback === false){
-      Help::statusCode('404');
+      Request::statusCode('404');
       return self::view('404', [], 'base/layout');
       exit;
     }
@@ -207,7 +210,7 @@ class Router extends AppInit {
   # Header Redirect
   # ----------------------------------
   public static function redirect($to, $status=301){
-    Help::statusCode($status);
+    Request::statusCode($status);
     header("Location: $to");
     exit;
   }
