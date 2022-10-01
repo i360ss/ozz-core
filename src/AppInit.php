@@ -10,12 +10,12 @@ namespace Ozz\Core;
 use Ozz\Core\Session;
 
 class AppInit {
-  
+
   private $SSL;      // Check (http or https)
   private $config;   // Config App
   private $csp;      // CSP
 
-  
+
   public function __construct() {
 
     define('SPC_BACK', [
@@ -29,13 +29,13 @@ class AppInit {
      * Get content from env.ini and assign to $this->config
      */
     $this->config = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
-    
+
 
     /**
      * App session start
      */
     Session::init($this->config);
-    
+
 
     /**
      * Content security policy configuration
@@ -43,13 +43,13 @@ class AppInit {
     $csp_unique_hash = substr(base64_encode(sha1( mt_rand() )), 0, 20);
     $csp_nonce = base64_encode($csp_unique_hash);
     defined('CSP_NONCE') || define('CSP_NONCE', $csp_nonce);
-    
+
     $this->csp = parse_ini_file(__DIR__.SPC_BACK['core'].'csp.ini', true); // Get CSP Values
     if($this->csp['CSP']['USE_CSP'] == 1){
       $csp = $this->csp['CSP'];
       header("Content-Security-Policy: base-uri ".$csp['base-uri']."; default-src ".$csp['default-src']."; style-src ".$csp['style-src']." 'nonce-".$csp_nonce."'; font-src ".$csp['font-src']."; script-src ".$csp['script-src']." 'nonce-" . $csp_nonce . "'; img-src ".$csp['img-src']."; connect-src ".$csp['connect-src']."; object-src ".$csp['object-src']."; media-src ".$csp['media-src']."; child-src ".$csp['child-src']."; report-uri ".$csp['report-uri']."; form-action ".$csp['form-action']."; frame-ancestors ".$csp['frame-ancestors']."; worker-src ".$csp['worker-src']."; ");
     }
-    
+
 
     /**
      * Create Common CSRF Token (For Outside Users)
@@ -69,7 +69,7 @@ class AppInit {
      * Input Field with CSRF token
      */
     define('CSRF_FIELD', '<input type="hidden" name="csrf_token" value="'.$_SESSION['csrf_token'].'">');
-    
+
 
     /**
      * Directory separator
@@ -105,8 +105,7 @@ class AppInit {
      * App Charset defined in env.ini
      */
     defined('CHARSET') || define('CHARSET', $this->config['app']['CHARSET']);
-    
-    
+
 
     /**
      * Set Base URL
@@ -116,11 +115,11 @@ class AppInit {
       $this->SSL = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') 
       ? 'http://' 
       : 'https://';
-      
+
       $baseURL = (APP_ENV == 'local') 
       ? $this->SSL.$_SERVER['SERVER_NAME'].':'.$this->config['app']['LOCAL_PORT'].'/'
       : $this->SSL.$_SERVER['SERVER_NAME'].'/';
-      
+
       defined('BASE_URL') || define('BASE_URL', $baseURL);
     }
     else{
