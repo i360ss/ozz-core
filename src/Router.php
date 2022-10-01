@@ -11,36 +11,49 @@ use Ozz\Core\Request;
 use Ozz\Core\Sanitize;
 
 class Router extends AppInit {
-  
+
   protected static $ValidRoutes=[];
   protected static $template; // Base Template for view
 
 
-  # ----------------------------------
-  # GET Route Group
-  # ----------------------------------
+  /**
+   * GET Route Group
+   * 
+   * @param array|string $middleware
+   * @param string $template Base layout template
+   * @param array $callback route paths as keys, objects or strings as values 
+   */
   public static function getGroup($middleware, $template, $callback){
     foreach ($callback as $k => $v) {
       self::get($k, $v, $template, $middleware);
     }
   }
-  
-  
-  
-  # ----------------------------------
-  # POST Route Group
-  # ----------------------------------
+
+
+
+  /**
+   * POST Route Group
+   * 
+   * @param array|string $middleware
+   * @param array $callback route paths as keys, objects or strings as values 
+   * @param string $template Base layout template (optional)
+   */
   public static function postGroup($middleware, $callback, $template=null){
     foreach ($callback as $k => $v) {
       self::post($k, $v, $middleware, $template);
     }
   }
-  
-  
-  
-  # ----------------------------------
-  # GET Method Route
-  # ----------------------------------
+
+
+
+  /**
+   * GET Method Route
+   * 
+   * @param string $route
+   * @param array|string|function $callBack
+   * @param string $baseTemplate Base layout template
+   * @param array|string $middleware
+   */
   public static function get($route, $callBack, $baseTemplate=null, $middlewares=null){
     $finalPath = self::finalizeRoutePath($route);
     $finalRoute = $finalPath['route'];
@@ -49,39 +62,103 @@ class Router extends AppInit {
     self::$ValidRoutes['get'][$finalRoute]['temp'] = $baseTemplate;
     self::$ValidRoutes['get'][$finalRoute]['callback'] = $callBack;
   }
-  
-  
-  
-  # ----------------------------------
-  # POST Method Route
-  # ----------------------------------
-  public static function post($route, $callBack, $middlewares=null, $baseTemplate=null){
+
+
+
+  /**
+   * Initial route method
+   * 
+   * @param string $method (get, post, put, patch, delete)
+   * @param string $route
+   * @param array|string|function $callBack
+   * @param array|string $middlewares
+   * @param string $baseTemplate Base layout template (optional)
+   */
+  protected static function initialRoute($method, $route, $callBack, $middlewares, $baseTemplate){
     $finalPath = self::finalizeRoutePath($route);
     $finalRoute = $finalPath['route'];
-    self::$ValidRoutes['post'][$finalRoute]['urlParam'] = $finalPath['data'];
-    self::$ValidRoutes['post'][$finalRoute]['callback'] = $callBack;
-    self::$ValidRoutes['post'][$finalRoute]['middlewares'] = $middlewares;
-    self::$ValidRoutes['post'][$finalRoute]['temp'] = $baseTemplate;
+    self::$ValidRoutes[$method][$finalRoute]['urlParam'] = $finalPath['data'];
+    self::$ValidRoutes[$method][$finalRoute]['callback'] = $callBack;
+    self::$ValidRoutes[$method][$finalRoute]['middlewares'] = $middlewares;
+    self::$ValidRoutes[$method][$finalRoute]['temp'] = $baseTemplate;
   }
-  
-  
-  
-  # ----------------------------------
-  # Finalize Get Method URL Parameter setting
-  # ----------------------------------
+
+
+
+  /**
+   * POST Method Route
+   * 
+   * @param string $route
+   * @param array|string|function $callBack
+   * @param array|string $middleware
+   * @param string $baseTemplate Base layout template (optional)
+   */
+  public static function post($route, $callBack, $middlewares=null, $baseTemplate=null){
+    return self::initialRoute('post', $route, $callBack, $middlewares, $baseTemplate);
+  }
+
+
+
+  /**
+   * DELETE Method Route
+   * 
+   * @param string $route
+   * @param array|string|function $callBack
+   * @param array|string $middleware
+   * @param string $baseTemplate Base layout template (optional)
+   */
+  public static function delete($route, $callBack, $middlewares=null, $baseTemplate=null){
+    return self::initialRoute('delete', $route, $callBack, $middlewares, $baseTemplate);
+  }
+
+
+
+  /**
+   * PATCH Method Route
+   * 
+   * @param string $route
+   * @param array|string|function $callBack
+   * @param array|string $middleware
+   * @param string $baseTemplate Base layout template (optional)
+   */
+  public static function patch($route, $callBack, $middlewares=null, $baseTemplate=null){
+    return self::initialRoute('patch', $route, $callBack, $middlewares, $baseTemplate);
+  }
+
+
+
+    /**
+   * PUT Method Route
+   * 
+   * @param string $route
+   * @param array|string|function $callBack
+   * @param array|string $middleware
+   * @param string $baseTemplate Base layout template (optional)
+   */
+  public static function put($route, $callBack, $middlewares=null, $baseTemplate=null){
+    return self::initialRoute('put', $route, $callBack, $middlewares, $baseTemplate);
+  }
+
+
+
+  /**
+   * Finalize URL Parameter setting
+   * 
+   * @param string $route
+   */
   private static function finalizeRoutePath($route){
-    
+
     $routeData['route'] = $route;
     $routeData['data'] = [];
-    
+
     if(preg_match("~\{\s*(.*?)\s*\}~",  $route)){
       $urlPlaceholders = [];
       preg_match_all("~\{\s*(.*?)\s*\}~",  $route, $urlPlaceholders);
-      
+
       $realUrlVals['innerRoute'] = explode('/', $route);
       $realUrlVals['url'] = Request::url_part();
       $realUrlVals['final'] = [];
-      
+
       if(count($realUrlVals['innerRoute']) == count($realUrlVals['url'])){
         foreach ($realUrlVals['innerRoute'] as $k => $v) {
           if(preg_match_all("~\{\s*(.*?)\s*\}~",  $v)){
@@ -93,7 +170,7 @@ class Router extends AppInit {
             $realUrlVals['innerRoute'][$key] = $realUrlVals['final'][$value];
           }
         }
-        
+
         // Final Route and URL Parameters
         $routeData['route'] = implode('/', $realUrlVals['innerRoute']); // Final Route Path
         foreach ($realUrlVals['final'] as $k => $v) {
@@ -107,12 +184,12 @@ class Router extends AppInit {
     }
     return $routeData;
   }
-  
-  
-  
-  # ----------------------------------
-  # Resolve
-  # ----------------------------------
+
+
+
+  /**
+   * Resolve route
+   */
   protected static function resolve(){
     global $DEBUG_BAR;
 
@@ -133,14 +210,14 @@ class Router extends AppInit {
     }
 
     $callback = self::$ValidRoutes[$method][$path]['callback'] ?? false;
-    
+
     // Render 404 if callback is false
     if($callback === false){
       Request::statusCode('404');
-      return self::view('404', [], 'base/layout');
+      return self::view('404', [], 'layout');
       exit;
     }
-    
+
     // Get set and execute Middlewares
     $thisMiddlewares = self::$ValidRoutes[$method][$path]['middlewares'] ?? false;
     if($thisMiddlewares && is_array($thisMiddlewares)){
@@ -149,12 +226,12 @@ class Router extends AppInit {
     elseif($thisMiddlewares && is_string($thisMiddlewares)){
       Middleware::execute($thisMiddlewares);
     }
-    
+
     // Get base template for this request
     self::$template = self::$ValidRoutes[$method][$path]['temp'] 
     ? self::$ValidRoutes[$method][$path]['temp']
     : false;
-    
+
     // Render View
     if(is_string($callback)){
       return self::view($callback);
@@ -208,7 +285,7 @@ class Router extends AppInit {
         ]);
 
         Err::custom([
-          'msg' => "Class [".get_class($callback[0])."] not found",
+          'msg' => "Class [".is_string($callback[0]) ? $callback[0] : get_class($callback[0])."] not found",
           'info' => "Please check the class name in your route for any spelling mistakes. If you don't have a class already, please create it first",
           'note' => "Command to create a class [ php ozz c:c className ]"
         ]);
@@ -218,26 +295,33 @@ class Router extends AppInit {
       return call_user_func($callback, new Request); // Execute
     }
   }
-  
-  
-  
-  # ----------------------------------
-  # Render View
-  # ----------------------------------
-  public static function view($vv, $data=[], $basetemp=''){
-    new Request;
-    return Templating::render($vv, $data, $basetemp, self::$template);
-  }  
-  
-  
 
-  # ----------------------------------
-  # Header Redirect
-  # ----------------------------------
+
+
+  /**
+   * Render View
+   * 
+   * @param string $vv The viw file (without extension)
+   * @param array $data Data to be passed to view
+   * @param string $template Base layout template
+   */
+  public static function view($vv, $data=[], $template=''){
+    new Request;
+    return Templating::render($vv, $data, $template, self::$template);
+  }  
+
+
+
+  /**
+   * Header Redirect
+   * 
+   * @param string $to Path/URL to redirect
+   * @param int $status Redirect status code
+   */
   public static function redirect($to, $status=301){
     Request::statusCode($status);
     header("Location: $to");
     exit;
   }
-  
+
 }
