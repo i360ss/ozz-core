@@ -8,20 +8,20 @@
 namespace Ozz\Core;
 
 class Request extends Router {
-  
-  private $fullRequest;
+
+  private $full_request;
   private $method;
-  
-  
+
+
   function __construct(){
-    $this->method = self::requestMethod();
-    
-    $this->fullRequest = [
+    $this->method = self::method();
+
+    $this->full_request = [
       'server' => $_SERVER['SERVER_NAME'],
       'root' => $_SERVER['DOCUMENT_ROOT'],
       'port' => $_SERVER['SERVER_PORT'] ?? null,
       'protocol' => $_SERVER['SERVER_PROTOCOL'] ?? null,
-      'method' => self::requestMethod() ?? null,
+      'method' => $this->method,
       'host' => $_SERVER['HTTP_HOST'] ?? null,
       'request_time' => date( 'M d, Y - H:i:s', $_SERVER['REQUEST_TIME']),
       'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? null,
@@ -30,29 +30,31 @@ class Request extends Router {
       'cache' => $_SERVER['HTTP_CACHE_CONTROL'] ?? null,
       'lang' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null,
       'encoding' => $_SERVER['HTTP_ACCEPT_ENCODING'] ?? null,
-      'path' => $this->path(),
+      'path' => $_SERVER['PATH_INFO'] ?? null,
       'url' => $_SERVER['REQUEST_URI'] ?? null,
       'url_parts' => self::url_part(),
-      'url_params' => $this->param() !== [] ? $this->param() : null,
+      'url_params' => self::param() !== [] ? self::param() : null,
       'query' => self::query(),
       'input' => self::input(),
       'files' => $_FILES,
     ];
   }
-  
-  
-  
-  # ---------------------------------------
-  // All Request values
-  # ---------------------------------------
-  public function all(){
-    return $this->fullRequest;
+
+
+
+  /**
+   * Return all values of Request object as array
+   */
+  public static function all(){
+    return $this->full_request;
   }
 
 
 
   /**
    * Set HTTP status code
+   * 
+   * @param int $code status code to be updated
    */
   public static function statusCode($code){
     return http_response_code($code);
@@ -61,7 +63,7 @@ class Request extends Router {
 
 
   /**
-   * Request path
+   * Returns Request path
    */
   public static function getPath(){
     $path = $_SERVER['REQUEST_URI'] ?? '/';
@@ -76,12 +78,13 @@ class Request extends Router {
 
   /**
    * Input data sent via request (Form data and Query string)
+   * 
    * @param string|array|int $key key of the input value 
    * @return array|string|int|bool Returns sanitized input data
    */
   public static function input($key=false){
     $output = [];
-    
+
     foreach ($_REQUEST as $k => $v) {
       if(is_array($v)){
         $output[$k] = Sanitize::array($v);
@@ -96,20 +99,22 @@ class Request extends Router {
         }
       }
     }
-    
+
     return $key ? $output[$key] : $output; // Sanitized Data
   }
 
 
 
   /**
-   * Get URL query strings
+   * Returns URL query strings array or string
+   * 
    * @param string|int $key
+   * @return array|string|int|bool
    */
   public static function query($key=null){
     if (isset($_SERVER['QUERY_STRING'])) {
       parse_str($_SERVER['QUERY_STRING'], $query_string);
-      
+
       return (isset($key) && $key !== null)
       ? filter_var($query_string[$key], FILTER_SANITIZE_URL)
       : Sanitize::array($query_string);
@@ -117,28 +122,34 @@ class Request extends Router {
       return false;
     }
   }
-  
-  
-  
-  # ---------------------------------------
-  // URL Parameters (SEO Friendly)
-  # ---------------------------------------
-  public function param($key=''){
-    if(isset(Router::$ValidRoutes[$this->method][$this->path()]['urlParam'])){
+
+
+
+  /**
+   * URL Parameters (Defined parameter keys and values on Route)
+   * 
+   * @param string $key the key of URL parameter
+   * @return array|string|int
+   */
+  public static function param($key=''){
+    $path = $_SERVER['PATH_INFO'] ?? false;
+    $method = self::method();
+    if(isset($path) && isset(Router::$ValidRoutes[$method][$path]['urlParam'])){
       $data = $key !== '' 
-      ? Router::$ValidRoutes[$this->method][$this->path()]['urlParam'][$key]
-      : Router::$ValidRoutes[$this->method][$this->path()]['urlParam'];
+      ? Router::$ValidRoutes[$method][$path]['urlParam'][$key]
+      : Router::$ValidRoutes[$method][$path]['urlParam'];
     }
     else{
       $data = null;
     }
     return $data !== [] ? $data : null;
   }
-  
-  
-  
+
+
+
   /**
    * URL part separated by ( / )
+   * 
    * @param int $q index of part
    */
   public static function url_part($q=''){
@@ -152,13 +163,15 @@ class Request extends Router {
       }
     }
   }
-  
-  
-  
-  # ---------------------------------------
-  // Files
-  # ---------------------------------------
-  public function file($key=null){
+
+
+
+  /**
+   * Returns Files sent over the request
+   * 
+   * @param $key the key for specific file
+   */
+  public static function file($key=null){
     return isset($key) 
     ? $_FILES[$key]
     : $_FILES;
@@ -167,133 +180,69 @@ class Request extends Router {
 
 
   /**
-   * Get HTTP request Methods
+   * Returns the Request method (get, post, ect...)
    */
-  public static function requestMethod(){
+  public static function method(){
     return strtolower($_SERVER['REQUEST_METHOD']);
   }
 
-  // Check is it GET
-  public static function isGet(){
-    return self::getMethod() === 'get';
+
+
+  /**
+   * Check the request method
+   * 
+   * @param string $method (get, post, ect...)
+   */
+  public static function methodIs($method){
+    return self::method() === strtolower($method);
   }
 
-  // Check is it POST
-  public static function isPost(){
-    return self::getMethod() === 'post';
-  }
 
-  // Check is it PUT
-  public static function isPut(){
-    return self::getMethod() === 'put';
-  }
 
-  // Check is it DELETE
-  public static function isDelete(){
-    return self::getMethod() === 'delete';
-  }
-  
-  // Other Common Methods
-  public function server(){
-    return $_SERVER['SERVER_NAME'];
-  }
-  
-  public function protocol(){
-    return $_SERVER['SERVER_PROTOCOL'];
-  }
-  
-  public function root(){
-    return $_SERVER['DOCUMENT_ROOT'];
-  }
-  
-  public function port(){
-    return $_SERVER['SERVER_PORT'];
-  }
-  
-  public function method(){
-    return self::requestMethod() ?? null;
-  }
-  
-  public function path(){
-    return $_SERVER['PATH_INFO'] ?? null;
-  }
-  
-  public function host(){
-    return $_SERVER['HTTP_HOST'] ?? null;
-  }
-  
-  public function userAgent(){
-    return $_SERVER['HTTP_USER_AGENT'] ?? null;
-  }
-  
-  public function header(){
-    return $_SERVER['HTTP_ACCEPT'] ?? null;
-  }
-  
-  public function cookie(){
-    return $_SERVER['HTTP_COOKIE'] ?? null;
-  }
-  
-  public function cache(){
-    return $_SERVER['HTTP_CACHE_CONTROL'] ?? null;
-  }
-  
-  public function lang(){
-    return $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
-  }
-  
-  public function encoding(){
-    return $_SERVER['HTTP_ACCEPT_ENCODING'] ?? null;
-  }
-  
-  public function requestTime($typ=''){
-    return $typ ? $_SERVER['REQUEST_TIME_FLOAT'] : $_SERVER['REQUEST_TIME'];
-  }
-  
-  public function url(){
-    return $_SERVER['REQUEST_URI'] ?? null;
-  }
+  /**
+   * Get Client IP address
+   */
+  public static function ip() {
+    $ip = $_SERVER['HTTP_CLIENT_IP'] 
+      ?? $_SERVER["HTTP_CF_CONNECTING_IP"]
+      ?? $_SERVER['HTTP_X_FORWARDED'] 
+      ?? $_SERVER['HTTP_X_FORWARDED_FOR'] 
+      ?? $_SERVER['HTTP_FORWARDED'] 
+      ?? $_SERVER['HTTP_FORWARDED_FOR'] 
+      ?? $_SERVER['REMOTE_ADDR'] 
+      ?? '0.0.0.0';
 
+    return $ip;
+  }
 
 
     /**
-   * Get Geo IP information
+   * Get client information
+   * 
    * javascript http://www.geoplugin.net/javascript.gp
    * @param string $key
    */
-  public static function client($key=''){
-    if(!empty($_SERVER['HTTP_CLIENT_IP'])) {
-      $userIp = $_SERVER['HTTP_CLIENT_IP'];
-    } elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-      $userIp = $_SERVER['HTTP_X_FORWARDED_FOR'];
-    } else {
-      $userIp = $_SERVER['REMOTE_ADDR'];
-    }
-    
+  public static function clientInfo($key=''){
+    $info = [];
+    $userIp = self::ip();
     $geo = unserialize(file_get_contents("http://www.geoplugin.net/php.gp?ip=$userIp"));
-    
-    $clientInfo = array(
-      'ip'              => $geo['geoplugin_request'],
-      'country'         => $geo['geoplugin_countryName'],
-      'country_code'    => $geo['geoplugin_countryCode'],
-      'city'            => $geo['geoplugin_city'],
-      'region'          => $geo['geoplugin_regionName'],
-      'timezone'        => $geo['geoplugin_timezone'],
-      'currency'        => $geo['geoplugin_currencyCode'],
-      'exchange'        => $geo['geoplugin_currencyConverter'], // 1 USD = this
-      'currency_symbol' => $geo['geoplugin_currencySymbol'],
-    );
-    
+    unset($geo['geoplugin_credit']);
+
+    foreach ($geo as $k => $val) {
+      $nk = str_replace('geoplugin_', '', $k);
+      $info[$nk] = $val;
+    }
+
     if ($key=='') {
-      return $clientInfo;
-    } elseif (isset($clientInfo[$key])) {
-      return $clientInfo[$key];
+      return $info;
+    } elseif (isset($info[$key])) {
+      return $info[$key];
     } else {
       return DEBUG 
       ? Err::custom([
         "msg" => "Invalid key provided for client information",
         "info" => "Please refer to the available client information below",
-        "note" => implode(', ', array_keys($clientInfo))
+        "note" => implode(', ', array_keys($info))
       ])
       : false;
     }
@@ -306,6 +255,6 @@ class Request extends Router {
    */
   public function __destruct() {
     global $DEBUG_BAR;
-    $DEBUG_BAR->set('ozz_request', $this->fullRequest);
+    $DEBUG_BAR->set('ozz_request', $this->full_request);
   }
 }

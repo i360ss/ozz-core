@@ -14,7 +14,8 @@ class Router extends AppInit {
   
   protected static $ValidRoutes=[];
   protected static $template; // Base Template for view
-  
+
+
   # ----------------------------------
   # GET Route Group
   # ----------------------------------
@@ -114,9 +115,9 @@ class Router extends AppInit {
   # ----------------------------------
   protected static function resolve(){
     global $DEBUG_BAR;
-    
+
     $path = Request::getPath();
-    $method = Request::requestMethod();
+    $method = Request::method();
 
     // Rewrite URL
     if($path != '/'){
@@ -149,7 +150,7 @@ class Router extends AppInit {
       Middleware::execute($thisMiddlewares);
     }
     
-    // Get base template for this GET Method request
+    // Get base template for this request
     self::$template = self::$ValidRoutes[$method][$path]['temp'] 
     ? self::$ValidRoutes[$method][$path]['temp']
     : false;
@@ -158,39 +159,63 @@ class Router extends AppInit {
     if(is_string($callback)){
       return self::view($callback);
     }
+
     // Load Class
     if(is_array($callback)){
       if(!isset($callback[1])){
         $callback[1] = 'index';
       }
 
+      // Check class existence
       if(class_exists($callback[0])){
         $callback[0] = new $callback[0];
-        // Log to debug bar
-        DEBUG ? $DEBUG_BAR->set('ozz_controller', [
-          'controller' => get_class($callback[0]),
-          'method' => $callback[1]
-        ]) : false;
-      } else {
-        DEBUG ? $DEBUG_BAR->set('ozz_controller', [
-          'controller' => $callback[0] . '<f style="color:red;"> Not Found</f>',
-          'method' => $callback[1]
-        ]) : false;
-      }
-    } else {
-      return call_user_func($callback, new Request); // Execute
-    }
 
-    if(method_exists($callback[0], $callback[1]) && is_callable($callback)){
-      return call_user_func($callback, new Request); // Execute
-    } else {
-      if(is_string($callback[0])) {
-        DEBUG ? Err::custom([
-          'msg' => "Class [ $callback[0] ] Not found",
+        // Check method existence
+        if(method_exists($callback[0], $callback[1])){
+          $DEBUG_BAR->set('ozz_controller', [
+            'controller' => get_class($callback[0]),
+            'method' => $callback[1]
+          ]);
+
+          if(is_callable($callback)){
+            return call_user_func($callback, new Request); // Execute
+          }
+          else {
+            Err::custom([
+              'msg' => "Error on class [ ".get_class($callback[0])." ]",
+              'info' => "Please check the class name in your route for any spelling mistakes. If you don't have a class already, please create it first",
+              'note' => "Command to create a class [ php ozz c:c className ]"
+            ]);
+          }
+        }
+        else {
+          // Method not found
+          $DEBUG_BAR->set('ozz_controller', [
+            'controller' => get_class($callback[0]),
+            'method' => $callback[1]. '<f style="color:red;"> Method not found</f>',
+          ]);
+
+          Err::custom([
+            'msg' => "Method [$callback[1]] Not found in [".get_class($callback[0])."] class",
+            'info' => "Please check the method name in your route for any spelling mistakes. If you don't have a [$callback[1]] method already, please create it first",
+          ]);
+        }
+      }
+      else {
+        $DEBUG_BAR->set('ozz_controller', [
+          'controller' => $callback[0] . '<f style="color:red;"> Class not found or invalid</f>',
+          'method' => $callback[1]
+        ]);
+
+        Err::custom([
+          'msg' => "Class [".get_class($callback[0])."] not found",
           'info' => "Please check the class name in your route for any spelling mistakes. If you don't have a class already, please create it first",
           'note' => "Command to create a class [ php ozz c:c className ]"
-        ]) : false;
+        ]);
       }
+    }
+    else {
+      return call_user_func($callback, new Request); // Execute
     }
   }
   
