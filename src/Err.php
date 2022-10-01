@@ -48,20 +48,22 @@ class Err {
 
 
   private static function renderErr($errData){
-    extract($errData);
     if(DEBUG){
+      extract($errData);
       echo self::$eachContainer;
-      echo $msg !== false ? self::$errorTmp . '<strong>Error: </strong>' . $msg . self::$errorTmpEnd : false;
-      echo $info !== false ? self::$errInfo . '<strong>Info: </strong>' . $info . self::$errInfoEnd : false;
-      echo $note !== false ? self::$errNote . '<strong>Note: </strong>' . $note . self::$errNoteEnd : false;
+      echo (isset($msg) && $msg !== false) ? self::$errorTmp . '<strong>Error: </strong>' . $msg . self::$errorTmpEnd : false;
+      echo (isset($info) && $info !== false) ? self::$errInfo . '<strong>Info: </strong>' . $info . self::$errInfoEnd : false;
+      echo (isset($note) && $note !== false) ? self::$errNote . '<strong>Note: </strong>' . $note . self::$errNoteEnd : false;
       echo self::$eachContainerEnd;
+    } else {
+      return false;
     }
   }
 
 
   // Custom Exception
   public static function custom($i) {
-    return self::renderErr($i);
+    return DEBUG ? self::renderErr($i) : false;
   }
 
 
@@ -142,8 +144,6 @@ class Err {
   }
 
   // File Handling Exceptions
-  ///////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////
 
   // Invalid File type defined to upload
   public static function invalidFileTypeDefinedToUpload($i){
@@ -158,7 +158,7 @@ class Err {
   public static function paramsRequiredForUploadSettings($i){
     return self::renderErr([
       "msg" => "Not provided enough parameters on [ $i ]",
-      "info" => "Please provide at least one of thies params (keep_original, copies)",
+      "info" => "Please provide at least one of this params (keep_original, copies)",
       "note" => "Additional Notes"
     ]);
   }
