@@ -41,17 +41,19 @@ class Templating extends AppInit {
 
       $viewContent = self::setView($vv)[0];
       $vars = self::setView($vv)[1];
-      
+
       if(!isset($basetemp_from_router) && $basetemp==''){
         return $viewContent;
       }
       else{
-        if($basetemp!==''){ $baselay = self::layout($basetemp); }
-        else{ $baselay = self::layout($basetemp_from_router); }
-        
+
+        $baselay = $basetemp !== ''
+          ? self::layout($basetemp)
+          : self::layout($basetemp_from_router);
+
         preg_match_all("~\{\{\s*(.*?)\s*\}\}~", $viewContent, $regComps['view']);
         preg_match_all("~\{\%\s*(.*?)\s*\%\}~", $baselay, $regComps['base']);
-      
+
         // Set up view page content
         $viewComp = [];
         foreach ($regComps['base'][1] as $v) {
@@ -82,12 +84,12 @@ class Templating extends AppInit {
             $baselay = str_replace("{% $v %}", '', $baselay);
           }
         }
-        
+
         // Replace Blocks on layout template by view contents
         foreach ($viewComp as $k => $v) {
           $baselay = str_replace("{% $k %}", $v, $baselay);
         }
-        
+
         // Set view info to debug bar
         DEBUG ? $DEBUG_BAR->set('ozz_view', self::$debug_view) : false;
         return $baselay;
@@ -105,13 +107,13 @@ class Templating extends AppInit {
     ob_start();
     $data = self::$cdt[0];
     $data_json = self::$cdt[1];
-    $temp = ($temp == '') ? 'base/layout' : $temp;
+    $temp = ($temp == '') ? 'layout' : $temp;
 
-    if(file_exists(VIEW . $temp . '.phtml')){
-      require VIEW . $temp.'.phtml';
-      DEBUG ? self::$debug_view['base_file'] = "view/$temp.phtml" : false; // Log to debug bar
+    if(file_exists(VIEW.'base/'. $temp . '.phtml')){
+      require VIEW.'base/'. $temp.'.phtml';
+      DEBUG ? self::$debug_view['base_file'] = "view/base/$temp.phtml" : false; // Log to debug bar
     } else{
-      return Err::baseTemplateNotFound(VIEW . $temp . '.phtml');
+      return Err::baseTemplateNotFound(VIEW.'base/'. $temp . '.phtml');
     }
 
     $lay = ob_get_contents();

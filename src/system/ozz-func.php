@@ -502,9 +502,10 @@ function _random_str($n=10, $type=null) {
  * Short way to render view with Data
  * @param string $view // View file to be rendered
  * @param array $data // Data array to be accessible on defined view
+ * @param string $template // Base template
  */
-function view($view, $data=[]) {
-  return Router::view($view, $data);
+function view($view, $data=[], $template='') {
+  return Router::view($view, $data, $template);
 }
 
 
