@@ -30,7 +30,7 @@ class Request extends Router {
       'cache' => $_SERVER['HTTP_CACHE_CONTROL'] ?? null,
       'lang' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null,
       'encoding' => $_SERVER['HTTP_ACCEPT_ENCODING'] ?? null,
-      'path' => $_SERVER['PATH_INFO'] ?? null,
+      'path' => self::getPath(),
       'url' => $_SERVER['REQUEST_URI'] ?? null,
       'url_parts' => self::url_part(),
       'url_params' => self::param() !== [] ? self::param() : null,
@@ -66,12 +66,16 @@ class Request extends Router {
    * Returns Request path
    */
   public static function getPath(){
-    $path = $_SERVER['REQUEST_URI'] ?? '/';
-    $position = strpos($path, '?');
-    if(!$position){
-      return $path;
+    if(isset($_SERVER['REQUEST_URI'])){
+      $path = Sanitize::url($_SERVER['REQUEST_URI']);
+      $pos = strpos($path, '?');
+      if(!$pos){
+        return $path;
+      }
+      return substr($path, 0, $pos);
+    } else {
+      return '/';
     }
-    return substr($path, 0, $position);
   }
 
 
@@ -132,7 +136,7 @@ class Request extends Router {
    * @return array|string|int
    */
   public static function param($key=''){
-    $path = $_SERVER['PATH_INFO'] ?? false;
+    $path = self::getPath() ?? false;
     $method = self::method();
     if(isset($path) && isset(Router::$ValidRoutes[$method][$path]['urlParam'])){
       $data = $key !== '' 
@@ -153,8 +157,9 @@ class Request extends Router {
    * @param int $q index of part
    */
   public static function url_part($q=''){
-    if(isset($_SERVER['REQUEST_URI'])){
-      $parts = explode('/', filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL));
+    $URL = self::getPath() ?? false;
+    if(isset($URL)){
+      $parts = explode('/', $URL);
       if($q==''){
         return $parts;
       }
@@ -216,7 +221,8 @@ class Request extends Router {
   }
 
 
-    /**
+
+  /**
    * Get client information
    * 
    * javascript http://www.geoplugin.net/javascript.gp
@@ -247,9 +253,9 @@ class Request extends Router {
       : false;
     }
   }
-  
-  
-  
+
+
+
   /**
    * Log Request info to Debug bar
    */
