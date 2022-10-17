@@ -179,6 +179,7 @@ class Session {
    */
   public static function clear() {
     $_SESSION = false;
+    session_unset();
   }
 
 
@@ -188,6 +189,7 @@ class Session {
    */
   public static function destroy() {
     $_SESSION = false;
+    session_unset();
     session_destroy();
   }
 

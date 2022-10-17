@@ -33,7 +33,7 @@ class Templating extends AppInit {
     DEBUG ? self::$debug_view['view_data'] = $data : false; // Log to debug bar
 
     $regComps = [];
-    $context = Sanitize::tempContext($data);
+    $context = Sanitize::templateContext($data);
     self::$cdt = [$context, json_encode($context, JSON_FORCE_OBJECT)];
 
     if(file_exists(VIEW . $vv . '.phtml')){

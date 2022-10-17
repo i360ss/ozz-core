@@ -60,11 +60,12 @@ class Sanitize {
 
   /**
    * Used to prevent template injection
+   * @param array $arr
    */
-  public static function tempContext($arr){
+  public static function templateContext($arr){
     if (is_array($arr) || is_object($arr)) {
       foreach ($arr as $k => $v) {
-        (is_array($v)) ? $arr[$k] = self::tempContext($v) : $arr[$k] = self::regExps($v);
+        (is_array($v)) ? $arr[$k] = self::templateContext($v) : $arr[$k] = self::regExps($v);
       }
     } else {
       $arr = self::regExps($arr);
@@ -73,7 +74,11 @@ class Sanitize {
     return $arr;
   }
 
-  // Clear template to prevent template injection
+
+
+  /**
+   * Clear template to prevent template injection
+   */
   public static function regExps($v){
     preg_match_all("~\{\{\s*(.*?)\s*\}\}~", $v, $clr['block_view']);
     preg_match_all("~\{\%\s*(.*?)\s*\%\}~", $v, $clr['block_base']);

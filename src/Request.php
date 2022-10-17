@@ -166,6 +166,8 @@ class Request extends Router {
       elseif(count($parts) > $q){
         return $parts[$q];
       }
+    } else {
+      return false;
     }
   }
 
