@@ -151,9 +151,9 @@ class Router extends AppInit {
     $routeData['route'] = $route;
     $routeData['data'] = [];
 
-    if(preg_match("~\{\s*(.*?)\s*\}~",  $route)){
+    if(preg_match("~\{\s*(.*?)\s*\}~", $route)){
       $urlPlaceholders = [];
-      preg_match_all("~\{\s*(.*?)\s*\}~",  $route, $urlPlaceholders);
+      preg_match_all("~\{\s*(.*?)\s*\}~", $route, $urlPlaceholders);
 
       $realUrlVals['innerRoute'] = explode('/', $route);
       $realUrlVals['url'] = Request::url_part();
@@ -161,7 +161,17 @@ class Router extends AppInit {
 
       if(count($realUrlVals['innerRoute']) == count($realUrlVals['url'])){
         foreach ($realUrlVals['innerRoute'] as $k => $v) {
-          if(preg_match_all("~\{\s*(.*?)\s*\}~",  $v)){
+          if(preg_match_all("~\{\s*(.*?)\s*\}~", $v)){
+
+            // Validate values
+            $item = trim(substr($v, 1, -1));
+            if(strpos($item, ':')){
+              $validate = explode(':', $item);
+              // # MAKE VALIDATOR FIRST AND COME TO THIS PART # //
+              // dump($realUrlVals['url'][$k]);
+              // dump(Validate::check($validate[0], $realUrlVals['url'][$k]));
+            }
+
             $realUrlVals['final'][$v] = $realUrlVals['url'][$k];
           }
         }

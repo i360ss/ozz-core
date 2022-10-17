@@ -96,9 +96,18 @@ class AppInit {
 
 
     /**
-     * App Language defined in env.ini
+     * App current language
      */
-    defined('APP_LANG') || define('APP_LANG', $this->config['app']['APP_LANG']);
+    if(!Session::has('app_language')){
+      Session::set('app_language', $this->config['app']['APP_LANG']);
+    }
+    defined('APP_LANG') || define('APP_LANG', Session::get('app_language'));
+
+
+    /**
+     * App current language path
+     */
+    defined('APP_LANG_PATH') || define('APP_LANG_PATH', __DIR__.SPC_BACK['core'].'app/lang/'.APP_LANG.'/');
 
 
     /**

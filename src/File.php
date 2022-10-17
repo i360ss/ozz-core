@@ -9,6 +9,7 @@ namespace Ozz\Core;
 
 use App\Validator;
 use Ozz\Core\Err;
+use Ozz\Core\Lang;
 use Ozz\Core\system\file\FileSettings;
 
 class File {
@@ -16,14 +17,14 @@ class File {
   use FileSettings;
   
   private static $thisFiles; // Current File(s)
-  private static $err;
+  private static $errors;
   private static $validator;
   private static $formats;
   private static $moveTo;
   private static $uploadedTo; // Upload to directory (for outside Use)
   private static $settings; // File Settings
   private static $maxSize; // Max upload file size
-  
+
 
   # ---------------------------------------
   // Upload Files
@@ -35,6 +36,8 @@ class File {
    * @param array $settings File upload settings
    */
   public static function upload(string $typ, $files=null, $to=null, $settings=false, $customExts=null){
+
+    self::$errors = new Lang;
 
     // Validator
     self::$validator = Validator::validExtensions();
@@ -70,7 +73,7 @@ class File {
     if(self::$thisFiles['name'] == ''){
       $response = [
         'error' => 1,
-        'message' => MEDIA_ERR['noFiles']
+        'message' => self::$errors->error('file_required')
       ];
 
       return $response;
@@ -86,7 +89,7 @@ class File {
         break;
         
       case 'document':
-        return self::uploadDocment();
+        return self::uploadDocument();
         break;
 
       case 'audio':
@@ -174,7 +177,6 @@ class File {
   private static function uploadImage(){
     if(is_array(self::$thisFiles['name'])){
       // Validate and Upload Multiple Images
-      ///////////////////////////////////////////////
       foreach (self::$thisFiles['name'] as $k => $val) {
         if(self::validateFileFormat($val, self::$thisFiles['tmp_name'][$k])){
           if(self::validateFileSize('image', self::$thisFiles['size'][$k])){
@@ -185,7 +187,7 @@ class File {
 
               if(isset($finalIMG['image']) && $finalIMG['image']['error'] === false){
                 $response['error'][$k] = 0;
-                $response['message'][$k] = MEDIA_ERR['imageUploadSuccess'];
+                $response['message'][$k] = self::$errors->message('image_upload_success');
                 $response['uploaded'][$k] = $finalIMG['image']['url'];
 
                 if($finalIMG['copies'] !== null && $finalIMG['copies']['error'] === false){
@@ -208,16 +210,16 @@ class File {
               if(is_dir(self::$moveTo)){
                 if(file_exists(self::$moveTo.basename($val))){
                   $response['error'][$k] = 1;
-                  $response['message'][$k] = MEDIA_ERR['imageAlreadyExist'];
+                  $response['message'][$k] = self::$errors->error('file_already_exist');
                 }
                 elseif (move_uploaded_file(self::$thisFiles['tmp_name'][$k], self::$moveTo.basename($val))) {
                   $response['error'][$k] = 0;
-                  $response['message'][$k] = MEDIA_ERR['imageUploadSuccess'];
+                  $response['message'][$k] = self::$errors->message('image_upload_success');
                   $response['uploaded'][$k] = self::$uploadedTo.basename($val);
                 }
                 else{
                   $response['error'][$k] = 1;
-                  $response['message'][$k] = MEDIA_ERR['commenError'];
+                  $response['message'][$k] = self::$errors->error('file_error');
                 }
               }
               else{
@@ -226,32 +228,31 @@ class File {
                 }
                 else{
                   $response['error'][$k] = 1;
-                  $response['message'][$k] = MEDIA_ERR['commenError'];
+                  $response['message'][$k] = self::$errors->error('file_error');
                 }
               }
             }
             else{
               $response['error'][$k] = 1;
-              $response['message'][$k] = MEDIA_ERR['commenError'];
+              $response['message'][$k] = self::$errors->error('file_error');
             }
           }
           else{
             $response['error'][$k] = 1;
-            $response['message'][$k] = "Error on file $val ".MEDIA_ERR['maxImageSize'];
+            $response['message'][$k] = self::$errors->error('file_too_large');
           }
         }
         else{
           $response['error'][$k] = 1;
-          $response['message'][$k] = "Error on file $val ".MEDIA_ERR['invalidFormat'];
+          $response['message'][$k] = self::$errors->error('file_invalid_format');
         }
       } // End of loop
     }
     else {
       // Validate and Upload 1 image
-      ///////////////////////////////////////////////
       $response = [
         'error' => 1,
-        'message' => MEDIA_ERR['commenError'],
+        'message' => self::$errors->error('file_error'),
         'uploaded' => null
       ];
 
@@ -265,7 +266,7 @@ class File {
             if(isset($finalIMG['image']) && $finalIMG['image']['error'] === false){
               $response = [
                 'error' => 0,
-                'message' => MEDIA_ERR['imageUploadSuccess'],
+                'message' => self::$errors->message('image_upload_success'),
                 'uploaded' => $finalIMG['image']['url']
               ];
 
@@ -287,35 +288,35 @@ class File {
           elseif(self::$thisFiles['error'] == 0){
             if(is_dir(self::$moveTo)){
               if(file_exists(self::$moveTo.basename(self::$thisFiles['name']))){
-                $response['message'] = MEDIA_ERR['imageAlreadyExist'];
+                $response['message'] = self::$errors->error('file_already_exist');
               }
               elseif (move_uploaded_file(self::$thisFiles['tmp_name'], self::$moveTo.basename(self::$thisFiles['name']))) {
                 $response = [
                   'error' => 0,
-                  'message' => MEDIA_ERR['imageUploadSuccess'],
+                  'message' => self::$errors->message('image_upload_success'),
                   'uploaded' => self::$uploadedTo.basename(self::$thisFiles['name'])
                 ];
               }
               else {
-                $response['message'] = MEDIA_ERR['commenError'];
+                $response['message'] = self::$errors->error('file_error');
               } 
             }
             else{
               DEBUG 
               ? Err::notDir(self::$moveTo) 
-              : $response['message'] = MEDIA_ERR['commenError'];
+              : $response['message'] = self::$errors->error('file_error');
             }
           }
           else{
-            $response['message'] = MEDIA_ERR['commenError'];
+            $response['message'] = self::$errors->error('file_error');
           }
         }
         else {
-          $response['message'] = MEDIA_ERR['maxImageSize'];
+          $response['message'] = self::$errors->error('file_too_large');
         }
       }
       else{
-        $response['message'] = MEDIA_ERR['invalidFormat'];
+        $response['message'] = self::$errors->error('file_invalid_format');
       }
     }
     
@@ -327,38 +328,37 @@ class File {
   # ---------------------------------------
   // Upload Document
   # ---------------------------------------
-  private static function uploadDocment(){
+  private static function uploadDocument(){
     if(is_array(self::$thisFiles['name'])){
       // Validate and Upload Multiple Documents
-      ///////////////////////////////////////////////
       foreach (self::$thisFiles['name'] as $k => $val) {
         if(self::validateFileFormat($val, self::$thisFiles['tmp_name'][$k])){
           if(self::validateFileSize('document', self::$thisFiles['size'][$k])){
             if(self::$thisFiles['error'][$k] == 0 && self::$settings){
-              $finalOut = self::commenSettings($k);
+              $finalOut = self::commonSettings($k);
               $response['error'][$k] = $finalOut['error'];
               $response['message'][$k] = $finalOut['message'];
               $response['uploaded'][$k] = $finalOut['uploaded'];
             }
             else{
               $response['error'][$k] = 1;
-              $response['message'][$k] = MEDIA_ERR['commenError'];
+              $response['message'][$k] = self::$errors->error('file_error');
               $response['uploaded'][$k] = null;
 
               if(is_dir(self::$moveTo)){
                 if(file_exists(self::$moveTo.basename($val))){
-                  $response['message'][$k] = MEDIA_ERR['imageAlreadyExist'];
+                  $response['message'][$k] = self::$errors->error('file_already_exist');
                 }
                 elseif (move_uploaded_file(self::$thisFiles['tmp_name'][$k], self::$moveTo.basename($val))) {
                   $response['error'][$k] = 0;
-                  $response['message'][$k] = MEDIA_ERR['fileUploadSuccess'];
+                  $response['message'][$k] = self::$errors->message('file_upload_success');
                   $response['uploaded'][$k] = self::$uploadedTo.basename($val);
                 }
               }
               else{
                 DEBUG 
                 ? Err::notDir(self::$moveTo) 
-                : $response['message'][$k] = MEDIA_ERR['commenError'];
+                : $response['message'][$k] = self::$errors->error('file_error');
               }
             }
           }
@@ -367,10 +367,9 @@ class File {
     }
     else{
       // Validate and Upload Single Documents
-      ///////////////////////////////////////////////
       $response = [
         'error' => 1,
-        'message' => MEDIA_ERR['commenError']
+        'message' => self::$errors->error('file_error')
       ];
       
       if(self::$thisFiles['error'] == 0){
@@ -378,38 +377,38 @@ class File {
           if(self::validateFileSize('document', self::$thisFiles['size'])){
             if(self::$settings && !empty(self::$settings)){
               // With settings 
-              $response = self::commenSettings();
+              $response = self::commonSettings();
             }
             else{
               // Without settings
               if(is_dir(self::$moveTo)){
                 if(file_exists(self::$moveTo.basename(self::$thisFiles['name']))){
-                  $response['message'] = MEDIA_ERR['imageAlreadyExist'];
+                  $response['message'] = self::$errors->error('file_already_exist');
                 }
                 elseif (move_uploaded_file(self::$thisFiles['tmp_name'], self::$moveTo.basename(self::$thisFiles['name']))) {
                   $response = [
                     'error' => 0,
-                    'message' => MEDIA_ERR['fileUploadSuccess'],
+                    'message' => self::$errors->message('file_upload_success'),
                     'uploaded' => self::$uploadedTo.basename(self::$thisFiles['name'])
                   ];
                 }
                 else {
-                  $response['message'] = MEDIA_ERR['commenError'];
+                  $response['message'] = self::$errors->error('file_error');
                 }
               }
               else{
                 DEBUG 
                 ? Err::notDir(self::$moveTo) 
-                : $response['message'] = MEDIA_ERR['commenError'];
+                : $response['message'] = self::$errors->error('file_error');
               }
             }
           }
           else{
-            $response['message'] = MEDIA_ERR['maxImageSize'];
+            $response['message'] = self::$errors->error('file_too_large');
           }
         }
         else{
-          $response['message'] = MEDIA_ERR['invalidFormat'];
+          $response['message'] = self::$errors->error('file_invalid_format');
         }
       }
     }
@@ -425,35 +424,34 @@ class File {
   private static function uploadFont(){
     if(is_array(self::$thisFiles['name'])){
       // Validate and Upload Multiple Fonts
-      ///////////////////////////////////////////////
       foreach (self::$thisFiles['name'] as $k => $val) {
         if(self::validateFileFormat($val, self::$thisFiles['tmp_name'][$k])){
           if(self::validateFileSize('font', self::$thisFiles['size'][$k])){
             if(self::$thisFiles['error'][$k] == 0 && self::$settings){
-              $finalOut = self::commenSettings($k);
+              $finalOut = self::commonSettings($k);
               $response['error'][$k] = $finalOut['error'];
               $response['message'][$k] = $finalOut['message'];
               $response['uploaded'][$k] = $finalOut['uploaded'];
             }
             else{
               $response['error'][$k] = 1;
-              $response['message'][$k] = MEDIA_ERR['commenError'];
+              $response['message'][$k] = self::$errors->error('file_error');
               $response['uploaded'][$k] = null;
 
               if(is_dir(self::$moveTo)){
                 if(file_exists(self::$moveTo.basename($val))){
-                  $response['message'][$k] = MEDIA_ERR['imageAlreadyExist'];
+                  $response['message'][$k] = self::$errors->error('file_already_exist');
                 }
                 elseif (move_uploaded_file(self::$thisFiles['tmp_name'][$k], self::$moveTo.basename($val))) {
                   $response['error'][$k] = 0;
-                  $response['message'][$k] = MEDIA_ERR['fileUploadSuccess'];
+                  $response['message'][$k] = self::$errors->message('file_upload_success');
                   $response['uploaded'][$k] = self::$uploadedTo.basename($val);
                 }
               }
               else{
                 DEBUG 
                 ? Err::notDir(self::$moveTo) 
-                : $response['message'][$k] = MEDIA_ERR['commenError'];
+                : $response['message'][$k] = self::$errors->error('file_error');
               }
             }
           }
@@ -462,10 +460,9 @@ class File {
     }
     else{
       // Validate and Upload Single Font
-      ///////////////////////////////////////////////
       $response = [
         'error' => 1,
-        'message' => MEDIA_ERR['commenError']
+        'message' => self::$errors->error('file_error')
       ];
       
       if(self::$thisFiles['error'] == 0){
@@ -473,38 +470,38 @@ class File {
           if(self::validateFileSize('font', self::$thisFiles['size'])){
             if(self::$settings && !empty(self::$settings)){
               // With settings 
-              $response = self::commenSettings();
+              $response = self::commonSettings();
             }
             else{
               // Without settings
               if(is_dir(self::$moveTo)){
                 if(file_exists(self::$moveTo.basename(self::$thisFiles['name']))){
-                  $response['message'] = MEDIA_ERR['imageAlreadyExist'];
+                  $response['message'] = self::$errors->error('file_already_exist');
                 }
                 elseif (move_uploaded_file(self::$thisFiles['tmp_name'], self::$moveTo.basename(self::$thisFiles['name']))) {
                   $response = [
                     'error' => 0,
-                    'message' => MEDIA_ERR['fileUploadSuccess'],
+                    'message' => self::$errors->message('file_upload_success'),
                     'uploaded' => self::$uploadedTo.basename(self::$thisFiles['name'])
                   ];
                 }
                 else {
-                  $response['message'] = MEDIA_ERR['commenError'];
+                  $response['message'] = self::$errors->error('file_error');
                 }
               }
               else{
                 DEBUG 
                 ? Err::notDir(self::$moveTo) 
-                : $response['message'] = MEDIA_ERR['commenError'];
+                : $response['message'] = self::$errors->error('file_error');
               }
             }
           }
           else{
-            $response['message'] = MEDIA_ERR['maxImageSize'];
+            $response['message'] = self::$errors->error('file_too_large');
           }
         }
         else{
-          $response['message'] = MEDIA_ERR['invalidFormat'];
+          $response['message'] = self::$errors->error('file_invalid_format');
         }
       }
     }

@@ -101,11 +101,10 @@ trait FileSettings {
     $finalOut['copies'] = null;
 
     // Upload Original Image 
-    ////////////////////////////////
     if(isset(self::$settings['ignore_source']) && self::$settings['ignore_source'] === true){
       // No required Parameters provided
       if(!isset(self::$settings['copies'])){
-        $finalOut['image']['error'] = MEDIA_ERR['commenError'];
+        $finalOut['image']['error'] = self::$errors->error('file_error');
         DEBUG ? Err::paramsRequiredForUploadSettings('File::upload() settings') : false;
       }
     }
@@ -116,11 +115,11 @@ trait FileSettings {
       }
       else{
         if(!is_dir(self::$moveTo)){
-          if (DEBUG) :
+          if (DEBUG) {
             return  Err::notDir(self::$moveTo);
-          else:
-            $finalOut['image']['error'] = MEDIA_ERR['commenError'];
-          endif;
+          } else {
+            $finalOut['image']['error'] = self::$errors->error('file_error');
+          }
         }
       }
 
@@ -128,7 +127,7 @@ trait FileSettings {
       $quality = isset(self::$settings['quality']) && self::$settings['quality'] !=='' ? self::$settings['quality'] : -1;
       
       if(file_exists($dir)){
-        $finalOut['image']['error'] = MEDIA_ERR['imageAlreadyExist'];
+        $finalOut['image']['error'] = self::$errors->error('file_already_exist');
       }
       else{
         // Make Image and Upload
@@ -143,7 +142,6 @@ trait FileSettings {
     
 
     // Create and Upload Copies
-    //////////////////////////////////////
     if(isset(self::$settings['copies']) && !empty(self::$settings['copies'])){
       foreach (self::$settings['copies'] as $key => $copy) {
 
@@ -250,7 +248,7 @@ trait FileSettings {
    * Valid Settings (Rename, Prefix, mkdir)
    * @param int $ky File key for multiple file upload
    */
-  private static function commenSettings($ky=null){
+  private static function commonSettings($ky=null){
 
     $doc = self::$thisFiles;
     $docName = isset($ky) ? $doc['name'][$ky] : $doc['name'];
@@ -260,23 +258,23 @@ trait FileSettings {
 
     $response = [
       'error' => 1,
-      'message' => MEDIA_ERR['commenError'],
+      'message' => self::$errors->error('file_error'),
       'uploaded' => null
     ];
 
     if(is_dir(self::$moveTo)){
       if(file_exists(self::$moveTo.$docFinalName)){
-        $response['message'] = MEDIA_ERR['imageAlreadyExist'];
+        $response['message'] = self::$errors->error('file_already_exist');
       }
       elseif (move_uploaded_file($docTmp, self::$moveTo.$docFinalName)) {
         $response = [
           'error' => 0,
-          'message' => MEDIA_ERR['fileUploadSuccess'],
+          'message' => self::$errors->message('file_upload_success'),
           'uploaded' => self::$uploadedTo.$docFinalName
         ];
       }
       else {
-        $response['message'] = MEDIA_ERR['commenError'];
+        $response['message'] = self::$errors->error('file_error');
       }
     }
     elseif(isset(self::$settings['mkdir']) && self::$settings['mkdir'] === true){
@@ -285,20 +283,20 @@ trait FileSettings {
       if (move_uploaded_file($docTmp, self::$moveTo.$docFinalName)) {
         $response = [
           'error' => 0,
-          'message' => MEDIA_ERR['fileUploadSuccess'],
+          'message' => self::$errors->message('file_upload_success'),
           'uploaded' => self::$uploadedTo.$docFinalName
         ];
       }
       else {
-        $response['message'] = MEDIA_ERR['commenError'];
+        $response['message'] = self::$errors->error('file_error');
       }
     }
     else{
-      if (DEBUG) :
+      if(DEBUG){
         return  Err::notDir(self::$moveTo);
-      else:
-        $response['message'] = MEDIA_ERR['commenError'];
-      endif;
+      } else {
+        $response['message'] = self::$errors->error('file_error');
+      }
     }
 
     return $response;
