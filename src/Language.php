@@ -17,7 +17,7 @@ class Language {
   public function __construct(){
     $this->lang = Session::has('app_language') 
       ? Session::get('app_language') 
-      : Session::set('app_language', 'en');
+      : Session::set('app_language', env('app', 'APP_LANG'));
   }
 
 

@@ -53,10 +53,10 @@ class Lang {
     if(isset($param)){
       if(is_array($param) && !empty($param)){
         foreach ($param as $k => $v) {
-          $res = str_replace(":$k", $v, $res);
+          $res = str_replace(":$k", esc_x($v), $res);
         }
       } elseif(is_string($param)) {
-        $res = str_replace('::', $param, $res);
+        $res = str_replace('::', esc_x($param), $res);
       }
     }
     

@@ -7,9 +7,14 @@
 
 namespace Ozz\Core;
 
-use Ozz\Core\Language;
+use Ozz\Core\Lang;
 
 class Validate {
+
+  private static $lang;
+  private static $current_input;
+
+
 
   /**
    * Validate multiple items with rules
@@ -17,6 +22,8 @@ class Validate {
    * @param array|string $checkup $input[key] as key and rules as value (Rules separated by "|" )
    */
   public static function check($input, $checkup){
+    self::$lang = new Lang;
+    self::$current_input = $input;
     $validity = [];
     $validatedData = [];
     if(is_array($input) && is_array($checkup)){
@@ -25,7 +32,7 @@ class Validate {
           $rules = explode('|', $val);
           foreach ($rules as $rule) {
             $validity[] = self::checkRule($input[$ky], $rule, $ky); // If multiple rules provided
-            $validatedData[$ky] = $input[$ky];
+            $validatedData[$ky] = isset($input[$ky]) ? $input[$ky] : false;
           }
         } else {
           $validity[] = self::checkRule($input[$ky], $val, $ky); // If only one rule provided per one key
@@ -95,7 +102,21 @@ class Validate {
             break;
 
           case 'match':
-            return self::matchValues($val, $v, $valueKey);
+            if($v[0] == '{' && $v[-1] == '}'){
+              $matchKey = substr($v, 1, -1);
+              $v2 = self::$current_input[$matchKey];
+            } else {
+              $matchKey = false;
+              $v2 = $v;
+            }
+            return self::matchValues($val, $v2, $valueKey, $matchKey);
+            break;
+
+          case 'strongPassword':
+          case 'strong_password':
+          case 'strongPass':
+          case 'strong_pass':
+            return self::password($val, $valueKey, true, $v);
             break;
 
           default:
@@ -127,6 +148,7 @@ class Validate {
           return self::email($val, $valueKey);
           break;
 
+        case 'num':
         case 'number':
         case 'numbers':
         case 'numeric':
@@ -137,6 +159,11 @@ class Validate {
           return self::string($val, $valueKey);
           break;
 
+        case 'url':
+        case 'URL':
+          return self::url($val, $valueKey);
+          break;
+
         case 'float':
         case 'double':
           return self::float($val, $valueKey);
@@ -145,6 +172,18 @@ class Validate {
         case 'int':
         case 'integer':
           return self::int($val, $valueKey);
+          break;
+
+        case 'password':
+        case 'pass':
+          return self::password($val, $valueKey, false);
+          break;
+
+        case 'strongPassword':
+        case 'strong_password':
+        case 'strongPass':
+        case 'strong_pass':
+          return self::password($val, $valueKey, true);
           break;
 
         default:
@@ -174,56 +213,88 @@ class Validate {
    * Validation Methods
    */
   public static function boolean($v, $key=''){
-    return self::response(($v === true || $v === false), $key, 'Not a boolean value (It should be either true or false)');
+    return self::response(($v === true || $v === false), $key, self::$lang->error('boolean', ['field' => $key, 'value' => $v]));
   }
 
   public static function required($v, $key=''){
-    return self::response((empty($v) || $v == ''), $key, 'Required!');
+    return self::response(!empty($v), $key, self::$lang->error('required', ['field' => $key, 'value' => $v]));
   }
 
   public static function text($v, $key=''){
-    return self::response(($v !== '' && preg_match ("/^[a-zA-z]*$/", $v)), $key, 'Invalid text');
+    return self::response(($v !== '' && preg_match ("/^[a-zA-z]*$/", $v)), $key, self::$lang->error('text', ['field' => $key, 'value' => $v]));
   }
 
   public static function email($v, $key=''){
-    return self::response((filter_var($v, FILTER_VALIDATE_EMAIL) && preg_match("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$^", $v)), $key, 'Invalid Email address');
+    return self::response((filter_var($v, FILTER_VALIDATE_EMAIL) && preg_match("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$^", $v)), $key, self::$lang->error('email', ['field' => $key, 'value' => $v]));
   }
 
   public static function number($v, $key=''){
-    return self::response(is_numeric($v), $key, 'Invalid number or numeric string');
+    return self::response(is_numeric($v), $key, self::$lang->error('number', ['field' => $key, 'value' => $v]));
   }
 
   public static function url($v, $key=''){
-    return self::response(preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $v), $key, 'Invalid URL');
+    return self::response(filter_var($v, FILTER_VALIDATE_URL), $key, self::$lang->error('url', ['field' => $key, 'value' => $v]));
   }
 
   public static function string($v, $key=''){
-    return self::response(is_string($v), $key, 'Invalid string');
+    return self::response(is_string($v), $key, self::$lang->error('string', ['field' => $key, 'value' => $v]));
   }
 
   public static function float($v, $key=''){
-    return self::response(is_float($v), $key, 'Invalid float');
+    return self::response(is_float($v), $key, self::$lang->error('float', ['field' => $key, 'value' => $v]));
   }
 
   public static function int($v, $key=''){
-    return self::response(is_int($v), $key, 'Invalid integer');
+    return self::response(is_int($v), $key, self::$lang->error('integer', ['field' => $key, 'value' => $v]));
   }
 
+  public static function password($v, $key='', $type, $minLength=6){
+    if($type === true){
+      // Strong Password (Check all)
+      $password_errors = [];
+      if($v == trim($v) && strpos($v, ' ')){
+        $password_errors[] = self::$lang->error('normal_password', ['field' => $key, 'value' => $v]);
+      }
+      if(!preg_match('@[0-9]@', $v)){
+        $password_errors[] = self::$lang->error('strong_password_numbers', ['field' => $key, 'value' => $v]);
+      }
+      if(!preg_match('@[A-Z]@', $v)){
+        $password_errors[] = self::$lang->error('strong_password_uppercase', ['field' => $key, 'value' => $v]);
+      }
+      if(!preg_match('@[a-z]@', $v)){
+        $password_errors[] = self::$lang->error('strong_password_lowercase', ['field' => $key, 'value' => $v]);
+      }
+      if(!preg_match('@[^\w]@', $v)){
+        $password_errors[] = self::$lang->error('strong_password_special_character', ['field' => $key, 'value' => $v]);
+      }
+      if(strlen($v) < $minLength){
+        $password_errors[] = self::$lang->error('strong_password_character_length', ['field' => $key, 'value' => $v, 'min' => $minLength]);
+      }
+      // Log all password errors
+      if(count($password_errors) > 0){
+        return self::response(false, $key, $password_errors);
+      }
+
+    } else {
+      // Normal Password (Only check for spaces)
+      return self::response(($v == trim($v) && strpos($v, ' ') == false), $key, self::$lang->error('normal_password', ['field' => $key, 'value' => $v]));
+    }
+  }
 
 
   /**
    * key:value options
    */
   public static function maxLength($v, $ln, $key=''){
-    return self::response((strlen($v) <= $ln), $key, 'Exceeded maximum characters');
+    return self::response((strlen($v) <= $ln), $key, self::$lang->error('max', ['field' => $key, 'value' => $v, 'max' => $ln]));
   }
   
   public static function minLength($v, $ln, $key=''){
-    return self::response((strlen($v) >= $ln), $key, 'Minimum character length is '.$ln);
+    return self::response((strlen($v) >= $ln), $key, self::$lang->error('min', ['field' => $key, 'value' => $v, 'min' => $ln]));
   }
 
-  public static function matchValues($v, $match, $key=''){
-    return self::response($v === $match, $key, 'Values not matching');
+  public static function matchValues($v, $match, $key='', $matchKey=false){
+    return self::response($v === $match, $key, self::$lang->error('match', ['field' => $key, 'value' => $v, 'key' => $matchKey, 'match' => $match]));
   }
 
 
