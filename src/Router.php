@@ -9,6 +9,11 @@ namespace Ozz\Core;
 
 use Ozz\Core\Request;
 use Ozz\Core\Sanitize;
+use Ozz\Core\Validate;
+
+if(defined('OZZ_FUNC') === false){
+  require 'system/ozz-func.php';
+}
 
 class Router extends AppInit {
 
@@ -55,7 +60,7 @@ class Router extends AppInit {
    * @param array|string $middleware
    */
   public static function get($route, $callBack, $baseTemplate=null, $middlewares=null){
-    $finalPath = self::finalizeRoutePath($route);
+    $finalPath = self::finalizeRoutePath($route, 'get');
     $finalRoute = $finalPath['route'];
     self::$ValidRoutes['get'][$finalRoute]['urlParam'] = $finalPath['data'];
     self::$ValidRoutes['get'][$finalRoute]['middlewares'] = $middlewares;
@@ -75,7 +80,7 @@ class Router extends AppInit {
    * @param string $baseTemplate Base layout template (optional)
    */
   protected static function initialRoute($method, $route, $callBack, $middlewares, $baseTemplate){
-    $finalPath = self::finalizeRoutePath($route);
+    $finalPath = self::finalizeRoutePath($route, $method);
     $finalRoute = $finalPath['route'];
     self::$ValidRoutes[$method][$finalRoute]['urlParam'] = $finalPath['data'];
     self::$ValidRoutes[$method][$finalRoute]['callback'] = $callBack;
@@ -145,33 +150,26 @@ class Router extends AppInit {
    * Finalize URL Parameter setting
    * 
    * @param string $route
+   * @param string $method The Route method (To validate with real request method)
    */
-  private static function finalizeRoutePath($route){
+  private static function finalizeRoutePath($route, $method){
 
     $routeData['route'] = $route;
     $routeData['data'] = [];
 
-    if(preg_match("~\{\s*(.*?)\s*\}~", $route)){
-      $urlPlaceholders = [];
-      preg_match_all("~\{\s*(.*?)\s*\}~", $route, $urlPlaceholders);
-
+    if(preg_match("~\{\s*(.*?)\s*\}~", $route) && $method == Request::method()){
       $realUrlVals['innerRoute'] = explode('/', $route);
       $realUrlVals['url'] = Request::url_part();
       $realUrlVals['final'] = [];
 
       if(count($realUrlVals['innerRoute']) == count($realUrlVals['url'])){
         foreach ($realUrlVals['innerRoute'] as $k => $v) {
+          // Validate URL Parameters
           if(preg_match_all("~\{\s*(.*?)\s*\}~", $v)){
-
-            // Validate values
             $item = trim(substr($v, 1, -1));
-            if(strpos($item, ':')){
-              $validate = explode(':', $item);
-              // # MAKE VALIDATOR FIRST AND COME TO THIS PART # //
-              // dump($realUrlVals['url'][$k]);
-              // dump(Validate::check($validate[0], $realUrlVals['url'][$k]));
+            if(strpos($item, '@') && $params = explode('@', $item)){
+              Validate::check([$params[0] => $realUrlVals['url'][$k]], $params[1]);
             }
-
             $realUrlVals['final'][$v] = $realUrlVals['url'][$k];
           }
         }
@@ -185,6 +183,7 @@ class Router extends AppInit {
         $routeData['route'] = implode('/', $realUrlVals['innerRoute']); // Final Route Path
         foreach ($realUrlVals['final'] as $k => $v) {
           $k = substr($k, 1, -1);
+          $k = strpos($k, '@') ? explode('@', $k)[0] : $k;
           $routeData['data'][$k] = $v; // Final Route URL Params
         };
       }
@@ -203,7 +202,7 @@ class Router extends AppInit {
   protected static function resolve(){
     global $DEBUG_BAR;
 
-    $path = Request::getPath();
+    $path = Request::path();
     $method = Request::method();
 
     // Rewrite URL

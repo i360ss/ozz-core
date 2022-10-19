@@ -7,6 +7,7 @@
 * OZZ DEFINED FUNCTIONS
 */
 
+
 // Used Classes
 use Ozz\Core\Errors;
 use Ozz\Core\Router;
@@ -14,10 +15,13 @@ use Ozz\Core\Help;
 use Ozz\Core\system\SubHelp;
 use Ozz\Core\Err;
 
+// Check if functions already declared
+if(!function_exists('ozz_func_loaded')) {
+
 # ----------------------------------------------------
 // Ozz escaping functions
 # ----------------------------------------------------
-// HTML Charsets
+// HTML Char sets
 $ozz_htmlSpecialChar = [
   'ISO-8859-1' => true, 
   'ISO8859-1' => true,
@@ -55,6 +59,10 @@ $ozz_htmlSpecialChar = [
   'MACROMAN' => true,
 ];
 
+
+function ozz_func_loaded() {
+  return true;
+}
 
 
 /**
@@ -276,7 +284,7 @@ function str_between_all($str, $start, $end) {
   }
 }
 
-// Direct echo (Returns a string each value is seperated by a comma (,))
+// Direct echo (Returns a string each value is separated by a comma (,))
 function _str_between_all($str, $start, $end) {
   if(is_array(str_between_all($str, $start, $end))){
     echo implode(', ', str_between_all($str, $start, $end));
@@ -289,7 +297,7 @@ function _str_between_all($str, $start, $end) {
 
 /**
  * Camel case to snake case
- * This will convert camelcase to snake case
+ * This will convert camelCase to snake case
  * @param string $str string to convert
  */
 function to_snakecase($str) {
@@ -388,7 +396,7 @@ function sql_dumper($str) {
 
 
 # ----------------------------------------------------
-// Short functions for existnig Object methods
+// Short functions for existing Object methods
 # ----------------------------------------------------
 /**
  * Simple base 64 encoding
@@ -623,3 +631,6 @@ function console_log($value=null) : void {
     $DEBUG_BAR->set('ozz_message', $new_log);
   }
 }
+
+
+} // Function existence check END

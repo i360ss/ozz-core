@@ -30,7 +30,7 @@ class Request extends Router {
       'cache' => $_SERVER['HTTP_CACHE_CONTROL'] ?? null,
       'lang' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null,
       'encoding' => $_SERVER['HTTP_ACCEPT_ENCODING'] ?? null,
-      'path' => self::getPath(),
+      'path' => self::path(),
       'url' => $_SERVER['REQUEST_URI'] ?? null,
       'url_parts' => self::url_part(),
       'url_params' => self::param() !== [] ? self::param() : null,
@@ -65,7 +65,7 @@ class Request extends Router {
   /**
    * Returns Request path
    */
-  public static function getPath(){
+  public static function path(){
     if(isset($_SERVER['REQUEST_URI'])){
       $path = Sanitize::url($_SERVER['REQUEST_URI']);
       $pos = strpos($path, '?');
@@ -90,18 +90,9 @@ class Request extends Router {
     $output = [];
 
     foreach ($_REQUEST as $k => $v) {
-      if(is_array($v)){
-        $output[$k] = Sanitize::array($v);
-      }
-      else{
-        if((strtolower(substr($k, 0, 5)) == 'html:')) {
-          $output[$k] = Sanitize::htmlEncode($v);
-        } elseif((strtolower(substr($k, 0, 5)) == 'evil:')) {
-          $output[$k] = $v;
-        } else {
-          $output[$k] = Sanitize::string($v);
-        }
-      }
+      (is_array($v))
+        ? $output[$k] = Sanitize::array($v)
+        : $output[$k] = Sanitize::specialChar($v);
     }
 
     return $key ? $output[$key] : $output; // Sanitized Data
@@ -136,9 +127,9 @@ class Request extends Router {
    * @return array|string|int
    */
   public static function param($key=''){
-    $path = self::getPath() ?? false;
+    $path = self::path() ?? false;
     $method = self::method();
-    if(isset($path) && isset(Router::$ValidRoutes[$method][$path]['urlParam'])){
+    if(isset(Router::$ValidRoutes[$method][$path]['urlParam'])){
       $data = $key !== '' 
       ? Router::$ValidRoutes[$method][$path]['urlParam'][$key]
       : Router::$ValidRoutes[$method][$path]['urlParam'];
@@ -157,7 +148,7 @@ class Request extends Router {
    * @param int $q index of part
    */
   public static function url_part($q=''){
-    $URL = self::getPath() ?? false;
+    $URL = self::path() ?? false;
     if(isset($URL)){
       $parts = explode('/', $URL);
       if($q==''){

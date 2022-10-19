@@ -8,6 +8,7 @@
 namespace Ozz\Core;
 
 use Ozz\Core\Lang;
+use Ozz\Core\Errors;
 
 class Validate {
 
@@ -75,7 +76,7 @@ class Validate {
 
     return (object) [
       'pass' => in_array(false, $validity) ? false : true,
-      'errors' => get_error(),
+      'errors' => Errors::get(),
       'data' => $validatedData,
     ];
   }
@@ -88,7 +89,7 @@ class Validate {
    * @param string $rule Single rule
    */
   private static function checkRule($val, $rule, $valueKey=null) {
-    $valueKey = ($valueKey == null && has_error()) ? count(get_error())+1 : $valueKey;
+    $valueKey = ($valueKey == null && Errors::has()) ? count(Errors::get())+1 : $valueKey;
     $rule = preg_match_all("/([^,= ]+):([^,= ]+)/", $rule, $r) ? array_combine($r[1], $r[2]) : $rule;
     if(is_array($rule)){
       foreach ($rule as $k => $v) {
@@ -304,7 +305,7 @@ class Validate {
    */
   private static function response($bool, $key, $errMsg) {
     if($bool === false){
-      set_error($key, $errMsg);
+      Errors::set($key, $errMsg);
     }
     return $bool;
   }
