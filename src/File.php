@@ -70,13 +70,22 @@ class File {
     $ReqFiles = $files !== null ? $files : $_FILES;
     self::$thisFiles = $ReqFiles[array_key_first($ReqFiles)];
 
-    if(self::$thisFiles['name'] == ''){
-      $response = [
+    if(is_string(self::$thisFiles['name']) && self::$thisFiles['name'] == ''){
+      return [
         'error' => 1,
-        'message' => self::$errors->error('file_required')
+        'message' => self::$errors->error('file_required'),
+        'uploaded' => null,
+        'no_file' => true,
       ];
-
-      return $response;
+    } elseif (is_array(self::$thisFiles['name'])) {
+      if(!isset(self::$thisFiles['name'][0]) || empty(self::$thisFiles['name'][0]) || self::$thisFiles['name'][0] == ''){
+        return [
+          'error' => 1,
+          'message' => self::$errors->error('file_required'),
+          'uploaded' => null,
+          'no_file' => true,
+        ];
+      }
     }
 
     // Settings before upload
@@ -211,6 +220,7 @@ class File {
                 if(file_exists(self::$moveTo.basename($val))){
                   $response['error'][$k] = 1;
                   $response['message'][$k] = self::$errors->error('file_already_exist');
+                  $response['uploaded'][$k] = null;
                 }
                 elseif (move_uploaded_file(self::$thisFiles['tmp_name'][$k], self::$moveTo.basename($val))) {
                   $response['error'][$k] = 0;
@@ -220,6 +230,7 @@ class File {
                 else{
                   $response['error'][$k] = 1;
                   $response['message'][$k] = self::$errors->error('file_error');
+                  $response['uploaded'][$k] = null;
                 }
               }
               else{
@@ -229,22 +240,26 @@ class File {
                 else{
                   $response['error'][$k] = 1;
                   $response['message'][$k] = self::$errors->error('file_error');
+                  $response['uploaded'][$k] = null;
                 }
               }
             }
             else{
               $response['error'][$k] = 1;
               $response['message'][$k] = self::$errors->error('file_error');
+              $response['uploaded'][$k] = null;
             }
           }
           else{
             $response['error'][$k] = 1;
             $response['message'][$k] = self::$errors->error('file_too_large');
+            $response['uploaded'][$k] = null;
           }
         }
         else{
           $response['error'][$k] = 1;
           $response['message'][$k] = self::$errors->error('file_invalid_format');
+          $response['uploaded'][$k] = null;
         }
       } // End of loop
     }
@@ -369,7 +384,8 @@ class File {
       // Validate and Upload Single Documents
       $response = [
         'error' => 1,
-        'message' => self::$errors->error('file_error')
+        'message' => self::$errors->error('file_error'),
+        'uploaded' => null,
       ];
       
       if(self::$thisFiles['error'] == 0){
@@ -384,6 +400,7 @@ class File {
               if(is_dir(self::$moveTo)){
                 if(file_exists(self::$moveTo.basename(self::$thisFiles['name']))){
                   $response['message'] = self::$errors->error('file_already_exist');
+                  $response['uploaded'] = null;
                 }
                 elseif (move_uploaded_file(self::$thisFiles['tmp_name'], self::$moveTo.basename(self::$thisFiles['name']))) {
                   $response = [
@@ -462,7 +479,8 @@ class File {
       // Validate and Upload Single Font
       $response = [
         'error' => 1,
-        'message' => self::$errors->error('file_error')
+        'message' => self::$errors->error('file_error'),
+        'uploaded' => null,
       ];
       
       if(self::$thisFiles['error'] == 0){

@@ -32,8 +32,10 @@ class Validate {
         if(explode('|', $val) > 0){
           $rules = explode('|', $val);
           foreach ($rules as $rule) {
-            $validity[] = self::checkRule($input[$ky], $rule, $ky); // If multiple rules provided
-            $validatedData[$ky] = isset($input[$ky]) ? $input[$ky] : false;
+            if(isset($input[$ky])){
+              $validity[] = self::checkRule($input[$ky], $rule, $ky); // If multiple rules provided
+              $validatedData[$ky] = isset($input[$ky]) ? $input[$ky] : false;
+            }
           }
         } else {
           $validity[] = self::checkRule($input[$ky], $val, $ky); // If only one rule provided per one key
