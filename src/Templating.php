@@ -20,6 +20,7 @@ class Templating extends AppInit {
   /**
    * @param string  $vv          View file (phtml/html)
    * @param mixed   $data        Data from controller/router to load into view
+   * @param array   $context     Basic Data to load into view (by default)
    * @param string  $basetemp    Base template defined on Router::render() method or render function
    * @param string  $basetemp_from_router   Base template defined on router
    * 
@@ -27,31 +28,47 @@ class Templating extends AppInit {
    * 
    * $basetemp will be used over $basetemp_from_router if it is not empty
    */
-  public static function render($vv, $data, $basetemp, $basetemp_from_router){
+  public static function render($vv, $customData, $basetemp, $basetemp_from_router, $context){
 
     global $DEBUG_BAR;
-    DEBUG ? self::$debug_view['view_data'] = $data : false; // Log to debug bar
+    DEBUG ? self::$debug_view['view_data'] = $customData : false; // Log to debug bar
 
     $regComps = [];
-    $context = Sanitize::templateContext($data);
-    self::$cdt = [$context, json_encode($context, JSON_FORCE_OBJECT)];
+    $data = Sanitize::templateContext($customData);
+    $context['view'] = $vv;
+    $context['layout'] = ($basetemp_from_router ?? $basetemp) ?? 'layout';
+    $context['layout'] = empty($context['layout']) ? 'layout' : $context['layout'];
+
+    require APP_DIR."/functions.php";
+    self::$cdt = [$context, $data];
 
     if(file_exists(VIEW . $vv . '.phtml')){
       DEBUG ? self::$debug_view['view_file'] = "view/$vv.phtml" : false; // Log to debug bar
 
-      $viewContent = self::setView($vv)[0];
-      $vars = self::setView($vv)[1];
+      $viewContentAll = self::setView($vv);
+      $viewContent = $viewContentAll[0];
+      $vars = $viewContentAll[1];
 
       if(!isset($basetemp_from_router) && $basetemp==''){
         return $viewContent;
       }
       else{
-
-        $baselay = $basetemp !== ''
-          ? self::layout($basetemp)
-          : self::layout($basetemp_from_router);
-
         preg_match_all("~\{\{\s*(.*?)\s*\}\}~", $viewContent, $regComps['view']);
+
+        // Get Variables from view to use on base layout
+        $variables = [];
+        foreach ($regComps['view'][1] as $vl) {
+          $vl = explode('=', $vl);
+          if(count($vl) > 1){
+            $variables[trim($vl[0])] = self::is_string($vl[1]) ? self::trim_string($vl[1]) : self::return_var($vl[1], $vars);
+          }
+        }
+
+        // Get Base layout content
+        $baselay = $basetemp !== ''
+          ? self::layout($basetemp, $variables)
+          : self::layout($basetemp_from_router, $variables);
+
         preg_match_all("~\{\%\s*(.*?)\s*\%\}~", $baselay, $regComps['base']);
 
         // Set up view page content
@@ -60,25 +77,8 @@ class Templating extends AppInit {
           if(in_array($v, $regComps['view'][1])){
             $viewComp[$v] = self::get_string_between($viewContent, "{{ $v }}", "{{ $v-end }}");
           }
-          elseif(preg_grep("/^$v::/i", $regComps['view'][1])){
-            $vvCon = explode('::', array_merge(preg_grep("/^$v::/i", $regComps['view'][1]))[0])[1];
-
-            if(self::is_string($vvCon)){
-              $viewComp[$v] = self::trim_string($vvCon);
-            }
-            else{
-              // Get the context as array or variable
-              $keys = array_map('trim', explode('.', self::trim_string($vvCon)));
-              if(count($keys) > 1){
-                $temp = $vars[$keys[0]];
-                foreach ($keys as $i => $vl) {
-                  $i !== 0 ? $temp =& $temp[$vl] : false;
-                }
-                $viewComp[$v] = !is_null($temp) ? $temp : false;
-              } else{
-                $viewComp[$v] = !is_null($vars[$keys[0]]) ? $vars[$keys[0]] : false; // Var
-              }
-            }
+          elseif(preg_grep("/^$v\s*=/i", $regComps['view'][1])){
+            $viewComp[$v] = $variables[$v];
           }
           else{
             $baselay = str_replace("{% $v %}", '', $baselay);
@@ -103,13 +103,14 @@ class Templating extends AppInit {
 
 
   // Main Layout Template
-  private static function layout($temp){
+  private static function layout($temp, $vars){
     ob_start();
-    $data = self::$cdt[0];
-    $data_json = self::$cdt[1];
+    $context = self::$cdt[0];
+    $data = self::$cdt[1];
     $temp = ($temp == '') ? 'layout' : $temp;
 
     if(file_exists(VIEW.'base/'. $temp . '.phtml')){
+      extract($vars); // Variables defined on view
       require VIEW.'base/'. $temp.'.phtml';
       DEBUG ? self::$debug_view['base_file'] = "view/base/$temp.phtml" : false; // Log to debug bar
     } else{
@@ -126,8 +127,8 @@ class Templating extends AppInit {
   // Set Up View Template with Components
   private static function setView($v){
     ob_start();
-    $data = self::$cdt[0];
-    $json_data = self::$cdt[1];
+    $context = self::$cdt[0];
+    $data = self::$cdt[1];
     require VIEW.$v.'.phtml';
     $vars = get_defined_vars();
     $view = ob_get_contents();
@@ -209,7 +210,7 @@ class Templating extends AppInit {
         Err::componentNotFound($parts[0]);
         $component = ''; 
       }
-      
+
       $possibleComp = ["{: $c :}", "{:$c:}", "{:$c :}", "{: $c:}"];
       $view = str_replace($possibleComp, $component, $view);
     }
@@ -223,7 +224,7 @@ class Templating extends AppInit {
     $c = trim($c);
     return ($c[0] == '\'') && (substr($c,-1) == '\'') || ($c[0] == '"') && (substr($c,-1) == '"');
   }
-  
+
 
 
   // Trim string (wrapped in single or double quotes)
@@ -235,22 +236,23 @@ class Templating extends AppInit {
 
 
 
-  // Return Variable / Array (Convert string to variable/array)
-  private static function return_vars($keys) {
-    if(count($keys) > 1){
-      $temp = ${$keys[0]};
-      foreach ($keys as $i => $v) {
-        $i !== 0 ? $temp =& $temp[$v] : false;
-      }
-      $args = !is_null($temp) ? $temp : false;
-    }
-    else{
-      $args = !is_null(${$keys[0]}) ? ${$keys[0]} : false;
-    }
-    return $args;
-  }
 
-    
+    // Return Variable / Array (Convert string to variable/array)
+    private static function return_var($str, $vars){
+      $keys = array_map('trim', explode('.', $str));
+      if(count($keys) > 1){
+        $temp = $vars[$keys[0]];
+        foreach ($keys as $i => $vl) {
+          $i !== 0 ? $temp =& $temp[$vl] : false;
+        }
+        return !is_null($temp) ? $temp : false;
+      } else{
+        return !is_null($vars[$keys[0]]) ? $vars[$keys[0]] : false; // Var
+      }
+    }
+
+
+
   // Templating Option
   private static function get_string_between($str, $stt, $end){
     $str = ' ' . $str;
@@ -260,5 +262,6 @@ class Templating extends AppInit {
     $len = strpos($str, $end, $ini) - $ini;
     return substr($str, $ini, $len);
   }
+
 
 }

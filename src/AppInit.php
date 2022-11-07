@@ -47,7 +47,7 @@ class AppInit {
     $this->csp = parse_ini_file(__DIR__.SPC_BACK['core'].'csp.ini', true); // Get CSP Values
     if($this->csp['CSP']['USE_CSP'] == 1){
       $csp = $this->csp['CSP'];
-      header("Content-Security-Policy: base-uri ".$csp['base-uri']."; default-src ".$csp['default-src']."; style-src ".$csp['style-src']." 'nonce-".$csp_nonce."'; font-src ".$csp['font-src']."; script-src ".$csp['script-src']." 'nonce-" . $csp_nonce . "'; img-src ".$csp['img-src']."; connect-src ".$csp['connect-src']."; object-src ".$csp['object-src']."; media-src ".$csp['media-src']."; child-src ".$csp['child-src']."; report-uri ".$csp['report-uri']."; form-action ".$csp['form-action']."; frame-ancestors ".$csp['frame-ancestors']."; worker-src ".$csp['worker-src']."; ");
+      header("Content-Security-Policy: base-uri ".$csp['base-uri']."; default-src ".$csp['default-src']."; style-src ".$csp['style-src']." 'nonce-".$csp_nonce."'; font-src ".$csp['font-src']."; script-src ".$csp['script-src']." 'nonce-" . $csp_nonce . "'; img-src ".$csp['img-src']."; connect-src ".$csp['connect-src']."; object-src ".$csp['object-src']."; media-src ".$csp['media-src']."; child-src ".$csp['child-src']."; form-action ".$csp['form-action']."; frame-ancestors ".$csp['frame-ancestors']."; worker-src ".$csp['worker-src']."; ");
     }
 
 
@@ -144,9 +144,15 @@ class AppInit {
 
 
     /**
+     * "App directory" where all dev source files live
+     */
+    defined('APP_DIR') || define('APP_DIR', __DIR__.SPC_BACK['core'].'app/');
+
+
+    /**
      * "View directory" where all view files will live
      */
-    defined('VIEW') || define('VIEW', __DIR__.SPC_BACK['core'].'app/view/');
+    defined('VIEW') || define('VIEW', APP_DIR.'view/');
 
 
     /**
@@ -207,15 +213,15 @@ class AppInit {
      * Load ozz functions
      */
     require "system/ozz-func.php";
-
+    
     /**
      * Prepare and output
      */
-    $out = Router::resolve();
+    $out = Router::resolve();    
     if(MINIFY_HTML){
       $out = Help::minifyHTML($out);
     }
-
+    
     echo $out;
 
     if(DEBUG && SHOW_DEBUG_BAR){

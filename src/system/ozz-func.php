@@ -12,8 +12,10 @@
 use Ozz\Core\Errors;
 use Ozz\Core\Router;
 use Ozz\Core\Help;
+use Ozz\Core\Session;
 use Ozz\Core\system\SubHelp;
 use Ozz\Core\Err;
+use Ozz\Core\Sanitize;
 
 // Check if functions already declared
 if(!function_exists('ozz_func_loaded')) {
@@ -239,6 +241,28 @@ function _esc_url($url) {
 }
 
 
+/**
+ * Encode HTML
+ * @param string $str direct HTML
+ * 
+ * @return string encoded HTML as string
+ */
+function html_encode($str){
+  return Sanitize::htmlEncode($str);
+}
+
+
+/**
+ * Decode encoded HTML
+ * @param string $str encoded HTML
+ * 
+ * @return HTML
+ */
+function html_decode($str){
+  return Sanitize::htmlDecode($str);
+}
+
+
 
 # ----------------------------------------------------
 // Var, Array, JSON and Object manipulations
@@ -302,6 +326,16 @@ function _str_between_all($str, $start, $end) {
  */
 function to_snakecase($str) {
   return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $str));
+}
+
+
+/**
+ * Convert string to valid slug
+ * @param string $str String to convert
+ * @param string $delimiter Delimiter to replace (Optional)
+ */
+function to_slug($str, $delimiter='-') {
+  return strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv(CHARSET, 'ASCII//TRANSLIT', urldecode($str)))))), $delimiter));
 }
 
 
@@ -517,6 +551,16 @@ function view($view, $data=[], $template='') {
 }
 
 
+/**
+ * Short way to Redirect back
+ * @param string $add Concat string after URL
+ * @param int $status Redirect Status Code
+ */
+function back($add='', $status=301) {
+  return Router::back($add, $status);
+}
+
+
 
 /**
  * Render component with parameters
@@ -569,6 +613,64 @@ function _dump($arg) {
 
 
 # ----------------------------------------------------
+// Short functions for Flash session handling
+# ----------------------------------------------------
+/**
+ * Return all available flash session values
+ */
+function flash($k='') {
+  $flash = Session::has('__flash') && !empty(Session::get('__flash')) ? Session::get('__flash') : false;
+  if($flash && $k !== ''){
+    return $flash[$k];
+  } else {
+    return $flash;
+  }
+}
+
+/**
+ * Set new flash session
+ */
+function set_flash($k, $v) {
+  Session::flash($k, $v, false);
+}
+
+/**
+ * Return Boolean
+ */
+function has_flash($k='') {
+  $flash = Session::has('__flash') && !empty(Session::get('__flash')) ? Session::get('__flash') : false;
+  if($flash === false){
+    return false;
+  } elseif($flash && $k !== ''){
+    return isset($flash[$k]);
+  } else {
+    return true; // Has flash & key not provided
+  }
+}
+
+/**
+ * Return Boolean
+ */
+function get_flash($k='') {
+  return flash($k);
+}
+
+/**
+ * Remove single flash value (use before request end)
+ */
+function remove_flash($k) {
+  unset($_SESSION['__flash'][$k]);
+}
+
+/**
+ * Clear all flash values (use before request end)
+ */
+function clear_flash() {
+  unset($_SESSION['__flash']);
+}
+
+
+# ----------------------------------------------------
 // Short functions for Error handling
 # ----------------------------------------------------
 /**
@@ -581,15 +683,22 @@ function errors() {
 /**
  * Returns Boolean
  */
-function has_error($key='') {
-  return Errors::has($key);
+function has_error($k='') {
+  return Errors::has($k);
+}
+
+/**
+ * Returns all current errors
+ */
+function error($k='') {
+  return get_error($k);
 }
 
 /**
  * Return only required error
  */
-function get_error($key='') {
-  return Errors::get($key);
+function get_error($k='') {
+  return Errors::get($k);
 }
 
 /**

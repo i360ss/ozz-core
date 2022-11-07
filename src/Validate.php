@@ -137,6 +137,18 @@ class Validate {
           return self::required($val, $valueKey);
           break;
 
+        case 'alphanum':
+        case 'alpha_num':  
+        case 'alphanumeric':
+          return self::alphaNum($val, $valueKey);
+          break;
+
+        case 'clean':
+        case 'safe':
+        case 'safe_text':
+          return self::safeText($val, $valueKey);
+          break;
+
         case 'txt':
         case 'text':
         case 'letters':
@@ -219,6 +231,14 @@ class Validate {
 
   public static function required($v, $key=''){
     return self::response(!empty($v), $key, self::$lang->error('required', ['field' => $key, 'value' => $v]));
+  }
+
+  public static function alphaNum($v, $key=''){
+    return self::response(($v !== '' && preg_match ("/[^0-9a-zA-Z]/", $v)), $key, self::$lang->error('alpha_num', ['field' => $key, 'value' => $v]));
+  }
+
+  public static function safeText($v, $key=''){
+    return self::response(($v !== '' && !preg_match ("/<[^<]+>/", $v)), $key, self::$lang->error('safe_text', ['field' => $key, 'value' => $v]));
   }
 
   public static function text($v, $key=''){

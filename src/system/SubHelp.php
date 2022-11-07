@@ -740,7 +740,11 @@ class SubHelp {
                 <?php
                   if (is_array($value)) {
                     foreach ($value as $k => $v) {
-                      echo "<b>$k</b> : $v <br>";
+                      if(is_string($v) || is_bool($v)){
+                        echo "<b>$k</b> : $v <br>";
+                      } else {
+                        self::varDump($v);
+                      }
                     }
                   } else {
                     echo $value;

@@ -162,13 +162,11 @@ class Session {
    * @param string|array|object|int $v Session value
    * @param bool $force overwrite existing value (default: true)
    */
-  public static function flash(string $k, $v, $force=true) {
-    $_SESSION['ozz__flash'][$k] = $v;
-
-    if ($force) {
-      $_SESSION[$k] = $v;
+  public static function flash(string $k, $v, $is_error=false) {
+    if($is_error){
+      $_SESSION['__error'][$k] = $v;
     } else {
-      !array_key_exists($k, $_SESSION) ? $_SESSION[$k] = $v : false;
+      $_SESSION['__flash'][$k] = $v;
     }
   }
 

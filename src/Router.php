@@ -19,6 +19,7 @@ class Router extends AppInit {
 
   protected static $ValidRoutes=[];
   protected static $template; // Base Template for view
+  protected static $context=[]; // Core data
 
 
   /**
@@ -202,8 +203,15 @@ class Router extends AppInit {
   protected static function resolve(){
     global $DEBUG_BAR;
 
-    $path = Request::path();
-    $method = Request::method();
+    $req = new Request;
+    $path = $req::path();
+    $method = $req::method();
+
+    self::$context['request'] = $req->all();
+    self::$context['url_parts'] = $req->all()['url_parts'];
+    self::$context['url'] = $req->all()['url'];
+    self::$context['path'] = $path;
+    self::$context['method'] = $method;
 
     // Rewrite URL
     if($path != '/'){
@@ -316,7 +324,7 @@ class Router extends AppInit {
    */
   public static function view($vv, $data=[], $template=''){
     new Request;
-    return Templating::render($vv, $data, $template, self::$template);
+    return Templating::render($vv, $data, $template, self::$template, self::$context);
   }  
 
 
@@ -332,5 +340,23 @@ class Router extends AppInit {
     header("Location: $to");
     exit;
   }
+
+
+
+  /**
+   * Go Back (Redirect to previous URL)
+   * 
+   * @param string $add Concat string after URL
+   * @param int $status Redirect status code
+   */
+  public static function back($add='', $status=301){
+    Request::statusCode($status);
+    if(isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] !== ''){
+      $to = $_SERVER['HTTP_REFERER'].$add;
+      header("Location: $to");
+      exit;
+    }
+  }
+
 
 }

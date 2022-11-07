@@ -45,7 +45,7 @@ class Request extends Router {
   /**
    * Return all values of Request object as array
    */
-  public static function all(){
+  public function all(){
     return $this->full_request;
   }
 
