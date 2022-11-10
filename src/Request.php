@@ -52,17 +52,6 @@ class Request extends Router {
 
 
   /**
-   * Set HTTP status code
-   * 
-   * @param int $code status code to be updated
-   */
-  public static function statusCode($code){
-    return http_response_code($code);
-  }
-
-
-
-  /**
    * Returns Request path
    */
   public static function path(){
@@ -191,7 +180,7 @@ class Request extends Router {
    * 
    * @param string $method (get, post, ect...)
    */
-  public static function methodIs($method){
+  public static function is_method($method){
     return self::method() === strtolower($method);
   }
 

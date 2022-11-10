@@ -12,27 +12,15 @@ trait Security {
   #---------------------------------------------------------------------
   // Check the request AJAX or not (Allow only Ajax requests)
   #---------------------------------------------------------------------
-  protected function isAjax(){
+  protected function is_ajax(){
     if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest'){
-      Request::statusCode(405);
+      http_response_code(405);
       exit('Not an AJAX request'); // Not a Ajax request
     }
   }
-  
-  
-  
-  #---------------------------------------------------------------------
-  // Check the request method
-  #---------------------------------------------------------------------
-  protected function isMethod($method){
-    if(strtolower($_SERVER['REQUEST_METHOD']) !== strtolower($method)) {
-      Request::statusCode(405);
-      exit('Invalid Request Method');
-    }
-  }
-  
-  
-  
+
+
+
   #---------------------------------------------------------------------
   // Check CSRF token validation
   #---------------------------------------------------------------------
@@ -48,7 +36,7 @@ trait Security {
       $csrfToken = $_SERVER["HTTP_X_CSRF_TOKEN"];
     }
     else{
-      Request::statusCode(401);
+      http_response_code(401);
       exit('Token not found');
     }
     
@@ -62,23 +50,10 @@ trait Security {
         }
       }
       else{
-        Request::statusCode(401);
+        http_response_code(401);
         exit('Invalid Token');
       }
     }
   }
-  
-  
-  
-  #---------------------------------------------------------------------
-  // Check All Secrity checks
-  #---------------------------------------------------------------------
-  protected function allSecurity($method = 'post'){
-    self::isAjax();
-    self::csrf();
-    self::isMethod($method);
-  }
-  
-  
-  
+
 } // Security class END
