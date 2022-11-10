@@ -230,9 +230,7 @@ class Router extends AppInit {
 
     // Render 404 if callback is false
     if($callback === false){
-      Request::statusCode('404');
-      return self::view('404', [], 'layout');
-      exit;
+      return self::view('404', [], 'layout', 404);
     }
 
     // Get set and execute Middlewares
@@ -321,10 +319,11 @@ class Router extends AppInit {
    * @param string $vv The viw file (without extension)
    * @param array $data Data to be passed to view
    * @param string $template Base layout template
+   * @param int $status_code HTTP Status code
    */
-  public static function view($vv, $data=[], $template=''){
+  public static function view($vv, $data=[], $template='', $status_code=200){
     new Request;
-    return Templating::render($vv, $data, $template, self::$template, self::$context);
+    return Templating::render($vv, $data, $template, self::$template, self::$context, $status_code);
   }  
 
 
@@ -335,9 +334,8 @@ class Router extends AppInit {
    * @param string $to Path/URL to redirect
    * @param int $status Redirect status code
    */
-  public static function redirect($to, $status=301){
-    Request::statusCode($status);
-    header("Location: $to");
+  public static function redirect($to, $status=302){
+    header("Location: $to", true, $status);
     exit;
   }
 
@@ -350,10 +348,9 @@ class Router extends AppInit {
    * @param int $status Redirect status code
    */
   public static function back($add='', $status=301){
-    Request::statusCode($status);
     if(isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] !== ''){
       $to = $_SERVER['HTTP_REFERER'].$add;
-      header("Location: $to");
+      header("Location: $to", true, $status);
       exit;
     }
   }

@@ -7,15 +7,52 @@
 
 namespace Ozz\Core;
 
+use Ozz\Core\Session;
+use Ozz\Core\Err;
+
 class Lang {
 
   private $messages;
   private $errors;
+  public $lang;
 
 
   public function __construct(){
-    $this->errors = include APP_LANG_PATH.'errors.php';
-    $this->messages = include APP_LANG_PATH.'messages.php';
+    $this->lang = Session::has('app_language') 
+      ? Session::get('app_language') 
+      : Session::set('app_language', env('app', 'APP_LANG'));
+
+    if(file_exists(APP_LANG_PATH.'errors.php')){
+      $this->errors = include APP_LANG_PATH.'errors.php';
+    } else {
+      return DEBUG
+        ? Err::custom([
+          'msg' => "errors.php Not found in current language directory ( app/lang/".APP_LANG."/ )",
+          'info' => 'You need to create error message files for each language that your application using',
+          'note' => "You can just copy <strong>app/lang/en/errors.php</strong> to <strong>app/lang/".APP_LANG."/</strong> and translate content",
+        ])
+        : false;
+    }
+
+    if(file_exists(APP_LANG_PATH.'messages.php')){
+      $this->messages = include APP_LANG_PATH.'messages.php';
+    } else {
+      return DEBUG
+        ? Err::custom([
+          'msg' => "messages.php Not found in current language directory ( app/lang/".APP_LANG."/ )",
+          'info' => 'You need to create message content files for each language that your application using',
+          'note' => "You can just copy <strong>app/lang/en/messages.php</strong> to <strong>app/lang/".APP_LANG."/</strong> and translate content",
+        ])
+        : false;
+    }
+  }
+
+
+
+  public function switch($lang){
+    if(Session::get('app_language') !== $lang){
+      Session::set('app_language', $lang);
+    }
   }
 
 

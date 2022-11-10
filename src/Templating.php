@@ -8,27 +8,26 @@
 namespace Ozz\Core;
 
 use Ozz\Core\Sanitize;
+use Ozz\Core\Response;
 
 class Templating extends AppInit {
   
   protected static $cdt=[]; // Current Data to load on view
   private static $debug_view = [];
   
-  # ----------------------------------
-  # Render Template
-  # ----------------------------------
   /**
-   * @param string  $vv          View file (phtml/html)
-   * @param mixed   $data        Data from controller/router to load into view
-   * @param array   $context     Basic Data to load into view (by default)
-   * @param string  $basetemp    Base template defined on Router::render() method or render function
-   * @param string  $basetemp_from_router   Base template defined on router
+   * Render Template
+   * @param string  $vv                         View file (phtml/html)
+   * @param mixed   $data                       Data from controller/router to load into view
+   * @param array   $context                    Basic Data to load into view (by default)
+   * @param string  $base_template              Base template defined on Router::render() method or render function
+   * @param string  $base_template_from_router  Base template defined on router
    * 
    * @return /DOM   Final view DOM to render
    * 
-   * $basetemp will be used over $basetemp_from_router if it is not empty
+   * $base_template will be used over $base_template_from_router if it is not empty
    */
-  public static function render($vv, $customData, $basetemp, $basetemp_from_router, $context){
+  public static function render($vv, $customData, $base_template, $base_template_from_router, $context, $status_code=200){
 
     global $DEBUG_BAR;
     DEBUG ? self::$debug_view['view_data'] = $customData : false; // Log to debug bar
@@ -36,7 +35,7 @@ class Templating extends AppInit {
     $regComps = [];
     $data = Sanitize::templateContext($customData);
     $context['view'] = $vv;
-    $context['layout'] = ($basetemp_from_router ?? $basetemp) ?? 'layout';
+    $context['layout'] = ($base_template_from_router ?? $base_template) ?? 'layout';
     $context['layout'] = empty($context['layout']) ? 'layout' : $context['layout'];
 
     require APP_DIR."/functions.php";
@@ -49,8 +48,8 @@ class Templating extends AppInit {
       $viewContent = $viewContentAll[0];
       $vars = $viewContentAll[1];
 
-      if(!isset($basetemp_from_router) && $basetemp==''){
-        return $viewContent;
+      if(!isset($base_template_from_router) && $base_template==''){
+        self::render_final_view($viewContent, $status_code); // Render final output
       }
       else{
         preg_match_all("~\{\{\s*(.*?)\s*\}\}~", $viewContent, $regComps['view']);
@@ -65,11 +64,11 @@ class Templating extends AppInit {
         }
 
         // Get Base layout content
-        $baselay = $basetemp !== ''
-          ? self::layout($basetemp, $variables)
-          : self::layout($basetemp_from_router, $variables);
+        $base_layout = $base_template !== ''
+          ? self::layout($base_template, $variables)
+          : self::layout($base_template_from_router, $variables);
 
-        preg_match_all("~\{\%\s*(.*?)\s*\%\}~", $baselay, $regComps['base']);
+        preg_match_all("~\{\%\s*(.*?)\s*\%\}~", $base_layout, $regComps['base']);
 
         // Set up view page content
         $viewComp = [];
@@ -81,23 +80,34 @@ class Templating extends AppInit {
             $viewComp[$v] = $variables[$v];
           }
           else{
-            $baselay = str_replace("{% $v %}", '', $baselay);
+            $base_layout = str_replace("{% $v %}", '', $base_layout);
           }
         }
 
         // Replace Blocks on layout template by view contents
         foreach ($viewComp as $k => $v) {
-          $baselay = str_replace("{% $k %}", $v, $baselay);
+          $base_layout = str_replace("{% $k %}", $v, $base_layout);
         }
 
         // Set view info to debug bar
         DEBUG ? $DEBUG_BAR->set('ozz_view', self::$debug_view) : false;
-        return $baselay;
+
+        self::render_final_view($base_layout, $status_code); // Render final output
       }
     }
     else{
       return Err::viewNotFound(VIEW . $vv . '.phtml');
     }
+  }
+
+
+
+  // Set Response and render the final view
+  private static function render_final_view($base_layout, $status_code){
+    $base_layout = MINIFY_HTML ? Help::minifyHTML($base_layout) : $base_layout; // Minify HTML if required
+    $headers['Content-Type'] = 'text/html; charset='.CHARSET;
+    $response = new Response($base_layout, $status_code ? $status_code : 200, $headers);
+    $response->send();
   }
 
 
@@ -233,7 +243,6 @@ class Templating extends AppInit {
     $args = trim($a, '"');
     return trim($args, '\'');
   }
-
 
 
 

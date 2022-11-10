@@ -16,6 +16,7 @@ use Ozz\Core\Session;
 use Ozz\Core\system\SubHelp;
 use Ozz\Core\Err;
 use Ozz\Core\Sanitize;
+use Ozz\Core\Response;
 
 // Check if functions already declared
 if(!function_exists('ozz_func_loaded')) {
@@ -404,7 +405,7 @@ function search_in_array($value, $array, $getOnlyKey=false) {
  * @param string @str
  * @return bool
  */
-function isJSON($str){
+function is_json($str){
   return is_string($str) && is_array(json_decode($str, true)) ? true : false;
 }
 
@@ -417,6 +418,29 @@ function isJSON($str){
 function json_dump($str) {
   $id = 'jd_'.rand(0, 10);
   return SubHelp::jsonDumper($id, $str);
+}
+
+
+/**
+ * Return as json
+ * @param array $data Array to convert into JSON
+ * @param string $flags json encoding flags
+ * @param int $status_code HTTP Response status code (Default: 200)
+ * @param array $custom_headers HTTP Headers
+ */
+function json(array $data, $flags=null, $status_code=200, array $custom_headers=null) {
+  $content = !is_null($flags) ? json_encode($data, $flags) : json_encode($data);
+  $headers['Content-Type'] = 'application/json; charset='.CHARSET;
+
+  if(!is_null($custom_headers)){
+    foreach ($custom_headers as $k => $v) {
+      $headers[$k] = $v;
+    }
+  }
+
+  $response = new Response($content, $status_code, $headers);
+
+  return $response->send();
 }
 
 
@@ -561,7 +585,6 @@ function back($add='', $status=301) {
 }
 
 
-
 /**
  * Render component with parameters
  * @param string $component Component name
@@ -695,17 +718,25 @@ function error($k='') {
 }
 
 /**
- * Return only required error
- */
-function get_error($k='') {
-  return Errors::get($k);
-}
-
-/**
  * Set new error
  */
 function set_error($k, $v) {
   return Errors::set($k, $v);
+}
+
+/**
+ * Return only required error
+ */
+function get_error($k='') {
+  return Errors::get($k) ?? false;
+}
+
+/**
+ * Return only first error
+ */
+function first_error() {
+  $errs = Errors::get();
+  return !is_null($errs) ? array_values($errs)[0] : null;
 }
 
 /**

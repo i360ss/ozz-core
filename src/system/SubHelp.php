@@ -712,7 +712,7 @@ class SubHelp {
                   <span class="ozz-fw-debug-bar-array"><?php self::varDump($value['args'][0], '', false, true); ?></span>
                   <span style="color: var(--ozz-dark2)"><?=$value['file'].' | ln: '.$value['line']?></span>
                 </pre>
-              <?php } elseif (isJSON($value['args'][0])) { ?>
+              <?php } elseif (is_json($value['args'][0])) { ?>
                 <pre class="ozz-fw-debug-bar-tab__message <?=$class?>">
                   <div><?= self::jsonDumper($key, $value['args'][0], false)?></div>
                   <span style="color: var(--ozz-dark2)"><?=$value['file'].' | ln: '.$value['line']?></span>
@@ -788,7 +788,7 @@ class SubHelp {
                   <span class="label">View Data</span><br><br>
                   <?php if (is_array($view['view_data']) || is_object($view['view_data'])) {?>
                     <span class="ozz-fw-debug-bar-array"><?php self::varDump($view['view_data'], '', false, true)?></span>
-                  <?php } elseif (isJSON($view['view_data'])) { ?>
+                  <?php } elseif (is_json($view['view_data'])) { ?>
                     <div><?= self::jsonDumper('view_data', $view['view_data'], false)?></div>
                   <?php } else { ?>
                     <span><?= is_string($view['view_data']) ? $view['view_data'] : false; ?></span>
@@ -806,7 +806,7 @@ class SubHelp {
                       echo '<div class="ozz-fw-debug-bar-tab__message-view-component">';
                       echo '<div><strong>Component: </strong><span class="green">'.$value['file'].'</span></div>';
 
-                      if (isJSON($value['args'])) {
+                      if (is_json($value['args'])) {
                         echo '<div><pre>'.json_encode($value['args'], JSON_PRETTY_PRINT).'</pre></div><br>';
                       } elseif (is_array($value['args']) || is_object($value['args'])) {
                         echo '<div>'.self::varDump($value['args'], '', false, true).'</div><br>';
@@ -856,7 +856,7 @@ class SubHelp {
               <span class="label"><?=$key?></span>
               <?php if (is_array($value) || is_object($value)) { ?>
                 <span class="ozz-fw-debug-bar-array"><?=self::varDump($value, '', false, true)?></span>
-              <?php } elseif (isJSON($value)) { ?>
+              <?php } elseif (is_json($value)) { ?>
                 <span><?= self::jsonDumper('jid_'.rand(), $value, false)?></span>
               <?php } else { ?>
                 <span><?=$value?></span>

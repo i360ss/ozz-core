@@ -140,8 +140,10 @@ class Validate {
           break;
 
         case 'alphanum':
+        case 'alphaNum':
         case 'alpha_num':  
         case 'alphanumeric':
+        case 'alphaNumeric':
           return self::alphaNum($val, $valueKey);
           break;
 
@@ -227,48 +229,76 @@ class Validate {
   /**
    * Validation Methods
    */
-  public static function boolean($v, $key=''){
-    return self::response(($v === true || $v === false), $key, self::$lang->error('boolean', ['field' => $key, 'value' => $v]));
-  }
-
   public static function required($v, $key=''){
     return self::response(!empty($v), $key, self::$lang->error('required', ['field' => $key, 'value' => $v]));
   }
 
+  public static function boolean($v, $key=''){
+    return $v!==''
+      ? self::response(($v === true || $v === false), $key, self::$lang->error('boolean', ['field' => $key, 'value' => $v]))
+      : true;
+  }
+
   public static function alphaNum($v, $key=''){
-    return self::response(($v !== '' && preg_match ("/[^0-9a-zA-Z]/", $v)), $key, self::$lang->error('alpha_num', ['field' => $key, 'value' => $v]));
+    return $v!==''
+      ? self::response((preg_match ("/[^0-9a-zA-Z]/", $v)), $key, self::$lang->error('alpha_num', ['field' => $key, 'value' => $v]))
+      : true;
   }
 
   public static function safeText($v, $key=''){
-    return self::response(($v !== '' && !preg_match ("/<[^<]+>/", $v)), $key, self::$lang->error('safe_text', ['field' => $key, 'value' => $v]));
+    return $v!==''
+      ? self::response((!preg_match ("/<[^<]+>/", $v)), $key, self::$lang->error('safe_text', ['field' => $key, 'value' => $v]))
+      : true;
   }
 
   public static function text($v, $key=''){
-    return self::response(($v !== '' && preg_match ("/^[a-zA-z]*$/", $v)), $key, self::$lang->error('text', ['field' => $key, 'value' => $v]));
+    return $v!==''
+      ? self::response((preg_match ("/^[a-zA-z]*$/", $v)), $key, self::$lang->error('text', ['field' => $key, 'value' => $v]))
+      : true;
+    
   }
 
   public static function email($v, $key=''){
-    return self::response((filter_var($v, FILTER_VALIDATE_EMAIL) && preg_match("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$^", $v)), $key, self::$lang->error('email', ['field' => $key, 'value' => $v]));
+    return $v!==''
+      ? self::response((filter_var($v, FILTER_VALIDATE_EMAIL) && preg_match("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$^", $v)), $key, self::$lang->error('email', ['field' => $key, 'value' => $v]))
+      : true;
+  }
+
+  public static function phone($v, $key=''){
+    return $v!==''
+      ? self::response(preg_match('/^[0-9]{10}+$/', $v), $key, self::$lang->error('phone', ['field' => $key, 'value' => $v]))
+      : true;
+    
   }
 
   public static function number($v, $key=''){
-    return self::response(is_numeric($v), $key, self::$lang->error('number', ['field' => $key, 'value' => $v]));
+    return $v!==''
+      ? self::response(is_numeric($v), $key, self::$lang->error('number', ['field' => $key, 'value' => $v]))
+      : true;
   }
 
   public static function url($v, $key=''){
-    return self::response(filter_var($v, FILTER_VALIDATE_URL), $key, self::$lang->error('url', ['field' => $key, 'value' => $v]));
+    return $v!==''
+      ? self::response(filter_var($v, FILTER_VALIDATE_URL), $key, self::$lang->error('url', ['field' => $key, 'value' => $v]))
+      : true;
   }
 
   public static function string($v, $key=''){
-    return self::response(is_string($v), $key, self::$lang->error('string', ['field' => $key, 'value' => $v]));
+    return $v!==''
+      ? self::response(is_string($v), $key, self::$lang->error('string', ['field' => $key, 'value' => $v]))
+      : true;
   }
 
   public static function float($v, $key=''){
-    return self::response(is_float($v), $key, self::$lang->error('float', ['field' => $key, 'value' => $v]));
+    return $v!==''
+      ? self::response(is_float($v), $key, self::$lang->error('float', ['field' => $key, 'value' => $v]))
+      : true;
   }
 
   public static function int($v, $key=''){
-    return self::response(is_int($v), $key, self::$lang->error('integer', ['field' => $key, 'value' => $v]));
+    return $v!==''
+      ? self::response(is_int($v), $key, self::$lang->error('integer', ['field' => $key, 'value' => $v]))
+      : true;
   }
 
   public static function password($v, $key='', $type, $minLength=6){

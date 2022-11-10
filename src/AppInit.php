@@ -209,28 +209,11 @@ class AppInit {
    * Run Application
    */
   public function run(){
-    /**
-     * Load ozz functions
-     */
+    // Load ozz functions
     require "system/ozz-func.php";
     
-    /**
-     * Prepare and output
-     */
-    $out = Router::resolve();    
-    if(MINIFY_HTML){
-      $out = Help::minifyHTML($out);
-    }
-    
-    echo $out;
-
-    if(DEBUG && SHOW_DEBUG_BAR){
-      global $DEBUG_BAR;
-      $DEBUG_BAR->show();
-    }
-
-    $afterReq = new AfterRequest;
-    $afterReq->run();
+    // Resolve Route
+    return Router::resolve();
   }
   
 }
