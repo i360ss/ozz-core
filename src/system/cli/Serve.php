@@ -15,7 +15,7 @@ class Serve {
     extract($utils->styles);
     
     $conf = env('app');
-    $url = $conf['APP_URL'].':'.$conf['LOCAL_PORT'];
+    $url = explode(' ', $conf['APP_URLS'])[0];
 
     $utils->console_return('Ozz development server started', 'white', 'green', 1, true);
     $utils->console_return('Press Ctrl+C to stop the server', 'brown', false, 2);

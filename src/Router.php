@@ -61,12 +61,23 @@ class Router extends AppInit {
    * @param array|string $middleware
    */
   public static function get($route, $callBack, $baseTemplate=null, $middlewares=null){
+    if(str_contains($route, '::')){
+      $dom_route = explode('::', $route);
+      $domain = $dom_route[0];
+      $route = $dom_route[1];
+    } else {
+      $domain = trim(APP_URL, '/');
+    }
+
     $finalPath = self::finalizeRoutePath($route, 'get');
     $finalRoute = $finalPath['route'];
-    self::$ValidRoutes['get'][$finalRoute]['urlParam'] = $finalPath['data'];
-    self::$ValidRoutes['get'][$finalRoute]['middlewares'] = $middlewares;
-    self::$ValidRoutes['get'][$finalRoute]['temp'] = $baseTemplate;
-    self::$ValidRoutes['get'][$finalRoute]['callback'] = $callBack;
+    self::$ValidRoutes['get'][$finalRoute] = [
+      'domain' => $domain,
+      'urlParam' => $finalPath['data'],
+      'middlewares' => $middlewares,
+      'temp' => $baseTemplate,
+      'callback' => $callBack,
+    ];
   }
 
 
@@ -81,12 +92,23 @@ class Router extends AppInit {
    * @param string $baseTemplate Base layout template (optional)
    */
   protected static function initialRoute($method, $route, $callBack, $middlewares, $baseTemplate){
+    if(str_contains($route, '::')){
+      $dom_route = explode('::', $route);
+      $domain = $dom_route[0];
+      $route = $dom_route[1];
+    } else {
+      $domain = trim(APP_URL, '/');
+    }
+
     $finalPath = self::finalizeRoutePath($route, $method);
     $finalRoute = $finalPath['route'];
-    self::$ValidRoutes[$method][$finalRoute]['urlParam'] = $finalPath['data'];
-    self::$ValidRoutes[$method][$finalRoute]['callback'] = $callBack;
-    self::$ValidRoutes[$method][$finalRoute]['middlewares'] = $middlewares;
-    self::$ValidRoutes[$method][$finalRoute]['temp'] = $baseTemplate;
+    self::$ValidRoutes[$method][$finalRoute] = [
+      'domain' => $domain,
+      'urlParam' => $finalPath['data'],
+      'callback' => $callBack,
+      'middlewares' => $middlewares,
+      'temp' => $baseTemplate,
+    ];
   }
 
 
@@ -204,6 +226,7 @@ class Router extends AppInit {
     global $DEBUG_BAR;
 
     $req = new Request;
+    $host = $req->all()['host'];
     $path = $req::path();
     $method = $req::method();
 
@@ -229,7 +252,7 @@ class Router extends AppInit {
     $callback = self::$ValidRoutes[$method][$path]['callback'] ?? false;
 
     // Render 404 if callback is false
-    if($callback === false){
+    if($callback === false || self::$ValidRoutes[$method][$path]['domain'] !== $host){
       return self::view('404', [], 'layout', 404);
     }
 
