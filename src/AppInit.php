@@ -102,6 +102,11 @@ class AppInit {
     defined('CHARSET') || define('CHARSET', $this->config['app']['CHARSET']);
 
     /**
+     * App Charset defined in env.ini
+     */
+    defined('PAGE_CACHE_TIME') || define('PAGE_CACHE_TIME', $this->config['app']['PAGE_CACHE_TIME']);
+
+    /**
      * Set Base URL
      */
     $this_host = $_SERVER['HTTP_HOST'];
@@ -125,6 +130,11 @@ class AppInit {
      * "App directory" where all dev source files live
      */
     defined('APP_DIR') || define('APP_DIR', __DIR__.SPC_BACK['core'].'app/');
+
+    /**
+     * "Cache directory" where all cache files live
+     */
+    defined('CACHE_DIR') || define('CACHE_DIR', __DIR__.SPC_BACK['core'].'storage/cache/');
 
     /**
      * "View directory" where all view files will live

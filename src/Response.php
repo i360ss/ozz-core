@@ -14,8 +14,6 @@ class Response {
   public $content;
   public $status_code;
   public $headers;
-  public $cookies; // have more work
-
 
 
   public function __construct($content, $status_code, $headers){
@@ -52,17 +50,28 @@ class Response {
    */
   public function send(){
     $show_debug_bar = false;
+    $page_cache = false;
+
     foreach ($this->headers as $key => $header) {
       header("$key: $header");
 
+      // Only for page view Response
       if($key == 'Content-Type' && in_array($header, ['text/html', 'text/html; charset='.CHARSET, 'text/plain'])){
         $show_debug_bar = true;
+        $page_cache = true;
       }
     }
 
     http_response_code($this->status_code);
     echo $this->content;
 
+    // Store page cache for this page
+    if($this->status_code !== 404 && PAGE_CACHE_TIME !== '0' && $page_cache === true){
+      $request = new Request;
+      (new Cache)->store('page', $request->all()['url'], $this->content);
+    }
+
+    // Show debug bar
     if(DEBUG && SHOW_DEBUG_BAR && $show_debug_bar){
       global $DEBUG_BAR;
       $DEBUG_BAR->show();

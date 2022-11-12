@@ -224,8 +224,13 @@ class Router extends AppInit {
    */
   protected static function resolve(){
     global $DEBUG_BAR;
-
     $req = new Request;
+
+    // Return page cache if available
+    if($page_cache = (new Cache)->get('page', $req->all()['url'])){
+      return $page_cache;
+    }
+
     $host = $req->all()['host'];
     $path = $req::path();
     $method = $req::method();

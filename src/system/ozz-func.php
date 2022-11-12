@@ -17,6 +17,7 @@ use Ozz\Core\system\SubHelp;
 use Ozz\Core\Err;
 use Ozz\Core\Sanitize;
 use Ozz\Core\Response;
+use Ozz\Core\Cache;
 
 // Check if functions already declared
 if(!function_exists('ozz_func_loaded')) {
@@ -753,6 +754,17 @@ function clear_error() {
   return Errors::clear();
 }
 
+
+# ----------------------------------------------------
+// Application Cache
+# ----------------------------------------------------
+/**
+ * Purge Cache
+ * @param string $typ Cache type to clear
+ */
+function purge_cache($typ){
+  return (new Cache)->purge($typ);
+}
 
 
 # ----------------------------------------------------
