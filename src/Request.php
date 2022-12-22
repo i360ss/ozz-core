@@ -73,15 +73,20 @@ class Request extends Router {
    * Input data sent via request (Form data and Query string)
    * 
    * @param string|array|int $key key of the input value 
+   * @param boolean $evil ignore sanitization if this is true
    * @return array|string|int|bool Returns sanitized input data
    */
-  public static function input($key=false){
-    $output = [];
+  public static function input($key=false, $evil=false){
+    $output = $_FILE;
 
-    foreach ($_REQUEST as $k => $v) {
-      (is_array($v))
-        ? $output[$k] = Sanitize::array($v)
-        : $output[$k] = Sanitize::specialChar($v);
+    if($evil === true){
+      $output = $_REQUEST;
+    } else {
+      foreach ($_REQUEST as $k => $v) {
+        (is_array($v))
+          ? $output[$k] = Sanitize::array($v)
+          : $output[$k] = is_json($v) ? $v : Sanitize::specialChar($v);
+      }
     }
 
     return $key ? $output[$key] : $output; // Sanitized Data
@@ -93,15 +98,23 @@ class Request extends Router {
    * Returns URL query strings array or string
    * 
    * @param string|int $key
+   * @param boolean $evil ignore sanitization if this is true
    * @return array|string|int|bool
    */
-  public static function query($key=null){
+  public static function query($key=null, $evil=false){
     if (isset($_SERVER['QUERY_STRING'])) {
       parse_str($_SERVER['QUERY_STRING'], $query_string);
 
-      return (isset($key) && $key !== null)
-      ? filter_var($query_string[$key], FILTER_SANITIZE_URL)
-      : Sanitize::array($query_string);
+      if($evil === true){
+        return (isset($key) && $key !== null)
+          ? $query_string[$key]
+          : $query_string;
+      } else {
+        return (isset($key) && $key !== null)
+          ? filter_var($query_string[$key], FILTER_SANITIZE_URL)
+          : Sanitize::array($query_string, 'url');
+      }
+
     } else {
       return false;
     }

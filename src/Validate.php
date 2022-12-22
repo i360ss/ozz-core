@@ -12,6 +12,8 @@ use Ozz\Core\Errors;
 
 class Validate {
 
+  use \Ozz\Core\system\file\FileValidation;
+
   private static $lang;
   private static $current_input;
 
@@ -30,7 +32,7 @@ class Validate {
     if(is_array($input) && is_array($checkup)){
       foreach ($checkup as $ky => $val) {
         if(explode('|', $val) > 0){
-          $rules = explode('|', $val);
+          $rules = array_map('trim', explode('|', $val));
           foreach ($rules as $rule) {
             if(isset($input[$ky])){
               $validity[] = self::checkRule($input[$ky], $rule, $ky); // If multiple rules provided
@@ -120,6 +122,16 @@ class Validate {
           case 'strongPass':
           case 'strong_pass':
             return self::password($val, $valueKey, true, $v);
+            break;
+
+          case 'format':
+          case 'formats':
+          case 'max_size':
+          case 'min_size':
+          case 'max_files':
+          case 'max_res':
+          case 'min_res':
+            return self::file($val, $k, $v, $valueKey);
             break;
 
           default:
@@ -230,6 +242,11 @@ class Validate {
    * Validation Methods
    */
   public static function required($v, $key=''){
+    // If File
+    if(is_array($v) && isset($v['name'])){
+      return self::response($v['name'] !== '', $key, self::$lang->error('file_required', ['field' => $key, 'value' => 'file']));
+    }
+
     return self::response(!empty($v), $key, self::$lang->error('required', ['field' => $key, 'value' => $v]));
   }
 
@@ -348,6 +365,151 @@ class Validate {
 
   public static function matchValues($v, $match, $key='', $matchKey=false){
     return self::response($v === $match, $key, self::$lang->error('match', ['field' => $key, 'value' => $v, 'key' => $matchKey, 'match' => $match]));
+  }
+
+
+
+  /**
+   * File Validation
+   * @param array $file The file to be validated
+   * @param string $rule Each (file Validation rule)
+   * @param string $v Rule argument
+   * @param string $input key
+   */
+  public static function file($file, $rule, $v, $key){
+    // If Multiple Files
+    // ===================================
+    if(isset($file['name']) && is_array($file['name'])){
+      // Maximum files per upload
+      if ($rule == 'max_files'){
+        return self::response(
+          (count($file['name']) <= $v), $key, self::$lang->error('file_max_count', ['field' => $key, 'value' => 'file'])
+        );
+      }
+
+      $multi_file_errors = [];
+
+      foreach ($file['tmp_name'] as $ky => $val) {
+        $tmp = $file['tmp_name'][$ky];
+        $name = $file['name'][$ky];
+        $size = $file['size'][$ky];
+        $type = $file['type'][$ky];
+        $error = $file['error'][$ky];
+
+        if ($rule == 'min_res'){
+          if(self::isImage($file, $ky)){
+            list($origWidth, $origHeight, $type) = getimagesize($tmp);
+            list($max_width, $max_height) = explode('x', strtolower($v));
+            settype($origWidth, 'integer');
+            settype($origHeight, 'integer');
+            settype($max_width, 'integer');
+            settype($max_height, 'integer');
+            $state = ($origWidth >= $max_width && $origHeight >= $max_height);
+            if($state === false){
+              $multi_file_errors[$ky] = self::$lang->error('image_low_res', ['field' => $key, 'value' => 'file']);
+            }
+          }
+        }
+
+        if ($rule == 'max_res'){
+          if(self::isImage($file)){
+            list($origWidth, $origHeight, $type) = getimagesize($tmp);
+            list($max_width, $max_height) = explode('x', strtolower($v));
+            settype($origWidth, 'integer');
+            settype($origHeight, 'integer');
+            settype($max_width, 'integer');
+            settype($max_height, 'integer');
+            $state = ($origWidth <= $max_width && $origHeight <= $max_height);
+            if($state === false){
+              $multi_file_errors[$ky] = self::$lang->error('image_high_res', ['field' => $key, 'value' => 'file']);
+            }
+          }
+        }
+
+        // File Min Size (MB/KB)
+        if ($rule == 'min_size'){
+          if(!self::validateFileSize($size, $v, 'min')){
+            $multi_file_errors[$ky] = self::$lang->error('file_too_small', ['field' => $key, 'value' => 'file']);
+          }
+        }
+
+        // File Max Size (MB/KB)
+        if ($rule == 'max_size'){
+          if(!self::validateFileSize($size, $v, 'max')){
+            $multi_file_errors[$ky] = self::$lang->error('file_too_large', ['field' => $key, 'value' => 'file']);
+          }
+        }
+
+        // File Format/MIME type
+        if($rule == 'formats' || $rule == 'format'){
+          if(self::validateFileFormat($file, $v, $ky) === false){
+            $multi_file_errors[$ky] = self::$lang->error('file_invalid_format', ['field' => $key, 'value' => 'file']);
+          }
+        }
+
+        return self::response(
+          empty($multi_file_errors), $key, $multi_file_errors
+        );
+      }
+    } else {
+      // If Single File 
+      // ===================================
+      // Image Min Resolution
+      if ($rule == 'min_res'){
+        if(self::isImage($file)){
+          list($origWidth, $origHeight, $type) = getimagesize($file['tmp_name']);
+          list($max_width, $max_height) = explode('x', strtolower($v));
+          settype($origWidth, 'integer');
+          settype($origHeight, 'integer');
+          settype($max_width, 'integer');
+          settype($max_height, 'integer');
+          $state = ($origWidth >= $max_width && $origHeight >= $max_height);
+
+          return self::response(
+            $state, $key, self::$lang->error('image_low_res', ['field' => $key, 'value' => 'file'])
+          );
+        }
+      }
+
+      // Image Max Resolution
+      if ($rule == 'max_res'){
+        if(self::isImage($file)){
+          list($origWidth, $origHeight, $type) = getimagesize($file['tmp_name']);
+          list($max_width, $max_height) = explode('x', strtolower($v));
+          settype($origWidth, 'integer');
+          settype($origHeight, 'integer');
+          settype($max_width, 'integer');
+          settype($max_height, 'integer');
+          $state = ($origWidth <= $max_width && $origHeight <= $max_height);
+
+          return self::response(
+            $state, $key, self::$lang->error('image_high_res', ['field' => $key, 'value' => 'file'])
+          );
+        }
+      }
+
+      // File Min Size (MB/KB)
+      if ($rule == 'min_size'){
+        return self::response(
+          self::validateFileSize($file['size'], $v, 'min'), $key, self::$lang->error('file_too_small', ['field' => $key, 'value' => 'file'])
+        );
+      }
+
+      // File Max Size (MB/KB)
+      if ($rule == 'max_size'){
+        return self::response(
+          self::validateFileSize($file['size'], $v, 'max'), $key, self::$lang->error('file_too_large', ['field' => $key, 'value' => 'file'])
+        );
+      }
+
+      // File Format/MIME type
+      if($rule == 'formats' || $rule == 'format'){
+        return self::response(
+          self::validateFileFormat($file, $v), $key, self::$lang->error('file_invalid_format', ['field' => $key, 'value' => 'file'])
+        );
+      }
+    }
+
   }
 
 

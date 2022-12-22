@@ -48,10 +48,60 @@ class Sanitize {
   public static function url($i){
     return filter_var($i, FILTER_SANITIZE_URL);
   }
-  
-  public static function array($arr){
+
+  public static function sanitize_each($v, $typ){
+    switch ($typ) {
+      case 'url':
+        return self::url($v);
+        break;
+
+      case 'string':
+        return self::string($v);
+        break;
+
+      case 'email':
+        return self::email($v);
+        break;
+
+      case 'number':
+        return self::number($v);
+        break;
+
+      case 'phone':
+        return self::phone($v);
+        break;
+
+      case 'htmlEncode':
+        return self::htmlEncode($v);
+        break;
+
+      case 'htmlDecode':
+        return self::htmlDecode($v);
+        break;
+
+      case 'encoded':
+        return self::encoded($v);
+        break;
+
+      case 'specialCharFull':
+        return self::specialCharFull($v);
+        break;
+
+      default:
+        return self::specialChar($v);
+        break;
+    }
+  }
+
+
+
+  /**
+   * @param array $arr The array to be sanitized
+   * @param string $sanType Sanitization method for each array item
+   */
+  public static function array($arr, $sanType=false){
     foreach ($arr as $k => $v) {
-      (is_array($v)) ? $arr[$k] = self::array($v) : $arr[$k] = filter_var($v, FILTER_SANITIZE_SPECIAL_CHARS);
+      (is_array($v)) ? $arr[$k] = self::array($v) : $arr[$k] = self::sanitize_each($v, $sanType);
     }
     return $arr;
   }

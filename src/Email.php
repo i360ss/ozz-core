@@ -36,6 +36,11 @@ class Email extends AppInit {
     ? self::$conf['sMTP']['MAIL_FROM_ADDRESS']
     : $from;
 
+    // Sender Name
+    $mailFromName = (!isset($from_name) || $from_name == "")
+    ? self::$conf['sMTP']['MAIL_FROM_NAME']
+    : $from_name;
+
     // Set Up Mail Body
     $mailBody = self::setEmailTemplate($template, $data);
 
@@ -59,9 +64,22 @@ class Email extends AppInit {
       }
 
       # Recipients
-      $mail->setFrom($mailFrom, self::$conf['sMTP']['MAIL_FROM_NAME']);
+      $mail->setFrom($mailFrom, $mailFromName);
       $mail->addAddress($to); // Add a recipient
-      $mail->addReplyTo($mailFrom, self::$conf['sMTP']['MAIL_FROM_NAME']);
+
+      # Set ReplyTo
+      if(isset($reply_to)){
+        if(is_array($reply_to)){
+          foreach ($reply_to as $name => $email) {
+            $mail->addReplyTo($email, $name);
+          }
+        } else {
+          $mail->addReplyTo($reply_to, $mailFromName);
+        }
+      } else {
+        $mail->addReplyTo($mailFrom, $mailFromName);
+      }
+      
 
       # BCC
       if(isset($bcc) && !empty($bcc)){
@@ -71,7 +89,7 @@ class Email extends AppInit {
       }
 
       # CC
-      if(isset($cc) && !empty($bcc)){
+      if(isset($cc) && !empty($cc)){
         foreach ($cc as $k => $v) {
           $mail->addCC($v, $k);
         }
@@ -121,7 +139,7 @@ class Email extends AppInit {
   # ----------------------------------
   private static function setEmailTemplate($tmp, $data){
     $placeHolders = []; // Placeholders in Template
-    $htmlMSG = file_get_contents(__DIR__ .'/../app/email_template/'.$tmp);
+    $htmlMSG = file_get_contents(APP_DIR .'email_template/'.$tmp);
 
     // Set up Template with actual data
     preg_match_all("~\{\{\s*(.*?)\s*\}\}~", $htmlMSG, $placeHolders);
