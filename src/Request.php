@@ -77,7 +77,7 @@ class Request extends Router {
    * @return array|string|int|bool Returns sanitized input data
    */
   public static function input($key=false, $evil=false){
-    $output = $_FILE;
+    $output = $_FILES;
 
     if($evil === true){
       $output = $_REQUEST;
