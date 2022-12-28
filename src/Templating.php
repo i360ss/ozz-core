@@ -246,19 +246,19 @@ class Templating extends AppInit {
 
 
 
-    // Return Variable / Array (Convert string to variable/array)
-    private static function return_var($str, $vars){
-      $keys = array_map('trim', explode('.', $str));
-      if(count($keys) > 1){
-        $temp = $vars[$keys[0]];
-        foreach ($keys as $i => $vl) {
-          $i !== 0 ? $temp =& $temp[$vl] : false;
-        }
-        return !is_null($temp) ? $temp : false;
-      } else{
-        return !is_null($vars[$keys[0]]) ? $vars[$keys[0]] : false; // Var
+  // Return Variable / Array (Convert string to variable/array)
+  private static function return_var($str, $vars){
+    $keys = array_map('trim', explode('.', $str));
+    if(count($keys) > 1){
+      $temp = $vars[$keys[0]];
+      foreach ($keys as $i => $vl) {
+        $i !== 0 ? $temp =& $temp[$vl] : false;
       }
+      return !is_null($temp) ? $temp : false;
+    } else{
+      return !is_null($vars[$keys[0]]) ? $vars[$keys[0]] : false; // Var
     }
+  }
 
 
 

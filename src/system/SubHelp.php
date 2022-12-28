@@ -128,7 +128,7 @@ class SubHelp {
    * @return html DOM
    */
   public static function jsonDumper($id, $jsonString, $bg_padd=true) {
-    include 'vendor/pretty-json/pretty-json.php';
+    include 'core_vendor/pretty-json/pretty-json.php';
     $styl = $bg_padd ? 'style="background: #fff;padding: 20px;"' : '';
 
     return '<style nonce="'.CSP_NONCE.'">'.$pretty_json_style.'</style><script type="text/javascript" nonce="'.CSP_NONCE.'">'.$pretty_json_script.'</script><div '.$styl.'>
@@ -371,11 +371,8 @@ class SubHelp {
   /**
    * Get Set and Render Debug Bar
    */
-  public function renderDebugBar($data) { ?>
-    <div class="ozz__debugbar">
-    <!-- Ozz Debug Bar Styles -->
-    <style nonce="<?=CSP_NONCE?>">
-    <?php $ozz_debugbar_css = "
+  public function renderDebugBar($data) { 
+    $ozz_debugbar_css = "
       :root {
         --ozz-white: #ffffff;
         --ozz-green: #88bf3d;
@@ -391,9 +388,14 @@ class SubHelp {
         --ozz-info: #2e86de;
       }
 
+      .ozz__debugbar {
+        all: unset;
+      }
       .ozz-fw-debug-bar {
+        all: unset;
         background: var(--ozz-white);
-        bottom: 0 !important;
+        border-top: 2px solid var(--ozz-green);
+        bottom: 12px !important;
         box-sizing: border-box;
         height: 25px;
         left: 0;
@@ -402,7 +404,13 @@ class SubHelp {
         position: fixed !important;
         right: 0;
         width: 100% !important;
+        text-align: left;
         z-index: 99999 !important;
+      }
+
+      .ozz-fw-debug-bar * {
+        text-align: left;
+        font-family: sans-serif !important;
       }
 
       .ozz-fw-debug-bar.open {
@@ -410,16 +418,26 @@ class SubHelp {
       }
 
       .ozz-fw-debug-bar span.label {
+        all: unset;
         font-weight: 600;
+        color: var(--dark1);
       }
       
       /** Tab Nav */
-      .ozz-fw-debug-bar__nav {
-        height: 23px;
-        background: var(--ozz-white);
-        border-top: 2px solid var(--ozz-green);
+      .ozz-fw-debug-bar__nav.wrapper {
+        all: unset;
+        display: inline-block;
+        width: 100%;
         border-bottom: 1px solid var(--ozz-light1);
+      }
+      .ozz-fw-debug-bar__nav {
+        all: unset;
+        height: 35px;
+        background: var(--ozz-white);
         padding: 0;
+        text-align: left;
+        display: inline-block;
+        color: var(--dark1);
       }
 
       .ozz-fw-debug-bar__nav.item {
@@ -432,7 +450,7 @@ class SubHelp {
         font-size: 13px;
         font-weight: 500;
         margin: 0;
-        padding: 6px 10px;
+        padding: 0 10px;
         outline: none;
       }
 
@@ -446,6 +464,7 @@ class SubHelp {
       }
 
       .ozz-fw-debug-bar__nav.item .count {
+        all: unset;
         color: var(--ozz-green);
         font-weight: 600;
       }
@@ -455,7 +474,6 @@ class SubHelp {
       }
 
       .ozz-fw-debug-bar__nav.bar-items {
-        background: green;
         float: right;
       }
 
@@ -466,6 +484,7 @@ class SubHelp {
       }
 
       .ozz-fw-debug-bar__body.tab-body {
+        all: unset;
         display: none;
         margin: 0;
         padding: 0;
@@ -473,6 +492,10 @@ class SubHelp {
 
       .ozz-fw-debug-bar__body.tab-body.active {
         display: block;
+      }
+
+      .ozz-fw-debug-bar__body.view .ozz-fw-debug-bar-tab__message-view {
+        border-bottom: none;
       }
 
       .ozz-fw-debug-bar-tab__empty {
@@ -491,6 +514,7 @@ class SubHelp {
       }
 
       .ozz-fw-debug-bar-tab__message span {
+        all: unset;
         margin: 0;
         padding: 0;
       }
@@ -526,6 +550,7 @@ class SubHelp {
 
       /** Used on Queries tab */
       .ozz-fw-debug-bar-tab__message-queries {
+        all: unset;
         border-bottom: 1px solid var(--ozz-light2);
         font-size: 13px;
         margin: 0;
@@ -542,35 +567,48 @@ class SubHelp {
 
       /* Used on View Tab */
       .ozz__dbg_view-comp-wrapper {
+        all: unset;
         display: grid;
         grid-template-columns: 1.5fr 1fr;
         grid-gap: 30px;
       }
 
       .ozz__dbg_view-comp-wrapper .ozz__dbg_view-info {
+        all: unset;
         border-right: 1px solid var(--ozz-light1);
         height: 100%;
         min-height: 280px;
       }
 
       .ozz-fw-debug-bar-tab__message-view-head {
+        all: unset;
         padding: 10px 20px;
         background: var(--ozz-light1);
         display: grid;
         grid-template-columns: auto auto 1fr;
         grid-gap: 30px;
         font-size: 13px;
+        color: var(--dark1);
       }
 
       .ozz-fw-debug-bar-tab__message-view-component {
         border-bottom: 1px solid var(--ozz-light1);
-        padding: 25px 0;
+        padding: 8px 0;
+        cursor: pointer;
+      }
+
+      .ozz-fw-debug-bar-tab__message-view-component .dumpr {
+        margin-left: 12px;
       }
 
       .ozz-fw-debug-bar-tab__message-view-component span.green {
         color: var(--ozz-dark1);
         font-size: 14px;
-        font-weight: bold;
+        padding: 3px 5px;
+        border-radius: 3px;
+        display: inline-block;
+        background: var(--ozz-light1);
+        border: 1px solid var(--ozz-light3);
       }
 
       .ozz__dbg_component-info .dumpr small {
@@ -586,6 +624,7 @@ class SubHelp {
       }
 
       .ozz-fw-debug-bar-tab__message-view pre {
+        all: unset;
         white-space: pre-wrap;
         white-space: -moz-pre-wrap;
         white-space: -pre-wrap;
@@ -594,6 +633,8 @@ class SubHelp {
       }
 
       .ozz-fw-debug-bar-tab__message-view {
+        all: unset;
+        display: block;
         border-bottom: 1px solid var(--ozz-light2);
         font-size: 13px;
         margin: 0;
@@ -603,6 +644,7 @@ class SubHelp {
 
       .ozz-fw-debug-bar-tab__message-controller,
       .ozz-fw-debug-bar-tab__message-request {
+        all: unset;
         border-bottom: 1px solid var(--ozz-light2);
         font-size: 13px;
         margin: 0;
@@ -615,6 +657,7 @@ class SubHelp {
 
       .ozz-fw-debug-bar-tab__message-controller span,
       .ozz-fw-debug-bar-tab__message-request span {
+        all: unset;
         text-align: left !important;
         float: left !important;
         color: var(--ozz-dark);
@@ -622,6 +665,7 @@ class SubHelp {
       }
 
       .ozz-fw-debug-bar-tab__message-view span {
+        all: unset;
         color: var(--ozz-dark);
         font-size: 13px;
       }
@@ -642,8 +686,8 @@ class SubHelp {
       .ozz-fw-debug-bar-tab__message .dumpr * {
         background: transparent !important;
       }
-      .ozz-fw-debug-bar-tab__message .dumpr div {
-        margin: 0 !important;
+      .ozz-fw-debug-bar-tab__message .dumpr > div {
+        margin: 3px 0 0 !important;
         border: none !important;
       }
 
@@ -673,20 +717,24 @@ class SubHelp {
       }
 
       .ozz_debugbar__collapse_btn {
+        all: unset;
         padding: 5px;
         font-size: 13px;
+        background: var(--ozz-dark2);
+        margin-left: -20px;
+        border-radius: 3px;
+        color: var(--ozz-white);
         cursor: pointer;
-        background-color: var(--ozz-dark1);
       }
       ";
-    
-    echo Help::minifyCSS($ozz_debugbar_css);
     ?>
-    </style>
+    <div class="ozz__debugbar">
+    <!-- Ozz Debug Bar Styles -->
+    <style nonce="<?=CSP_NONCE?>"><?php echo Help::minifyCSS($ozz_debugbar_css); ?></style>
 
     <!-- Ozz Debug Bar -->
     <div class="ozz-fw-debug-bar">
-      <div class="ozz-fw-debug-bar__nav">
+      <div class="ozz-fw-debug-bar__nav wrapper">
         <button class="ozz-fw-debug-bar__nav item" data-item="console">Console <span class="count"><?= count($data['ozz_message']) ?></span></button>
         <button class="ozz-fw-debug-bar__nav item" data-item="request">Request</button>
         <button class="ozz-fw-debug-bar__nav item" data-item="queries">Queries <span class="count"><?= count($data['ozz_sql_queries']) ?></span></button>
@@ -695,7 +743,7 @@ class SubHelp {
         <button class="ozz-fw-debug-bar__nav item" data-item="session">Session <span class="count"></span></button>
 
         <div class="ozz-fw-debug-bar__nav bar-items">
-
+          
         </div>
       </div>
 
@@ -777,15 +825,12 @@ class SubHelp {
           <?php elseif (isset($data['ozz_view'])) : ?>
             <?php $view = $data['ozz_view']; ?>
 
-            <div class="ozz-fw-debug-bar-tab__message-view-head">
-              <span><strong>View File:</strong> <?=$view['view_file']?></span>
-              <span><strong>Base Layout:</strong> <?=$view['base_file']?></span>
-            </div>
-
             <div class="ozz__dbg_view-comp-wrapper">
               <div class="ozz__dbg_view-info">
                 <div class="ozz-fw-debug-bar-tab__message-view">
-                  <span class="label">View Data</span><br><br>
+                  <span><strong>View File:</strong> <?=$view['view_file']?></span><br><br>
+                  <span><strong>Base Layout:</strong> <?=$view['base_file']?></span><br><br>
+                  <span class="label">View Data: </span><br>
                   <?php if (is_array($view['view_data']) || is_object($view['view_data'])) {?>
                     <span class="ozz-fw-debug-bar-array"><?php self::varDump($view['view_data'], '', false, true)?></span>
                   <?php } elseif (is_json($view['view_data'])) { ?>
@@ -801,19 +846,26 @@ class SubHelp {
                 <div class="ozz-fw-debug-bar-tab__message-view">
                   <span class="label">Components</span><br><br>
                   <?php
-                  if (isset($view['components'])) {
-                    foreach ($view['components'] as $key => $value) {
-                      echo '<div class="ozz-fw-debug-bar-tab__message-view-component">';
-                      echo '<div><strong>Component: </strong><span class="green">'.$value['file'].'</span></div>';
+                  if (isset($view['components']) || has_flash('ozz_components')) {
+
+                    // Merge Components info from flash and default
+                    $view_components = has_flash('ozz_components') ? array_merge(get_flash('ozz_components'), $view['components']) : $view['components'];
+
+                    // remove component info flash
+                    remove_flash('ozz_components');
+
+                    foreach ($view_components as $key => $value) {
+                      echo '<details class="ozz-fw-debug-bar-tab__message-view-component">';
+                      echo '<summary><span class="green">'.$value['file'].'</span></summary>';
 
                       if (is_json($value['args'])) {
-                        echo '<div><pre>'.json_encode($value['args'], JSON_PRETTY_PRINT).'</pre></div><br>';
+                        echo '<br><div><pre>'.json_encode($value['args'], JSON_PRETTY_PRINT).'</pre></div>';
                       } elseif (is_array($value['args']) || is_object($value['args'])) {
                         echo '<div>'.self::varDump($value['args'], '', false, true).'</div><br>';
                       } else {
-                        echo '<div>'.$value['args'].'</div>';
+                        echo '<br><div>'.$value['args'].'</div>';
                       }
-                      echo '</div>';
+                      echo '</details>';
                     }
                   }
                   ?>

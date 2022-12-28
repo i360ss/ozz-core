@@ -13,11 +13,11 @@ use Ozz\Core\Errors;
 use Ozz\Core\Router;
 use Ozz\Core\Help;
 use Ozz\Core\Session;
-use Ozz\Core\system\SubHelp;
 use Ozz\Core\Err;
 use Ozz\Core\Sanitize;
 use Ozz\Core\Response;
 use Ozz\Core\Cache;
+use Ozz\Core\system\SubHelp;
 
 // Check if functions already declared
 if(!function_exists('ozz_func_loaded')) {
@@ -132,6 +132,10 @@ function esc_x($str){
   }
 
   return filter_var($str, FILTER_SANITIZE_STRING);
+}
+
+function esx($str){
+  return esc_x($str);
 }
 
 // Direct echo
@@ -593,6 +597,8 @@ function back($add='', $status=301) {
  */
 function component($component, $args=null) {
   $dom = '';
+  $component_info = has_flash('ozz_components') ? get_flash('ozz_components') : [];
+  $comp_key = count($component_info);
 
   if(file_exists(VIEW.'components/'.$component.'.phtml')){
     if(isset($args) && is_array($args)){
@@ -603,15 +609,27 @@ function component($component, $args=null) {
     include VIEW.'components/'.$component.'.phtml';
     $dom = ob_get_contents();
     ob_end_clean();
+
+    // Set up to log into debug bar
+    if(DEBUG){
+      $component_info[$comp_key] = [
+        'file' => "view/components/$component.phtml",
+        'args' => $args,
+      ];
+    }
   }
   elseif(file_exists(VIEW.'components/'.$component.'.html')){
-    $dom = file_get_contents(VIEW.'components/'.$component.'.html'); 
+    $dom = file_get_contents(VIEW.'components/'.$component.'.html');
+    DEBUG ? $component_info[$comp_key]['file'] = "view/components/$component.html" : false; // Log to debug bar
   }
   else {
     return DEBUG
     ? Err::componentNotFound($component)
     : false;
   }
+
+  // Log into flash session
+  set_flash('ozz_components', $component_info);
 
   return $dom;
 }
