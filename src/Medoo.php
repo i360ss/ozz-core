@@ -519,6 +519,7 @@ class Medoo
         $this->statement = null;
         $this->errorInfo = null;
         $this->error = null;
+        $temp_log_statement = $statement;
 
         if ($this->testMode) {
             $this->queryString = $this->generate($statement, $map);
@@ -558,7 +559,10 @@ class Medoo
             $statement->bindValue($key, $value[0], $value[1]);
         }
 
-        $hrime_start = hrtime(true);
+        // Calculate SQL run time
+        if(DEBUG){
+            $run_time_start = hrtime(true);
+        }
         
         if (is_callable($callback)) {
             $this->pdo->beginTransaction();
@@ -569,7 +573,11 @@ class Medoo
             $execute = $statement->execute();
         }
 
-        $dff = (hrtime(true) - $hrime_start) / 1e9;
+        // Log SQL to debug bar
+        if(DEBUG){
+            $dff = (hrtime(true) - $run_time_start) / 1e9;
+            file_put_contents(__DIR__.SPC_BACK['core'].'storage/log/sql_debug.log', $dff.'<###>'.$this->generate($temp_log_statement, $map).'<####>', FILE_APPEND);
+        }
 
         // Log Execution Time
         $this->logs[array_key_last($this->logs)][] = $dff;

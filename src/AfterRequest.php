@@ -20,7 +20,8 @@ class AfterRequest {
    */
   public function run() {
     $this->session_flash_out();
-  }  
+    $this->remove_temp_logs();
+  }
 
 
 
@@ -36,4 +37,14 @@ class AfterRequest {
       unset($_SESSION['__error']);
     }
   }
+
+
+
+  /**
+   * Clear Temporary debug log files
+   */
+  private function remove_temp_logs() {
+    file_put_contents(__DIR__.SPC_BACK['core'].'storage/log/sql_debug.log', '');
+  }
+
 }

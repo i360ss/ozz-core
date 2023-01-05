@@ -41,7 +41,7 @@ trait DB {
         'command' => [
           'SET SQL_MODE=ANSI_QUOTES'
         ],
-        'logging' => DEBUG ? true : false,
+        'logging' => DEBUG,
         'prefix' => isset($this->db_prefix) ? $this->db_prefix : false,
       ]);
     }
@@ -56,7 +56,7 @@ trait DB {
     $this->connect = new Medoo([
       'type' => 'sqlite',
       'database' => __DIR__ .SPC_BACK['core'].'/database/sqlite/'.$this->db_name,
-      'logging' => DEBUG ? true : false,
+      'logging' => DEBUG,
       'prefix' => isset($this->db_prefix) ? $this->db_prefix : false,
     ]);
   }
@@ -71,10 +71,10 @@ trait DB {
    */
   public function DB($db=null) {
     $this->DBconfig = env();
-    
+
     $connection = $this->DBconfig['app']['PRIMARY_DB'];
     $dbName = false;
-    
+
     if ($db !== null && isset($this->DBconfig[$db])) {
       $connection = $db; // New connection
     } elseif (null !== $db) {
@@ -105,30 +105,18 @@ trait DB {
         case 'mysql':
           $this->mysql();
           break;
-  
+
         case 'sqlite':
           $this->sqlite();
           break;
-        
+
         default:
           $this->mysql();
           break;
       }
-  
+
       return $this->connect;
     }
   }
 
-
-
-  /**
-   * Destructor
-   */
-  public function __destruct() {
-    if ($this->connect !== null) {
-      global $DEBUG_BAR;
-      $DEBUG_BAR->set('ozz_sql_queries', $this->connect->log());
-    }
-  }
-  
 }

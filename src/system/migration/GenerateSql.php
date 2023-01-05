@@ -11,7 +11,7 @@ use Ozz\Core\system\cli\CliUtils;
 use Ozz\Core\system\Ozz_CLI_Connection;
 
 class GenerateSql {
-  
+
   use Ozz_CLI_Connection;
 
   private $validDataTypes;
@@ -19,7 +19,7 @@ class GenerateSql {
   private $finalSchemas = [];
   private $cli_utils;
   private $conn;
-  
+
   function __construct(){
 
     $this->conn = $this->mysql();
@@ -34,7 +34,7 @@ class GenerateSql {
       'str'                => 'VARCHAR',
       'var'                => 'VARCHAR',
       'varchar'            => 'VARCHAR',
-      
+
       'char'               => 'CHAR',
       'tinytext'           => 'TINYTEXT',
       'tinytxt'            => 'TINYTEXT',
@@ -52,7 +52,7 @@ class GenerateSql {
       'bigtxt'             => 'LONGTEXT',
       'btext'              => 'LONGTEXT',
       'btxt'               => 'LONGTEXT',
-      
+
       'tinyblob'           => 'TINYBLOB',
       'tblob'              => 'TINYBLOB',
       'blob'               => 'BLOB',
@@ -64,7 +64,7 @@ class GenerateSql {
       'binary'             => 'BINARY',
       'varbinary'          => 'VARBINARY',
       'enum'               => 'ENUM',
-      
+
       'smallint'           => 'SMALLINT',
       'sint'               => 'SMALLINT',
       'tinyint'            => 'TINYINT',
@@ -81,7 +81,7 @@ class GenerateSql {
       'bit'                => 'BIT',
       'bool'               => 'BOOLEAN',
       'serial'             => 'SERIAL',
-      
+
       'date'               => 'DATE',
       'datetime'           => 'DATETIME',
       'dt'                 => 'DATETIME',
@@ -91,7 +91,7 @@ class GenerateSql {
       'tm'                 => 'TIME',
       'year'               => 'YEAR',
       'yr'                 => 'YEAR',
-      
+
       'ai'                 => 'AUTO_INCREMENT',
       'auto_increment'     => 'AUTO_INCREMENT',
       'currenttimestamp'   => 'CURRENT_TIMESTAMP',
@@ -105,7 +105,7 @@ class GenerateSql {
       'unq'                => 'UNIQUE',
       'default'            => 'DEFAULT',
       'dflt'               => 'DEFAULT',
-      
+
       'geometry'           => 'GEOMETRY',
       'geo'                => 'GEOMETRY',
       'point'              => 'POINT',
@@ -124,7 +124,7 @@ class GenerateSql {
       'rename'             => 'RENAME COLUMN',
       'change'             => 'RENAME COLUMN'
     ];
-    
+
     $this->validConstraint = [
       'primary'            => 'PRIMARY KEY',
       'primarykey'         => 'PRIMARY KEY',
@@ -136,11 +136,11 @@ class GenerateSql {
       'index'              => 'INDEX',
       'check'              => 'CHECK',
     ];
-    
+
   }
-  
-  
-  
+
+
+
   # --------------------------------------
   // Convert developer txt to SQL for CREATE
   # --------------------------------------
@@ -154,18 +154,18 @@ class GenerateSql {
     }
     else{
       foreach ($baseData as $key => $value) {
-        
+
         $fields = [];
         $constr = []; // Constraint (Single for Table)
-        
+
         foreach ($value as $k => $v) {
-          
+
           $dtypSQL = [];
           foreach ($v as $dtyp) {
-            
+
             if(strpos($dtyp, ':') !== false){
               $dtyp = explode(':', $dtyp);
-              
+
               if(array_key_exists($dtyp[0], $this->validDataTypes)){
                 $dtypSQL[] = $this->validDataTypes[$dtyp[0]].'('.$dtyp[1].')';
               }
@@ -182,7 +182,7 @@ class GenerateSql {
                 case 'VARCHAR':
                   $dtypSQL[] = $this->validDataTypes[$dtyp].'(255)';
                   break;
-                  
+
                 default:
                   $dtypSQL[] = $this->validDataTypes[$dtyp];
                   break;
@@ -196,27 +196,27 @@ class GenerateSql {
                 case 'prim':
                   $constr['PRIMARY KEY'] = $k;
                   break;
-                                  
+
                 case 'foreign':
                 case 'foreignkey':
                 case 'frn':
                 case 'frnkey':
                   $constr['FOREIGN KEY'] = $k;
                   break;
-                    
+
                 case 'index':
                   $constr['INDEX'] = $k;
                   break;
               }
             }
           }
-          
+
           $fields[$k] = $dtypSQL;
         }
-                            
+
         $this->finalSchemas[$key]['prop'] = $fields;
         $this->finalSchemas[$key]['const'] = $constr;
-        
+
         // Set Dropable items and remove from inner array
         if(isset($baseData[$key]['drop']) && !empty($baseData[$key]['drop'])){
           $this->finalSchemas[$key]['drop'] = $baseData[$key]['drop'];
@@ -227,27 +227,27 @@ class GenerateSql {
       return $this->final_TableCreation_SQL();
     }
   }
-                      
-                      
-                      
+
+
+
   # --------------------------------------
   // Get all SQL for ALTER
   # --------------------------------------
   protected function generateAlterSql($baseData=[]){
-    
+
     if(!empty($baseData)){
-      
+
       $alterData = [];
       foreach ($baseData as $table => $value) {
-        
+
         $addCols = $this->generateAlterSets($value['add']); // Add new columns
         $updateCols = $this->generateAlterSets($value['update']); // Update existing columns
-        
+
         $alterData[$table]['add'] = $addCols;
         $alterData[$table]['update'] = $updateCols;
         $alterData[$table]['drop'] = $value['drop'];
         $alterData[$table]['const'] = [];
-        
+
         if(isset($addCols['const']) && !empty($updateCols['const'])){
           $alterData[$table]['const'] = array_merge($addCols['const'], $updateCols['const']);
         }
@@ -257,7 +257,7 @@ class GenerateSql {
         elseif(isset($updateCols['const'])){
           $alterData[$table]['const'] = $updateCols['const'];
         }
-        
+
         // Unset Const from Add/Update inside
         if(isset($alterData[$table]['add']['const'])){
           unset($alterData[$table]['add']['const']);
@@ -265,16 +265,16 @@ class GenerateSql {
         if(isset($alterData[$table]['update']['const'])){
           unset($alterData[$table]['update']['const']);
         }
-        
+
       }
-      
+
       $this->finalSchemas = $alterData;
       return $this->final_TableUpdating_SQL();
     }
   }
-                      
-                      
-                      
+
+
+
   # --------------------------------------
   // Convert developer txt to SQL for ALTER
   # --------------------------------------
@@ -282,7 +282,7 @@ class GenerateSql {
     $returnData = [];
     if(!empty($data)){
       foreach ($data as $ky => $v) {
-        
+
         // Check for real values
         foreach ($v as $k => $df) {
           if(strpos($df, ':') !== false){
@@ -295,7 +295,6 @@ class GenerateSql {
               else {
                 $returnData[$ky][$k] = $this->validDataTypes[$dtyp[0]].'('.$dtyp[1].')';
               }
-              
             }
           }
           elseif(array_key_exists($df, $this->validDataTypes)){
@@ -303,7 +302,7 @@ class GenerateSql {
               case 'VARCHAR':
                 $returnData[$ky][$k] = $this->validDataTypes[$df].'(255)';
                 break;
-                
+
               default:
                 $returnData[$ky][$k] = $this->validDataTypes[$df];
                 break;
@@ -330,52 +329,51 @@ class GenerateSql {
       case 'prim':
         $constr['PRIMARY KEY'] = $ky;
         break;
-            
+
       case 'foreign':
       case 'foreignkey':
       case 'frn':
       case 'frnkey':
         $constr['FOREIGN KEY'] = $ky;
         break;
-              
+
       case 'index':
         $constr['INDEX'] = $ky;
         break;
       }
       return $constr;
   }
-                                        
-                                        
-                                        
+
+
   # --------------------------------------
   // All Tables Creation SQL
   # --------------------------------------
   private function final_TableCreation_SQL(){
-    
+
     $generateSql = $this->finalSchemas;
-    
+
     if(isset($generateSql) && !empty($generateSql)){
-      
+
       // Create Tables
       $allTablesSQL = [];
       foreach ($generateSql as $key => $value) {
-        
+
         $comma = '';
         $sql_fields = "";
-        $lastProp = end($value['prop']);
+        $lastProp = array_key_last($value['prop']);
         foreach ($value['prop'] as $k => $v) {
-          $sql_fields .= $v == $lastProp ? $k.' '.implode(' ', $v) : $k.' '.implode(' ', $v).', ';
+          $sql_fields .= $k == $lastProp ? $k.' '.implode(' ', $v) : $k.' '.implode(' ', $v).', ';
         }
-        
+
         $constr = "";
         if(!empty($value['const'])){
-          $lastConst = end($value['const']);
+          $lastConst = array_key_last($value['const']);
           foreach ($value['const'] as $k => $v) {
-            $constr .= $v == $lastConst ? "$k ($v) " : "$k ($v), ";
+            $constr .= $k == $lastConst ? "$k ($v) " : "$k ($v), ";
           }
           $comma = ',';
         }
-        
+
         $allTablesSQL[$key] = 'CREATE TABLE IF NOT EXISTS '.$key.' ('.$sql_fields.$comma.' '.$constr.');';
       }
       return $allTablesSQL;
@@ -447,19 +445,19 @@ class GenerateSql {
         $constCols = '';
         if(isset($value['const']) && !empty($value['const'])){
           $constLast = array_key_last($value['const']);
-          
+
           foreach ($value['const'] as $key => $val) {
             $cm = $key == $constLast ? '' : ', ';
             $key = (strpos($key, 'PRIMARY') !== false) ? 'DROP PRIMARY KEY, ADD '.$key : $key;
             $constCols .= $key.'('.$val.')'.$cm;
           }
-          
+
           $allSQL['tableConsts'] = 'ALTER TABLE '.$table.' '.$constCols;
         }
-        
+
         $altTableSQL[$table] = $allSQL;
       }
-      
+
       return $altTableSQL;
     }
   }

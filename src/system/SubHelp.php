@@ -372,6 +372,20 @@ class SubHelp {
    * Get Set and Render Debug Bar
    */
   public function renderDebugBar($data) { 
+
+    // Get and set SQL temporary debug log
+    $sql_temp_log_content = file_get_contents(__DIR__.SPC_BACK['core_1'].'storage/log/sql_debug.log');
+    $sql_temp_log_arr = array_filter(explode('<####>', $sql_temp_log_content));
+    $final_sql_log = [];
+
+    foreach ($sql_temp_log_arr as $k => $statement) {
+      if(!empty(explode('<###>', $statement))){
+        $final_sql_log[$k] = explode('<###>', $statement);
+      }
+    }
+    $data['ozz_sql_queries'] = $final_sql_log;
+
+    // Debug bar CSS
     $ozz_debugbar_css = "
       :root {
         --ozz-white: #ffffff;
@@ -429,6 +443,7 @@ class SubHelp {
         display: inline-block;
         width: 100%;
         border-bottom: 1px solid var(--ozz-light1);
+        background: var(--ozz-white);
       }
       .ozz-fw-debug-bar__nav {
         all: unset;
@@ -728,6 +743,7 @@ class SubHelp {
       }
       ";
     ?>
+
     <div class="ozz__debugbar">
     <!-- Ozz Debug Bar Styles -->
     <style nonce="<?=CSP_NONCE?>"><?php echo Help::minifyCSS($ozz_debugbar_css); ?></style>
@@ -959,4 +975,5 @@ class SubHelp {
     </div>
     <?php
   }
+
 }

@@ -80,7 +80,13 @@ elseif(count($com) == 2){
     case 'start':
       $class = "cli/Serve";
       break;
-    
+
+    case 'c:auth':
+    case 'make:auth':
+    case 'create:auth':
+      $class = "auth/CreateAuth";
+      break;
+
     case 'migrate':
     case 'migrate:run':
     case 'migrate:clear':

@@ -21,7 +21,6 @@ class DebugBar {
   public function __construct() {
     $this->debug_info['ozz_message'] = [];
     $this->debug_info['ozz_request'] = [];
-    $this->debug_info['ozz_sql_queries'] = [];
   }
 
 
@@ -32,7 +31,9 @@ class DebugBar {
    * @param string|array|object|int The debug info
    */
   public function set($key, $value) {
-    DEBUG ? $this->debug_info[$key] = $value : false;
+    if(DEBUG){
+      $this->debug_info[$key] = $value;
+    }
   }
 
 
@@ -40,7 +41,7 @@ class DebugBar {
   /**
    * Get Debug Information
    * @param string $key the key to return value (optional)
-   * @return array|string|int ill return the debug infor
+   * @return array|string|int ill return the debug info
    */
   public function get($key=null) {
     if (isset($key) && array_key_exists($key, $this->debug_info)) {
