@@ -389,7 +389,8 @@ class SubHelp {
     $ozz_debugbar_css = "
       :root {
         --ozz-white: #ffffff;
-        --ozz-green: #88bf3d;
+        --ozz-green: #39B54A;
+        --ozz-darkGreen: #20862E;
         --ozz-light1: #f1f2f6;
         --ozz-light2: #dfe4ea;
         --ozz-light3: #ced6e0;
@@ -440,7 +441,7 @@ class SubHelp {
       /** Tab Nav */
       .ozz-fw-debug-bar__nav.wrapper {
         all: unset;
-        display: inline-block;
+        display: inline-flex;
         width: 100%;
         border-bottom: 1px solid var(--ozz-light1);
         background: var(--ozz-white);
@@ -758,9 +759,7 @@ class SubHelp {
         <button class="ozz-fw-debug-bar__nav item" data-item="controller">Controller</button>
         <button class="ozz-fw-debug-bar__nav item" data-item="session">Session <span class="count"></span></button>
 
-        <div class="ozz-fw-debug-bar__nav bar-items">
-          
-        </div>
+        <div class="ozz-fw-debug-bar__nav bar-items"></div>
       </div>
 
       <div class="ozz-fw-debug-bar__body">
@@ -940,34 +939,34 @@ class SubHelp {
     <!-- Ozz Debug Bar Script -->
     <script type="text/javascript" nonce="<?=CSP_NONCE?>">
     (function() {
-      var ozzdebugbar__container = document.querySelector('.ozz-fw-debug-bar');
-      var ozzdebugbar__nav_item = document.querySelectorAll('.ozz-fw-debug-bar__nav.item');
-      var ozzdebugbar__tab_bodies = document.querySelectorAll('.ozz-fw-debug-bar__body.tab-body');
-      var ozzdebugbar__tempTabName = '';
+      var ozzDebugBar__container = document.querySelector('.ozz-fw-debug-bar');
+      var ozzDebugBar__nav_item = document.querySelectorAll('.ozz-fw-debug-bar__nav.item');
+      var ozzDebugBar__tab_bodies = document.querySelectorAll('.ozz-fw-debug-bar__body.tab-body');
+      var ozzDebugBar__tempTabName = '';
 
-      ozzdebugbar__nav_item.forEach(el => {
+      ozzDebugBar__nav_item.forEach(el => {
         el.addEventListener('click', function() {
           var tabName = this.getAttribute('data-item');
-          ozzdebugbar__container.classList.toggle('open');
+          ozzDebugBar__container.classList.toggle('open');
 
           // Active current menu item
-          ozzdebugbar__nav_item.forEach(item => {
+          ozzDebugBar__nav_item.forEach(item => {
             item.classList.remove('active');
           });
           this.classList.add('active');
 
-          ozzdebugbar__tab_bodies.forEach(tab => {
+          ozzDebugBar__tab_bodies.forEach(tab => {
             tab.classList.remove('active');
           });
 
           // Activate current tab
           document.querySelector('.ozz-fw-debug-bar__body.tab-body.'+tabName).classList.add('active');
 
-          if (tabName !== ozzdebugbar__tempTabName) {
-            ozzdebugbar__container.classList.add('open');
+          if (tabName !== ozzDebugBar__tempTabName) {
+            ozzDebugBar__container.classList.add('open');
           }
 
-          ozzdebugbar__tempTabName = tabName;
+          ozzDebugBar__tempTabName = tabName;
         });
       });
     })()

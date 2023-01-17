@@ -343,6 +343,8 @@ class Validate {
       // Log all password errors
       if(count($password_errors) > 0){
         return self::response(false, $key, $password_errors);
+      } else {
+        return self::response(true, $key, $password_errors);
       }
 
     } else {

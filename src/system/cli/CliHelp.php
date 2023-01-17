@@ -65,7 +65,7 @@ All available commands
     print($green." c:layout                    ".$wt."Create a new base layout ".$br);
     print($green." c:component                 ".$wt."Create a new view component ".$br);
     print($green." c:middleware                ".$wt."Create a new middleware ".$br);
-    print($green." c:email_template            ".$wt."Create a new email template ".$br);
+    print($green." c:email-template            ".$wt."Create a new email template ".$br);
     print($green." c:migration                 ".$wt."Create a new migration file ".$br);
     print($green." u:migration                 ".$wt."Create a new update migration file (For ALTER a table) ".$br.$br);
 
