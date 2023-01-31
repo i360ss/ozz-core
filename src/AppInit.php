@@ -180,11 +180,6 @@ class AppInit {
      * Minify HTML, defined in env.ini
      */
     defined('MINIFY_HTML') || define('MINIFY_HTML', $this->config['app']['MINIFY_HTML'] == 1 ? true : false);
-
-    /**
-     * App Configurations
-     */
-    defined('APP_CONFIG') || define('APP_CONFIG', require APP_DIR.'config.php');
   }
 
 
