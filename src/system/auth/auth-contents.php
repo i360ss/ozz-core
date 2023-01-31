@@ -153,11 +153,7 @@ class AuthController extends Controller {
     ]);
 
     if(\$validate->pass){
-      Auth::login(\$email, \$password, false, [
-        'throttle_mail_data'  => [],
-        'new_login_mail_data' => [],
-        'redirect_path'       => 'user/home',
-      ]);
+      Auth::login(\$email, \$password, false);
     }
 
     view('auth/login');
