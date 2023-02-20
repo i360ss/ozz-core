@@ -1,0 +1,38 @@
+<?php
+/**
+ * View Name: verify-account
+ * Path: view/auth/verify-account
+ * 
+ * @param array $data arguments passed from controller
+ * 
+ */
+?>
+{{ title        = "Verify Email Address | <?=APP_NAME?>" }}
+{{ bodyClass    = "auth" }}
+
+{{ content }}
+  <section class="component auth-comp verify-account center">
+    <div class="container">
+      <?php if($data['status'] == 'success') : ?>
+        <h1 class="c-green">Congratulations!</h1>
+        <hr class="hr1">
+        <p>Your account verified successfully</p>
+        <a href="<?=BASE_URL?>login" class="button">Login to your account</a>
+      <?php elseif($data['status'] == 'disabled') : ?>
+        <h1 class="c-orange">Account is Disabled</h1>
+        <hr class="hr1">
+        <p>Your account is disabled. Please contact support team for more information.</p>
+      <?php elseif($data['status'] == 'invalid') : ?>
+        <h1 CLASS="c-red">Invalid Link</h1>
+        <hr class="hr1">
+        <p>The verification link is invalid</p>
+        <a href="<?=BASE_URL?>login" class="button">Go to Login page</a>
+      <?php else : ?>
+        <h1 CLASS="c-red">Error</h1>
+        <hr class="hr1">
+        <p>Something went wrong. There is an error on verifying your account!</p>
+        <a href="<?=BASE_URL?>login" class="button">Go to Login page</a>
+      <?php endif; ?>
+    </div>
+  </section>
+{{ content-end }}

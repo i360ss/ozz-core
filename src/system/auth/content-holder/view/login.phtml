@@ -1,0 +1,51 @@
+<?php
+/**
+ * View Name: login
+ * Path: view/login
+ * 
+ * @param array $data arguments passed from controller
+ * 
+ */
+
+$value = has_flash('form_data') ? (object) get_flash('form_data') : false;
+
+?>
+{{ title        = "Login | <?=APP_NAME?>" }}
+{{ keywords     = "login" }}
+{{ description  = "Login" }}
+{{ bodyClass    = "auth" }}
+
+{{ content }}
+  <section class="component auth-comp log-in center">
+    <div class="container">
+      <h1 class="component__heading-1">Login</h1>
+      <form action="<?=BASE_URL?>login" method="post" class="form">
+
+        <?=CSRF_FIELD?>
+
+        <div class="form-item">
+          <input type="email" name="email" placeholder="Email" value="<?=$value->email ?? '' ?>" class="<?=has_error('email') ? 'error' : false ?>">
+          <?=show_error('email', '<span class="error-label">##</span>')?>
+        </div>
+
+        <div class="form-item">
+          <input type="password" name="password" placeholder="Password" autocomplete="new-password" value="<?=$value->password ?? '' ?>" class="<?=has_error('password') ? 'error' : false ?>">
+          <?=show_error('password', '<span class="error-label">##</span>')?>
+        </div>
+
+        <div class="form-error">
+          <?=show_error('success', '<p class="message success">##</p>'); ?>
+          <?=show_error('error', '<p class="message danger">##</p>'); ?>
+        </div>
+
+        <input type="submit" value="Login">
+      </form>
+    </div>
+  </section>
+
+  <div class="off-bottom-link">
+    <a href="<?=BASE_URL?>sign-up" class="link">Create an account</a> 
+    &nbsp;| &nbsp;
+    <a href="<?=BASE_URL?>forgot-password" class="link">Forgot Password?</a>
+  </div>
+{{ content-end }}

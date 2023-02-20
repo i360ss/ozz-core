@@ -57,8 +57,10 @@ class DebugBar {
    * Set and Display/Render the debug bar
    */
   public function show() {
+    $request = Request::getInstance();
     $subHelp = new SubHelp();
-    $subHelp->renderDebugBar( $this->get() );
+    $this->set('ozz_request', $request->all());
+    $subHelp->renderDebugBar($this->get());
   }
-  
+
 }

@@ -15,20 +15,33 @@ trait AuthInternal {
 
 
   /**
+   * Generate common auth hashes
+   * @param string $type hash $type
+   * @param string $string string to include to hash
+   */
+  public static function hashKey($type='activation', $string=''){
+    switch ($type) {
+      case 'activation':
+        return sha1(random_str(36).time().$string);
+        break;
+    }
+  }
+
+
+
+  /**
    * Log Throttles
    * @param array $throttle_data Throttle information to be logged
    */
   private static function logThrottle($throttle_data){
-    if(AUTH_THROTTLE === true){
-      $request = new Request;
+    $request = Request::getInstance();
 
-      $throttle_data['user_ip']        = $request->ip();
-      $throttle_data['user_agent']     = $request->all('user_agent');
-      $throttle_data['user_agent_all'] = json_encode($request->user_agent());
-      $throttle_data['timestamp']      = time();
+    $throttle_data['user_ip']        = $request->ip();
+    $throttle_data['user_agent']     = $request->user_agent(true);
+    $throttle_data['user_agent_all'] = json_encode($request->user_agent());
+    $throttle_data['timestamp']      = time();
 
-      self::$db->insert(AUTH_THROTTLE_TABLE, $throttle_data);
-    }
+    self::$db->insert(AUTH_THROTTLE_TABLE, $throttle_data);
   }
 
 
@@ -37,9 +50,9 @@ trait AuthInternal {
    * Check if Login attempts exceeded
    * @param int $user_id User ID
    */
-  private static function attemptsExceeded($user_id){
+  private static function isAttemptsExceeded($user_id){
     if(AUTH_THROTTLE === true){
-      $request  = new Request;
+      $request = Request::getInstance();
       $time_ago = time() - AUTH_THROTTLE_TIME;
 
       $failed_attempts = self::$db->count(AUTH_THROTTLE_TABLE, ['timestamp'], [
@@ -50,7 +63,7 @@ trait AuthInternal {
         'timestamp[>=]' => $time_ago,
       ]);
 
-      return $failed_attempts > AUTH_THROTTLE_MAX_ATTEMPTS;
+      return $failed_attempts >= AUTH_THROTTLE_MAX_ATTEMPTS;
     } else {
       return false;
     }

@@ -18,13 +18,13 @@ class Session {
   public static function init($config) {
     self::$refresh_after = $config['app']['REFRESH_SESSION_ID'];
 
-    if (session_status() == PHP_SESSION_NONE) {
+    if(session_status() == PHP_SESSION_NONE){
       session_start();
     }
 
-    if (!isset($_SESSION['INIT_TIME'])) {
+    if(!isset($_SESSION['INIT_TIME'])){
       $_SESSION['INIT_TIME'] = time();
-    } elseif (time() - $_SESSION['INIT_TIME'] > self::$refresh_after) {
+    } elseif (time() - $_SESSION['INIT_TIME'] > self::$refresh_after){
       self::re_generate_id();
     }
   }
@@ -40,7 +40,7 @@ class Session {
   }
 
 
-  
+
   /**
    * Set New session value
    * @param string $k Key of the session

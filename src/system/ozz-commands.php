@@ -5,7 +5,7 @@ if(APP_ENV !== 'local'){
   exit('Unauthorized');
 }
 
-require __DIR__.SPC_BACK['core_1'].'app/config.php';
+require __DIR__.SPC_BACK['core_1'].'app/config/config.php';
 
 $GLOBALS['utils'] = new CliUtils;
 global $utils;

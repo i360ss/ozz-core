@@ -13,7 +13,9 @@ class CreateAuth {
   private $migration_dir      = __DIR__.SPC_BACK['core_2'].'database/migration/';
   private $controller_dir     = __DIR__.SPC_BACK['core_2'].'app/controller/';
   private $view_dir           = __DIR__.SPC_BACK['core_2'].'app/view/';
+  private $middleware_dir     = __DIR__.SPC_BACK['core_2'].'app/middleware/';
   private $email_template_dir = __DIR__.SPC_BACK['core_2'].'app/email_template/';
+  private $content_holder     = __DIR__.'/content-holder';
 
 
   public function index($com){
@@ -63,8 +65,8 @@ class CreateAuth {
     $this->createAuthController(AUTH_CONTROLLER);
 
     // Generate and Run Migrations
-    $this->createAuthMigration('user_table', AUTH_USERS_TABLE);
-    $this->createAuthMigration('throttle_table', AUTH_THROTTLE_TABLE);
+    $this->createAuthMigration('user-table', AUTH_USERS_TABLE);
+    $this->createAuthMigration('user-log-table', AUTH_THROTTLE_TABLE);
     $this->runAuthMigration($migration_name);
     $this->runAuthMigration(ucfirst(AUTH_THROTTLE_TABLE));
 
@@ -74,18 +76,18 @@ class CreateAuth {
     $this->createAuthViewFile('forgot-password', AUTH_VIEWS['forgot-password']);
     $this->createAuthViewFile('reset-password', AUTH_VIEWS['reset-password']);
     $this->createAuthViewFile('verify-account', AUTH_VIEWS['verify-account']);
+    $this->createAuthViewFile('dashboard', AUTH_VIEWS['dashboard']);
 
     // Generate Email Templates
     $this->createAuthEmailTemplate('account-verification-mail', AUTH_EMAIL_TEMPLATES['account-verification']);
     $this->createAuthEmailTemplate('password-reset-mail', AUTH_EMAIL_TEMPLATES['password-reset-request']);
-    $this->createAuthEmailTemplate('throttle-reset-mail', AUTH_EMAIL_TEMPLATES['throttle-reset-request']);
     $this->createAuthEmailTemplate('new-login-alert-mail', AUTH_EMAIL_TEMPLATES['new-login-alert']);
 
     // Generate Routes
     $this->createAuthRoutes();
 
     // Generate Middleware
-    // ===>
+    $this->createAuthMiddleware(AUTH_MIDDLEWARE_NAME);
   }
 
 
@@ -96,13 +98,18 @@ class CreateAuth {
    */
   private function createAuthController($name){
     global $utils;
-    require 'auth-contents.php';
+    require $this->content_holder.'/auth-controller.php';
 
-    $newFile = $this->controller_dir.$name.'.php';
+    $name = ucfirst($name);
+    $newFile = substr($name, -4) == '.php' ? $this->controller_dir.$name : $this->controller_dir.$name.'.php';
     $controller_file = fopen($newFile, 'w');
-    fwrite($controller_file, $auth_controller_content);
     
-    $utils->console_return("[$name] generated", 'green');
+    if(fwrite($controller_file, $content)){
+      $utils->console_return("Controller created [$name]", 'green');
+    } else {
+      $utils->console_return("Error on creating Controller [$name]", 'red');
+    }
+    fclose($controller_file);
   }
 
 
@@ -111,24 +118,19 @@ class CreateAuth {
    * Create auth migration file
    * @param string Migration Name
    */
-  private function createAuthMigration($type, $name){
+  private function createAuthMigration($base_file, $name){
     global $utils;
-    require 'auth-contents.php';
+    require $this->content_holder.'/'.$base_file.'.php';
 
     $newFile = $this->migration_dir.'mg_'.date('d_m_Y_').ucfirst($name).'.php';
     $migration_file = fopen($newFile, 'w');
 
-    switch ($type) {
-      case 'user_table':
-        fwrite($migration_file, $auth_migration_content);
-        break;
-
-      case 'throttle_table':
-        fwrite($migration_file, $login_attempts_migration_content);
-        break;
+    if(fwrite($migration_file, $content)){
+      $utils->console_return("Migration created [$name]", 'green');
+    } else {
+      $utils->console_return("Error on creating migration file [$name]", 'red');
     }
-
-    $utils->console_return("[$name] migration file generated", 'green');
+    fclose($migration_file);
   }
 
 
@@ -149,40 +151,21 @@ class CreateAuth {
   /**
    * Create Auth View Files view
    */
-  private function createAuthViewFile($type, $name){
+  private function createAuthViewFile($base_file, $name){
     global $utils;
-    require 'auth-contents.php';
 
     if (!file_exists($this->view_dir.'auth/')) {
       mkdir($this->view_dir.'auth/', 0777, true);
     }
 
-    $newFile = $this->view_dir.'auth/'.$name;
-    $view_file = fopen($newFile, 'w');
+    $from = $this->content_holder.'/view/'.$base_file.'.phtml';
+    $to = $this->view_dir.'auth/'.$name;
 
-    switch ($type) {
-      case 'sign-up':
-        fwrite($view_file, $signup_content);
-        break;
-
-      case 'login':
-        fwrite($view_file, $login_content);
-        break;
-
-      case 'forgot-password':
-        fwrite($view_file, $forgot_pass_content);
-        break;
-
-      case 'reset-password':
-        fwrite($view_file, $reset_pass_content);
-        break;
-
-      case 'verify-account':
-        fwrite($view_file, $verify_account_content);
-        break;
+    if(copy($from, $to)){
+      $utils->console_return("View file created [$name]", 'green');
+    } else {
+      $utils->console_return("Error on creating view file [$name]", 'red');
     }
-
-    $utils->console_return("[$name] View file created", 'green');
   }
 
 
@@ -192,32 +175,38 @@ class CreateAuth {
    * @param string $type Template type
    * @param string $name Template name
    */
-  private function createAuthEmailTemplate($type, $name){
+  private function createAuthEmailTemplate($base_file, $name){
     global $utils;
-    require 'auth-contents.php';
+    
+    $from = $this->content_holder.'/mail-templates/'.$base_file.'.html';
+    $to = $this->email_template_dir.$name;
 
-    $newFile = $this->email_template_dir.$name;
-    $email_template = fopen($newFile, 'w');
-
-    switch ($type) {
-      case 'account-verification-mail':
-        fwrite($email_template, $account_verification_mail);
-        break;
-
-      case 'password-reset-mail':
-        fwrite($email_template, $password_reset_mail);
-        break;
-
-      case 'throttle-reset-mail':
-        fwrite($email_template, $throttle_reset_mail);
-        break;
-
-      case 'new-login-alert-mail':
-        fwrite($email_template, $new_login_security_alert_mail);
-        break;
+    if(copy($from, $to)){
+      $utils->console_return("Email template created [$name]", 'green');
+    } else {
+      $utils->console_return("Error on creating Email template [$name]", 'red');
     }
+  }
 
-    $utils->console_return("[$name] Email template created", 'green');
+
+
+  /**
+   * Create Auth Middleware
+   */
+  private function createAuthMiddleware($name){
+    global $utils;
+    require $this->content_holder.'/auth-middleware.php';
+
+    $name = ucfirst($name);
+    $newFile = substr($name, -4) == '.php' ? $this->middleware_dir.$name : $this->middleware_dir.$name.'.php';
+    $middleware_file = fopen($newFile, 'w');
+
+    if(fwrite($middleware_file, $content)){
+      $utils->console_return("Middleware created [$name]", 'green');
+    } else {
+      $utils->console_return("Error on creating Middleware [$name]", 'red');
+    }
+    fclose($middleware_file);
   }
 
 
@@ -227,9 +216,9 @@ class CreateAuth {
    */
   private function createAuthRoutes(){
     global $utils;
-    require 'auth-contents.php';
+    require $this->content_holder.'/routes.php';
 
-    if(file_put_contents($this->app_dir.'Route.php', $router_content, FILE_APPEND | LOCK_EX)){
+    if(file_put_contents($this->app_dir.'Route.php', $content, FILE_APPEND | LOCK_EX)){
       $utils->console_return("Auth routes added to Route file", 'green');
     }
   }

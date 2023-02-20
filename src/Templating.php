@@ -27,7 +27,7 @@ class Templating extends AppInit {
    * 
    * $base_template will be used over $base_template_from_router if it is not empty
    */
-  public static function render($vv, $customData, $base_template, $base_template_from_router, $context, $status_code=200){
+  public static function render($vv, $customData, $base_template, $base_template_from_router, $context){
 
     global $DEBUG_BAR;
     DEBUG ? self::$debug_view['view_data'] = $customData : false; // Log to debug bar
@@ -49,7 +49,7 @@ class Templating extends AppInit {
       $vars = $viewContentAll[1];
 
       if(!isset($base_template_from_router) && $base_template==''){
-        self::render_final_view($viewContent, $status_code); // Render final output
+        self::render_final_view($viewContent); // Render final output
       }
       else{
         preg_match_all("~\{\{\s*(.*?)\s*\}\}~", $viewContent, $regComps['view']);
@@ -92,7 +92,7 @@ class Templating extends AppInit {
         // Set view info to debug bar
         DEBUG ? $DEBUG_BAR->set('ozz_view', self::$debug_view) : false;
 
-        self::render_final_view($base_layout, $status_code); // Render final output
+        self::render_final_view($base_layout); // Render final output
       }
     }
     else{
@@ -102,17 +102,27 @@ class Templating extends AppInit {
 
 
 
-  // Set Response and render the final view
-  private static function render_final_view($base_layout, $status_code){
+  /**
+   * Set Response and render the final view
+   * @param string|HTML final Content
+   */
+  private static function render_final_view($base_layout){
     $base_layout = MINIFY_HTML ? Help::minifyHTML($base_layout) : $base_layout; // Minify HTML if required
-    $headers['Content-Type'] = 'text/html; charset='.CHARSET;
-    $response = new Response($base_layout, $status_code ? $status_code : 200, $headers);
+    $response = Response::getInstance();
+    if(!$response->has_header('Content-Type')){
+      $response->set_header('Content-Type', 'text/html; charset='.CHARSET);
+    }
+    $response->set_content($base_layout);
     $response->send();
   }
 
 
 
-  // Main Layout Template
+  /**
+   * Main Layout Template
+   * @param string $temp base template
+   * @param array $vars Variables defined on view file
+   */
   private static function layout($temp, $vars){
     ob_start();
     $context = self::$cdt[0];
@@ -120,7 +130,7 @@ class Templating extends AppInit {
     $temp = ($temp == '') ? 'layout' : $temp;
 
     if(file_exists(VIEW.'base/'. $temp . '.phtml')){
-      extract($vars); // Variables defined on view
+      extract($vars);
       require VIEW.'base/'. $temp.'.phtml';
       DEBUG ? self::$debug_view['base_file'] = "view/base/$temp.phtml" : false; // Log to debug bar
     } else{
@@ -134,7 +144,10 @@ class Templating extends AppInit {
 
 
 
-  // Set Up View Template with Components
+  /**
+   * Set Up View Template with Components
+   * @param string $v view file name
+   */
   private static function setView($v){
     ob_start();
     $context = self::$cdt[0];
@@ -229,7 +242,10 @@ class Templating extends AppInit {
 
 
 
-  // Check is string (wrapped in single or double quotes)
+  /**
+   * Check is string (wrapped in single or double quotes)
+   * @param string $c string to check
+   */
   private static function is_string($c) {
     $c = trim($c);
     return ($c[0] == '\'') && (substr($c,-1) == '\'') || ($c[0] == '"') && (substr($c,-1) == '"');
@@ -237,7 +253,10 @@ class Templating extends AppInit {
 
 
 
-  // Trim string (wrapped in single or double quotes)
+  /**
+   * Trim string (wrapped in single or double quotes)
+   * @param string $a
+   */
   private static function trim_string($a){
     $a = trim($a);
     $args = trim($a, '"');
@@ -246,7 +265,11 @@ class Templating extends AppInit {
 
 
 
-  // Return Variable / Array (Convert string to variable/array)
+  /**
+   * Return Variable / Array (Convert string to variable/array)
+   * @param string $str
+   * @param array $vars Variables
+   */
   private static function return_var($str, $vars){
     $keys = array_map('trim', explode('.', $str));
     if(count($keys) > 1){
@@ -262,7 +285,12 @@ class Templating extends AppInit {
 
 
 
-  // Templating Option
+  /**
+   * Get string between
+   * @param string $str full string
+   * @param string $stt Start position
+   * @param string $end End position
+   */
   private static function get_string_between($str, $stt, $end){
     $str = ' ' . $str;
     $ini = strpos($str, $stt);

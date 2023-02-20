@@ -1,0 +1,66 @@
+<?php
+/**
+ * View Name: sign-up
+ * Path: view/sign-up
+ * 
+ * @param array $data arguments passed from controller
+ * 
+ */
+
+$value = has_flash('form_data') ? (object) get_flash('form_data') : false;
+
+?>
+{{ title        = "Sign up | <?=APP_NAME?>" }}
+{{ keywords     = "signup" }}
+{{ description  = "Sign Up" }}
+{{ bodyClass    = "auth" }}
+
+{{ content }}
+  <section class="component auth-comp sign-up center">
+    <div class="container">
+      <h1 class="component__heading-1">Sign Up</h1>
+      <form action="<?=BASE_URL?>sign-up" method="post" class="form">
+
+        <?=CSRF_FIELD?>
+
+        <div class="col2">
+          <div class="form-item">
+            <input type="text" name="first_name" placeholder="First Name" value="<?=$value->first_name ?? '' ?>" class="<?=has_error('first_name') ? 'error' : false ?>">
+            <?=show_error('first_name', '<span class="error-label">##</span>')?>
+          </div>
+
+          <div class="form-item">
+            <input type="text" name="last_name" placeholder="Last Name" value="<?=$value->last_name ?? '' ?>" class="<?=has_error('last_name') ? 'error' : false ?>">
+            <?=show_error('last_name', '<span class="error-label">##</span>')?>
+          </div>
+        </div>
+
+        <div class="form-item">
+          <input type="email" name="email" placeholder="Email Address" value="<?=$value->email ?? '' ?>" class="<?=has_error('email') ? 'error' : false ?>">
+          <?=show_error('email', '<span class="error-label">##</span>')?>
+          <?=show_error('username', '<span class="error-label">##</span>')?>
+        </div>
+
+        <div class="form-item">
+          <input type="password" name="password" placeholder="Password" autocomplete="new-password" class="<?=has_error('password') ? 'error' : false ?>">
+          <?=show_error('password', '<span class="error-label">##</span>')?>
+        </div>
+
+        <div class="form-item">
+          <input type="password" name="password_confirmation" placeholder="Confirm Password" autocomplete="new-password" class="<?=has_error('password_confirmation') ? 'error' : false ?>">
+          <?=show_error('password_confirmation', '<span class="error-label">##</span>')?>
+        </div>
+
+        <div class="form-error">
+          <?=show_error('success', '<p class="message success">##</p>'); ?>
+        </div>
+
+        <input type="submit" value="Sign Up">
+      </form>
+    </div>
+  </section>
+
+  <div class="off-bottom-link">
+    <p>Already have an account? <a href="<?=BASE_URL?>/login" class="link">Login</a></p>
+  </div>
+{{ content-end }}

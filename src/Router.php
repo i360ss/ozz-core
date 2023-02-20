@@ -63,8 +63,8 @@ class Router extends AppInit {
   public static function get($route, $callBack, $baseTemplate=null, $middlewares=null){
     if(str_contains($route, '::')){
       $dom_route = explode('::', $route);
-      $domain = $dom_route[0];
-      $route = $dom_route[1];
+      $domain = trim($dom_route[0]);
+      $route = trim($dom_route[1]);
     } else {
       $domain = trim(APP_URL, '/');
     }
@@ -177,12 +177,13 @@ class Router extends AppInit {
    */
   private static function finalizeRoutePath($route, $method){
 
+    $request = Request::getInstance();
     $routeData['route'] = $route;
     $routeData['data'] = [];
 
-    if(preg_match("~\{\s*(.*?)\s*\}~", $route) && $method == Request::method()){
+    if(preg_match("~\{\s*(.*?)\s*\}~", $route) && $method == $request->method()){
       $realUrlVals['innerRoute'] = explode('/', $route);
-      $realUrlVals['url'] = Request::url_part();
+      $realUrlVals['url'] = $request->url_part();
       $realUrlVals['final'] = [];
 
       if(count($realUrlVals['innerRoute']) == count($realUrlVals['url'])){
@@ -224,20 +225,21 @@ class Router extends AppInit {
    */
   protected static function resolve(){
     global $DEBUG_BAR;
-    $req = new Request;
+    $request = Request::getInstance();
+    $response = Response::getInstance();
 
     // Return page cache if available
-    if($page_cache = (new Cache)->get('page', $req->all()['url'])){
+    if($page_cache = (new Cache)->get('page', $request->url())){
       return $page_cache;
     }
 
-    $host = $req->all()['host'];
-    $path = $req::path();
-    $method = $req::method();
+    $host = $request->host();
+    $path = $request->path();
+    $method = $request->method();
 
-    self::$context['request'] = $req->all();
-    self::$context['url_parts'] = $req->all()['url_parts'];
-    self::$context['url'] = $req->all()['url'];
+    self::$context['request'] = $request->all();
+    self::$context['url_parts'] = $request->url_part();
+    self::$context['url'] = $request->url();
     self::$context['path'] = $path;
     self::$context['method'] = $method;
 
@@ -258,7 +260,8 @@ class Router extends AppInit {
 
     // Render 404 if callback is false
     if($callback === false || self::$ValidRoutes[$method][$path]['domain'] !== $host){
-      return self::view('404', [], 'layout', 404);
+      $response->set_status_code(404);
+      return self::view('404', [], 'layout');
     }
 
     // Get set and execute Middlewares
@@ -298,7 +301,7 @@ class Router extends AppInit {
           ]);
 
           if(is_callable($callback)){
-            return call_user_func($callback, new Request); // Execute
+            return call_user_func_array($callback, [$request, $response]); // Execute
           }
           else {
             Err::custom([
@@ -335,7 +338,7 @@ class Router extends AppInit {
       }
     }
     else {
-      return call_user_func($callback, new Request); // Execute
+      return call_user_func_array($callback, [$request, $response]); // Execute
     }
   }
 
@@ -349,9 +352,10 @@ class Router extends AppInit {
    * @param string $template Base layout template
    * @param int $status_code HTTP Status code
    */
-  public static function view($vv, $data=[], $template='', $status_code=200){
-    new Request;
-    return Templating::render($vv, $data, $template, self::$template, self::$context, $status_code);
+  public static function view($vv, $data=[], $template=''){
+    // new Request;
+    $request = Request::getInstance();
+    return Templating::render($vv, $data, $template, self::$template, self::$context);
   }  
 
 

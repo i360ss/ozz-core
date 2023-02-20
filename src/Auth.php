@@ -9,6 +9,8 @@ namespace Ozz\Core;
 
 use Ozz\Core\Email;
 use Ozz\Core\Request;
+use Ozz\Core\Response;
+use Ozz\Core\Router;
 
 class Auth extends Model {
 
@@ -21,20 +23,25 @@ class Auth extends Model {
   private static $id_field;
   private static $password_field;
   private static $username_field;
+  private static $first_name_field;
+  private static $last_name_field;
   private static $email_field;
   private static $status_field;
   private static $role_field;
+  private static $active_key_field;
   private static $auth_errors = [
-    'login_success'          => 'success',
-    'signup_success'         => 'success',
-    'invalid_username'       => 'invalid_username',
-    'invalid_password'       => 'invalid_password',
-    'unverified_account'     => 'unverified_account',
-    'registration_failed'    => 'registration_failed',
-    'email_already_exist'    => 'email_already_exist',
-    'username_already_exist' => 'username_already_exist',
-    'account_blocked'        => 'account_blocked',
-    'throttle_error'         => 'throttle_error',
+    'login_success'           => 'success',
+    'signup_success'          => 'success',
+    'invalid_username'        => 'invalid_username',
+    'invalid_password'        => 'invalid_password',
+    'unverified_account'      => 'unverified_account',
+    'registration_failed'     => 'registration_failed',
+    'email_already_exist'     => 'email_already_exist',
+    'username_already_exist'  => 'username_already_exist',
+    'account_locked_throttle' => 'account_locked_throttle',
+    'account_locked'          => 'account_locked',
+    'account_suspended'       => 'account_suspended',
+    'throttle_error'          => 'throttle_error',
   ];
 
 
@@ -43,13 +50,17 @@ class Auth extends Model {
    * Initialize settings
    */
   private static function init(){
-    self::$db              = (new static)->DB();
-    self::$id_field        = AUTH_CORE_FIELDS['id_field'];
-    self::$username_field  = AUTH_CORE_FIELDS['username_field'];
-    self::$email_field     = AUTH_CORE_FIELDS['email_field'];
-    self::$password_field  = AUTH_CORE_FIELDS['password_field'];
-    self::$status_field    = AUTH_CORE_FIELDS['status_field'];
-    self::$role_field      = AUTH_CORE_FIELDS['role_field'];
+    self::$db               = (new static)->DB();
+    self::$id_field         = AUTH_CORE_FIELDS['id_field'];
+    self::$username_field   = AUTH_CORE_FIELDS['username_field'];
+    self::$email_field      = AUTH_CORE_FIELDS['email_field'];
+    self::$first_name_field = AUTH_CORE_FIELDS['first_name_field'];
+    self::$last_name_field  = AUTH_CORE_FIELDS['last_name_field'];
+    self::$password_field   = AUTH_CORE_FIELDS['password_field'];
+    self::$status_field     = AUTH_CORE_FIELDS['status_field'];
+    self::$role_field       = AUTH_CORE_FIELDS['role_field'];
+    self::$active_key_field = AUTH_CORE_FIELDS['activation_key_field'];
+    
   }
 
 
@@ -62,6 +73,11 @@ class Auth extends Model {
   public static function register(array $user_data, $return_status=true){
     self::init();
 
+    $user_data[self::$username_field]   = isset($user_data[self::$username_field]) ? $user_data[self::$username_field] : explode('@', $user_data[self::$email_field])[0];
+    $user_data[self::$role_field]       = isset($user_data[self::$role_field]) ? $user_data[self::$role_field] : self::roles()[0];
+    $user_data[self::$status_field]     = isset($user_data[self::$status_field]) ? $user_data[self::$status_field] : $user_data[self::$status_field] = 'pending';
+    $user_data[self::$active_key_field] = isset($user_data[self::$active_key_field]) ? $user_data[self::$active_key_field] : self::hashKey('activation');
+
     // Check if table fields are configured
     if(!empty($invalid_fields = array_diff(array_keys($user_data), AUTH_ALLOWED_FIELDS))){
       $error_fields = implode(', ', $invalid_fields);
@@ -69,8 +85,8 @@ class Auth extends Model {
       return DEBUG
         ? Err::custom([
           'msg' => "Invalid table fields provided on [Auth::register()] method",
-          'info' => 'These fields are not configured on app/config.php <strong>['.$error_fields.']</strong>',
-          'note' => "You must define the allowed fields of the Users table on app/config.php before using it with user registration",
+          'info' => 'These fields are not configured on app/config/auth-config.php <strong>['.$error_fields.']</strong>',
+          'note' => "You must define the allowed fields of the Users table on app/config/auth-config.php before using it with user registration",
         ])
         : false;
     }
@@ -79,7 +95,10 @@ class Auth extends Model {
     $user_count_username = self::$db->count(AUTH_USERS_TABLE, [self::$username_field => $user_data[self::$username_field]]);
 
     if($user_count_email == 0 && $user_count_username == 0){
-      // Hash password 
+      // Temp Password (For instance Login)
+      $temp_password = $user_data[self::$password_field];
+
+      // Hash password
       $user_data[self::$password_field] = password_hash($user_data[self::$password_field], PASSWORD_DEFAULT);
 
       // Registration time
@@ -100,10 +119,34 @@ class Auth extends Model {
         ]);
 
         self::logThrottle([
-          'user_id'    => $get_this_user[0][self::$id_field],
-          'status'     => 'success',
-          'type'       => 'signup',
+          'user_id' => $get_this_user[0][self::$id_field],
+          'status'  => 'success',
+          'type'    => 'signup',
         ]);
+
+        // Send Verification mail if enabled
+        if(AUTH_SEND_VERIFICATION_MAIL === true){
+          $full_name = isset($user_data[self::$first_name_field]) && isset($user_data[self::$last_name_field]) 
+            ? $user_data[self::$first_name_field].' '.$user_data[self::$last_name_field]
+            : $user_data[self::$username_field];
+
+          self::sendVerificationMail([
+            'email' => $user_data[self::$email_field],
+            'name'  => $full_name,
+            'url'   => BASE_URL.AUTH_EMAIL_VERIFY_PATH.$user_data[self::$active_key_field]
+          ]);
+
+          remove_error('success');
+          set_error('success', trans('signup_success_pending_verification'));
+        }
+
+        // Activate and Login to account if enabled
+        if(AUTH_ACTIVATE_AND_LOGIN_ONCE_SIGNUP === true && AUTH_SEND_VERIFICATION_MAIL === false){
+          self::activateAccount($user_data[self::$email_field]);
+          self::login($user_data[self::$email_field], $temp_password);
+
+          return Router::redirect(AUTH_USER_ROLES[$_SESSION['logged_user_role']]['landing_page']);
+        }
 
         return $return_status ? self::$auth_errors['signup_success'] : true;
       } else {
@@ -178,14 +221,21 @@ class Auth extends Model {
     self::init();
 
     $status = $return_status ? 'error' : false;
-    $rows = self::$db->count(AUTH_USERS_TABLE, [self::$status_field => 'pending', 'activation_key' => $token]);
+    $rows = self::$db->count(AUTH_USERS_TABLE, [self::$status_field => 'pending', self::$active_key_field => $token]);
 
     if($rows > 0){
-      if(self::$db->update(AUTH_USERS_TABLE, [self::$status_field => 'active', 'email_verified_at' => time(), 'activation_key' => 0], ['activation_key' => $token])){
+      if(self::$db->update(AUTH_USERS_TABLE, [
+        self::$status_field => 'active', 'email_verified_at' => time(),
+        self::$active_key_field => 0
+      ], [
+        self::$active_key_field => $token])){
         $status = $return_status ? 'success' : true; // Account Activated
       }
     } else {
-      $disabled_rows = self::$db->count(AUTH_USERS_TABLE, [self::$status_field => 'disabled', 'activation_key' => $token]);
+      $disabled_rows = self::$db->count(AUTH_USERS_TABLE, [
+        self::$status_field => 'disabled',
+        self::$active_key_field => $token
+      ]);
       if($disabled_rows > 0){
         $status = $return_status ? 'disabled' : false;
       } else {
@@ -266,7 +316,7 @@ class Auth extends Model {
     self::init();
 
     // Optional Arguments
-    list($new_login_mail_data, $throttle_mail_data, $redirect_path, $query) = false;
+    list($new_login_mail_data, $redirect_path, $query) = false;
     if(!empty($args)){
       extract($args, EXTR_IF_EXISTS);
     }
@@ -287,31 +337,31 @@ class Auth extends Model {
       $throttle_data['user_id'] = $user[self::$id_field]; // User ID for Throttle log
       $throttle_data['type']    = 'login';
 
-      // Check if Max attempts exceeded
-      if(self::attemptsExceeded($user[self::$id_field])){
-        if(AUTH_THROTTLE_ACTION == 'reset'){
-          set_error('error', trans_e('throttle_reset'));
-        } else {
-          set_error('error', trans_e('throttle_delay', ['time' => gmdate('i', AUTH_THROTTLE_ACTION).' minutes' ]));
-        }
+      // Check if Max attempts exceeded (Throttle)
+      if(self::isAttemptsExceeded($user[self::$id_field])){
+        $wait_time = (AUTH_THROTTLE_DELAY_TIME <= 60) 
+          ? AUTH_THROTTLE_DELAY_TIME.' seconds' 
+          : (AUTH_THROTTLE_DELAY_TIME / 60).' minutes';
 
-        // Execute Throttle action
-        self::throttleAction($user[self::$id_field], $throttle_mail_data);
+        set_error('error', trans_e('account_locked_throttle', ['time' => $wait_time]));
+        self::throttleAction($user[self::$id_field]);
 
         return $return_status ? self::$auth_errors['throttle_error'] : false;
       } else {
         if(password_verify($password, $user[self::$password_field])){
           // User logged in
           $redirect_to = (isset($redirect_path) && $redirect_path !== '') ? $redirect_path : AUTH_USER_ROLES[$user[self::$role_field]]['landing_page'];
-          $_SESSION['logged_user_id']     = $user[self::$id_field];
-          $_SESSION['logged_username']    = $user[self::$username_field];
-          $_SESSION['logged_user_email']  = $user[self::$email_field];
-          $_SESSION['logged_user_status'] = $user[self::$status_field];
-          $_SESSION['logged_user_role']   = $user[self::$role_field];
+          $_SESSION['logged_user_id']         = $user[self::$id_field];
+          $_SESSION['logged_username']        = $user[self::$username_field];
+          $_SESSION['logged_user_email']      = $user[self::$email_field];
+          $_SESSION['logged_user_first_name'] = $user[self::$first_name_field];
+          $_SESSION['logged_user_last_name']  = $user[self::$last_name_field];
+          $_SESSION['logged_user_status']     = $user[self::$status_field];
+          $_SESSION['logged_user_role']       = $user[self::$role_field];
 
           set_error('success', trans('login_success'));
 
-          // Send New Login alert (Device/Browser/IP) if changed
+          // Send New Login alert (IP/Device/OS/Browser) if changed
           $new_login_mail_data['email'] = $user[self::$email_field];
           self::sendNewLoginAlert($new_login_mail_data);
 
@@ -332,18 +382,51 @@ class Auth extends Model {
         }
       }
     } else {
-      // Check if user blocked
-      $blocked_user = self::$db->count(AUTH_USERS_TABLE, self::$id_field, [
+      // Check if user locked
+      $locked_user = self::$db->select(AUTH_USERS_TABLE, self::$id_field, [
         'OR' => [
           self::$username_field => $email,
           self::$email_field => $email,
         ],
-        self::$status_field => 'blocked'
+        self::$status_field => 'locked'
       ]);
 
-      if($blocked_user === 1){
-        set_error('error', trans_e('account_blocked'));
-        return $return_status ? self::$auth_errors['account_blocked'] : false;
+      if(count($locked_user) === 1){
+        // Check if temporary locked (Throttle)
+        $is_temp_lock = self::$db->get(AUTH_THROTTLE_TABLE, ['id', 'user_id', 'timestamp'], [
+          'user_id'   => $locked_user[0],
+          'status'    => 'locked',
+          'type'      => 'throttle_error',
+          'is_active' => true,
+          'ORDER'     => ['id' => 'DESC']
+        ]);
+
+        if(!is_null($is_temp_lock)){
+          // Locked (Throttling)
+          $unlock_time = $is_temp_lock['timestamp'] + AUTH_THROTTLE_DELAY_TIME;
+
+          if($unlock_time <= time()){
+            // Disable lock on users_log and Unlock account
+            self::$db->update(AUTH_THROTTLE_TABLE, ['is_active' => false], ['id' => $is_temp_lock['id']]);
+            self::activateAccount($is_temp_lock['user_id']);
+            self::removeFailedAttempts($is_temp_lock['user_id']);
+
+            return self::login($email, $password, $return_status, $args);
+          } else {
+            $remaining_time = $unlock_time - time();
+            $remaining_time_string = (AUTH_THROTTLE_DELAY_TIME <= 60 || $remaining_time <= 60)
+              ? round($remaining_time).' seconds' 
+              : round($remaining_time / 60).' minutes';
+
+            set_error('error', trans_e('account_locked_throttle', ['time' => $remaining_time_string]));
+
+            return $return_status ? self::$auth_errors['account_locked_throttle'] : false;
+          }
+        } else {
+          // Locked (Other reasons)
+          set_error('error', trans_e('account_locked'));
+          return $return_status ? self::$auth_errors['account_locked'] : false;
+        }
       } else {
         // Check if email not verified
         $unverified_user = self::$db->count(AUTH_USERS_TABLE, self::$id_field, [
@@ -389,11 +472,14 @@ class Auth extends Model {
   public static function info($key=false){
     if(self::isLoggedIn()){
       $user = [
-        'id'        => $_SESSION['logged_user_id'],
-        'username'  => $_SESSION['logged_username'],
-        'email'     => $_SESSION['logged_user_email'],
-        'status'    => $_SESSION['logged_user_status'],
-        'role'      => $_SESSION['logged_user_role'],
+        'id'         => $_SESSION['logged_user_id'],
+        'username'   => $_SESSION['logged_username'],
+        'email'      => $_SESSION['logged_user_email'],
+        'name'       => $_SESSION['logged_user_first_name'].' '.$_SESSION['logged_user_last_name'],
+        'first_name' => $_SESSION['logged_user_first_name'],
+        'last_name'  => $_SESSION['logged_user_last_name'],
+        'status'     => $_SESSION['logged_user_status'],
+        'role'       => $_SESSION['logged_user_role'],
       ];
 
       return (isset($key) && $key !== false) ? $user[$key] : $user;
@@ -428,21 +514,45 @@ class Auth extends Model {
   /**
    * Throttle Action
    * @param int $user_id User ID
-   * @param array $throttle_mail_data Additional email data for throttle reset mail
    */
-  public static function throttleAction($user_id, $throttle_mail_data=false){
+  public static function throttleAction($user_id){
     if(AUTH_THROTTLE === true){
-      if(AUTH_THROTTLE_ACTION == 'reset'){
-        self::blockAccount($user_id);
-        self::requestPasswordReset($user_id);
-      } else {
-        // Delay Login
-        // Create Throttle a log with status=blocked, timestamp=time()
-        // Remove Blocked log after $action time
-        // Think again ----
-        // ==================>
-      }
+      $throttle_data = [
+        'user_id'   => $user_id,
+        'status'    => 'locked',
+        'type'      => 'throttle_error',
+        'is_active' => true,
+      ];
+
+      self::lockAccount($user_id);
+      self::logThrottle($throttle_data);
     }
+  }
+
+
+
+  /**
+	 * Get either a Gravatar URL or complete image tag for a specified email address.
+	 * @param string $email The email address
+	 * @param string $s Size in pixels, defaults to 80px [ 1 - 2048 ]
+	 * @param string $default Default image set to use [ 404 | mp | identicon | monsterid | wavatar ]
+	 * @param string $r Maximum rating (inclusive) [ g | pg | r | x ]
+	 */
+  public static function getGravatar($email=false, $s=80, $d='identicon', $r='g') {
+    $url = 'https://www.gravatar.com/avatar/';
+    $url .= md5(strtolower(trim($email ? $email : $_SESSION['logged_user_email'])));
+    $url .= "?s=$s&d=$d&r=$r";
+
+    return $url;
+  }
+
+
+
+    /**
+   * Add Avatar/Profile picture
+   */
+  public static function addAvatar($email){
+    
   }
 
 
@@ -452,6 +562,8 @@ class Auth extends Model {
    * @return array|boolean Changed items (ip, device, browser, os) / return (false) if not a new login
    */
   public static function isNewLogin(){
+    $request = Request::getInstance();
+
     if(!self::isLoggedIn()){
       return false;
     }
@@ -476,8 +588,8 @@ class Auth extends Model {
       $known_agents['browser'][$key] = $ag['browser'];
     }
 
-    $current_agent = Request::user_agent();
-    $current_agent['ip'] = Request::ip();
+    $current_agent = $request->user_agent();
+    $current_agent['ip'] = $request->ip();
     $current_agent['date_time'] = date("M d, Y | H:i:s");
     $new_entries = [];
     $keys = ['ip', 'device', 'os', 'browser', 'os_version'];
@@ -496,10 +608,16 @@ class Auth extends Model {
 
 
   /**
-   * Verify Password (for reset)
+   * Send password reset mail
+   * @param int|string $user_id User Id
+   * @param array $additional_mail_data Additional mail data to password reset mail
    */
-  public static function requestPasswordReset(){
+  public static function sendPasswordResetMail($user_id, $additional_mail_data=false){
+    $user_data = self::$db->get(AUTH_USERS_TABLE, AUTH_ALLOWED_FIELDS, [ self::$id_field => $user_id ]);
+    $user_data[self::$username_field];
+    $user_data[self::$email_field];
 
+    dd($user_data);
   }
 
 
@@ -526,8 +644,11 @@ class Auth extends Model {
 
   /**
    * Change Email
+   * @param int $user_id User ID
+   * @param string $current_email
+   * @param string $new_email
    */
-  public static function changeEmail(){
+  public static function changeEmail($user_id, $current_email, $new_email){
     // 0. change account status to (pending)
     // 1. Send verification mail to new email
     // 2. Verify new Email account
@@ -604,6 +725,27 @@ class Auth extends Model {
 
 
   /**
+   * Get a user's role by email or user ID
+   * @param string $id_or_email User ID or User email
+   */
+  public static function getRole($id_or_email=false){
+    if(self::isLoggedIn() && $id_or_email === false){
+      return $_SESSION['logged_user_role'];
+    } else {
+      $role = self::$db->get(AUTH_USERS_TABLE, self::$role_field, [
+        'OR' => [
+          self::$email_field => $id_or_email,
+          self::$id_field => $id_or_email,
+        ]
+      ]);
+
+      return !is_null($role) ? $role : false;
+    }
+  }
+
+
+
+  /**
    * Check User status
    * @param string $status Status to check against
    */
@@ -618,40 +760,76 @@ class Auth extends Model {
 
 
   /**
-   * Block User Account
-   * @param string|int $user_id User ID to block
+   * Lock User Account
+   * @param string|int $user_id User ID to lock
    * @param array $where Extra arguments
    */
-  public static function blockAccount($user_id, $where=[]){
+  public static function lockAccount($user_id, $where=[]){
     self::init();
 
     $where_args = !empty($where)
       ? array_merge([self::$id_field => $user_id ], $where) 
       : [self::$id_field => $user_id ];
 
-    $blocked = self::$db->update(AUTH_USERS_TABLE, [
-      self::$status_field => 'blocked', 'activation_key' => sha1(random_str(36).time().$user_id) 
+    $locked = self::$db->update(AUTH_USERS_TABLE, [
+      self::$status_field => 'locked',
+      self::$active_key_field => self::hashKey('activation', $user_id)
     ], $where_args );
 
-    return $blocked ? true : false;
+    return $locked ? true : false;
+  }
+
+
+
+    /**
+   * Activate/Unlock User Account
+   * @param string|int $id_or_email User ID or email to activate
+   * @param array $where Extra arguments
+   */
+  public static function activateAccount($id_or_email, $where=[]){
+    self::init();
+
+    $initial_where = [
+      'OR' => [
+        self::$id_field => $id_or_email,
+        self::$email_field => $id_or_email
+      ]
+    ];
+    $where_args = !empty($where)
+      ? array_merge($initial_where, $where) 
+      : $initial_where;
+
+    $unlock = self::$db->update(AUTH_USERS_TABLE, [
+      self::$status_field => 'active',
+      self::$active_key_field => 0 
+    ], $where_args );
+
+    return $unlock ? true : false;
   }
 
 
 
   /**
    * Disable User Account
-   * @param string|int $user_id User ID to disable
+   * @param string|int $id_or_email User ID or Email to disable
    * @param array $where Extra arguments
    */
-  public static function disableAccount($user_id, $where=[]){
+  public static function disableAccount($id_or_email, $where=[]){
     self::init();
 
+    $initial_where = [
+      'OR' => [
+        self::$id_field => $id_or_email,
+        self::$email_field => $id_or_email
+      ]
+    ];
     $where_args = !empty($where)
-      ? array_merge([self::$id_field => $user_id ], $where) 
-      : [self::$id_field => $user_id ];
+      ? array_merge($initial_where, $where) 
+      : $initial_where;
 
     $disabled = self::$db->update(AUTH_USERS_TABLE, [
-      self::$status_field => 'disable', 'activation_key' => sha1(random_str(36).time().$user_id) 
+      self::$status_field => 'disable',
+      self::$active_key_field => self::hashKey('activation', $user_id)
     ], $where_args );
 
     return $disabled ? true : false;
@@ -661,15 +839,21 @@ class Auth extends Model {
 
   /**
    * Delete User Account
-   *@param string|int $user_id User ID to delete
+   *@param string|int $id_or_email User ID or Email to delete
    * @param array $where Extra arguments
    */
-  public static function deleteAccount(int $user_id, $where=[]){
+  public static function deleteAccount($id_or_email, $where=[]){
     self::init();
 
+    $initial_where = [
+      'OR' => [
+        self::$id_field => $id_or_email,
+        self::$email_field => $id_or_email
+      ]
+    ];
     $where_args = !empty($where)
-      ? array_merge([self::$id_field => $user_id ], $where) 
-      : [self::$id_field => $user_id ];
+      ? array_merge($initial_where, $where) 
+      : $initial_where;
 
     $deleted = self::$db->delete(AUTH_USERS_TABLE, $where_args);
 

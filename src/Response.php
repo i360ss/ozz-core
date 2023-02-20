@@ -11,15 +11,55 @@ use Ozz\Core\AfterRequest;
 
 class Response {
 
-  public $content;
-  public $status_code;
-  public $headers;
+  private static $instance;
+  private $content;
+  private $status_code;
+  private $headers = [];
 
 
-  public function __construct($content, $status_code, $headers){
-    $this->content = $content;
-    $this->status_code = $status_code;
-    $this->headers = $headers;
+
+  private function __construct() {}
+
+
+
+  /**
+   * Single Instance of Response
+   */
+  public static function getInstance() {
+    if (self::$instance === null) {
+      self::$instance = new self();
+    }
+    return self::$instance;
+  }
+
+
+
+  /**
+   * Get Response properties
+   * @param string $key property name (optional)
+   */
+  public function get($key=false){
+    $props = [
+      'status_code' => $this->status_code,
+      'headers' => $this->headers,
+      'content' => $this->content,
+    ];
+
+    return $key ? $props[$key] : $props;
+  }
+
+
+
+  /**
+   * Check header exist
+   * @param string Header key
+   */
+  public function has_header($key=false){
+    if(isset($key)){
+      return isset($this->headers[$key]) && !empty($this->headers[$key]);
+    } else {
+      return !empty($this->headers);
+    }
   }
 
 
@@ -46,29 +86,45 @@ class Response {
 
 
   /**
+   * Set Response Content
+   * @param $content response content
+   */
+  public function set_content($content){
+    $this->content = $content;
+  }
+
+
+
+  /**
    * Send Response to client
    */
   public function send(){
     $show_debug_bar = false;
     $page_cache = false;
 
-    foreach ($this->headers as $key => $header) {
-      header("$key: $header");
+    http_response_code($this->status_code);
 
-      // Only for page view Response
-      if($key == 'Content-Type' && in_array($header, ['text/html', 'text/html; charset='.CHARSET, 'text/plain'])){
-        $show_debug_bar = true;
-        $page_cache = true;
+    if(isset($this->headers) && !empty($this->headers)){
+      foreach ($this->headers as $key => $header) {
+        header("$key: $header");
+
+        // Only for page view Response
+        if($key == 'Content-Type' && in_array($header, ['text/html', 'text/html; charset='.CHARSET, 'text/plain'])){
+          $show_debug_bar = true;
+          $page_cache = true;
+        }
       }
+    } else {
+      // Default header
+      header('Content-Type', 'text/html; charset='.CHARSET);
     }
 
-    http_response_code($this->status_code);
     echo $this->content;
 
     // Store page cache for this page
     if($this->status_code !== 404 && PAGE_CACHE_TIME !== '0' && $page_cache === true){
-      $request = new Request;
-      (new Cache)->store('page', $request->all()['url'], $this->content);
+      $request = Request::getInstance();
+      (new Cache)->store('page', $request->url(), $this->content);
     }
 
     // Show debug bar
@@ -77,8 +133,8 @@ class Response {
       $DEBUG_BAR->show();
     }
 
-    $afterReq = new AfterRequest;
-    $afterReq->run();
+    $afterRequest = new AfterRequest;
+    $afterRequest->run();
   }
 
 }

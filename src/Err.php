@@ -98,30 +98,12 @@ class Err {
     ]);
   }
   
-  // User Role Not Found
-  public static function userRoleNotFound($i){
-    return self::renderErr([
-      "msg" => "User role not found <br> Role Name: $i",
-      "info" => "More information about the issue and how to fix it",
-      "note" => "Additional Notes"
-    ]);
-  }
-  
-  // User landing page not defined or not set in session
-  public static function userLandingPageNotFound($i){
-    return self::renderErr([
-      "msg" => "User landing page not defined or not set in session",
-      "info" => "More information about the issue and how to fix it",
-      "note" => "Additional Notes"
-    ]);
-  }
-  
   // Invalid Middleware name
   public static function invalidMiddleware($i){
     return self::renderErr([
       "msg" => "(".$i.") Middleware Not registered",
-      "info" => "More information about the issue and how to fix it",
-      "note" => "Additional Notes"
+      "info" => "First create your middleware and register it on [ app/RegisterMiddleware.php ]",
+      "note" => "To create a middleware just run [ php ozz c:md MiddlewareName ]"
     ]);
   }
 
