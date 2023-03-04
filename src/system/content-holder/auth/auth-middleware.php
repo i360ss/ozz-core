@@ -18,6 +18,8 @@ class ".ucfirst($middlewareName)." {
     \$deniedPages = [
       AUTH_LOGIN_PATH,
       AUTH_SIGNUP_PATH,
+      AUTH_FORGOT_PASSWORD_PATH,
+      AUTH_RESET_PASSWORD_PATH,
     ];
 
     \$loggedIn = Auth::isLoggedIn();

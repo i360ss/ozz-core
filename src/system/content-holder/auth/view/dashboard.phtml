@@ -1,0 +1,27 @@
+<?php
+/**
+ * View Name: dashboard
+ * Path: view/auth/dashboard
+ * 
+ * @param array $data arguments passed from controller
+ * 
+ */
+?>
+
+{{ title     = "Dashboard" }}
+{{ bodyClass = "dashboard light-bg" }}
+
+{{ content }}
+  <section class="component auth-comp center user-card">
+    <div class="container">
+      <div class="profile-pic">
+        <img src="<?=get_gravatar($email, 80);?>" alt="Avatar">
+      </div>
+      <div class="content">
+        <h1><?=$first_name.' '.$last_name?></h1>
+        <p>@<?=$username?></p>
+        <p><?=$email?></p>
+      </div>
+    </div>
+  </section>
+{{ content-end }}

@@ -270,3 +270,12 @@ function random_str($n=10, $validChars=null) {
 function _random_str($n=10, $type=null) {
   echo random_str($n, $type);
 }
+
+
+/**
+ * Replace multiple slashes by single slash
+ * @param string $str string to be replaced
+ */
+function clear_multi_slashes($str) {
+  return preg_replace("/\/+/", "/", $str);
+}

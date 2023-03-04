@@ -10,6 +10,7 @@
 $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
 
 ?>
+
 {{ title        = "Sign up | <?=APP_NAME?>" }}
 {{ keywords     = "signup" }}
 {{ description  = "Sign Up" }}
@@ -53,6 +54,7 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
 
         <div class="form-error">
           <?=show_error('success', '<p class="message success">##</p>'); ?>
+          <?=show_error('error', '<p class="message danger">##</p>'); ?>
         </div>
 
         <input type="submit" value="Sign Up">

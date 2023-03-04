@@ -18,9 +18,9 @@ class Lang {
 
 
   public function __construct(){
-    $this->lang = Session::has('app_language') 
-      ? Session::get('app_language') 
-      : Session::set('app_language', env('app', 'APP_LANG'));
+    $this->lang = Session::has('app_lang') 
+      ? Session::get('app_lang') 
+      : Session::set('app_lang', env('app', 'APP_LANG'));
 
     if(file_exists(APP_LANG_PATH.'errors.php')){
       $this->errors = include APP_LANG_PATH.'errors.php';
@@ -50,8 +50,8 @@ class Lang {
 
 
   public function switch($lang){
-    if(Session::get('app_language') !== $lang){
-      Session::set('app_language', $lang);
+    if(Session::get('app_lang') !== $lang){
+      Session::set('app_lang', $lang);
     }
   }
 

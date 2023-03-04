@@ -17,11 +17,6 @@ class Response {
   private $headers = [];
 
 
-
-  private function __construct() {}
-
-
-
   /**
    * Single Instance of Response
    */
@@ -122,7 +117,7 @@ class Response {
     echo $this->content;
 
     // Store page cache for this page
-    if($this->status_code !== 404 && PAGE_CACHE_TIME !== '0' && $page_cache === true){
+    if($this->status_code !== 404 && PAGE_CACHE_TIME && $page_cache === true){
       $request = Request::getInstance();
       (new Cache)->store('page', $request->url(), $this->content);
     }

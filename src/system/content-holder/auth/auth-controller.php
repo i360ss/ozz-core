@@ -39,12 +39,10 @@ class ".ucfirst($controllerName)." extends Controller {
         'password'   => \$password,
       ];
 
-      if(Auth::register(\$user_data, false)){
-        remove_flash('form_data');
-      }
+      Auth::register(\$user_data, false);
     }
 
-    view('auth/sign-up');
+    return view('auth/sign-up');
   }
 
 
@@ -55,7 +53,7 @@ class ".ucfirst($controllerName)." extends Controller {
   public function verifyUserAccount(Request \$request){
     \$data['status'] = Auth::verifyEmail(\$request->url_param('token'));
 
-    view('auth/verify-account', \$data);
+    return view('auth/verify-account', \$data);
   }
 
 
@@ -73,12 +71,70 @@ class ".ucfirst($controllerName)." extends Controller {
       'password'  => 'req | password',
     ]);
 
-    if(\$validation->pass){
-      Auth::login(\$email, \$password, false);
+    \$validation->pass ? Auth::login(\$email, \$password) : false;
+
+    return Router::redirect('/login');
+  }
+
+
+
+  /**
+   * Password reset request
+   */
+  public function passwordResetRequest(Request \$request){
+    \$form_data = \$request->input();
+    set_flash('form_data', \$form_data);
+
+    \$validation = Validate::check(\$form_data, [
+      'email' => 'req | email'
+    ]);
+
+    \$validation->pass ? Auth::passwordResetAttempt(\$form_data['email']) : false;
+
+    return Router::redirect('/forgot-password');
+  }
+
+
+
+  /**
+   * Reset password
+   */
+  public function resetPassword(Request \$request){
+    \$data['status'] = Auth::validateResetToken(\$request->url_param('token'));
+    \$data['token'] = \$request->url_param('token');
+
+    return view('auth/reset-password', \$data);
+  }
+
+
+
+  /**
+   * Update new password
+   */
+  public function updateNewPassword(Request \$request){
+    \$token = \$request->input('token');
+    \$data['token'] = \$token;
+    \$data['status'] = Auth::validateResetToken(\$token);
+
+    \$validate = Validate::check(\$request->input(), [
+      'password' => 'req | strong_password',
+      'confirm_password' => 'req | match:{password}',
+    ]);
+
+    if(\$validate->pass){
+      if(\$data['status'] == 'valid_token'){
+        if(Auth::changePasswordByToken(\$token, \$request->input('password'))){
+          \$data['status'] = 'success';
+        }
+      } else {
+        set_error('error', trans_e('invalid_reset_token'));
+      }
     }
 
-    Router::redirect('/login');
+    return view('auth/reset-password', \$data);
   }
+
+
 
 }
 ";

@@ -217,7 +217,7 @@ class Migrate extends Schema {
             if(isset($allTblCreation_SQL) && !empty($allTblCreation_SQL)){
               foreach ($allTblCreation_SQL as $table => $v) {
                 if($this->conn->query($v)) {
-                  
+
                   // Log Migration data history
                   $this->log_migrations([$table => $v], 'create');
 

@@ -16,15 +16,15 @@ class Session {
    * Initialize Application Session
    */
   public static function init($config) {
-    self::$refresh_after = $config['app']['REFRESH_SESSION_ID'];
+    self::$refresh_after = REFRESH_SESSION_ID_IN;
 
     if(session_status() == PHP_SESSION_NONE){
       session_start();
     }
 
-    if(!isset($_SESSION['INIT_TIME'])){
-      $_SESSION['INIT_TIME'] = time();
-    } elseif (time() - $_SESSION['INIT_TIME'] > self::$refresh_after){
+    if(!isset($_SESSION['SESSION_INIT_TIME'])){
+      $_SESSION['SESSION_INIT_TIME'] = time();
+    } elseif (time() - $_SESSION['SESSION_INIT_TIME'] > self::$refresh_after){
       self::re_generate_id();
     }
   }
@@ -36,7 +36,7 @@ class Session {
    */
   public static function re_generate_id() {
     session_regenerate_id(true);
-    $_SESSION['INIT_TIME'] = time();
+    $_SESSION['SESSION_INIT_TIME'] = time();
   }
 
 

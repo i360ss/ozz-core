@@ -3,8 +3,8 @@
 $ozz_debugbar_css = "
 :root {
   --ozz-white: #ffffff;
-  --ozz-green: #39B54A;
-  --ozz-darkGreen: #20862E;
+  --ozz-blue: #666EE8;
+  --ozz-darkBlue: #3E46B1;
   --ozz-light1: #f1f2f6;
   --ozz-light2: #dfe4ea;
   --ozz-light3: #ced6e0;
@@ -23,7 +23,7 @@ $ozz_debugbar_css = "
 .ozz-fw-debug-bar {
   all: unset;
   background: var(--ozz-white);
-  border-top: 2px solid var(--ozz-green);
+  border-top: 2px solid var(--ozz-blue);
   bottom: 12px !important;
   box-sizing: border-box;
   height: 25px;
@@ -90,12 +90,12 @@ $ozz_debugbar_css = "
 
 .ozz-fw-debug-bar__nav.item.active {
   color: var(--ozz-light1);
-  background: var(--ozz-green);
+  background: var(--ozz-blue);
 }
 
 .ozz-fw-debug-bar__nav.item .count {
   all: unset;
-  color: var(--ozz-green);
+  color: var(--ozz-blue);
   font-weight: 600;
 }
 
@@ -298,6 +298,10 @@ $ozz_debugbar_css = "
   all: unset;
   color: var(--ozz-dark);
   font-size: 13px;
+}
+
+.ozz-fw-debug-bar-tab__message-view span :nth-child(1) {
+  margin-right: 10px;
 }
 
 .ozz-fw-debug-bar-tab__message:hover, 

@@ -410,6 +410,7 @@ class Request extends Router {
 
     $user_agent = $_SERVER['HTTP_USER_AGENT'];
     $user_agent_info = [
+      'all'             => $user_agent,
       'device'          => null,
       'os'              => null,
       'device_name'     => null,

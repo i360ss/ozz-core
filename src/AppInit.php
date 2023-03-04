@@ -86,25 +86,15 @@ class AppInit {
     /**
      * App current language
      */
-    if(!Session::has('app_language')){
-      Session::set('app_language', $this->config['app']['APP_LANG']);
+    if(!Session::has('app_lang')){
+      Session::set('app_lang', $this->config['app']['APP_LANG']);
     }
-    defined('APP_LANG') || define('APP_LANG', Session::get('app_language'));
+    defined('APP_LANG') || define('APP_LANG', Session::get('app_lang'));
 
     /**
      * App current language path
      */
     defined('APP_LANG_PATH') || define('APP_LANG_PATH', __DIR__.SPC_BACK['core'].'app/lang/'.APP_LANG.'/');
-
-    /**
-     * App Charset defined in env.ini
-     */
-    defined('CHARSET') || define('CHARSET', $this->config['app']['CHARSET']);
-
-    /**
-     * App Charset defined in env.ini
-     */
-    defined('PAGE_CACHE_TIME') || define('PAGE_CACHE_TIME', $this->config['app']['PAGE_CACHE_TIME']);
 
     /**
      * Set Base URL
@@ -154,7 +144,7 @@ class AppInit {
     /**
      * Upload directory, point to URL
      */
-    defined('UPLOADS') || define('UPLOADS', BASE_URL.$this->config['app']['UPLOAD_DIR']);
+    defined('UPLOAD_DIR_PUBLIC') || define('UPLOAD_DIR_PUBLIC', $this->config['app']['UPLOAD_DIR_PUBLIC']);
 
     /**
      * CSS directory, all CSS files should be here
@@ -177,9 +167,9 @@ class AppInit {
     defined('SHOW_DEBUG_BAR') || define('SHOW_DEBUG_BAR', $this->config['app']['SHOW_DEBUG_BAR'] == 1 ? true : false);
 
     /**
-     * Minify HTML, defined in env.ini
+     * Debug Email template output, defined in env.ini
      */
-    defined('MINIFY_HTML') || define('MINIFY_HTML', $this->config['app']['MINIFY_HTML'] == 1 ? true : false);
+    defined('DEBUG_EMAIL_TEMP') || define('DEBUG_EMAIL_TEMP', $this->config['app']['DEBUG_EMAIL_TEMP'] == 1 ? true : false);
   }
 
 

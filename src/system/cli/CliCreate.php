@@ -204,7 +204,7 @@ class CliCreate {
       return false;
     }
     
-    $fileName = $this->createTo.'email_template/'.$name.'.html';
+    $fileName = $this->createTo.'email_template/'.$name.'.phtml';
     
     if(!file_exists($fileName)){
       require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents

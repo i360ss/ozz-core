@@ -7,7 +7,6 @@
 
 namespace Ozz\Core;
 
-use App\Validator;
 use Ozz\Core\Err;
 use Ozz\Core\Lang;
 use Ozz\Core\system\file\FileSettings;
@@ -40,7 +39,7 @@ class File {
     self::$errors = new Lang;
 
     // Validator
-    self::$validator = Validator::validExtensions();
+    self::$validator = DEFAULT_FILE_VALIDATION;
     
     // Invalid File type defined in function call
     if(!array_key_exists($typ, self::$validator)){
@@ -63,8 +62,11 @@ class File {
     self::$formats = array_map('trim', explode('|', $validFormats));
 
     // Upload Directory
-    self::$uploadedTo = $to !== null ? 'uploads/'.$to : 'uploads/';
     self::$moveTo = $to !== null ? UPLOAD_TO.$to : UPLOAD_TO;
+    self::$moveTo = preg_replace("/\/+/", "/", self::$moveTo);
+
+    self::$uploadedTo = $to !== null ? UPLOAD_DIR_PUBLIC.$to : UPLOAD_DIR_PUBLIC;
+    self::$uploadedTo = preg_replace("/\/+/", "/", self::$uploadedTo);
 
     // Current File(s)
     $ReqFiles = $files !== null ? $files : $_FILES;

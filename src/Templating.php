@@ -152,6 +152,7 @@ class Templating extends AppInit {
     ob_start();
     $context = self::$cdt[0];
     $data = self::$cdt[1];
+    extract($data); // Extract data to view
     require VIEW.$v.'.phtml';
     $vars = get_defined_vars();
     $view = ob_get_contents();
@@ -171,7 +172,7 @@ class Templating extends AppInit {
         DEBUG ? self::$debug_view['components'][$k]['file'] = "view/components/$parts[0].phtml" : false; // Log to debug bar
 
         ob_start();
-        
+
         // Setup arguments to component
         if(count($parts) == 2){
           // Clear previous component's args and extracted variables

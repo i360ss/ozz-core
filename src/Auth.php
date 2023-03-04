@@ -30,8 +30,8 @@ class Auth extends Model {
   private static $role_field;
   private static $active_key_field;
   private static $auth_errors = [
-    'login_success'           => 'success',
-    'signup_success'          => 'success',
+    'success'                 => 'success',
+    'valid_token'             => 'valid_token',
     'invalid_username'        => 'invalid_username',
     'invalid_password'        => 'invalid_password',
     'unverified_account'      => 'unverified_account',
@@ -42,6 +42,9 @@ class Auth extends Model {
     'account_locked'          => 'account_locked',
     'account_suspended'       => 'account_suspended',
     'throttle_error'          => 'throttle_error',
+    'password_reset_error'    => 'password_reset_error',
+    'invalid_token'           => 'invalid_token',
+    'expired_token'           => 'expired_token',
   ];
 
 
@@ -51,16 +54,15 @@ class Auth extends Model {
    */
   private static function init(){
     self::$db               = (new static)->DB();
-    self::$id_field         = AUTH_CORE_FIELDS['id_field'];
-    self::$username_field   = AUTH_CORE_FIELDS['username_field'];
-    self::$email_field      = AUTH_CORE_FIELDS['email_field'];
-    self::$first_name_field = AUTH_CORE_FIELDS['first_name_field'];
-    self::$last_name_field  = AUTH_CORE_FIELDS['last_name_field'];
-    self::$password_field   = AUTH_CORE_FIELDS['password_field'];
-    self::$status_field     = AUTH_CORE_FIELDS['status_field'];
-    self::$role_field       = AUTH_CORE_FIELDS['role_field'];
-    self::$active_key_field = AUTH_CORE_FIELDS['activation_key_field'];
-    
+    self::$id_field         = AUTH_CORE_FIELDS['ID_FIELD'];
+    self::$username_field   = AUTH_CORE_FIELDS['USERNAME_FIELD'];
+    self::$email_field      = AUTH_CORE_FIELDS['EMAIL_FIELD'];
+    self::$first_name_field = AUTH_CORE_FIELDS['FIRST_NAME_FIELD'];
+    self::$last_name_field  = AUTH_CORE_FIELDS['LAST_NAME_FIELD'];
+    self::$password_field   = AUTH_CORE_FIELDS['PASSWORD_FIELD'];
+    self::$status_field     = AUTH_CORE_FIELDS['STATUS_FIELD'];
+    self::$role_field       = AUTH_CORE_FIELDS['ROLE_FIELD'];
+    self::$active_key_field = AUTH_CORE_FIELDS['ACTIVATION_KEY_FIELD'];
   }
 
 
@@ -85,8 +87,8 @@ class Auth extends Model {
       return DEBUG
         ? Err::custom([
           'msg' => "Invalid table fields provided on [Auth::register()] method",
-          'info' => 'These fields are not configured on app/config/auth-config.php <strong>['.$error_fields.']</strong>',
-          'note' => "You must define the allowed fields of the Users table on app/config/auth-config.php before using it with user registration",
+          'info' => 'These fields are not configured on app/config/auth.php <strong>['.$error_fields.']</strong>',
+          'note' => "You must define the allowed fields of the Users table on app/config/auth.php before using it with user registration",
         ])
         : false;
     }
@@ -99,7 +101,7 @@ class Auth extends Model {
       $temp_password = $user_data[self::$password_field];
 
       // Hash password
-      $user_data[self::$password_field] = password_hash($user_data[self::$password_field], PASSWORD_DEFAULT);
+      $user_data[self::$password_field] = self::hashKey('password-hash', $user_data[self::$password_field]);
 
       // Registration time
       if(!array_key_exists('registered_at', $user_data)){
@@ -118,7 +120,7 @@ class Auth extends Model {
           ]
         ]);
 
-        self::logThrottle([
+        self::addUserLog([
           'user_id' => $get_this_user[0][self::$id_field],
           'status'  => 'success',
           'type'    => 'signup',
@@ -130,14 +132,12 @@ class Auth extends Model {
             ? $user_data[self::$first_name_field].' '.$user_data[self::$last_name_field]
             : $user_data[self::$username_field];
 
-          self::sendVerificationMail([
-            'email' => $user_data[self::$email_field],
-            'name'  => $full_name,
-            'url'   => BASE_URL.AUTH_EMAIL_VERIFY_PATH.$user_data[self::$active_key_field]
-          ]);
+          $mail_args = [
+            'name' => $full_name,
+            'verify_link' => clear_multi_slashes(AUTH_EMAIL_VERIFY_PATH.'/').$user_data[self::$active_key_field]
+          ];
 
-          remove_error('success');
-          set_error('success', trans('signup_success_pending_verification'));
+          return self::notify('email-verification', $user_data[self::$email_field], $mail_args);
         }
 
         // Activate and Login to account if enabled
@@ -148,7 +148,7 @@ class Auth extends Model {
           return Router::redirect(AUTH_USER_ROLES[$_SESSION['logged_user_role']]['landing_page']);
         }
 
-        return $return_status ? self::$auth_errors['signup_success'] : true;
+        return $return_status ? self::$auth_errors['success'] : true;
       } else {
         set_error('error', trans_e('registration_failed'));
         return $return_status ? self::$auth_errors['registration_failed'] : false;
@@ -165,59 +165,11 @@ class Auth extends Model {
 
 
   /**
-   * Send verification Email
-   * @param array $args Email parameters (email and url values are must)
-   */
-  public static function sendVerificationMail($args=[]){
-    self::init();
-
-    $defaults = [
-      'app_name'     => APP_NAME,
-      'subject'      => trans('email_verification_subject'),
-      'title'        => trans('email_verification_title'),
-      'button_label' => trans('email_verification_button_label'),
-      'template'     => AUTH_EMAIL_TEMPLATES['account-verification'],
-      'email'        => false,
-      'url'          => false,
-      'name'         => false,
-      'attachments'  => false,
-      'images'       => false,
-    ];
-
-    $args = array_merge($defaults, $args);
-
-    $mandatory_args = ['email', 'url'];
-    $has_error = 0;
-    foreach ($mandatory_args as $arg) {
-      if ($args[$arg] === false) {
-        Err::custom([
-          'msg' => ucfirst($arg) . " not provided",
-          'info' => 'For send mails using [Auth::sendVerificationMail()] method, [email] and [url] values are mandatory',
-          'note' => "Provide the email and verification URL to send the verification mail",
-        ]);
-        $has_error++;
-      }
-    }
-
-    if($has_error == 0){
-      $alt_mail = trans('email_verification_title') ?? 'Email Verification - '.$args['app_name'];
-      $alt_mail .= 'Please verify your email address.';
-      $alt_mail .= '<a href="'.$args['url'].'" target="_blank">'.$args['url'].'</a>';
-
-      return self::sendMail($args, $alt_mail);
-    } else {
-      return false;
-    }
-  }
-
-
-
-  /**
    * Verify Account (Email)
    * @param string $token Verification token
    * @param string $return_status Return meaningful status or boolean
    */
-  public static function verifyEmail(string $token, $return_status=false){
+  public static function verifyEmail(string $token, $return_status=true){
     self::init();
 
     $status = $return_status ? 'error' : false;
@@ -226,10 +178,10 @@ class Auth extends Model {
     if($rows > 0){
       if(self::$db->update(AUTH_USERS_TABLE, [
         self::$status_field => 'active', 'email_verified_at' => time(),
-        self::$active_key_field => 0
+        self::$active_key_field => ''
       ], [
         self::$active_key_field => $token])){
-        $status = $return_status ? 'success' : true; // Account Activated
+        $status = $return_status ? self::$auth_errors['success'] : true; // Account Activated
       }
     } else {
       $disabled_rows = self::$db->count(AUTH_USERS_TABLE, [
@@ -237,64 +189,13 @@ class Auth extends Model {
         self::$active_key_field => $token
       ]);
       if($disabled_rows > 0){
-        $status = $return_status ? 'disabled' : false;
+        $status = $return_status ? self::$auth_errors['account_suspended'] : false;
       } else {
-        $status = $return_status ? 'invalid' : false;
+        $status = $return_status ? self::$auth_errors['invalid_token'] : false;
       }
     }
 
     return $status;
-  }
-
-
-
-  /**
-   * Send New Login alert email (If Browser/Device changed)
-   * @param array $args Email parameters
-   */
-  public static function sendNewLoginAlert($args=[]){
-    self::init();
-
-    if(AUTH_NEW_LOGIN_ALERT === true && self::isNewLogin()){
-      $info = self::isNewLogin();
-      $changed = $info['changes'];
-
-      if(in_array('device', $changed) || in_array('os', $changed) || in_array('os_version', $changed)){
-        $what = 'Device';
-      } elseif(in_array('ip', $changed)){
-        $what = 'IP Address';
-      } elseif(in_array('browser', $changed)){
-        $what = 'Browser';
-      }
-
-      $info_msg = "<br><br>";
-      $info_msg .= '<p><strong>IP Address: </strong>'.$info['ip'].'</p>';
-      $info_msg .= '<p><strong>Device: </strong>'.$info['device'].'</p>';
-      $info_msg .= '<p><strong>os: </strong>'.$info['os'].' | '.$info['os_version'].'</p>';
-      $info_msg .= '<p><strong>Browser: </strong>'.$info['browser'].'</p>';
-      $info_msg .= '<p><strong>When: </strong>'.$info['date_time'].'</p>';
-      $info_msg .= "<br><br>";
-
-      $title = trans('new_login_alert_mail_title', ['what' => $what]);
-      $message = trans('new_login_alert_mail_message', ['what' => $what, 'info' => $info_msg]);
-
-      $defaults = [
-        'app_name'     => APP_NAME,
-        'subject'      => $title,
-        'title'        => $title,
-        'message'      => $message,
-        'template'     => AUTH_EMAIL_TEMPLATES['new-login-alert'],
-        'email'        => $_SESSION['logged_user_email'],
-        'name'         => $_SESSION['logged_username'],
-        'attachments'  => false,
-        'images'       => false,
-      ];
-
-      $args = array_merge($defaults, $args);
-      $alt_mail = trans('new_login_alert_mail_title') ?? 'Login from a new IP address - '.$args['app_name'];
-
-      return self::sendMail($args, $alt_mail);
-    }
   }
 
 
@@ -316,7 +217,7 @@ class Auth extends Model {
     self::init();
 
     // Optional Arguments
-    list($new_login_mail_data, $redirect_path, $query) = false;
+    list($redirect_path, $query) = false;
     if(!empty($args)){
       extract($args, EXTR_IF_EXISTS);
     }
@@ -338,13 +239,13 @@ class Auth extends Model {
       $throttle_data['type']    = 'login';
 
       // Check if Max attempts exceeded (Throttle)
-      if(self::isAttemptsExceeded($user[self::$id_field])){
-        $wait_time = (AUTH_THROTTLE_DELAY_TIME <= 60) 
-          ? AUTH_THROTTLE_DELAY_TIME.' seconds' 
-          : (AUTH_THROTTLE_DELAY_TIME / 60).' minutes';
+      if(self::isLoginAttemptsExceeded($user[self::$id_field])){
+        $wait_time = (AUTH_LOGIN_THROTTLE['DELAY_TIME'] <= 60) 
+          ? AUTH_LOGIN_THROTTLE['DELAY_TIME'].' seconds' 
+          : (AUTH_LOGIN_THROTTLE['DELAY_TIME'] / 60).' minutes';
 
         set_error('error', trans_e('account_locked_throttle', ['time' => $wait_time]));
-        self::throttleAction($user[self::$id_field]);
+        self::loginThrottleAction($user[self::$id_field]);
 
         return $return_status ? self::$auth_errors['throttle_error'] : false;
       } else {
@@ -362,21 +263,51 @@ class Auth extends Model {
           set_error('success', trans('login_success'));
 
           // Send New Login alert (IP/Device/OS/Browser) if changed
-          $new_login_mail_data['email'] = $user[self::$email_field];
-          self::sendNewLoginAlert($new_login_mail_data);
+          if(AUTH_NEW_LOGIN_ALERT === true && self::isNewLogin()){
+            $info = self::isNewLogin();
+            $changed = $info['info'];
+
+            if(in_array('device', $changed) || in_array('os', $changed) || in_array('os_version', $changed)){
+              $what = 'Device';
+            } elseif(in_array('ip', $changed)){
+              $what = 'IP Address';
+            } elseif(in_array('browser', $changed)){
+              $what = 'Browser';
+            }
+
+            $info_dom = '<p><strong>IP Address: </strong>'.$info['ip'].'</p>';
+            $info_dom .= '<p><strong>Device: </strong>'.$info['device'].'</p>';
+            $info_dom .= '<p><strong>os: </strong>'.$info['os'].' | '.$info['os_version'].'</p>';
+            $info_dom .= '<p><strong>Browser: </strong>'.$info['browser'].'</p>';
+            $info_dom .= '<p><strong>Time: </strong>'.$info['date_time'].'</p>';
+
+            $full_name = !empty($user[self::$first_name_field]) 
+              ? $user[self::$first_name_field].' '.$user[self::$last_name_field] 
+              : $user[self::$username_field];
+
+            $args = [
+              'name' => $full_name,
+              'what' => $what,
+              'info_dom' => $info_dom,
+              'info' => $info,
+            ];
+
+            self::notify('new-login-alert', $user[self::$email_field], $args);
+          }
 
           // Log throttle as success login
           $throttle_data['status'] = 'success';
-          self::logThrottle($throttle_data);
+          self::addUserLog($throttle_data);
 
-          // Remove failed login attempts
-          self::removeFailedAttempts($user[self::$id_field]);
+          // Disable failed login attempts
+          self::disableFailedAttempts($user[self::$id_field]);
 
-          return $return_status ? self::$auth_errors['login_success'] : Router::redirect($redirect_to);
+          return $return_status ? self::$auth_errors['success'] : Router::redirect($redirect_to);
         } else {
           set_error('error', trans_e('invalid_password'));
           $throttle_data['status'] = 'failed';
-          self::logThrottle($throttle_data);
+          $throttle_data['is_active'] = 1;
+          self::addUserLog($throttle_data);
 
           return $return_status ? self::$auth_errors['invalid_password'] : false;
         }
@@ -393,7 +324,7 @@ class Auth extends Model {
 
       if(count($locked_user) === 1){
         // Check if temporary locked (Throttle)
-        $is_temp_lock = self::$db->get(AUTH_THROTTLE_TABLE, ['id', 'user_id', 'timestamp'], [
+        $is_temp_lock = self::$db->get(AUTH_LOG_TABLE, ['id', 'user_id', 'timestamp'], [
           'user_id'   => $locked_user[0],
           'status'    => 'locked',
           'type'      => 'throttle_error',
@@ -403,18 +334,18 @@ class Auth extends Model {
 
         if(!is_null($is_temp_lock)){
           // Locked (Throttling)
-          $unlock_time = $is_temp_lock['timestamp'] + AUTH_THROTTLE_DELAY_TIME;
+          $unlock_time = $is_temp_lock['timestamp'] + AUTH_LOGIN_THROTTLE['DELAY_TIME'];
 
           if($unlock_time <= time()){
             // Disable lock on users_log and Unlock account
-            self::$db->update(AUTH_THROTTLE_TABLE, ['is_active' => false], ['id' => $is_temp_lock['id']]);
+            self::$db->update(AUTH_LOG_TABLE, ['is_active' => false], ['id' => $is_temp_lock['id']]);
             self::activateAccount($is_temp_lock['user_id']);
-            self::removeFailedAttempts($is_temp_lock['user_id']);
+            self::disableFailedAttempts($is_temp_lock['user_id']);
 
             return self::login($email, $password, $return_status, $args);
           } else {
             $remaining_time = $unlock_time - time();
-            $remaining_time_string = (AUTH_THROTTLE_DELAY_TIME <= 60 || $remaining_time <= 60)
+            $remaining_time_string = (AUTH_LOGIN_THROTTLE['DELAY_TIME'] <= 60 || $remaining_time <= 60)
               ? round($remaining_time).' seconds' 
               : round($remaining_time / 60).' minutes';
 
@@ -470,6 +401,8 @@ class Auth extends Model {
    * @param string $key Key for get specific user value (Optional)
    */
   public static function info($key=false){
+    self::init();
+
     if(self::isLoggedIn()){
       $user = [
         'id'         => $_SESSION['logged_user_id'],
@@ -502,31 +435,13 @@ class Auth extends Model {
     unset($_SESSION['logged_user_email']);
     unset($_SESSION['logged_user_status']);
     unset($_SESSION['logged_user_role']);
+    unset($_SESSION['logged_user_first_name']);
+    unset($_SESSION['logged_user_last_name']);
 
     $to = $redirect ? $redirect : AUTH_LOGIN_PATH;
     clear_error();
 
     return Router::redirect($to);
-  }
-
-
-
-  /**
-   * Throttle Action
-   * @param int $user_id User ID
-   */
-  public static function throttleAction($user_id){
-    if(AUTH_THROTTLE === true){
-      $throttle_data = [
-        'user_id'   => $user_id,
-        'status'    => 'locked',
-        'type'      => 'throttle_error',
-        'is_active' => true,
-      ];
-
-      self::lockAccount($user_id);
-      self::logThrottle($throttle_data);
-    }
   }
 
 
@@ -548,11 +463,41 @@ class Auth extends Model {
 
 
 
-    /**
-   * Add Avatar/Profile picture
+  /**
+   * Get specific user by email, username, or user ID
+   * @param string|int $email_username_id
+   * @param string $key Return specific field value
    */
-  public static function addAvatar($email){
-    
+  public static function getUser($email_username_id=false, $key=false){
+    self::init();
+
+    if($email_username_id === false && isset($_SESSION['logged_user_id'])){
+      $email_username_id = $_SESSION['logged_user_id'];
+    }
+
+    $user_data = self::$db->get(AUTH_USERS_TABLE, '*', [ 
+      'OR' => [
+        self::$id_field => $email_username_id,
+        self::$email_field => $email_username_id,
+        self::$username_field => $email_username_id
+      ]
+    ]);
+
+    return $key ? $user_data[$key] : $user_data;
+  }
+
+
+
+  /**
+   * Get only authenticated User
+   * @param string $key Specific field
+   */
+  public static function user($key=false){
+    if(self::isLoggedIn()){
+      return self::getUser($_SESSION['logged_user_id'], $key);
+    } else {
+      return false;
+    }
   }
 
 
@@ -570,29 +515,33 @@ class Auth extends Model {
 
     self::init();
 
-    $last_log = self::$db->select(AUTH_THROTTLE_TABLE, ['user_ip', 'user_agent_all'], [
+    $last_log = self::$db->select(AUTH_LOG_TABLE, ['user_ip', 'user_agent'], [
       'user_id' => $_SESSION['logged_user_id'],
       'status' => 'success',
       'type' => ['login', 'signup'],
       'ORDER' => ['id' => 'DESC'],
-      'LIMIT' => [0, 100]
+      'LIMIT' => [0, 500]
     ]);
+
+    if(empty($last_log)){
+      return false;
+    }
 
     $known_agents = [];
     foreach ($last_log as $key => $data) {
-      $ag = json_decode($data['user_agent_all'], true);
-      $known_agents['ip'][$key] = $data['user_ip'];
-      $known_agents['device'][$key] = $ag['device'];
-      $known_agents['os'][$key] = $ag['os'];
+      $ag = json_decode($data['user_agent'], true);
+      $known_agents['ip'][$key]         = $data['user_ip'];
+      $known_agents['device'][$key]     = $ag['device'];
+      $known_agents['os'][$key]         = $ag['os'];
       $known_agents['os_version'][$key] = $ag['os_version'];
-      $known_agents['browser'][$key] = $ag['browser'];
+      $known_agents['browser'][$key]    = $ag['browser'];
     }
 
-    $current_agent = $request->user_agent();
-    $current_agent['ip'] = $request->ip();
+    $current_agent              = $request->user_agent();
+    $current_agent['ip']        = $request->ip();
     $current_agent['date_time'] = date("M d, Y | H:i:s");
-    $new_entries = [];
-    $keys = ['ip', 'device', 'os', 'browser', 'os_version'];
+    $new_entries                = [];
+    $keys                       = ['ip', 'device', 'os', 'browser', 'os_version'];
 
     foreach ($keys as $key) {
       if (!is_null($current_agent[$key]) && !in_array($current_agent[$key], $known_agents[$key])) {
@@ -600,44 +549,270 @@ class Auth extends Model {
       }
     }
 
-    $current_agent['changes'] = $new_entries;
+    $current_agent['info'] = $new_entries;
 
-    return !empty($current_agent['changes']) ? $current_agent : false;
+    return !empty($current_agent['info']) ? $current_agent : false;
   }
 
 
 
   /**
    * Send password reset mail
-   * @param int|string $user_id User Id
+   * @param string $email_username Email or Username
    * @param array $additional_mail_data Additional mail data to password reset mail
    */
-  public static function sendPasswordResetMail($user_id, $additional_mail_data=false){
-    $user_data = self::$db->get(AUTH_USERS_TABLE, AUTH_ALLOWED_FIELDS, [ self::$id_field => $user_id ]);
-    $user_data[self::$username_field];
-    $user_data[self::$email_field];
+  public static function passwordResetAttempt($email_username, $return_status=true, $additional_mail_data=[]){
+    self::init();
 
-    dd($user_data);
+    $user = self::getUser($email_username);
+
+    if(isset($user)){
+      $token = self::hashKey('password-reset', $email_username);
+      $reset_link = clear_multi_slashes(AUTH_RESET_PASSWORD_PATH.'/'.$token);
+
+      // Full name or Username
+      $name = isset($user[self::$first_name_field]) && $user[self::$first_name_field] !== ''
+        ? $user[self::$first_name_field].' '.$user[self::$last_name_field] 
+        : $user[self::$username_field];
+
+      // Primary mail arguments for password reset
+      $args = [
+        'reset_link' => $reset_link,
+        'name'       => $name,
+      ];
+      $args = array_merge($args, $additional_mail_data);
+
+      // Throttle Check
+      if(self::isResetAttemptsExceeded($user[self::$id_field])){
+        $last_attempt = self::$db->get(AUTH_META_TABLE, 'timestamp', [
+          'user_id'   => $user[self::$id_field],
+          'meta_key'  => 'password_reset_token',
+          'ORDER'     => ['id' => 'DESC']
+        ]);
+
+        $unlock_time = $last_attempt + AUTH_PASSWORD_RESET_THROTTLE['DELAY_TIME'];
+        if($unlock_time <= time()){
+          // Store token and send reset mail
+          if(self::addUserMeta($user[self::$id_field], 'password_reset_token', $token)){
+            return self::notify('password-reset', $user[self::$email_field], $args);
+          } else {
+            return $return_status ? self::$auth_errors['password_reset_error'] : false;
+          }
+        } else {
+          $remaining_time = $unlock_time - time();
+          $remaining_time_string = (AUTH_PASSWORD_RESET_THROTTLE['DELAY_TIME'] <= 60 || $remaining_time <= 60)
+            ? round($remaining_time).' seconds' 
+            : round($remaining_time / 60).' minutes';
+
+          set_error('error', trans_e('password_reset_throttle', ['time' => $remaining_time_string]));
+
+          return $return_status ? self::$auth_errors['throttle_error'] : false;
+        }
+      } else {
+        // Store token and send reset mail
+        if(self::addUserMeta($user[self::$id_field], 'password_reset_token', $token)){
+          return self::notify('password-reset', $user[self::$email_field], $args);
+        } else {
+          return $return_status ? self::$auth_errors['password_reset_error'] : false;
+        }
+      }
+    } else {
+      set_error('error', trans_e('invalid_username'));
+
+      return $return_status ? self::$auth_errors['invalid_username'] : false;
+    }
   }
 
 
 
   /**
-   * Reset Password
+   * Common Email Notification
+   * @param string $type Notification type
+   * @param string $email recipient email
+   * @param array $args All arguments to be passed to email template
    */
-  public static function resetPassword(){
+  public static function notify($type, $email, $args){
+    $success = false;
+    $error = false;
 
+    switch ($type) {
+      case 'email-verification':
+        $defaults = [
+          'title' => trans('email_verification_mail_title'),
+          'subject' => trans('email_verification_mail_subject'),
+          'template' => AUTH_EMAIL_TEMPLATES['account-verification'],
+        ];
+        $success = trans('email_verification_mail_sent', ['email' => $email]);
+        $error = trans_e('email_verification_mail_error');
+        $alt_fallback = trans('email_verification_mail_title').'<br> <a href="'.$args['verify_link'].'"></a>';
+        break;
+
+      case 'new-login-alert':
+        $defaults = [
+          'title' => trans('new_login_alert_mail_title'),
+          'subject' => trans('new_login_alert_mail_subject'),
+          'template' => AUTH_EMAIL_TEMPLATES['new-login-alert'],
+        ];
+        $alt_fallback = trans('new_login_alert_mail_title').'<br> Login from New '.$args['what'].'<br>Info: <br>'.$args['info_dom'];
+        break;
+
+      case 'password-reset':
+        $defaults = [
+          'title' => trans('password_reset_mail_title'),
+          'subject' => trans('password_reset_mail_subject'),
+          'template' => AUTH_EMAIL_TEMPLATES['password-reset-request'],
+        ];
+        $success = trans('password_reset_link_sent', ['email' => $email]);
+        $error = trans_e('password_reset_mail_error');
+        $alt_fallback = trans('password_reset_mail_title').'<br> Open the link below to reset your password<br> '.$args['reset_link'];
+        break;
+
+      case 'password-changed-alert':
+        $defaults = [
+          'title' => trans('password_changed_mail_title'),
+          'subject' => trans('password_changed_mail_subject'),
+          'template' => AUTH_EMAIL_TEMPLATES['password-changed-alert'],
+        ];
+        $alt_fallback = trans('password_changed_mail_title').'<br> Your password was changed. If it wasn\'t you, please contact us immediately.';
+        break;
+    }
+
+    $defaults['app_name'] = APP_NAME;
+    $defaults['attachments'] = false;
+    $defaults['images'] = false;
+    $defaults['email'] = $email;
+
+    $arg = array_merge($defaults, $args);
+    $alt_mail = isset($arg['alt']) ? $arg['alt'] : $alt_fallback;
+
+    if(self::sendMail($arg, $alt_mail)){
+      $success ? set_error('success', $success) : false;
+      return true;
+    } else {
+      $error ? set_error('error', $error) : false;
+      return false;
+    }
+  }
+
+
+
+  /**
+   * Verify/Confirm current password
+   * @param string $current_password Current password to verify
+   * @param string|int $user_id_email user ID, Email or username
+   */
+  public static function verifyPassword($current_password){
+    if($user = self::user()){
+      if(password_verify($current_password, $user[self::$password_field])){
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+
+
+  /**
+   * Change password by reset token
+   * @param string $token Password reset token
+   * @param string $new_password New password
+   */
+  public static function changePasswordByToken($token, $new_password){
+    self::init();
+
+    $user_id = self::$db->get(AUTH_META_TABLE, 'user_id', [
+      'meta_key'     => 'password_reset_token',
+      'meta_value'   => $token,
+      'timestamp[>]' => time() - (PASSWORD_RESET_LINK_EXPIRE_IN + 1),
+      'ORDER'        => ['id' => 'DESC']
+    ]);
+
+    if(isset($user_id) && self::deleteUserMeta(['user_id' => $user_id, 'meta_key' => 'password_reset_token'])){
+      return self::changePassword($user_id, $new_password);
+    }
+
+    return false;
   }
 
 
 
   /**
    * Change Password
+   * @param int $user_id
+   * @param string $new_password New password
    */
-  public static function changePassword(){
-    // 1. Verify current password
-    // 2. Change to New password
-    // 3. Send Password reset alert
+  public static function changePassword($user_id, $new_password){
+    self::init();
+
+    // Check password change throttle
+    if(self::isPasswordChangeAttemptsExceeded($user_id)){
+      $last_attempt = self::$db->get(AUTH_LOG_TABLE, 'timestamp', [
+        'user_id' => $user_id,
+        'type'    => 'password_change',
+        'ORDER'   => ['id' => 'DESC']
+      ]);
+
+      $unlock_time = $last_attempt + AUTH_PASSWORD_RESET_THROTTLE['DELAY_TIME'];
+      if($unlock_time > time()){
+        $remaining_time = $unlock_time - time();
+        $remaining_time_string = (AUTH_PASSWORD_RESET_THROTTLE['DELAY_TIME'] <= 60 || $remaining_time <= 60)
+          ? round($remaining_time).' seconds' 
+          : round($remaining_time / 60).' minutes';
+
+        set_error('error', trans_e('password_reset_throttle', ['time' => $remaining_time_string]));
+
+        return false;
+      }
+    }
+
+    $request = Request::getInstance();
+    $pass = self::hashKey('password-hash', $new_password);
+    $changed = self::$db->update(AUTH_USERS_TABLE, [ self::$password_field => $pass ], [
+      self::$id_field => $user_id
+    ]);
+
+    if($changed){
+      // Log password change
+      self::addUserLog(['user_id' => $user_id, 'type' => 'password_change', 'status' => 'success']);
+
+      set_error('success', trans('password_changed'));
+
+      if(AUTH_PASSWORD_CHANGED_ALERT === true){
+        $user = self::getUser($user_id);
+        $name = isset($user[self::$first_name_field]) && $user[self::$first_name_field] !== ''
+          ? $user[self::$first_name_field].' '.$user[self::$last_name_field] 
+          : $user[self::$username_field];
+
+        $info = $request->user_agent();
+        $info['ip'] = $request->ip();
+
+        $info_dom = '<p><strong>IP Address: </strong>'.$info['ip'].'</p>';
+        $info_dom .= '<p><strong>Device: </strong>'.$info['device'].'</p>';
+        $info_dom .= '<p><strong>os: </strong>'.$info['os'].' | '.$info['os_version'].'</p>';
+        $info_dom .= '<p><strong>Browser: </strong>'.$info['browser'].'</p>';
+        $info_dom .= '<p><strong>Time: </strong>'.date("M d, Y | H:i:s").'</p>';
+
+        $args = [
+          'name' => $name,
+          'time' => time(),
+          'info' => $info,
+          'info_dom' => $info_dom,
+        ];
+
+        self::notify('password-changed-alert', $user[self::$email_field], $args);
+      }
+
+      if(AUTH_LOGOUT_ON_PASSWORD_CHANGE === true && self::isLoggedIn()){
+        self::logout();
+      }
+
+      return true;
+    } else {
+      set_error('error', trans_e('password_change_error'));
+
+      return false;
+    }
   }
 
 
@@ -715,6 +890,8 @@ class Auth extends Model {
    * @param string $role Role to check against
    */
   public static function isRole($role){
+    self::init();
+
     if(self::isLoggedIn()){
       return $_SESSION['logged_user_role'] == $role;
     } else {
@@ -729,6 +906,8 @@ class Auth extends Model {
    * @param string $id_or_email User ID or User email
    */
   public static function getRole($id_or_email=false){
+    self::init();
+
     if(self::isLoggedIn() && $id_or_email === false){
       return $_SESSION['logged_user_role'];
     } else {
@@ -750,6 +929,8 @@ class Auth extends Model {
    * @param string $status Status to check against
    */
   public static function isStatus($status){
+    self::init();
+
     if(self::isLoggedIn()){
       return $_SESSION['logged_user_status'] == $status;
     } else {
@@ -801,7 +982,7 @@ class Auth extends Model {
 
     $unlock = self::$db->update(AUTH_USERS_TABLE, [
       self::$status_field => 'active',
-      self::$active_key_field => 0 
+      self::$active_key_field => ''
     ], $where_args );
 
     return $unlock ? true : false;

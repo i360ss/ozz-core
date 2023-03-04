@@ -10,6 +10,7 @@ namespace Ozz\Core;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+use Ozz\Core\Err;
 
 class Email extends AppInit {
 
@@ -43,6 +44,11 @@ class Email extends AppInit {
 
     // Set Up Mail Body
     $mailBody = self::setEmailTemplate($template, $data);
+
+    if(DEBUG && DEBUG_EMAIL_TEMP){
+      echo $mailBody;
+      exit;
+    }
 
     $mail = new PHPMailer(true);
     try {
@@ -139,7 +145,17 @@ class Email extends AppInit {
   # ----------------------------------
   private static function setEmailTemplate($tmp, $data){
     $placeHolders = []; // Placeholders in Template
-    $htmlMSG = file_get_contents(APP_DIR .'email_template/'.$tmp);
+    if(file_exists(APP_DIR .'email_template/'.$tmp)){
+      $htmlMSG = file_get_contents(APP_DIR .'email_template/'.$tmp);
+    } else {
+      return DEBUG
+        ? Err::custom([
+          'msg' => "Email template [ app/email_template/$tmp ] not found",
+          'info' => 'Please check your email template name or create one if it is not exist.',
+          'note' => "You can create an email template by running this command <br> [ php ozz c:email-temp template_name ]",
+        ])
+        : false;
+    }
 
     // Set up Template with actual data
     preg_match_all("~\{\{\s*(.*?)\s*\}\}~", $htmlMSG, $placeHolders);
