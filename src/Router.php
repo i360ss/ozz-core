@@ -352,7 +352,7 @@ class Router extends AppInit {
    * @param string $template Base layout template
    * @param int $status_code HTTP Status code
    */
-  public static function view($vv, $data=[], $template=''){
+  public static function view($vv, $data=[], $template=false){
     // new Request;
     $request = Request::getInstance();
     return Templating::render($vv, $data, $template, self::$template, self::$context);

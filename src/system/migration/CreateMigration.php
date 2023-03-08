@@ -31,7 +31,7 @@ class CreateMigration {
       $extName = 'Update_';
     }
     
-    if(!valid_file_name($r2)){
+    if(!validate_file_name($r2)){
       ozz_console_error('Invalid Migration File Name');
       return false;
     }

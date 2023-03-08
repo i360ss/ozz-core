@@ -1,6 +1,3 @@
-<?php
-// Debug bar CSS
-$ozz_debugbar_css = "
 :root {
   --ozz-white: #ffffff;
   --ozz-blue: #666EE8;
@@ -35,93 +32,84 @@ $ozz_debugbar_css = "
   width: 100% !important;
   text-align: left;
   z-index: 99999 !important;
-}
+  * {
+    text-align: left;
+    font-family: monospace, sans-serif !important;
+  }
+  &.open {
+    height: 350px;
+  }
+  span {
+    &.label {
+      all: unset;
+      font-weight: 600;
+      color: var(--dark1);
+    }
+  }
 
-.ozz-fw-debug-bar * {
-  text-align: left;
-  font-family: sans-serif !important;
-}
+  // Tab Nav
+  &__nav {
+    all: unset;
+    height: 35px;
+    background: var(--ozz-white);
+    padding: 0;
+    text-align: left;
+    display: inline-block;
+    color: var(--dark1);
+    &.wrapper {
+      all: unset;
+      display: inline-flex;
+      width: 100%;
+      border-bottom: 1px solid var(--ozz-light1);
+      background: var(--ozz-white);
+    }
+    &.item {
+      background: var(--ozz-white);
+      border-radius: 0 !important;
+      border: none;
+      color: var(--ozz-dark1);
+      cursor: pointer;
+      font-family: sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      margin: 0;
+      padding: 0 10px;
+      outline: none;
+      &:hover {
+        background: var(--ozz-light1);
+      }
+      &.active {
+        color: var(--ozz-light1);
+        background: var(--ozz-blue);
+        .count {
+          color: var(--ozz-white);
+        }
+      }
+      &.bar-items {
+        float: right;
+      }
+      .count {
+        all: unset;
+        color: var(--ozz-blue);
+        font-weight: 600;
+      }
+    }
+  }
 
-.ozz-fw-debug-bar.open {
-  height: 350px;
-}
-
-.ozz-fw-debug-bar span.label {
-  all: unset;
-  font-weight: 600;
-  color: var(--dark1);
-}
-
-/** Tab Nav */
-.ozz-fw-debug-bar__nav.wrapper {
-  all: unset;
-  display: inline-flex;
-  width: 100%;
-  border-bottom: 1px solid var(--ozz-light1);
-  background: var(--ozz-white);
-}
-.ozz-fw-debug-bar__nav {
-  all: unset;
-  height: 35px;
-  background: var(--ozz-white);
-  padding: 0;
-  text-align: left;
-  display: inline-block;
-  color: var(--dark1);
-}
-
-.ozz-fw-debug-bar__nav.item {
-  background: var(--ozz-white);
-  border-radius: 0 !important;
-  border: none;
-  color: var(--ozz-dark1);
-  cursor: pointer;
-  font-family: sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  margin: 0;
-  padding: 0 10px;
-  outline: none;
-}
-
-.ozz-fw-debug-bar__nav.item:hover {
-  background: var(--ozz-light1);
-}
-
-.ozz-fw-debug-bar__nav.item.active {
-  color: var(--ozz-light1);
-  background: var(--ozz-blue);
-}
-
-.ozz-fw-debug-bar__nav.item .count {
-  all: unset;
-  color: var(--ozz-blue);
-  font-weight: 600;
-}
-
-.ozz-fw-debug-bar__nav.item.active .count {
-  color: var(--ozz-white);
-}
-
-.ozz-fw-debug-bar__nav.bar-items {
-  float: right;
-}
-
-/** Tab Body */
-.ozz-fw-debug-bar__body {
-  overflow-x: auto;
-  max-height: 320px;
-}
-
-.ozz-fw-debug-bar__body.tab-body {
-  all: unset;
-  display: none;
-  margin: 0;
-  padding: 0;
-}
-
-.ozz-fw-debug-bar__body.tab-body.active {
-  display: block;
+  // Tab Body
+  &__body {
+    overflow-x: auto;
+    max-height: 320px;
+    &.tab-body {
+      all: unset;
+      display: none;
+      margin: 0;
+      padding: 0;
+      &.active {
+        display: block;
+      }
+    }
+  }
 }
 
 .ozz-fw-debug-bar__body.view .ozz-fw-debug-bar-tab__message-view {
@@ -360,4 +348,3 @@ $ozz_debugbar_css = "
   color: var(--ozz-white);
   cursor: pointer;
 }
-";

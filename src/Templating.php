@@ -9,6 +9,7 @@ namespace Ozz\Core;
 
 use Ozz\Core\Sanitize;
 use Ozz\Core\Response;
+use Ozz\Core\Err;
 
 class Templating extends AppInit {
   
@@ -20,7 +21,7 @@ class Templating extends AppInit {
    * @param string  $vv                         View file (phtml/html)
    * @param mixed   $data                       Data from controller/router to load into view
    * @param array   $context                    Basic Data to load into view (by default)
-   * @param string  $base_template              Base template defined on Router::render() method or render function
+   * @param string  $base_template              Base template defined on Router::render() method or view function
    * @param string  $base_template_from_router  Base template defined on router
    * 
    * @return /DOM   Final view DOM to render
@@ -35,8 +36,10 @@ class Templating extends AppInit {
     $regComps = [];
     $data = Sanitize::templateContext($customData);
     $context['view'] = $vv;
-    $context['layout'] = ($base_template_from_router ?? $base_template) ?? 'layout';
-    $context['layout'] = empty($context['layout']) ? 'layout' : $context['layout'];
+
+    $context['layout'] = isset($base_template) && $base_template !== ''
+      ? $base_template
+      : ($base_template_from_router ? $base_template_from_router : 'layout');
 
     require APP_DIR."/functions.php";
     self::$cdt = [$context, $data];
@@ -64,9 +67,7 @@ class Templating extends AppInit {
         }
 
         // Get Base layout content
-        $base_layout = $base_template !== ''
-          ? self::layout($base_template, $variables)
-          : self::layout($base_template_from_router, $variables);
+        $base_layout = self::layout($context['layout'], $variables);
 
         preg_match_all("~\{\%\s*(.*?)\s*\%\}~", $base_layout, $regComps['base']);
 
@@ -96,7 +97,8 @@ class Templating extends AppInit {
       }
     }
     else{
-      return Err::viewNotFound(VIEW . $vv . '.phtml');
+      Err::viewNotFound($vv);
+      self::render_final_view('');
     }
   }
 
@@ -127,14 +129,13 @@ class Templating extends AppInit {
     ob_start();
     $context = self::$cdt[0];
     $data = self::$cdt[1];
-    $temp = ($temp == '') ? 'layout' : $temp;
 
     if(file_exists(VIEW.'base/'. $temp . '.phtml')){
       extract($vars);
       require VIEW.'base/'. $temp.'.phtml';
       DEBUG ? self::$debug_view['base_file'] = "view/base/$temp.phtml" : false; // Log to debug bar
     } else{
-      return Err::baseTemplateNotFound(VIEW.'base/'. $temp . '.phtml');
+      return Err::baseTemplateNotFound($temp);
     }
 
     $lay = ob_get_contents();

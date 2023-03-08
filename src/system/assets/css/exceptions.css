@@ -1,0 +1,144 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.ozz-exceptions {
+  height: calc(100vh - 48px);
+  width: calc(100% - 48px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  top: 0;
+  left: 0;
+  background: #f1f2f6;
+  padding: 24px;
+}
+.ozz-exceptions * {
+  font-family: "monospace", sans-serif;
+  overflow-wrap: break-word;
+}
+.ozz-exceptions .ozz-exceptions-container {
+  padding: 20px;
+  max-width: 1360px;
+  margin: 0 auto;
+  background: #ffffff;
+}
+.ozz-exceptions .ozz-exceptions-container .trace-code-wrapper {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+}
+.ozz-exceptions .ozz-exceptions-container .trace-code-wrapper .trace-menu {
+  position: sticky;
+  top: 0;
+  bottom: auto;
+  border-right: 1px solid #dfe4ea;
+}
+.ozz-exceptions .ozz-exceptions-container .trace-code-wrapper .trace-menu .single-trace {
+  margin-left: -20px;
+  padding: 16px;
+  border-bottom: 1px solid #dfe4ea;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.ozz-exceptions .ozz-exceptions-container .trace-code-wrapper .trace-menu .single-trace:hover {
+  background: #dfe4ea;
+}
+.ozz-exceptions .ozz-exceptions-container .trace-code-wrapper .trace-menu .single-trace.active {
+  background: #666EE8;
+}
+.ozz-exceptions .ozz-exceptions-container .trace-code-wrapper .trace-menu .single-trace.active * {
+  color: #ffffff;
+}
+.ozz-exceptions .ozz-exceptions-container .trace-code-wrapper .trace-menu .single-trace em {
+  color: #3E46B1;
+}
+.ozz-exceptions .ozz-exception-heading {
+  padding: 32px;
+  border-bottom: 1px solid #dfe4ea;
+}
+.ozz-exceptions .ozz-exception-heading pre {
+  font-size: 14px;
+  color: #2f3542;
+}
+.ozz-exceptions .ozz-exception-heading pre.label {
+  background: #f1f2f6;
+  display: inline-block;
+  padding: 6px 8px;
+}
+.ozz-exceptions .ozz-exception-heading pre.title {
+  margin-top: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #ff4757;
+}
+.ozz-exceptions .code-highlight pre {
+  font-size: 15px;
+  line-height: 1.5;
+}
+.ozz-exceptions .code-highlight pre code {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  display: inline-block;
+}
+.ozz-exceptions .code-highlight__line {
+  border-bottom: 1px solid #f1f2f6;
+  padding: 7px 10px;
+  display: flex;
+  align-items: baseline;
+  font-weight: 500;
+}
+.ozz-exceptions .code-highlight__line .line-no {
+  color: rgba(116, 125, 140, 0.5);
+  font-weight: 400;
+  margin-right: 10px;
+}
+.ozz-exceptions .code-highlight__line--active {
+  color: #ff4757;
+  background-color: rgba(255, 71, 87, 0.1);
+  font-weight: 600;
+  box-shadow: 4px 0 0 inset #B91E1D;
+}
+.ozz-exceptions .code-highlight__line--active .line-no {
+  color: #747d8c;
+}
+.ozz-exceptions .code-highlight__line ch-purple {
+  color: #940094;
+}
+.ozz-exceptions .code-highlight__line ch-green {
+  color: #066046;
+}
+.ozz-exceptions .code-highlight__line ch-red {
+  color: #B91E1D;
+}
+.ozz-exceptions .code-highlight__line ch-orange {
+  color: #ffa502;
+}
+.ozz-exceptions .code-highlight__line ch-blue {
+  color: #666EE8;
+}
+.ozz-exceptions .code-highlight__line ch-gray {
+  color: #a4b0be;
+}
+.ozz-exceptions .code-highlight .trace-highlight {
+  margin-bottom: 24px;
+}
+.ozz-exceptions .code-highlight .trace-highlight .trace-single-highlight {
+  margin-bottom: 40px;
+}
+.ozz-exceptions .code-highlight .trace-highlight .trace-single-highlight .trace-snippet-head {
+  margin-top: -15px;
+  padding: 10px;
+  background: #f1f2f6;
+}
+.ozz-exceptions .code-highlight .single-code-snippet {
+  display: none;
+}
+.ozz-exceptions .code-highlight .single-code-snippet.active {
+  display: inline;
+}/*# sourceMappingURL=exceptions.css.map */

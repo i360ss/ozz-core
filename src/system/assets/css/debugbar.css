@@ -1,0 +1,362 @@
+:root {
+  --ozz-white: #ffffff;
+  --ozz-blue: #666EE8;
+  --ozz-darkBlue: #3E46B1;
+  --ozz-light1: #f1f2f6;
+  --ozz-light2: #dfe4ea;
+  --ozz-light3: #ced6e0;
+  --ozz-light4: #a4b0be;
+  --ozz-dark1: #2f3542;
+  --ozz-dark2: #747d8c;
+  --ozz-warn: #ffa502;
+  --ozz-error: #ff4757;
+  --ozz-info: #2e86de;
+}
+
+.ozz__debugbar {
+  all: unset;
+}
+
+.ozz-fw-debug-bar {
+  all: unset;
+  background: var(--ozz-white);
+  border-top: 2px solid var(--ozz-blue);
+  bottom: 12px !important;
+  box-sizing: border-box;
+  height: 25px;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  position: fixed !important;
+  right: 0;
+  width: 100% !important;
+  text-align: left;
+  z-index: 99999 !important;
+}
+.ozz-fw-debug-bar * {
+  text-align: left;
+  font-family: monospace, sans-serif !important;
+}
+.ozz-fw-debug-bar.open {
+  height: 350px;
+}
+.ozz-fw-debug-bar span.label {
+  all: unset;
+  font-weight: 600;
+  color: var(--dark1);
+}
+.ozz-fw-debug-bar__nav {
+  all: unset;
+  height: 35px;
+  background: var(--ozz-white);
+  padding: 0;
+  text-align: left;
+  display: inline-block;
+  color: var(--dark1);
+}
+.ozz-fw-debug-bar__nav.wrapper {
+  all: unset;
+  display: inline-flex;
+  width: 100%;
+  border-bottom: 1px solid var(--ozz-light1);
+  background: var(--ozz-white);
+}
+.ozz-fw-debug-bar__nav.item {
+  background: var(--ozz-white);
+  border-radius: 0 !important;
+  border: none;
+  color: var(--ozz-dark1);
+  cursor: pointer;
+  font-family: sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0;
+  padding: 0 10px;
+  outline: none;
+}
+.ozz-fw-debug-bar__nav.item:hover {
+  background: var(--ozz-light1);
+}
+.ozz-fw-debug-bar__nav.item.active {
+  color: var(--ozz-light1);
+  background: var(--ozz-blue);
+}
+.ozz-fw-debug-bar__nav.item.active .count {
+  color: var(--ozz-white);
+}
+.ozz-fw-debug-bar__nav.item.bar-items {
+  float: right;
+}
+.ozz-fw-debug-bar__nav.item .count {
+  all: unset;
+  color: var(--ozz-blue);
+  font-weight: 600;
+}
+.ozz-fw-debug-bar__body {
+  overflow-x: auto;
+  max-height: 320px;
+}
+.ozz-fw-debug-bar__body.tab-body {
+  all: unset;
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+.ozz-fw-debug-bar__body.tab-body.active {
+  display: block;
+}
+
+.ozz-fw-debug-bar__body.view .ozz-fw-debug-bar-tab__message-view {
+  border-bottom: none;
+}
+
+.ozz-fw-debug-bar-tab__empty {
+  color: var(--ozz-light4);
+  padding: 0 10px;
+}
+
+.ozz-fw-debug-bar-tab__message {
+  border-bottom: 1px solid var(--ozz-light2);
+  display: grid;
+  font-size: 13px;
+  grid-template-columns: 1fr auto;
+  margin: 0;
+  padding: 5px 5px 5px 20px;
+  position: relative;
+}
+
+.ozz-fw-debug-bar-tab__message span {
+  all: unset;
+  margin: 0;
+  padding: 0;
+}
+
+/* Inner arrays dumper */
+.ozz-fw-debug-bar-array {
+  padding-left: 0;
+  line-height: 0;
+}
+
+.ozz-fw-debug-bar-array:nth-child(2) {
+  line-height: 13px;
+}
+
+.ozz-fw-debug-bar-array .dumpr {
+  background: transparent !important;
+}
+
+.ozz-fw-debug-bar-array .xdebug-var-dump {
+  margin-top: -15px;
+}
+
+.ozz-fw-debug-bar-array .xdebug-var-dump small {
+  display: none;
+}
+
+.ozz-fw-debug-bar-array .dumpr div,
+.ozz-fw-debug-bar-array .dumpr div pre {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/** Used on Queries tab */
+.ozz-fw-debug-bar-tab__message-queries {
+  all: unset;
+  border-bottom: 1px solid var(--ozz-light2);
+  font-size: 13px;
+  margin: 0;
+  padding: 10px 5px 10px 20px;
+  position: relative;
+  color: var(--ozz-dark1);
+  display: grid;
+  grid-template-columns: 1fr 100px;
+}
+
+.ozz-fw-debug-bar-tab__message-queries span.high-txt {
+  color: var(--ozz-info);
+}
+
+/* Used on View Tab */
+.ozz__dbg_view-comp-wrapper {
+  all: unset;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  grid-gap: 30px;
+}
+
+.ozz__dbg_view-comp-wrapper .ozz__dbg_view-info {
+  all: unset;
+  border-right: 1px solid var(--ozz-light1);
+  height: 100%;
+  min-height: 280px;
+}
+
+.ozz-fw-debug-bar-tab__message-view-head {
+  all: unset;
+  padding: 10px 20px;
+  background: var(--ozz-light1);
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  grid-gap: 30px;
+  font-size: 13px;
+  color: var(--dark1);
+}
+
+.ozz-fw-debug-bar-tab__message-view-component {
+  border-bottom: 1px solid var(--ozz-light1);
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.ozz-fw-debug-bar-tab__message-view-component .dumpr {
+  margin-left: 12px;
+}
+
+.ozz-fw-debug-bar-tab__message-view-component span.green {
+  color: var(--ozz-dark1);
+  font-size: 14px;
+  padding: 3px 5px;
+  border-radius: 3px;
+  display: inline-block;
+  background: var(--ozz-light1);
+  border: 1px solid var(--ozz-light3);
+}
+
+.ozz__dbg_component-info .dumpr small {
+  display: none;
+}
+
+.ozz__dbg_component-info .dumpr,
+.ozz__dbg_component-info .dumpr pre,
+.ozz__dbg_component-info .dumpr div {
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+.ozz-fw-debug-bar-tab__message-view pre {
+  all: unset;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+
+.ozz-fw-debug-bar-tab__message-view {
+  all: unset;
+  display: block;
+  border-bottom: 1px solid var(--ozz-light2);
+  font-size: 13px;
+  margin: 0;
+  padding: 10px 5px 10px 20px;
+  color: var(--ozz-dark1);
+}
+
+.ozz-fw-debug-bar-tab__message-controller,
+.ozz-fw-debug-bar-tab__message-request {
+  all: unset;
+  border-bottom: 1px solid var(--ozz-light2);
+  font-size: 13px;
+  margin: 0;
+  padding: 10px 5px 10px 20px;
+  position: relative;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  color: var(--ozz-dark1);
+}
+
+.ozz-fw-debug-bar-tab__message-controller span,
+.ozz-fw-debug-bar-tab__message-request span {
+  all: unset;
+  text-align: left !important;
+  float: left !important;
+  color: var(--ozz-dark);
+  font-size: 13px;
+}
+
+.ozz-fw-debug-bar-tab__message-view span {
+  all: unset;
+  color: var(--ozz-dark);
+  font-size: 13px;
+}
+
+.ozz-fw-debug-bar-tab__message-view span :nth-child(1) {
+  margin-right: 10px;
+}
+
+.ozz-fw-debug-bar-tab__message:hover,
+.ozz-fw-debug-bar-tab__message-controller:hover,
+.ozz-fw-debug-bar-tab__message-queries:hover,
+.ozz-fw-debug-bar-tab__message-request:hover {
+  background: var(--ozz-light1);
+}
+
+.ozz-fw-debug-bar-tab__message .dumpr {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+}
+
+.ozz-fw-debug-bar-tab__message .dumpr,
+.ozz-fw-debug-bar-tab__message .dumpr * {
+  background: transparent !important;
+}
+
+.ozz-fw-debug-bar-tab__message .dumpr > div {
+  margin: 3px 0 0 !important;
+  border: none !important;
+}
+
+.ozz-fw-debug-bar-tab__message.w {
+  color: var(--ozz-warn);
+}
+
+.ozz-fw-debug-bar-tab__message.e {
+  color: var(--ozz-error);
+}
+
+.ozz-fw-debug-bar-tab__message.i {
+  color: var(--ozz-info);
+}
+
+.ozz-fw-debug-bar-tab__message.w::before,
+.ozz-fw-debug-bar-tab__message.e::before,
+.ozz-fw-debug-bar-tab__message.i::before {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 6px;
+  top: 12px;
+  left: 12px;
+}
+
+.ozz-fw-debug-bar-tab__message.w::before {
+  background: var(--ozz-warn);
+}
+
+.ozz-fw-debug-bar-tab__message.e::before {
+  background: var(--ozz-error);
+}
+
+.ozz-fw-debug-bar-tab__message.i::before {
+  background: var(--ozz-info);
+}
+
+/* Pretty JSON */
+.ozz-fw-debug-bar .json-viewer {
+  margin: 5px 0 0;
+}
+
+.ozz_debugbar__collapse_btn {
+  all: unset;
+  padding: 5px;
+  font-size: 13px;
+  background: var(--ozz-dark2);
+  margin-left: -20px;
+  border-radius: 3px;
+  color: var(--ozz-white);
+  cursor: pointer;
+}/*# sourceMappingURL=debugbar.css.map */

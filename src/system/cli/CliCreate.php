@@ -8,343 +8,249 @@
 namespace Ozz\Core\system\cli;
 
 class CliCreate {
-  
+
   private $createTo = SPC_BACK['core_2'].'app/';
-  
+  private $fallback_content = __DIR__.'/../content-holder/fallback_codegen.php';
+
+
+
   public function index($com){
     extract($com);
-    if($r1 == 'c:mvc' || $r1 == 'create:mvc' || $r1 == 'make:mvc'){
+
+    if( in_array($r1, ['c:mvc', 'create:mvc', 'make:mvc']) ) {
       $this->createController($r2);
       $this->createModel($r2);
       $this->createView($r2);
-    }
-    elseif($r1 == 'c:c' || $r1 == 'c:controller' || $r1 == 'create:controller' || $r1 == 'make:controller'){
+    } elseif( in_array($r1, ['c:c', 'c:controller', 'create:controller', 'make:controller']) ) {
       $this->createController($r2);
-    }
-    elseif($r1 == 'c:m' || $r1 == 'c:model' || $r1 == 'create:model' || $r1 == 'make:model'){
+    } elseif( in_array($r1, ['c:m', 'c:model', 'create:model', 'make:model']) ) {
       $this->createModel($r2);
-    }
-    elseif($r1 == 'c:v' || $r1 == 'c:view' || $r1 == 'create:view' || $r1 == 'make:view'){
+    } elseif( in_array($r1, ['c:v', 'c:view', 'create:view', 'make:view']) ) {
       $this->createView($r2);
-    }
-    elseif($r1 == 'c:vc' || $r1 == 'c:cv'){
+    } elseif( in_array($r1, ['c:vc', 'c:cv']) ) {
       $this->createController($r2);
       $this->createView($r2);
-    }
-    elseif($r1 == 'c:mc' || $r1 == 'c:cm'){
+    } elseif( in_array($r1, ['c:mc', 'c:cm']) ) {
       $this->createController($r2);
       $this->createModel($r2);
-    }
-    elseif($r1 == 'c:vm' || $r1 == 'c:mv'){
+    } elseif( in_array($r1, ['c:vm', 'c:mv']) ) {
       $this->createModel($r2);
       $this->createView($r2);
-    }
-    elseif($r1 == 'c:middleware' || $r1 == 'c:md' || $r1 == 'create:middleware' || $r1 == 'make:middleware'){
+    } elseif( in_array($r1, ['c:middleware', 'c:md', 'create:middleware', 'make:middleware']) ) {
       $this->createMiddleware($r2);
-    }
-    elseif($r1 == 'c:et' || $r1 == 'c:email-temp' || $r1 == 'c:email-template' || $r1 == 'create:email-template' || $r1 == 'create:email-temp' || $r1 == 'make:email-template' || $r1 == 'make:email-temp' || $r1 == 'c:email-view'){
+    } elseif( in_array($r1, ['c:et', 'c:email-temp', 'c:email-template', 'create:email-template', 'create:email-temp', 'make:email-template', 'make:email-temp', 'c:email-view']) ) {
       $this->createEmailTemplate($r2);
-    }
-    elseif($r1 == 'c:layout' || $r1 == 'c:lay' || $r1 == 'c:base-layout'){
+    } elseif( in_array($r1, ['c:layout', 'c:lay', 'c:base-layout']) ) {
       $this->createLayout($r2);
-    }
-    elseif($r1 == 'c:component' || $r1 == 'c:comp' || $r1 == 'c:compo'){
+    } elseif( in_array($r1, ['c:component', 'c:comp', 'c:compo']) ) {
       $this->createComponent($r2);
+    } else {
+      ozz_console_error('Error on creating');
     }
-    else{
-      $this->createError();
-    }
-    
+
   }
-  
-  
-  
-  # ------------------------------------
-  // Create Controller
-  # ------------------------------------
+
+
+
+  /**
+   * Create Controller
+   */
   private function createController($name){
-    if(!valid_file_name($name)){
+    if(!validate_file_name($name)){
       ozz_console_error('Invalid Controller Name');
       return false;
     }
-    
+
     $fileName = $this->createTo.'controller/' .$name.'.php';
+    $fileName_check = $this->createTo.'controller/' .ucfirst($name).'.php';
     $namespace = self::SetNamespace('App\controller\\'.$name);
     $nameFinal = explode("/", $name);
-    
-    if(!file_exists($fileName)){
-      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
-      $content = Content('controller', [
-        'namespace' => $namespace,
-        'class' => end($nameFinal)
-      ]); // Generating Contents
-      
-      if(self::Create('controller', $fileName, $content)){
-        ozz_console_success("Controller $name Created successfully");
-      }
-      else{
-        ozz_console_error('Controller not generated');
-      }
-    }
-    else{
-      ozz_console_warn("Controller $name already exist");
-    }
-    
+    $file_data = [
+      'namespace' => $namespace,
+      'class' => end($nameFinal)
+    ];
+
+    return $this->common_create('controller', $fileName_check, $fileName, $name, $file_data);
   }
-  
-  
-  
-  # ------------------------------------
-  // Create View
-  # ------------------------------------
-  private function createView($name){    
-    if(!valid_file_name($name)){
+
+
+
+  /**
+   * Create View
+   */
+  private function createView($name){
+    if(!validate_file_name($name)){
       ozz_console_error("Invalid View file name");
       return false;
     }
-    
+
     $fileName = $this->createTo.'view/' .$name.'.phtml';
     $nameFinal = explode("/", $name);
-    
-    if(!file_exists($fileName)){
-      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
-      $content = Content('view', [
-        'name' => end($nameFinal),
-        'path' => 'view/'.$name
-      ]); // Generating Contents
-      
-      if(self::Create('view', $fileName, $content)){
-        ozz_console_success("View $name Created successfully");
-      }
-      else{ 
-        ozz_console_error("View file not generated");
-      }
-    }
-    else{
-      ozz_console_warn("View $name already exist");
-    }
+    $file_data = [
+      'name' => end($nameFinal),
+      'path' => 'view/'.$name
+    ];
+
+    return $this->common_create('view', $fileName, $fileName, $name, $file_data);
   }
-  
-  
-  
-  # ------------------------------------
-  // Create View
-  # ------------------------------------
+
+
+
+  /**
+   * Create Model
+   */
   private function createModel($name){
-    if(!valid_file_name($name)){
+    if(!validate_file_name($name)){
       ozz_console_error("Invalid Model name");
       return false;
     }
-    
+
     $fileName = $this->createTo.'model/' .$name.'.php';
+    $fileName_check = $this->createTo.'model/' .ucfirst($name).'.php';
     $namespace = self::SetNamespace('App\model\\'.$name);
     $nameFinal = explode("/", $name);
-    
-    if(!file_exists($fileName)){
-      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
-      $content = Content('model', [
-        'namespace' => $namespace,
-        'class' => end($nameFinal)
-      ]); // Generating Contents
-      
-      if(self::Create('model', $fileName, $content)){
-        ozz_console_success("Model $name Created successfully");
-      }
-      else{
-        ozz_console_error("Model not generated");
-      }
-    }
-    else{
-      ozz_console_warn("Model $name already exist");
-    }
+    $file_data = [
+      'namespace' => $namespace,
+      'class' => end($nameFinal)
+    ];
+
+    return $this->common_create('model', $fileName_check, $fileName, $name, $file_data);
   }
-  
-  
-  
-  # ------------------------------------
-  // Create View
-  # ------------------------------------
+
+
+
+  /**
+   * Create Middleware
+   */
   private function createMiddleware($name){    
-    if(!valid_file_name($name)){
+    if(!validate_file_name($name)){
       ozz_console_error("Invalid Middleware Name");
       return false;
     }
-    
+
     $fileName = $this->createTo.'middleware/' .$name.'.php';
+    $fileName_check = $this->createTo.'middleware/' .ucfirst($name).'.php';
     $namespace = self::SetNamespace('App\middleware\\'.$name);
     $nameFinal = explode("/", $name);
-    
-    if(!file_exists($fileName)){
-      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
-      $content = Content('middleware', [
-        'namespace' => $namespace,
-        'class' => end($nameFinal)
-      ]); // Generating Contents
-      
-      if(self::Create('middleware', $fileName, $content)){
-        ozz_console_success("Middleware $name Created successfully");
-      }
-      else{
-        ozz_console_error("Middleware not generated");
-      }
-    }
-    else{
-      ozz_console_warn("Middleware $name already exist");
-    }
+    $file_data = [
+      'namespace' => $namespace,
+      'class' => end($nameFinal)
+    ];
+
+    return $this->common_create('middleware', $fileName_check, $fileName, $name, $file_data);
   }
 
 
 
-  # ------------------------------------
-  // Create Email Template
-  # ------------------------------------
+  /**
+   * Create Email Template
+   */
   private function createEmailTemplate($name){
-    if(!valid_file_name($name)){
+    if(!validate_file_name($name)){
       ozz_console_error("Invalid Email Template Name");
       return false;
     }
-    
+
     $fileName = $this->createTo.'email_template/'.$name.'.phtml';
-    
-    if(!file_exists($fileName)){
-      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
-      $content = Content('email_template', false); // Generating Contents
-      
-      if(self::Create('email_template', $fileName, $content)){
-        ozz_console_success("Email Template $name Created successfully");
-      }
-      else{
-        ozz_console_error("Email Template not generated");
-      }
-    }
-    else{
-      ozz_console_warn("Email Template $name already exist");
-    }
+    $nameFinal = explode("/", $name);
+    $file_data = [
+      'name' => end($nameFinal),
+      'path' => 'email_template/'.$name
+    ];
+
+    return $this->common_create('email_template', $fileName, $fileName, $name, $file_data);
   }
 
 
 
-  # ------------------------------------
-  // Create Base Layout (View)
-  # ------------------------------------
+  /**
+   * Create Base Layout (View)
+   */
   private function createLayout($name){
-    if(!valid_file_name($name)){
+    if(!validate_file_name($name)){
       ozz_console_error("Invalid Layout Name");
       return false;
     }
-    
+
     $fileName = $this->createTo.'view/base/'.$name.'.phtml';
-    
-    if(!file_exists($fileName)){
-      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
-      $content = Content('layout', false); // Generating Contents
-      
-      if(self::Create('layout', $fileName, $content)){
-        ozz_console_success("Base Layout $name Created successfully");
-      }
-      else{
-        ozz_console_error("Base Layout not generated");
-      }
-    }
-    else{
-      ozz_console_warn("Base Layout $name already exist");
-    }
+    $nameFinal = explode("/", $name);
+    $file_data = [
+      'name' => end($nameFinal),
+      'path' => 'view/'.$name
+    ];
+
+    return $this->common_create('layout', $fileName, $fileName, $name, $file_data);
   }
 
 
 
-  # ------------------------------------
-  // Create Component (View)
-  # ------------------------------------
+  /**
+   * Create Component (View)
+   */
   private function createComponent($name){
-    if(!valid_file_name($name)){
+    if(!validate_file_name($name)){
       ozz_console_error("Invalid Component Name");
       return false;
     }
-    
+
     $fileName = $this->createTo.'view/components/'.$name.'.phtml';
     $nameFinal = explode("/", $name);
-    
-    if(!file_exists($fileName)){
-      require_once __DIR__.$this->createTo.'GenerateContent.php'; // Generating Contents
-      $content = Content('component', [
-        'path' => 'view/components/'.$name,
-        'name' => end($nameFinal)
-      ]); // Generating Contents
-      
-      if(self::Create('component', $fileName, $content)){
-        ozz_console_success("Component $name Created successfully");
-      }
-      else{
-        ozz_console_error("Component not generated");
-      }
-    }
-    else{
-      ozz_console_warn("Component $name already exist");
-    }
+    $file_data = [
+      'name' => end($nameFinal),
+      'path' => 'view/components/'.$name
+    ];
+
+    return $this->common_create('component', $fileName, $fileName, $name, $file_data);
   }
-  
-  
-  
-  # ------------------------------------
-  // Create Error
-  # ------------------------------------
-  private function createError(){
-    ozz_console_error('Error on creating');
-  }
-  
-  
-  
-  # ------------------------------------
-  // Create File
-  # ------------------------------------
-  private static function Create($typ, $fullName, $content){
-    
+
+
+
+  /**
+   * Create File
+   * @param string $typ File type
+   * @param string $fullName File full name with path
+   * @param DOM $content Content to be added to the file
+   * @param string $name file name only
+   */
+  private static function Create($typ, $fullName, $content, $name){
     $DS = DIRECTORY_SEPARATOR;
     $dirName = explode("/", $fullName);
-    
     $dirArr = array_slice($dirName, 0, -1);
     $dir = implode($DS, $dirArr);
 
-    if(PHP_OS == 'WIN32' || PHP_OS == 'Windows' || PHP_OS == 'WINNT'){
-      if(!is_dir(__DIR__.$DS.$dir)){
-        mkdir(__DIR__.$DS.$dir, 0777, true);
-      }
-    } else {
-      if(!file_exists(__DIR__.$DS.$dir)){
-        mkdir(__DIR__.$DS.$dir, 0755, true);
-      }
+    if(PHP_OS_FAMILY === 'Windows' && !is_dir(__DIR__.$dir)){
+      mkdir(__DIR__.$dir.$DS, 0777, true);
+    } elseif(!file_exists(__DIR__.$dir)) {
+      mkdir(__DIR__.$dir.$DS, 0755, true);
     }
-    
+
     if($typ == "controller" || $typ == "model" || $typ == "middleware"){
       $onlyName = substr($fullName, strrpos($fullName, '/') + 1); // Only Name
       $onlyName = ucwords($onlyName);
-      
+
       $onlyDir = explode('/', $fullName);
       array_pop($onlyDir);
-      
+
       $fileFinalPath = implode($DS, $onlyDir).$DS.$onlyName;
-    }
-    else{
+    } else {
       $fileFinalPath = $fullName;
     }
-    
+
     // Create File
     $fl = fopen(__DIR__.$fileFinalPath, 'w');
-    fwrite($fl, $content."\n");
+    fwrite($fl, $content);
     if(fclose($fl)){
-      return true;
-    }
-    else {
-      return false;
+      return ozz_console_success("$typ $name Created successfully");
+    } else {
+      return ozz_console_error("$typ not generated");
     }
   }
-  
-  
-  
-  # ------------------------------------
-  // Set Namespace for creating Class
-  # ------------------------------------
+
+
+
+  /**
+   * Set Namespace for creating Class
+   */
   private static function SetNamespace($fullName){
     $namespace = explode("/", $fullName);
     if (count($namespace) < 2) {
@@ -354,7 +260,32 @@ class CliCreate {
     $namespace = join("\\", $namespace);
     return $namespace;
   }
-  
-  
+
+
+
+  /**
+   * Common pre-create
+   */
+  private function common_create($typ, $fileName_check, $fileName, $name, $file_data){
+    if(!file_exists(__DIR__.$fileName_check)){
+
+      file_exists(__DIR__.$this->createTo.'codegen.php') 
+        ? require_once __DIR__.$this->createTo.'codegen.php' 
+        : false;
+
+      if(is_callable('ozz_code_gen_'.$typ)){
+        $content = call_user_func('ozz_code_gen_'.$typ, $file_data);
+      } else {
+        require_once $this->fallback_content;
+        $content = Content($typ, $file_data);
+      }
+
+      return self::Create($typ, $fileName, $content, $name);
+    } else{
+      return ozz_console_warn("Controller $name already exist");
+    }
+  }
+
+
 }
 (new CliCreate)->index($com);

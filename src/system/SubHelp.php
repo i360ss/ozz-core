@@ -369,6 +369,52 @@ class SubHelp {
 
 
   /**
+   * PHP code highlight
+   */
+  public static function phpHighlight($code) {
+    // Replace special characters with HTML entities
+    $code = htmlspecialchars($code, ENT_NOQUOTES);
+  
+    // Define the patterns to match
+    $patterns = array(
+      // Keywords and function names
+      '/\b(abstract|and|array|as|break|callable|case|catch|class|clone|const|continue|declare|default|die|do|echo|else|elseif|empty|enddeclare|endfor|endforeach|endif|endswitch|endwhile|eval|exit|extends|final|finally|for|foreach|function|global|goto|if|implements|include|include_once|instanceof|insteadof|interface|isset|list|namespace|new|or|print|private|protected|public|require|return|static|switch|throw|trait|try|unset|use|var|while|xor)\b/',
+      // Variables and const
+      '/(\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)/',
+      // Numbers
+      '/\b([0-9]+\.?[0-9]*|\.[0-9]+)\b/',
+      // Strings
+      '/(\'[^\']*\'|"[^"]*")/',
+       // Single line comments
+      '/\/\/(.*)/',
+       // Multi-line comments
+      '/\/\*(.*?)\*\//s',
+       // Hash comments
+      '/\#(.*)/',
+    );
+
+
+    // Define the replacements
+    $replacements = array(
+      '<ch-purple>$0</ch-purple>',
+      '<ch-blue>$0</ch-blue>',
+      '<ch-green>$0</ch-green>',
+      '<ch-red>$0</ch-red>',
+      '<ch-gray>$0</ch-gray>',
+      '<ch-gray>$0</ch-gray>',
+      '<ch-gray>$0</ch-gray>',
+    );
+  
+    // Apply the highlighting
+    $code = preg_replace($patterns, $replacements, $code);
+  
+    // Return the highlighted code
+    return $code;
+  }
+
+
+
+  /**
    * Get Set and Render Debug Bar
    */
   public function renderDebugBar($data) { 
@@ -384,14 +430,11 @@ class SubHelp {
       }
     }
     $data['ozz_sql_queries'] = $final_sql_log;
-
-    // Debug bar CSS
-    require __DIR__.'/debugbar-style.php';
     ?>
 
     <div class="ozz__debugbar">
     <!-- Ozz Debug Bar Styles -->
-    <style nonce="<?=CSP_NONCE?>"><?php echo Help::minifyCSS($ozz_debugbar_css); ?></style>
+    <style nonce="<?=CSP_NONCE?>"><?= Help::minifyCSS(file_get_contents(__DIR__.'/assets/css/debugbar.css')); ?></style>
 
     <!-- Ozz Debug Bar -->
     <div class="ozz-fw-debug-bar">
@@ -409,7 +452,7 @@ class SubHelp {
       <div class="ozz-fw-debug-bar__body">
         <div class="ozz-fw-debug-bar__body tab-body console">
           <?php if (count($data['ozz_message']) < 1) : ?>
-            <pre class="ozz-fw-debug-bar-tab__empty">No Console logs</pre>
+            <pre class="ozz-fw-debug-bar__empty">No Console logs</pre>
           <?php else: ?>
             <?php foreach ($data['ozz_message'] as $key => $value) : ?>
               <?php $class = isset($value['args'][1]) ? $value['args'][1] : ''; ?>
@@ -438,7 +481,7 @@ class SubHelp {
 
         <div class="ozz-fw-debug-bar__body tab-body request">
           <?php if (count($data['ozz_request']) < 1) : ?>
-            <pre class="ozz-fw-debug-bar-tab__empty">Error</pre>
+            <pre class="ozz-fw-debug-bar__empty">Error</pre>
           <?php else: ?>
             <?php foreach ($data['ozz_request'] as $key => $value) : ?>
               <div class="ozz-fw-debug-bar-tab__message-request">
@@ -466,7 +509,7 @@ class SubHelp {
 
         <div class="ozz-fw-debug-bar__body tab-body queries">
           <?php if (isset($data['ozz_sql_queries']) && count($data['ozz_sql_queries']) < 1) : ?>
-            <pre class="ozz-fw-debug-bar-tab__empty">No Queries</pre>
+            <pre class="ozz-fw-debug-bar__empty">No Queries</pre>
           <?php else: ?>
             <?php foreach ($data['ozz_sql_queries'] as $key => $value) : ?>
               <div class="ozz-fw-debug-bar-tab__message-queries">
@@ -480,15 +523,15 @@ class SubHelp {
 
         <div class="ozz-fw-debug-bar__body tab-body view">
           <?php if (!isset($data['ozz_view']) || count($data['ozz_view']) < 1) : ?>
-            <pre class="ozz-fw-debug-bar-tab__empty">No View Files</pre>
+            <pre class="ozz-fw-debug-bar__empty">No View Files</pre>
           <?php elseif (isset($data['ozz_view'])) : ?>
             <?php $view = $data['ozz_view']; ?>
 
             <div class="ozz__dbg_view-comp-wrapper">
               <div class="ozz__dbg_view-info">
                 <div class="ozz-fw-debug-bar-tab__message-view">
-                  <span><strong>View File:</strong> <?=$view['view_file']?></span><br><br>
-                  <span><strong>Base Layout:</strong> <?=$view['base_file']?></span><br><br>
+                  <span><strong>View File:</strong> <?=isset($view['view_file']) ? $view['view_file'] : '<em style="color: #a00">Not Found</em>'; ?></span><br><br>
+                  <span><strong>Base Layout:</strong> <?=isset($view['base_file']) ? $view['base_file'] : '<em style="color: #a00">Not Found</em>';?></span><br><br>
                   <span class="label">View Data: </span><br>
                   <?php if (is_array($view['view_data']) || is_object($view['view_data'])) {?>
                     <span class="ozz-fw-debug-bar-array"><?php self::varDump($view['view_data'], '', false, true)?></span>
@@ -542,7 +585,7 @@ class SubHelp {
           <?php
           if (isset($data['ozz_controller'])) { 
             if (count($data['ozz_controller']) < 1) {
-              echo '<pre class="ozz-fw-debug-bar-tab__empty">No Controller</pre>';
+              echo '<pre class="ozz-fw-debug-bar__empty">No Controller</pre>';
             } else {
               $ctl = $data['ozz_controller']; ?>
               <div class="ozz-fw-debug-bar-tab__message-controller">
@@ -557,7 +600,7 @@ class SubHelp {
             <?php
             }
           } else {
-            echo '<pre class="ozz-fw-debug-bar-tab__empty">No Controller</pre>';
+            echo '<pre class="ozz-fw-debug-bar__empty">No Controller</pre>';
           } ?>
         </div>
 

@@ -8,6 +8,7 @@
 namespace Ozz\Core;
 
 use Ozz\Core\AfterRequest;
+use Ozz\Core\Err;
 
 class Response {
 
@@ -114,6 +115,15 @@ class Response {
       header('Content-Type', 'text/html; charset='.CHARSET);
     }
 
+    // Render Exceptions
+    $exceptions = Err::getInstance();
+    if(isset($exceptions::$exception_doms) && !empty($exceptions::$exception_doms) && is_array($exceptions::$exception_doms) && DEBUG){
+      foreach ($exceptions::$exception_doms as $key => $exception) {
+        echo $exception;
+      }
+    }
+
+    // Render final Content
     echo $this->content;
 
     // Store page cache for this page

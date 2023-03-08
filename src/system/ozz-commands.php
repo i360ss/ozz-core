@@ -34,7 +34,7 @@ function ozz_console_success($message) {
 /**
  * Validate class/file Name to create
  */
-function valid_file_name($name) {
+function validate_file_name($name) {
   if(strpos($name, './') || !preg_match('/^[a-z0-9.\\/\-_]+$/i', $name) || is_numeric($name[0])){
     return false;
   }
