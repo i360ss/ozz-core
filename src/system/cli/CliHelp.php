@@ -12,7 +12,7 @@ use Ozz\Core\system\cli\CliUtils;
 class CliHelp {
 
   public function index(){
-    
+
     $utils = new CliUtils;
     extract($utils->styles);
 
@@ -30,12 +30,12 @@ class CliHelp {
     $gray---------------------------------------------------
 
     ".$br);
-    
+
 print("
 All available commands 
 ----------------------
 ".$br);
-    
+
     print($yellow."Usage".$br);
     print($cyan." php ozz [option] [argument]".$br);
     

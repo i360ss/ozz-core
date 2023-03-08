@@ -21,7 +21,6 @@ class GenerateSql {
   private $conn;
 
   function __construct(){
-
     $this->conn = $this->mysql();
     $this->cli_utils = new CliUtils;
 
@@ -136,48 +135,38 @@ class GenerateSql {
       'index'              => 'INDEX',
       'check'              => 'CHECK',
     ];
-
   }
 
-
-
-  # --------------------------------------
-  // Convert developer txt to SQL for CREATE
-  # --------------------------------------
+  /**
+   * Convert developer txt to SQL for CREATE
+   */
   protected function generateCreateSql($baseData=[]){
-
     // Generate Working SQL Here
     if(empty($baseData)){
       $this->cli_utils->console_return("No migrations found", 'white', 'red', 1, true);
       $this->cli_utils->console_colored("For create your migration file run [ php ozz c:migration migration_name ]", 'cyan');
       $this->cli_utils->console_colored("For more info [ php ozz -h ]", 'cyan');
-    }
-    else{
+    } else {
       foreach ($baseData as $key => $value) {
-
         $fields = [];
         $constr = []; // Constraint (Single for Table)
 
         foreach ($value as $k => $v) {
-
           $dtypSQL = [];
           foreach ($v as $dtyp) {
-
             if(strpos($dtyp, ':') !== false){
               $dtyp = explode(':', $dtyp);
 
               if(array_key_exists($dtyp[0], $this->validDataTypes)){
                 $dtypSQL[] = $this->validDataTypes[$dtyp[0]].'('.$dtyp[1].')';
-              }
-              else{
+              } else {
                 switch ($dtyp[0]) {
                   case 'check':
                     $constr['CHECK'] = $dtyp[1];
                     break;
                 }
               }
-            }
-            elseif(array_key_exists($dtyp, $this->validDataTypes)){
+            } elseif(array_key_exists($dtyp, $this->validDataTypes)){
               switch ($this->validDataTypes[$dtyp]) {
                 case 'VARCHAR':
                   $dtypSQL[] = $this->validDataTypes[$dtyp].'(255)';
@@ -187,8 +176,7 @@ class GenerateSql {
                   $dtypSQL[] = $this->validDataTypes[$dtyp];
                   break;
               }
-            }
-            else{
+            } else {
             // Single values for each table
               switch ($dtyp) {
                 case 'primary':
@@ -228,18 +216,13 @@ class GenerateSql {
     }
   }
 
-
-
-  # --------------------------------------
-  // Get all SQL for ALTER
-  # --------------------------------------
+  /**
+   * Get all SQL for ALTER
+   */
   protected function generateAlterSql($baseData=[]){
-
     if(!empty($baseData)){
-
       $alterData = [];
       foreach ($baseData as $table => $value) {
-
         $addCols = $this->generateAlterSets($value['add']); // Add new columns
         $updateCols = $this->generateAlterSets($value['update']); // Update existing columns
 
@@ -250,11 +233,9 @@ class GenerateSql {
 
         if(isset($addCols['const']) && !empty($updateCols['const'])){
           $alterData[$table]['const'] = array_merge($addCols['const'], $updateCols['const']);
-        }
-        elseif(isset($addCols['const'])){
+        } elseif(isset($addCols['const'])){
           $alterData[$table]['const'] = $addCols['const'];
-        }
-        elseif(isset($updateCols['const'])){
+        } elseif(isset($updateCols['const'])){
           $alterData[$table]['const'] = $updateCols['const'];
         }
 
@@ -265,7 +246,6 @@ class GenerateSql {
         if(isset($alterData[$table]['update']['const'])){
           unset($alterData[$table]['update']['const']);
         }
-
       }
 
       $this->finalSchemas = $alterData;
@@ -273,11 +253,9 @@ class GenerateSql {
     }
   }
 
-
-
-  # --------------------------------------
-  // Convert developer txt to SQL for ALTER
-  # --------------------------------------
+  /**
+   * Convert developer txt to SQL for ALTER
+   */
   private function generateAlterSets($data){
     $returnData = [];
     if(!empty($data)){
@@ -291,13 +269,11 @@ class GenerateSql {
               if($this->validDataTypes[$dtyp[0]] == 'RENAME COLUMN'){
                 $returnData[$ky][$k]['type'] = 'change';
                 $returnData[$ky][$k]['context'] = $this->validDataTypes[$dtyp[0]].' '.$ky.' TO '.$dtyp[1];
-              }
-              else {
+              } else {
                 $returnData[$ky][$k] = $this->validDataTypes[$dtyp[0]].'('.$dtyp[1].')';
               }
             }
-          }
-          elseif(array_key_exists($df, $this->validDataTypes)){
+          } elseif(array_key_exists($df, $this->validDataTypes)){
             switch ($this->validDataTypes[$df]) {
               case 'VARCHAR':
                 $returnData[$ky][$k] = $this->validDataTypes[$df].'(255)';
@@ -307,8 +283,7 @@ class GenerateSql {
                 $returnData[$ky][$k] = $this->validDataTypes[$df];
                 break;
             }
-          }
-          else{
+          } else {
             // Single values for each table
             $returnData['const'] = $this->setConstr($df, $ky);
           }
@@ -317,8 +292,6 @@ class GenerateSql {
     }
     return $returnData;
   }
-
-
 
   // Set Constr
   private function setConstr($df, $ky){
@@ -344,16 +317,13 @@ class GenerateSql {
       return $constr;
   }
 
-
-  # --------------------------------------
-  // All Tables Creation SQL
-  # --------------------------------------
+  /**
+   * All Tables Creation SQL
+   */
   private function final_TableCreation_SQL(){
-
     $generateSql = $this->finalSchemas;
 
     if(isset($generateSql) && !empty($generateSql)){
-
       // Create Tables
       $allTablesSQL = [];
       foreach ($generateSql as $key => $value) {
@@ -381,26 +351,22 @@ class GenerateSql {
     
   }
 
-
-
-  # --------------------------------------
-  // All Tables Updating SQL
-  # --------------------------------------
+  /**
+   * All Tables Updating SQL
+   */
   private function final_TableUpdating_SQL(){
-    
     $generateSql = $this->finalSchemas;
-    
     if(isset($generateSql) && !empty($generateSql)){
       
       $altTableSQL = [];// All Alter SQLs
       foreach ($generateSql as $table => $value) {
-        
+
         $allSQL = [];
         $allSQL['addColumns'] = [];
         $allSQL['updateColumns'] = [];
         $allSQL['dropColumns'] = [];
         $allSQL['tableConsts'] = [];
-        
+
         // Add New Columns SQL
         $addColumns = '';
         if(isset($value['add']) && !empty($value['add'])){
@@ -411,14 +377,14 @@ class GenerateSql {
           }
           $allSQL['addColumns'] = 'SET sql_notes = 0; ALTER TABLE '.$table.' '.$addColumns;
         }
-        
+
         // Edit Existing Columns
         $editCols = '';
         if(isset($value['update']) && !empty($value['update'])){
           $editLast = array_key_last($value['update']);
           foreach ($value['update'] as $key => $val) {
             $cm = $key == $editLast ? '' : ', ';
-            
+
             if(is_array($val[0])){
               // Rename/Change
               $editCols .= $val[0]['context'].$cm;
@@ -429,7 +395,7 @@ class GenerateSql {
           }
           $allSQL['updateColumns'] = 'SET sql_notes = 0;  ALTER TABLE '.$table.' '.$editCols;
         }
-        
+
         // Drop Columns
         $dropCols = '';
         if(isset($value['drop']) && !empty($value['drop'])){
@@ -440,7 +406,7 @@ class GenerateSql {
           }
           $allSQL['dropColumns'] = 'SET sql_notes = 0;  ALTER TABLE '.$table.' '.$dropCols;
         }
-        
+
         // Const Table
         $constCols = '';
         if(isset($value['const']) && !empty($value['const'])){

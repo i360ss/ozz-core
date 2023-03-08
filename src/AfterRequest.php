@@ -14,7 +14,6 @@ class AfterRequest {
   private $flash_keys;
   private $error_keys;
 
-
   /**
    * Run this after each request
    */
@@ -22,8 +21,6 @@ class AfterRequest {
     $this->session_flash_out();
     $this->remove_temp_logs();
   }
-
-
 
   /**
    * Execute this after all request
@@ -37,8 +34,6 @@ class AfterRequest {
       unset($_SESSION['__error']);
     }
   }
-
-
 
   /**
    * Clear Temporary debug log files

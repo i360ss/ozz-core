@@ -9,9 +9,9 @@ namespace Ozz\Core;
 
 trait Security {
   
-  #---------------------------------------------------------------------
-  // Check the request AJAX or not (Allow only Ajax requests)
-  #---------------------------------------------------------------------
+  /**
+   * Check the request AJAX or not (Allow only Ajax requests)
+   */
   protected function is_ajax(){
     if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest'){
       http_response_code(405);
@@ -19,11 +19,9 @@ trait Security {
     }
   }
 
-
-
-  #---------------------------------------------------------------------
-  // Check CSRF token validation
-  #---------------------------------------------------------------------
+  /**
+   * Check CSRF token validation
+   */
   protected function csrf($fresh = false){
     $token = '';
     if (isset($_POST['csrf']) && !empty($_POST['csrf'])) {
@@ -39,7 +37,7 @@ trait Security {
       http_response_code(401);
       exit('Token not found');
     }
-    
+
     // Check Token
     if($csrfToken !== ""){
       if (hash_equals($_SESSION['csrf_token'], $csrfToken)) {
@@ -56,4 +54,4 @@ trait Security {
     }
   }
 
-} // Security class END
+}

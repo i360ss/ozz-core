@@ -21,10 +21,8 @@ class Router extends AppInit {
   protected static $template; // Base Template for view
   protected static $context=[]; // Core data
 
-
   /**
    * GET Route Group
-   * 
    * @param array|string $middleware
    * @param string $template Base layout template
    * @param array $callback route paths as keys, objects or strings as values 
@@ -35,11 +33,8 @@ class Router extends AppInit {
     }
   }
 
-
-
   /**
    * POST Route Group
-   * 
    * @param array|string $middleware
    * @param array $callback route paths as keys, objects or strings as values 
    * @param string $template Base layout template (optional)
@@ -50,11 +45,8 @@ class Router extends AppInit {
     }
   }
 
-
-
   /**
    * GET Method Route
-   * 
    * @param string $route
    * @param array|string|function $callBack
    * @param string $baseTemplate Base layout template
@@ -80,11 +72,8 @@ class Router extends AppInit {
     ];
   }
 
-
-
   /**
    * Initial route method
-   * 
    * @param string $method (get, post, put, patch, delete)
    * @param string $route
    * @param array|string|function $callBack
@@ -111,11 +100,8 @@ class Router extends AppInit {
     ];
   }
 
-
-
   /**
    * POST Method Route
-   * 
    * @param string $route
    * @param array|string|function $callBack
    * @param array|string $middleware
@@ -125,11 +111,8 @@ class Router extends AppInit {
     return self::initialRoute('post', $route, $callBack, $middlewares, $baseTemplate);
   }
 
-
-
   /**
    * DELETE Method Route
-   * 
    * @param string $route
    * @param array|string|function $callBack
    * @param array|string $middleware
@@ -139,11 +122,8 @@ class Router extends AppInit {
     return self::initialRoute('delete', $route, $callBack, $middlewares, $baseTemplate);
   }
 
-
-
   /**
    * PATCH Method Route
-   * 
    * @param string $route
    * @param array|string|function $callBack
    * @param array|string $middleware
@@ -153,11 +133,8 @@ class Router extends AppInit {
     return self::initialRoute('patch', $route, $callBack, $middlewares, $baseTemplate);
   }
 
-
-
-    /**
+  /**
    * PUT Method Route
-   * 
    * @param string $route
    * @param array|string|function $callBack
    * @param array|string $middleware
@@ -167,16 +144,12 @@ class Router extends AppInit {
     return self::initialRoute('put', $route, $callBack, $middlewares, $baseTemplate);
   }
 
-
-
   /**
    * Finalize URL Parameter setting
-   * 
    * @param string $route
    * @param string $method The Route method (To validate with real request method)
    */
   private static function finalizeRoutePath($route, $method){
-
     $request = Request::getInstance();
     $routeData['route'] = $route;
     $routeData['data'] = [];
@@ -217,8 +190,6 @@ class Router extends AppInit {
     }
     return $routeData;
   }
-
-
 
   /**
    * Resolve route
@@ -342,11 +313,8 @@ class Router extends AppInit {
     }
   }
 
-
-
   /**
    * Render View
-   * 
    * @param string $vv The viw file (without extension)
    * @param array $data Data to be passed to view
    * @param string $template Base layout template
@@ -356,13 +324,10 @@ class Router extends AppInit {
     // new Request;
     $request = Request::getInstance();
     return Templating::render($vv, $data, $template, self::$template, self::$context);
-  }  
-
-
+  }
 
   /**
    * Header Redirect
-   * 
    * @param string $to Path/URL to redirect
    * @param int $status Redirect status code
    */
@@ -371,11 +336,8 @@ class Router extends AppInit {
     exit;
   }
 
-
-
   /**
    * Go Back (Redirect to previous URL)
-   * 
    * @param string $add Concat string after URL
    * @param int $status Redirect status code
    */
@@ -386,6 +348,5 @@ class Router extends AppInit {
       exit;
     }
   }
-
 
 }

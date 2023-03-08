@@ -12,7 +12,6 @@ class CreateMigration {
   private $mgDir = __DIR__.SPC_BACK['core_2'].'database/migration/'; // Migrations Directory
   
   public function index($com){
-
     // CLI Input
     extract($com);
     $r2 = ucwords($r2);
@@ -23,14 +22,13 @@ class CreateMigration {
       $content = $this->newMigratorContent($r2);
       $newFile = $this->mgDir.'mg_'.date('d_m_Y_').$r2.'.php';
       $extName = '';
-    }
-    elseif($r1 == 'u:migration' || $r1 == 'u:mig' || $r1 == 'update:migration' || $r1 == 'update:mig'){
+    } elseif($r1 == 'u:migration' || $r1 == 'u:mig' || $r1 == 'update:migration' || $r1 == 'update:mig'){
       // Default Update Table Migration Generating Content
       $content = $this->updateMigratorContent($r2);
       $newFile = $this->mgDir.'mg_'.date('d_m_Y_').'Update_'.$r2.'.php';
       $extName = 'Update_';
     }
-    
+
     if(!validate_file_name($r2)){
       ozz_console_error('Invalid Migration File Name');
       return false;
@@ -42,28 +40,24 @@ class CreateMigration {
     foreach ($mg_files as $k => $v) {
       $fileNamesOnly[$k] = ucwords(substr($v, 14));
     }
-    
+
     // Crete migration file only if not already exist
     if( !in_array($extName.$r2.'.php', $fileNamesOnly) ){
       $fl = fopen($newFile, 'w');
       fwrite($fl, $content);
       if(fclose($fl)){
         ozz_console_success("Migration [ $r2 ] created successfully");
-      }
-      else {
+      } else {
         ozz_console_error(" Error: Migration [ $r2 ] not created!");
       }
-    }
-    else{
+    } else {
       ozz_console_warn(" Migration [ $r2 ] already exist!");
     }
   }
-  
-  
-  
-  # -------------------------------------------
-  // Create New Migrator Default Contents
-  # -------------------------------------------
+
+  /**
+   * Create New Migrator Default Contents
+   */
   private function newMigratorContent($migrationName){
     return "<?php
 // Run: [ php ozz -h migration ] to more info
@@ -89,12 +83,10 @@ class $migrationName {
   }
 }";
   }
-  
-  
-  
-  # -------------------------------------------
-  // Update Migrator Default Contents
-  # -------------------------------------------
+
+  /**
+   * Update Migrator Default Contents
+   */
   private function updateMigratorContent($migrationName){
 return "<?php
 use Ozz\Core\system\migration\Schema;
@@ -118,6 +110,6 @@ class Update_$migrationName {
   }
 }";
   }
-  
+
 }
 (new CreateMigration)->index($com);

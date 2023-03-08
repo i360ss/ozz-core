@@ -15,7 +15,6 @@ function view($view, $data=[], $template='') {
   return Router::view($view, $data, $template);
 }
 
-
 /**
  * Short way to Redirect back
  * @param string $add Concat string after URL
@@ -24,7 +23,6 @@ function view($view, $data=[], $template='') {
 function back($add='', $status=301) {
   return Router::back($add, $status);
 }
-
 
 /**
  * Render component with parameters

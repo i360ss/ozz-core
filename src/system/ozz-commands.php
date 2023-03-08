@@ -10,7 +10,6 @@ require __DIR__.SPC_BACK['core_1'].'app/config/config.php';
 $GLOBALS['utils'] = new CliUtils;
 global $utils;
 
-
 // Print error on console
 function ozz_console_error($message) {
   global $utils;
@@ -28,8 +27,6 @@ function ozz_console_success($message) {
   global $utils;
   $utils->console_return($message, 'white', 'green', true, true);
 }
-
-
 
 /**
  * Validate class/file Name to create
@@ -50,8 +47,6 @@ function validate_file_name($name) {
     }
   }
 }
-
-
 
 /**
  * All CLI scripts here

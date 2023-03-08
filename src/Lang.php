@@ -16,7 +16,6 @@ class Lang {
   private $errors;
   public $lang;
 
-
   public function __construct(){
     $this->lang = Session::has('app_lang') 
       ? Session::get('app_lang') 
@@ -47,15 +46,15 @@ class Lang {
     }
   }
 
-
-
+  /**
+   * Change language
+   * @param string $lang
+   */
   public function switch($lang){
     if(Session::get('app_lang') !== $lang){
       Session::set('app_lang', $lang);
     }
   }
-
-
 
   /**
    * return the required translated error message
@@ -67,8 +66,6 @@ class Lang {
     return $this->setOutput($res, $param);
   }
 
-
-
   /**
    * return the required translated message
    * @param string $key the key of the required string
@@ -78,8 +75,6 @@ class Lang {
     $res = isset($this->messages[$key]) ? $this->messages[$key] : $this->errors['invalid_array_key'];
     return $this->setOutput($res, $param);
   }
-
-
 
   /**
    * Replace the messages and errors with provided arguments
@@ -96,7 +91,7 @@ class Lang {
         $res = str_replace('::', esc_x($param), $res);
       }
     }
-    
+
     return $res;
   }
 

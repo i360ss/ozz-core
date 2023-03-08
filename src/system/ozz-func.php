@@ -3,7 +3,6 @@
 * Ozz micro framework
 * Author: Shakir
 * Contact: shakeerwahid@gmail.com
-*
 * OZZ DEFINED FUNCTIONS
 */
 
@@ -24,7 +23,6 @@ if(!function_exists('ozz_func_loaded')) {
       return $env;
     }
   }
-
 
   require __DIR__.'/functions/f-escaping.php'; // Escaping
   require __DIR__.'/functions/f-content-manipulation.php'; // Var, Array, JSON, String, ect Manipulation

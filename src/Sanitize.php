@@ -8,43 +8,43 @@
 namespace Ozz\Core;
 
 class Sanitize {
-  
+
   public static function string($i){
     return filter_var($i, FILTER_SANITIZE_STRING);
   }
-  
+
   public static function email($i){
     return filter_var($i, FILTER_SANITIZE_EMAIL);
   }
-  
+
   public static function number($i){
     return filter_var($i, FILTER_SANITIZE_NUMBER_INT);
   }
-  
+
   public static function phone($i){
     return filter_var($i, FILTER_SANITIZE_NUMBER_FLOAT);
   }
-  
+
   public static function htmlEncode($i, $flag=null){
     return htmlspecialchars($i, $flag);
   }
-  
+
   public static function htmlDecode($i, $flag=null){
     return htmlspecialchars_decode($i, $flag);
   }
-  
+
   public static function encoded($i){
     return filter_var($i, FILTER_SANITIZE_ENCODED);
   }
-  
+
   public static function specialChar($i){
     return filter_var($i, FILTER_SANITIZE_SPECIAL_CHARS);
   }
-  
+
   public static function specialCharFull($i){
     return filter_var($i, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
   }
-  
+
   public static function url($i){
     return filter_var($i, FILTER_SANITIZE_URL);
   }
@@ -93,8 +93,6 @@ class Sanitize {
     }
   }
 
-
-
   /**
    * @param array $arr The array to be sanitized
    * @param string $sanType Sanitization method for each array item
@@ -105,8 +103,6 @@ class Sanitize {
     }
     return $arr;
   }
-
-
 
   /**
    * Used to prevent template injection
@@ -120,11 +116,9 @@ class Sanitize {
     } else {
       $arr = self::regExps($arr);
     }
-    
+
     return $arr;
   }
-
-
 
   /**
    * Clear template to prevent template injection
@@ -144,5 +138,5 @@ class Sanitize {
     }
     return $v;
   }
-  
+
 }

@@ -10,7 +10,7 @@ namespace Ozz\Core;
 use Ozz\Core\Session;
 
 class Errors {
-  
+
   /**
    * Return all current errors
    */
@@ -19,8 +19,6 @@ class Errors {
       ? $_SESSION['__error'] 
       : false;
   }
-
-
 
   /**
    * Check Error key exist
@@ -40,8 +38,6 @@ class Errors {
       return false;
     }
   }
-
-
 
   /**
    * Get One Error by key
@@ -66,8 +62,6 @@ class Errors {
     }
   }
 
-
-
   /**
    * Set New Error with key value
    * @param string $key key of the Error
@@ -76,8 +70,6 @@ class Errors {
   public static function set(string $key, $value) : void {
     Session::flash($key, $value, true);
   }
-
-
 
   /**
    * Remove Error
@@ -96,8 +88,6 @@ class Errors {
     }
   }
 
-
-
   /**
    * Clear All Errors
    */
@@ -106,5 +96,5 @@ class Errors {
       Session::remove('__error');
     }
   }
-  
+
 }

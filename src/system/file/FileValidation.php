@@ -40,8 +40,6 @@ trait FileValidation {
     }
   }
 
-
-
   /**
    * Validate File Format
    * @param object|array File
@@ -62,17 +60,13 @@ trait FileValidation {
 
       if(isset($MIME_TYPES[$ext])){
         return in_array($mime, $MIME_TYPES[$ext]);
-      }
-      else {
+      } else {
         return false;
       }
-    }
-    else{
+    } else {
       return false;
     }
   }
-
-
 
   /**
    * Check if the file is an Image
@@ -91,8 +85,7 @@ trait FileValidation {
 
     if(isset($IMAGE_MIME_TYPES[$ext])){
       return in_array($mime, $IMAGE_MIME_TYPES[$ext]);
-    }
-    else {
+    } else {
       return false;
     }
   }

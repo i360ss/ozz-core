@@ -7,7 +7,6 @@
 
 namespace Ozz\Core;
 
-
 class Controller {
 
   use DB;

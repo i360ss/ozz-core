@@ -34,14 +34,10 @@ class OzzExceptions {
     }
   }
 
-
-
   /**
    * Default Ozz exception handler
    */
-  public static function handler($exception) {
-    // dump($exception);
-    
+  public static function handler($exception) {    
     // Print the context to the screen
     $style = '<style nonce="'.CSP_NONCE.'">'.Help::minifyCSS(file_get_contents(__DIR__.'/system/assets/css/exceptions.css')).'</style>';
     $script = '<script type="text/javascript" nonce="'.CSP_NONCE.'">'.file_get_contents(__DIR__.'/system/assets/js/exceptions.js').'</script>';
@@ -87,7 +83,6 @@ class OzzExceptions {
     }
     $modified_exception .= '</div>';
 
-
     // Code Highlights
     $modified_exception .= '<div class="code-highlight"><pre>';
 
@@ -112,7 +107,6 @@ class OzzExceptions {
       }
     }
     $modified_exception .= '</div>'; // Primary Code highlight class end
-
 
     // Trace code highlight
     $modified_exception .= '<div class="trace-highlight">'; // Trace code highlight wrapper start
@@ -153,6 +147,5 @@ class OzzExceptions {
 
     echo $style.$modified_exception.$script;
   }
-
 
 }

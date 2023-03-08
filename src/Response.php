@@ -17,7 +17,6 @@ class Response {
   private $status_code;
   private $headers = [];
 
-
   /**
    * Single Instance of Response
    */
@@ -27,8 +26,6 @@ class Response {
     }
     return self::$instance;
   }
-
-
 
   /**
    * Get Response properties
@@ -44,8 +41,6 @@ class Response {
     return $key ? $props[$key] : $props;
   }
 
-
-
   /**
    * Check header exist
    * @param string Header key
@@ -58,8 +53,6 @@ class Response {
     }
   }
 
-
-
   /**
    * Update Response Header
    * @param string $key Header key
@@ -69,8 +62,6 @@ class Response {
     $this->headers[$key] = $val;
   }
 
-
-
   /**
    * Set Response status code
    * @param int $status_code HTTP response status code
@@ -79,8 +70,6 @@ class Response {
     $this->status_code = $status_code;
   }
 
-
-
   /**
    * Set Response Content
    * @param $content response content
@@ -88,8 +77,6 @@ class Response {
   public function set_content($content){
     $this->content = $content;
   }
-
-
 
   /**
    * Send Response to client

@@ -119,8 +119,6 @@ class SubHelp {
     }
   }
 
-
-
   /**
    * JSON Pretty Dumper
    * @param string JSON string to be dumped
@@ -155,8 +153,6 @@ class SubHelp {
       </script>
     </div>';
   }
-
-
 
   /**
    * Highlight SQL syntax
@@ -366,8 +362,6 @@ class SubHelp {
     }
   }
 
-
-
   /**
    * PHP code highlight
    */
@@ -393,7 +387,6 @@ class SubHelp {
       '/\#(.*)/',
     );
 
-
     // Define the replacements
     $replacements = array(
       '<ch-purple>$0</ch-purple>',
@@ -404,21 +397,18 @@ class SubHelp {
       '<ch-gray>$0</ch-gray>',
       '<ch-gray>$0</ch-gray>',
     );
-  
+
     // Apply the highlighting
     $code = preg_replace($patterns, $replacements, $code);
-  
+
     // Return the highlighted code
     return $code;
   }
-
-
 
   /**
    * Get Set and Render Debug Bar
    */
   public function renderDebugBar($data) { 
-
     // Get and set SQL temporary debug log
     $sql_temp_log_content = file_get_contents(__DIR__.SPC_BACK['core_1'].'storage/log/sql_debug.log');
     $sql_temp_log_arr = array_filter(explode('<####>', $sql_temp_log_content));
@@ -506,7 +496,6 @@ class SubHelp {
           <?php endif; ?>
         </div>
 
-
         <div class="ozz-fw-debug-bar__body tab-body queries">
           <?php if (isset($data['ozz_sql_queries']) && count($data['ozz_sql_queries']) < 1) : ?>
             <pre class="ozz-fw-debug-bar__empty">No Queries</pre>
@@ -519,7 +508,6 @@ class SubHelp {
             <?php endforeach; ?>
           <?php endif; ?>
         </div>
-
 
         <div class="ozz-fw-debug-bar__body tab-body view">
           <?php if (!isset($data['ozz_view']) || count($data['ozz_view']) < 1) : ?>
@@ -542,7 +530,6 @@ class SubHelp {
                   <?php } ?>
                 </div>
               </div>
-
 
               <div class="ozz__dbg_component-info">
                 <div class="ozz-fw-debug-bar-tab__message-view">
@@ -580,7 +567,6 @@ class SubHelp {
           <?php endif; ?>
         </div>
 
-
         <div class="ozz-fw-debug-bar__body tab-body controller">
           <?php
           if (isset($data['ozz_controller'])) { 
@@ -603,7 +589,6 @@ class SubHelp {
             echo '<pre class="ozz-fw-debug-bar__empty">No Controller</pre>';
           } ?>
         </div>
-
 
         <div class="ozz-fw-debug-bar__body tab-body session">
           <?php if (isset($_SESSION) && !empty($_SESSION)) { ?>

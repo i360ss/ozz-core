@@ -20,11 +20,9 @@ class Email extends AppInit {
     self::$conf = env();
   }
 
-
-
-  # ----------------------------------
-  // Send The Email
-  # ----------------------------------
+  /**
+   * Send The Email
+   */
   public static function send($info){
 
     self::index();
@@ -138,11 +136,9 @@ class Email extends AppInit {
     }
   }
 
-
-
-  # ----------------------------------
-  // Set Up HTML Email Template
-  # ----------------------------------
+  /**
+   * Set Up HTML Email Template
+   */
   private static function setEmailTemplate($tmp, $data){
     $placeHolders = []; // Placeholders in Template
     if(file_exists(APP_DIR .'email_template/'.$tmp)){

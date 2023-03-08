@@ -29,7 +29,6 @@ class Templating extends AppInit {
    * $base_template will be used over $base_template_from_router if it is not empty
    */
   public static function render($vv, $customData, $base_template, $base_template_from_router, $context){
-
     global $DEBUG_BAR;
     DEBUG ? self::$debug_view['view_data'] = $customData : false; // Log to debug bar
 
@@ -102,8 +101,6 @@ class Templating extends AppInit {
     }
   }
 
-
-
   /**
    * Set Response and render the final view
    * @param string|HTML final Content
@@ -117,8 +114,6 @@ class Templating extends AppInit {
     $response->set_content($base_layout);
     $response->send();
   }
-
-
 
   /**
    * Main Layout Template
@@ -142,8 +137,6 @@ class Templating extends AppInit {
     ob_end_clean();
     return $lay;
   }
-
-
 
   /**
    * Set Up View Template with Components
@@ -242,8 +235,6 @@ class Templating extends AppInit {
     return [$view, $vars];
   }
 
-
-
   /**
    * Check is string (wrapped in single or double quotes)
    * @param string $c string to check
@@ -252,8 +243,6 @@ class Templating extends AppInit {
     $c = trim($c);
     return ($c[0] == '\'') && (substr($c,-1) == '\'') || ($c[0] == '"') && (substr($c,-1) == '"');
   }
-
-
 
   /**
    * Trim string (wrapped in single or double quotes)
@@ -264,8 +253,6 @@ class Templating extends AppInit {
     $args = trim($a, '"');
     return trim($args, '\'');
   }
-
-
 
   /**
    * Return Variable / Array (Convert string to variable/array)
@@ -285,8 +272,6 @@ class Templating extends AppInit {
     }
   }
 
-
-
   /**
    * Get string between
    * @param string $str full string
@@ -301,6 +286,5 @@ class Templating extends AppInit {
     $len = strpos($str, $end, $ini) - $ini;
     return substr($str, $ini, $len);
   }
-
 
 }

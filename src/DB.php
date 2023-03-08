@@ -22,7 +22,6 @@ trait DB {
   private $connect = null;
   private $current_connection;
 
-
   /**
    * Make MySQL Connection
    */
@@ -47,8 +46,6 @@ trait DB {
     }
   }
 
-
-
   /**
    * Make SqLite Connection
    */
@@ -60,8 +57,6 @@ trait DB {
       'prefix' => isset($this->db_prefix) ? $this->db_prefix : false,
     ]);
   }
-
-
 
     /**
    * The Database connection method

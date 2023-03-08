@@ -53,7 +53,6 @@ class Err {
   background:#f1f2f6;'><code><em>";
   public static $errNoteEnd = "</em></code></div>";
 
-
   /**
    * Single Err instance
    */
@@ -63,7 +62,6 @@ class Err {
     }
     return self::$instance;
   }
-
 
   /**
    * Wrap and log errors to render
@@ -84,12 +82,10 @@ class Err {
     }
   }
 
-
   // Custom Exception
   public static function custom($i) {
     return DEBUG ? self::renderErr($i) : false;
   }
-
 
   // Base template file Not Found Error
   public static function baseTemplateNotFound($i){
@@ -98,7 +94,6 @@ class Err {
       "info" => "Please create your base template first. Run [ php ozz c:lay ".$i." ]",
     ]);
   }
-
 
   // View file Not Found Error
   public static function viewNotFound($i){
@@ -109,7 +104,6 @@ class Err {
     ]);
   }
 
-
   // Component name
   public static function componentNotFound($i){
     return self::renderErr([
@@ -118,7 +112,6 @@ class Err {
       "note" => "Your component must be a PHTML or HTML file"
     ]);
   }
-
 
   // Invalid Middleware name
   public static function invalidMiddleware($i){
@@ -129,7 +122,6 @@ class Err {
     ]);
   }
 
-
   // It is not a directory
   public static function notDir($i){
     return self::renderErr([
@@ -137,7 +129,6 @@ class Err {
       "info" => "Please re-check directory name or create the directory",
     ]);
   }
-
 
   // Invalid Array Key
   public static function invalidArrayKey($i){
@@ -147,7 +138,6 @@ class Err {
     ]);
   }
 
-
   // Invalid File type defined to upload
   public static function invalidFileTypeDefinedToUpload($i){
     return self::renderErr([
@@ -156,7 +146,6 @@ class Err {
     ]);
   }
 
-
   // Upload settings parameters not provided
   public static function paramsRequiredForUploadSettings($i){
     return self::renderErr([
@@ -164,6 +153,5 @@ class Err {
       "info" => "Please provide at least one of this params (keep_original, copies)",
     ]);
   }
-
 
 }

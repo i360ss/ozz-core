@@ -11,10 +11,8 @@ use Ozz\Core\Err;
 
 trait FileSettings {
 
-  # ---------------------------------------
-  // Upload each image
-  # ---------------------------------------
   /**
+   * Upload each image
    * @param string $img Image
    * @param string $tmp Temp name
    * @param string $dir Directory
@@ -49,19 +47,13 @@ trait FileSettings {
 
     if (isset($copies) && $copies === true) {
       return $im;
-    }
-    else {
-      // imagedestroy($im);
-      return $image ? true : false;
+    } else {
+      return $image ? true : false; // imagedestroy($im);
     }
   }
 
-
-
-  # ---------------------------------------
-  // Set Up File Name
-  # ---------------------------------------
   /**
+   * Set Up File Name
    * @param $setts Settings to get rename options
    * @param $name Current name
    */
@@ -71,31 +63,22 @@ trait FileSettings {
       return (isset($setts['prefix'])) 
         ? $setts['prefix'].$newName.'.'.pathinfo($name, PATHINFO_EXTENSION)
         : $newName.'.'.pathinfo($name, PATHINFO_EXTENSION);
-    }
-    elseif(isset($setts['prefix'])) {
+    } elseif(isset($setts['prefix'])) {
       return $setts['prefix'].$name;
-    }
-    else{
+    } else{
       return $name;
     }
   }
 
-
-
-  # ---------------------------------------
-  // Image Manipulation and Upload Settings
-  # ---------------------------------------
   /**
+   * Image Manipulation and Upload Settings
    * @param int $ky Image key for multiple image upload
    */
   private static function imageSettings($ky=null){
-    
     $img = self::$thisFiles;
     $imgName = isset($ky) ? $img['name'][$ky] : $img['name'];
     $imgTmp = isset($ky) ? $img['tmp_name'][$ky] : $img['tmp_name'];
-
     $ext = strtolower(pathinfo($imgName, PATHINFO_EXTENSION));
-
     $finalOut['image']['url'] = false;
     $finalOut['image']['error'] = false;
     $finalOut['copies'] = null;
@@ -107,13 +90,11 @@ trait FileSettings {
         $finalOut['image']['error'] = self::$errors->error('file_error');
         DEBUG ? Err::paramsRequiredForUploadSettings('File::upload() settings') : false;
       }
-    }
-    else{
+    } else {
       $name = self::setName(self::$settings, $imgName);
       if(isset(self::$settings['mkdir']) && self::$settings['mkdir'] === true){
         !is_dir(self::$moveTo) ? mkdir(self::$moveTo, 0777, true) : false; // Make directory if not exist
-      }
-      else{
+      } else {
         if(!is_dir(self::$moveTo)){
           if (DEBUG) {
             return  Err::notDir(self::$moveTo);
@@ -128,23 +109,19 @@ trait FileSettings {
       
       if(file_exists($dir)){
         $finalOut['image']['error'] = self::$errors->error('file_already_exist');
-      }
-      else{
+      } else {
         // Make Image and Upload
         if(self::uploadEachImage($name, $imgTmp, $dir, $quality)){
           $finalOut['image']['url'] = self::$uploadedTo . $name;
-        }
-        else {
+        } else {
           $finalOut['image']['url'] = null;
         }
       }
     }
-    
 
     // Create and Upload Copies
     if(isset(self::$settings['copies']) && !empty(self::$settings['copies'])){
       foreach (self::$settings['copies'] as $key => $copy) {
-
         $finalOut['copies']['url'][$key] = null;
         $finalOut['copies']['error'] = false;
 
@@ -186,12 +163,11 @@ trait FileSettings {
         // Rename the Copy (with prefix)
         $nameSize = '-'.round($newWidth).'x'.round($newHeight);
         $prifix = isset(self::$settings['prefix']) ? self::$settings['prefix'] : '';
-        
+
         if((isset($copy['rename']) &&  $copy['rename'] !== '')){
           $newName = ($copy['rename']=='rand' || $copy['rename'] == 'random') ? rand(1000, time()) : $copy['rename'];
           $fileName = $prifix.$newName.$nameSize.'.'.pathinfo($imgName, PATHINFO_EXTENSION);
-        }
-        else{
+        } else {
           $prifix.pathinfo($imgName, PATHINFO_FILENAME).$nameSize.pathinfo($imgName, PATHINFO_EXTENSION);
         }
 
@@ -202,7 +178,6 @@ trait FileSettings {
         if($gdImage){
           $newCopy = imagecreatetruecolor($newWidth, $newHeight);
           imagecopyresampled($newCopy, $gdImage, $dstX, $dstY, $srcX, $srcY, $newWidth, $newHeight, $origWidth, $origHeight);
-          
           $qlt = $copy['quality'] ?? 100;
 
           switch ($ext) {
@@ -224,7 +199,7 @@ trait FileSettings {
               break;
           }
         }
-        
+
         // Copies Response
         if($finalCopy){
           $imgurl = isset($copy['dir']) ? $copy['dir'].$fileName : $fileName;
@@ -239,17 +214,12 @@ trait FileSettings {
     return $finalOut;
   }
 
-
-
-  # ---------------------------------------
-  // Document/Font settings and upload
-  # ---------------------------------------
   /**
+   * Document/Font settings and upload
    * Valid Settings (Rename, Prefix, mkdir)
    * @param int $ky File key for multiple file upload
    */
   private static function commonSettings($ky=null){
-
     $doc = self::$thisFiles;
     $docName = isset($ky) ? $doc['name'][$ky] : $doc['name'];
     $docTmp = isset($ky) ? $doc['tmp_name'][$ky] : $doc['tmp_name'];
@@ -265,19 +235,16 @@ trait FileSettings {
     if(is_dir(self::$moveTo)){
       if(file_exists(self::$moveTo.$docFinalName)){
         $response['message'] = self::$errors->error('file_already_exist');
-      }
-      elseif (move_uploaded_file($docTmp, self::$moveTo.$docFinalName)) {
+      } elseif (move_uploaded_file($docTmp, self::$moveTo.$docFinalName)) {
         $response = [
           'error' => 0,
           'message' => self::$errors->message('file_upload_success'),
           'uploaded' => self::$uploadedTo.$docFinalName
         ];
-      }
-      else {
+      } else {
         $response['message'] = self::$errors->error('file_error');
       }
-    }
-    elseif(isset(self::$settings['mkdir']) && self::$settings['mkdir'] === true){
+    } elseif (isset(self::$settings['mkdir']) && self::$settings['mkdir'] === true){
       mkdir(self::$moveTo, 0777, true); // Make directory if not exist
 
       if (move_uploaded_file($docTmp, self::$moveTo.$docFinalName)) {
@@ -286,12 +253,10 @@ trait FileSettings {
           'message' => self::$errors->message('file_upload_success'),
           'uploaded' => self::$uploadedTo.$docFinalName
         ];
-      }
-      else {
+      } else {
         $response['message'] = self::$errors->error('file_error');
       }
-    }
-    else{
+    } else {
       if(DEBUG){
         return  Err::notDir(self::$moveTo);
       } else {
@@ -302,5 +267,4 @@ trait FileSettings {
     return $response;
   }
 
-  
 }

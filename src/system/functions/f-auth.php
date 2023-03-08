@@ -15,7 +15,6 @@ function auth_check(){
   return Auth::isLoggedIn();
 }
 
-
 /**
  * Get Gravatar image
  * @param string $email The email address

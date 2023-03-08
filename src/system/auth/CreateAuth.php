@@ -17,13 +17,10 @@ class CreateAuth {
   private $email_template_dir  = __DIR__.SPC_BACK['core_2'].'app/email_template/';
   private $auth_content_holder = __DIR__.'/../content-holder/auth';
 
-
   public function index($com){
     //Create New Auth
     $this->createAuth();
   }
-
-
 
   /**
    * Create Auth
@@ -80,8 +77,6 @@ class CreateAuth {
     $this->createAuthMiddleware(AUTH_MIDDLEWARE_NAME);
   }
 
-
-
   /**
    * Create auth controller
    * @param string Controller Name
@@ -102,8 +97,6 @@ class CreateAuth {
     fclose($controller_file);
   }
 
-
-
   /**
    * Create auth migration file
    * @param string Migration Name
@@ -123,8 +116,6 @@ class CreateAuth {
     fclose($migration_file);
   }
 
-
-
   /**
    * Run default auth migration
    * @param string $name Migration Name
@@ -135,8 +126,6 @@ class CreateAuth {
       $utils->console_return("Table created [ $name ]", 'green');
     }
   }
-
-
 
   /**
    * Create Auth View Files view
@@ -158,8 +147,6 @@ class CreateAuth {
     }
   }
 
-
-
   /**
    * Create Email Template
    * @param string $type Template type
@@ -177,8 +164,6 @@ class CreateAuth {
       $utils->console_return("Error on creating Email template [ $name ]", 'red');
     }
   }
-
-
 
   /**
    * Create Auth Middleware
@@ -199,8 +184,6 @@ class CreateAuth {
     fclose($middleware_file);
   }
 
-
-
   /**
    * Create Auth Routes
    */
@@ -212,7 +195,6 @@ class CreateAuth {
       $utils->console_return("Auth routes added to Route file", 'green');
     }
   }
-
 
 }
 (new CreateAuth)->index($com);

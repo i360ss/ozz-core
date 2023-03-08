@@ -18,8 +18,6 @@ trait Ozz_CLI_Connection {
     $this->config = env();
   }
 
-
-
   /**
    * Mysql Connection to CLI usage
    * @return ozz_cli_DB_Conn Mysql connection for CLI
@@ -32,8 +30,6 @@ trait Ozz_CLI_Connection {
     $this->ozz_cli_DB_Conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     return $this->ozz_cli_DB_Conn;
   }
-
-
 
   /**
    * Framework Log Sqlite Connection to CLI usage (internal)

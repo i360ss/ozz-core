@@ -8,7 +8,7 @@
 namespace Ozz\Core\system\cli;
 
 class CliUtils {
-  
+
   public $styles;
   public $console_colors;
 
@@ -60,7 +60,6 @@ class CliUtils {
     ];
   }
 
-
   /**
    * Color console outputs
    * @param string $string String to be styled
@@ -69,20 +68,17 @@ class CliUtils {
    */
   public function color_string($string, $foreground_color=null, $background_color=null) {
     $colored_string = '';
-  
+
     if (isset($this->console_colors['color'][$foreground_color])) {
       $colored_string .= "\033[" . $this->console_colors['color'][$foreground_color] . "m";
     }
-  
     if (isset($this->console_colors['background'][$background_color])) {
       $colored_string .= "\033[" . $this->console_colors['background'][$background_color] . "m";
     }
-  
+
     $colored_string .=  $string . "\033[0m";
     return $colored_string;
   }
-
-
 
   /**
    * Console Return
@@ -95,46 +91,39 @@ class CliUtils {
    */
   public function console_return($message, $color=null, $background=null, $brk=true, $bigbox=false) {
     extract($this->styles);
-  
+
     // Set Line break
     $break = '';
     if (!$brk) {
       $break = false;
-    }
-    elseif (is_numeric($brk)) {
+    } elseif (is_numeric($brk)) {
       for ($i=0; $i < $brk; $i++) { 
         $break .= $br;
       }
-    }
-    elseif ($background == 'red') {
+    } elseif ($background == 'red') {
       $break = $br.$br;
-    }
-    else {
+    } else {
       $break = $br;
     }
-  
+
     // Final Output
     if($bigbox) {
       $spaces = '';
       for ($i=0; $i < strlen($message); $i++) { 
         $spaces .= ' ';  
       }
-  
+
       print($this->color_string('  '.$spaces.'  ', $background, $background) . $br);
       print($this->color_string('  '.$message.'  ', $color, $background) . $br);
       print($this->color_string('  '.$spaces.'  ', $background, $background) . $br.$br);
-    }
-    else {
+    } else {
       if(!$break){
         print($this->color_string($message, $color, $background));
-      }
-      else{
+      } else{
         print($this->color_string($message, $color, $background) . $break);
       }
     }
   }
-
-
 
   /**
    * Return error to Console
@@ -144,8 +133,6 @@ class CliUtils {
     $this->console_return($message, 'red', null, true);
   }
 
-
-
   /**
    * Return warning to Console
    * Just yellow text
@@ -153,8 +140,6 @@ class CliUtils {
   public function console_warn($message) {
     $this->console_return($message, 'yellow', null, true);
   }
-
-
 
   /**
    * Return success to Console
@@ -164,14 +149,11 @@ class CliUtils {
     $this->console_return($message, 'green', null, true);
   }
 
-
-
   /**
    * Return defined colored response to Console
    */
   public function console_colored($message, $color) {
     $this->console_return($message, $color, null, true);
   }
-
 
 }

@@ -14,10 +14,8 @@ use Ozz\Core\Router;
 
 class Auth extends Model {
 
-
   use \Ozz\Core\DB;
   use \Ozz\Core\system\auth\AuthInternal;
-
 
   private static $db;
   private static $id_field;
@@ -47,8 +45,6 @@ class Auth extends Model {
     'expired_token'           => 'expired_token',
   ];
 
-
-
   /**
    * Initialize settings
    */
@@ -64,8 +60,6 @@ class Auth extends Model {
     self::$role_field       = AUTH_CORE_FIELDS['ROLE_FIELD'];
     self::$active_key_field = AUTH_CORE_FIELDS['ACTIVATION_KEY_FIELD'];
   }
-
-
 
   /**
    * Create/Register New User
@@ -162,8 +156,6 @@ class Auth extends Model {
     }
   }
 
-
-
   /**
    * Verify Account (Email)
    * @param string $token Verification token
@@ -197,8 +189,6 @@ class Auth extends Model {
 
     return $status;
   }
-
-
 
   /**
    * Login User
@@ -379,8 +369,6 @@ class Auth extends Model {
     }
   }
 
-
-
   /**
    * Is Logged in
    */
@@ -393,8 +381,6 @@ class Auth extends Model {
       return false;
     }
   }
-
-
 
   /**
    * Get Logged in user info
@@ -421,8 +407,6 @@ class Auth extends Model {
     }
   }
 
-
-
   /**
    * Logout User
    * @param string $redirect path to redirect after Logout
@@ -444,8 +428,6 @@ class Auth extends Model {
     return Router::redirect($to);
   }
 
-
-
   /**
 	 * Get either a Gravatar URL or complete image tag for a specified email address.
 	 * @param string $email The email address
@@ -460,8 +442,6 @@ class Auth extends Model {
 
     return $url;
   }
-
-
 
   /**
    * Get specific user by email, username, or user ID
@@ -486,8 +466,6 @@ class Auth extends Model {
     return $key ? $user_data[$key] : $user_data;
   }
 
-
-
   /**
    * Get only authenticated User
    * @param string $key Specific field
@@ -499,8 +477,6 @@ class Auth extends Model {
       return false;
     }
   }
-
-
 
   /**
    * If logged in from a new browser or Device/IP
@@ -553,8 +529,6 @@ class Auth extends Model {
 
     return !empty($current_agent['info']) ? $current_agent : false;
   }
-
-
 
   /**
    * Send password reset mail
@@ -622,8 +596,6 @@ class Auth extends Model {
       return $return_status ? self::$auth_errors['invalid_username'] : false;
     }
   }
-
-
 
   /**
    * Common Email Notification
@@ -694,8 +666,6 @@ class Auth extends Model {
     }
   }
 
-
-
   /**
    * Verify/Confirm current password
    * @param string $current_password Current password to verify
@@ -710,8 +680,6 @@ class Auth extends Model {
 
     return false;
   }
-
-
 
   /**
    * Change password by reset token
@@ -734,8 +702,6 @@ class Auth extends Model {
 
     return false;
   }
-
-
 
   /**
    * Change Password
@@ -815,8 +781,6 @@ class Auth extends Model {
     }
   }
 
-
-
   /**
    * Change Email
    * @param int $user_id User ID
@@ -831,8 +795,6 @@ class Auth extends Model {
     // 4. Send Email change alert to old email
     // 5. Send welcome mail to new Email
   }
-
-
 
   /**
    * Change Status
@@ -852,8 +814,6 @@ class Auth extends Model {
     return $changed ? true : false;
   }
 
-
-
   /**
    * Change Role
    * @param string|int $user_id User ID to change the role
@@ -872,8 +832,6 @@ class Auth extends Model {
     return $changed ? true : false;
   }
 
-
-
   /**
    * Get all available User Role
    */
@@ -882,8 +840,6 @@ class Auth extends Model {
 
     return array_keys(AUTH_USER_ROLES);
   }
-
-
 
   /**
    * Check User role
@@ -898,8 +854,6 @@ class Auth extends Model {
       return false;
     }
   }
-
-
 
   /**
    * Get a user's role by email or user ID
@@ -922,8 +876,6 @@ class Auth extends Model {
     }
   }
 
-
-
   /**
    * Check User status
    * @param string $status Status to check against
@@ -937,8 +889,6 @@ class Auth extends Model {
       return false;
     }
   }
-
-
 
   /**
    * Lock User Account
@@ -959,8 +909,6 @@ class Auth extends Model {
 
     return $locked ? true : false;
   }
-
-
 
     /**
    * Activate/Unlock User Account
@@ -988,8 +936,6 @@ class Auth extends Model {
     return $unlock ? true : false;
   }
 
-
-
   /**
    * Disable User Account
    * @param string|int $id_or_email User ID or Email to disable
@@ -1015,8 +961,6 @@ class Auth extends Model {
 
     return $disabled ? true : false;
   }
-
-
 
   /**
    * Delete User Account

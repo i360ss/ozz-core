@@ -7,17 +7,13 @@
 
 namespace Ozz\Core;
 
-
 class Model {
 
   use DB;
 
-
   function __construct() {
     $this->table = $this->get_table();
   }
-
-
 
   /**
    * Set table name
@@ -30,8 +26,6 @@ class Model {
     return isset($this->table) ? $this->table : to_snakecase(end($table_from_class));
   }
 
-
-
   /**
    * A simple method for select from current table
    * @param array|string $what Items to be selected eg: '*' | 'address' | ['email', 'name'] ect.
@@ -41,12 +35,11 @@ class Model {
     return $this->DB()->select($this->table, $what, $where);
   }
 
-
-
   /**
    * A simple method for select all from current table
    */
   protected function all() {
     return $this->DB()->select($this->table, '*');
   }
+
 }

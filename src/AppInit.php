@@ -16,7 +16,6 @@ class AppInit {
   private $csp;      // CSP
 
   public function __construct() {
-
     define('SPC_BACK', [
       'core' => '/../../../../',
       'core_1' => '/../../../../../',
@@ -171,7 +170,6 @@ class AppInit {
      */
     defined('DEBUG_EMAIL_TEMP') || define('DEBUG_EMAIL_TEMP', $this->config['app']['DEBUG_EMAIL_TEMP'] == 1 ? true : false);
   }
-
 
   /**
    * Run Application

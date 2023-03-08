@@ -11,8 +11,6 @@ use Ozz\Core\system\SubHelp;
 
 class Help extends AppInit {
 
-
-
   /**
    * Encode or Decode String (Base 64 encryption)
    * @param string $e
@@ -23,8 +21,6 @@ class Help extends AppInit {
   public static function dec_base64($e){
     return base64_decode(strtr($e, '-_,', '+/='));
   }
-
-
 
   /**
    * Minify HTML
@@ -38,8 +34,6 @@ class Help extends AppInit {
     return $html;
   }
 
-
-
     /**
    * Minify CSS
    * @param CSS $css
@@ -51,8 +45,6 @@ class Help extends AppInit {
 
     return $css;
   }
-
-
 
   /**
    * Ozz built-in dumper
@@ -66,6 +58,4 @@ class Help extends AppInit {
     }
   }
 
-
-
-} // Helper END
+}

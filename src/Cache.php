@@ -7,16 +7,13 @@
 
 namespace Ozz\Core;
 
-
 class Cache {
 
   private $cache_file;
 
-
   public function __construct(){
     $this->cache_file = CACHE_DIR.'page/'.md5($_SERVER['REQUEST_URI']);
   }
-
 
   /**
    * Store Cache
@@ -32,7 +29,6 @@ class Cache {
     }
   }
 
-
   /**
    * Return stored cache if available
    * @param string $type Cache type (page, array, object etc.)
@@ -47,7 +43,6 @@ class Cache {
 
     return readfile($this->cache_file);
   }
-
 
   /**
    * Purge cache
@@ -66,7 +61,6 @@ class Cache {
       }
     }
   }
-
 
   /**
    * Page Cache

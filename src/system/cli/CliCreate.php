@@ -12,8 +12,6 @@ class CliCreate {
   private $createTo = SPC_BACK['core_2'].'app/';
   private $fallback_content = __DIR__.'/../content-holder/fallback_codegen.php';
 
-
-
   public function index($com){
     extract($com);
 
@@ -47,10 +45,7 @@ class CliCreate {
     } else {
       ozz_console_error('Error on creating');
     }
-
   }
-
-
 
   /**
    * Create Controller
@@ -73,8 +68,6 @@ class CliCreate {
     return $this->common_create('controller', $fileName_check, $fileName, $name, $file_data);
   }
 
-
-
   /**
    * Create View
    */
@@ -93,8 +86,6 @@ class CliCreate {
 
     return $this->common_create('view', $fileName, $fileName, $name, $file_data);
   }
-
-
 
   /**
    * Create Model
@@ -117,8 +108,6 @@ class CliCreate {
     return $this->common_create('model', $fileName_check, $fileName, $name, $file_data);
   }
 
-
-
   /**
    * Create Middleware
    */
@@ -140,8 +129,6 @@ class CliCreate {
     return $this->common_create('middleware', $fileName_check, $fileName, $name, $file_data);
   }
 
-
-
   /**
    * Create Email Template
    */
@@ -160,8 +147,6 @@ class CliCreate {
 
     return $this->common_create('email_template', $fileName, $fileName, $name, $file_data);
   }
-
-
 
   /**
    * Create Base Layout (View)
@@ -182,8 +167,6 @@ class CliCreate {
     return $this->common_create('layout', $fileName, $fileName, $name, $file_data);
   }
 
-
-
   /**
    * Create Component (View)
    */
@@ -202,8 +185,6 @@ class CliCreate {
 
     return $this->common_create('component', $fileName, $fileName, $name, $file_data);
   }
-
-
 
   /**
    * Create File
@@ -246,8 +227,6 @@ class CliCreate {
     }
   }
 
-
-
   /**
    * Set Namespace for creating Class
    */
@@ -260,8 +239,6 @@ class CliCreate {
     $namespace = join("\\", $namespace);
     return $namespace;
   }
-
-
 
   /**
    * Common pre-create
@@ -285,7 +262,6 @@ class CliCreate {
       return ozz_console_warn("Controller $name already exist");
     }
   }
-
 
 }
 (new CliCreate)->index($com);

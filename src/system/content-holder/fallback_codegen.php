@@ -35,8 +35,6 @@ function Content($type, $data){
   }
 }
 
-
-
 /**
  * Middleware Contents
  * @param array $data The Namespace and Class name of the middleware
@@ -50,8 +48,6 @@ function ozz_content_Middleware($data){
   }
 }";
 }
-
-
 
 /**
  * Model Contents
@@ -67,8 +63,6 @@ function ozz_content_Model($data){
 }";
 }
 
-
-
 /**
  * Controller Contents
  * @param array $data The Namespace and Class name of the controller
@@ -83,8 +77,6 @@ use Ozz\Core\Request;
   }\n
 }";
 }
-
-
 
 /**
  * View Contents
@@ -110,8 +102,6 @@ function ozz_content_ViewContent($data){
 {{ content-end }}';
 }
 
-
-
 /**
  * Email Template Contents
  */
@@ -134,8 +124,6 @@ function ozz_content_EmailTemplate() {
 </html>';
 }
 
-
-
 /**
  * Component file Contents (View)
  * @param array $data The Name and path of the component
@@ -154,8 +142,6 @@ function ozz_content_Component($data){
 
 ';
 }
-
-
 
 /**
  * Base Layout file Contents

@@ -13,7 +13,6 @@ use Ozz\Core\Email;
 
 trait AuthInternal {
 
-
   /**
    * Generate common auth hashes
    * @param string $type hash $type
@@ -35,8 +34,6 @@ trait AuthInternal {
     }
   }
 
-
-
   /**
    * User activity log
    * @param array $log_data Information to be logged
@@ -50,8 +47,6 @@ trait AuthInternal {
 
     self::$db->insert(AUTH_LOG_TABLE, $log_data);
   }
-
-
 
   /**
    * Login Throttle Action
@@ -72,8 +67,6 @@ trait AuthInternal {
       self::addUserLog($throttle_data);
     }
   }
-
-
 
   /**
    * Check if Login attempts exceeded
@@ -100,8 +93,6 @@ trait AuthInternal {
     }
   }
 
-
-
   /**
    * Check if Password reset attempts exceeded
    * @param int $user_id User ID
@@ -122,8 +113,6 @@ trait AuthInternal {
     }
   }
 
-
-
   /**
    * Check if password change attempts exceeded
    * @param int $user_id User ID
@@ -143,8 +132,6 @@ trait AuthInternal {
       return false;
     }
   }
-
-
 
   /**
    * Validate password reset token
@@ -179,8 +166,6 @@ trait AuthInternal {
     return $return_status ? self::$auth_errors['invalid_token'] : false;
   }
 
-
-
   /**
    * Disable Failed Attempts of a user
    * @param int $user_id User ID
@@ -197,8 +182,6 @@ trait AuthInternal {
 
     return $delete_failed_attempts ? true : false;
   }
-
-
 
   /**
    * Send All Auth mails
@@ -220,8 +203,6 @@ trait AuthInternal {
     return (boolean) $mail;
   }
 
-
-
   /**
    * Create a User Meta
    * @param int $user_id User ID
@@ -239,8 +220,6 @@ trait AuthInternal {
     return $create ? true : false;
   }
 
-
-
   /**
    * Delete user meta
    * @param array $where Where arguments
@@ -250,6 +229,5 @@ trait AuthInternal {
 
     return $deleted ? true : false;
   }
-
 
 }

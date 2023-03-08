@@ -14,7 +14,7 @@ use Ozz\Core\system\file\FileSettings;
 class File {
 
   use FileSettings;
-  
+
   private static $thisFiles; // Current File(s)
   private static $errors;
   private static $validator;
@@ -24,18 +24,14 @@ class File {
   private static $settings; // File Settings
   private static $maxSize; // Max upload file size
 
-
-  # ---------------------------------------
-  // Upload Files
-  # ---------------------------------------
   /**
+   * Upload Files
    * @param string $typ file Type (image, document, font, audio, video)
    * @param $files Single/Multiple files to Upload (By default it will get from $_FILES)
    * @param string $to Upload to this directory
    * @param array $settings File upload settings
    */
   public static function upload(string $typ, $files=null, $to=null, $settings=false, $customExts=null){
-
     self::$errors = new Lang;
 
     // Validator
@@ -58,7 +54,7 @@ class File {
     elseif(isset($customExts) && is_string($customExts)){
       $validFormats = $customExts;
     }
-    
+
     self::$formats = array_map('trim', explode('|', $validFormats));
 
     // Upload Directory
@@ -98,7 +94,7 @@ class File {
       case 'image':
         return self::uploadImage();
         break;
-        
+
       case 'document':
         return self::uploadDocument();
         break;
@@ -117,12 +113,8 @@ class File {
     }
   }
 
-
-
-  # ---------------------------------------
-  // Validate file size
-  # ---------------------------------------
   /**
+   * Validate file size
    * @param $typ File type
    * @param $fileSize File size to validate
    */
@@ -136,7 +128,7 @@ class File {
       case 'k':
         $max_size *= 1024;
         break;
-          
+
       case 'M':
       case 'm':
         $max_size *= 1024;
@@ -150,11 +142,9 @@ class File {
     return $fileSize > $max_size ? false : true;
   }
 
-
-
-  # ---------------------------------------
-  // Validate file format
-  # ---------------------------------------
+  /**
+   * Validate file format
+   */
   private static function validateFileFormat($file=false, $tmp=false){
     $checkFile = $file ? $file : self::$thisFiles['name'];
     $tempFile = $tmp ? $tmp : self::$thisFiles['tmp_name'];
@@ -180,11 +170,9 @@ class File {
     }
   }
 
-
-
-  # ---------------------------------------
-  // Upload Image
-  # ---------------------------------------
+  /**
+   * Upload Image
+   */
   private static function uploadImage(){
     if(is_array(self::$thisFiles['name'])){
       // Validate and Upload Multiple Images
@@ -340,11 +328,9 @@ class File {
     return $response;
   }
 
-
-
-  # ---------------------------------------
-  // Upload Document
-  # ---------------------------------------
+  /**
+   * Upload Document
+   */
   private static function uploadDocument(){
     if(is_array(self::$thisFiles['name'])){
       // Validate and Upload Multiple Documents
@@ -435,11 +421,9 @@ class File {
     return $response;
   }
 
-
-
-  # ---------------------------------------
-  // Upload Font
-  # ---------------------------------------
+  /**
+   * Upload Font
+   */
   private static function uploadFont(){
     if(is_array(self::$thisFiles['name'])){
       // Validate and Upload Multiple Fonts

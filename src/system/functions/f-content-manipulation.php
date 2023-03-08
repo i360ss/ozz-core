@@ -26,8 +26,6 @@ function _str_between($str, $start, $end) {
   echo str_between($str, $start, $end);
 }
 
-
-
 /**
  * Returns an array of all matching strings between 2 strings
  * @param string $str   // Full string
@@ -39,8 +37,7 @@ function _str_between($str, $start, $end) {
 function str_between_all($str, $start, $end) {
   if (preg_match_all("/$start(.*?)$end/", $str, $match)) {
     return $match[1];
-  }
-  else {
+  } else {
     return false;
   }
 }
@@ -49,12 +46,10 @@ function str_between_all($str, $start, $end) {
 function _str_between_all($str, $start, $end) {
   if(is_array(str_between_all($str, $start, $end))){
     echo implode(', ', str_between_all($str, $start, $end));
-  }
-  else {
+  } else {
     return false;
   }
 }
-
 
 /**
  * Camel case to snake case
@@ -65,7 +60,6 @@ function to_snakecase($str) {
   return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $str));
 }
 
-
 /**
  * Convert string to valid slug
  * @param string $str String to convert
@@ -74,7 +68,6 @@ function to_snakecase($str) {
 function to_slug($str, $delimiter='-') {
   return strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv(CHARSET, 'ASCII//TRANSLIT', urldecode($str)))))), $delimiter));
 }
-
 
 /**
  * Find value in array by provided key
@@ -97,7 +90,6 @@ function find_in_array($key, $array) {
   }
 }
 
-
 /**
  * Get sub-classes of a class
  * @param object $parent
@@ -109,8 +101,6 @@ function get_sub_classes($parent) {
   }
   return $result;
 }
-
-
 
 /**
  * Search [key => value] in array by provided value
@@ -135,7 +125,6 @@ function search_in_array($value, $array, $getOnlyKey=false) {
   }
 }
 
-
 /**
  * Check string is JSON or not
  * @param string @str
@@ -144,7 +133,6 @@ function search_in_array($value, $array, $getOnlyKey=false) {
 function is_json($str){
   return is_string($str) && is_array(json_decode($str, true)) ? true : false;
 }
-
 
 /**
  * Return as json
@@ -158,12 +146,10 @@ function json(array $data, $flags=null) {
   if(!$response->has_header('Content-Type')){
     $response->set_header('Content-Type', 'application/json; charset='.CHARSET);
   }
-
   $response->set_content($content);
 
   return $response->send();
 }
-
 
 /**
  * Simple base 64 encoding
@@ -178,8 +164,6 @@ function _enc_base64($str) {
   echo enc_base64($str);
 }
 
-
-
 /**
  * Simple base 64 decoding
  * @param string $str Encoded string to decode
@@ -192,8 +176,6 @@ function dec_base64($str) {
 function _dec_base64($str) {
   echo dec_base64($str);
 }
-
-
 
 /**
  * Random string generator
@@ -270,7 +252,6 @@ function random_str($n=10, $validChars=null) {
 function _random_str($n=10, $type=null) {
   echo random_str($n, $type);
 }
-
 
 /**
  * Replace multiple slashes by single slash

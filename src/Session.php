@@ -11,7 +11,6 @@ class Session {
 
   private static $refresh_after;
 
-
   /**
    * Initialize Application Session
    */
@@ -29,8 +28,6 @@ class Session {
     }
   }
 
-
-
   /**
    * Re Generate Session ID
    */
@@ -38,8 +35,6 @@ class Session {
     session_regenerate_id(true);
     $_SESSION['SESSION_INIT_TIME'] = time();
   }
-
-
 
   /**
    * Set New session value
@@ -54,8 +49,6 @@ class Session {
       !array_key_exists($k, $_SESSION) ? $_SESSION[$k] = $v : false;
     }
   }
-
-
 
   /**
    * Get Session Value by key
@@ -80,8 +73,6 @@ class Session {
       return $_SESSION;
     }
   }
-
-
 
   /**
    * Unset/Remove session by key
@@ -120,8 +111,6 @@ class Session {
     }
   }
 
-
-
   /**
    * Set Session only if not set already
    * @param string $k Key of the session
@@ -131,8 +120,6 @@ class Session {
   public static function set_if_not($k, $v, $force=true) {
     !self::has($k) ? self::set($k, $v, $force) : true;
   }
-
-
 
   /**
    * Check if session exist
@@ -153,8 +140,6 @@ class Session {
     }
   }
 
-
-
   /**
    * Session Flash
    * Store session for only one request and unset
@@ -170,8 +155,6 @@ class Session {
     }
   }
 
-
-
   /**
    * Clear Session variable
    */
@@ -179,8 +162,6 @@ class Session {
     $_SESSION = false;
     session_unset();
   }
-
-
 
   /**
    * Destroy Session variable

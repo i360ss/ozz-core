@@ -17,8 +17,6 @@ class Validate {
   private static $lang;
   private static $current_input;
 
-
-
   /**
    * Validate multiple items with rules
    * @param array|string $input The values to be validated
@@ -84,8 +82,6 @@ class Validate {
       'data' => $validatedData,
     ];
   }
-
-
 
   /**
    * Check each rule
@@ -222,8 +218,6 @@ class Validate {
     }
   }
 
-
-
   /**
    * Invalid rule provided
    * @param string $rule
@@ -236,8 +230,6 @@ class Validate {
       : false;
   }
 
-
-
   /**
    * Validation Methods
    */
@@ -246,7 +238,6 @@ class Validate {
     if(is_array($v) && isset($v['name'])){
       return self::response($v['name'] !== '', $key, self::$lang->error('file_required', ['field' => $key, 'value' => 'file']));
     }
-
     return self::response(!empty($v), $key, self::$lang->error('required', ['field' => $key, 'value' => $v]));
   }
 
@@ -272,7 +263,6 @@ class Validate {
     return $v!==''
       ? self::response((preg_match ("/^[a-zA-z]*$/", $v)), $key, self::$lang->error('text', ['field' => $key, 'value' => $v]))
       : true;
-    
   }
 
   public static function email($v, $key=''){
@@ -353,14 +343,13 @@ class Validate {
     }
   }
 
-
   /**
    * key:value options
    */
   public static function maxLength($v, $ln, $key=''){
     return self::response((strlen($v) <= $ln), $key, self::$lang->error('max', ['field' => $key, 'value' => $v, 'max' => $ln]));
   }
-  
+
   public static function minLength($v, $ln, $key=''){
     return self::response((strlen($v) >= $ln), $key, self::$lang->error('min', ['field' => $key, 'value' => $v, 'min' => $ln]));
   }
@@ -368,8 +357,6 @@ class Validate {
   public static function matchValues($v, $match, $key='', $matchKey=false){
     return self::response($v === $match, $key, self::$lang->error('match', ['field' => $key, 'value' => $v, 'key' => $matchKey, 'match' => $match]));
   }
-
-
 
   /**
    * File Validation
@@ -520,8 +507,6 @@ class Validate {
       ]);
     }
   }
-
-
 
   /**
    * Internal Responser

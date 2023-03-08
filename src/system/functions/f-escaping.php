@@ -42,27 +42,18 @@ $ozz_htmlSpecialChar = [
   'MACROMAN' => true,
 ];
 
-
 /**
  * Escape HTML
  * @param string $str
  */
 function esc($str){
-  if (0 === strlen($str)) {
-    return '';
-  }
-
-  if (!preg_match('/[&<>"\']/', $str)) {
-    return $str;
-  }
-
+  if (0 === strlen($str)) { return ''; }
+  if (!preg_match('/[&<>"\']/', $str)) { return $str; }
   if (isset($ozz_htmlSpecialChar[CHARSET])) {
     return htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, CHARSET);
-  }
-  elseif (isset($ozz_htmlSpecialChar[strtoupper(CHARSET)])) {
+  } elseif (isset($ozz_htmlSpecialChar[strtoupper(CHARSET)])) {
     return htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, CHARSET);
-  }
-  else {
+  } else {
     return htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
   }
 }
@@ -72,21 +63,14 @@ function _esc($str) {
   echo esc($str);
 }
 
-
-
 /**
  * Escape HTML (Sanitize)
  * This will remove all the HTML entities and return plain text
  * @param string $str
  */
 function esc_x($str){
-  if (0 === strlen($str)) {
-    return '';
-  }
-
-  if (!preg_match('/[&<>"\']/', $str)) {
-    return $str;
-  }
+  if (0 === strlen($str)) { return ''; }
+  if (!preg_match('/[&<>"\']/', $str)) { return $str; }
 
   return filter_var($str, FILTER_SANITIZE_STRING);
 }
@@ -104,25 +88,20 @@ function _esx($str) {
   echo esc_x($str);
 }
 
-
-
 /**
  * Escape Javascript
  * @param string $str
  */
 function esc_js($str) {
-  if (0 === strlen($str)) {
-    return '';
-  }
+  if (0 === strlen($str)) { return ''; }
 
-  if (!preg_match('/[&<>"\']/', $str)) {
-    return $str;
-  }
+  if (!preg_match('/[&<>"\']/', $str)) { return $str; }
 
   $str = htmlspecialchars($str, ENT_COMPAT, CHARSET);
   $str = preg_replace('/&#(x)?0*(?(1)27|39);?/i', "'", stripslashes($str));
   $str = str_replace("\r", '', $str);
   $str = str_replace("\n", '\\n', addslashes($str));
+
   return $str;
 }
 
@@ -130,8 +109,6 @@ function esc_js($str) {
 function _esc_js($str) {
   echo esc_js($str);
 }
-
-
 
 /**
  * Escape CSS
@@ -145,8 +122,6 @@ function esc_css($str) {
 function _esc_css($str) {
   echo esc_css($str);
 }
-
-
 
 /**
  * Escape attributes
@@ -162,8 +137,6 @@ function _esc_attr($str) {
   echo esc_attr($str);
 }
 
-
-
 /**
  * Escape textarea
  * @param string $str
@@ -177,8 +150,6 @@ function esc_textarea($str) {
 function _esc_textarea($str) {
   echo esc_textarea($str);
 }
-
-
 
 /**
  * Escape URL
@@ -203,7 +174,6 @@ function _esc_url($url) {
   echo esc_url($url);
 }
 
-
 /**
  * Encode HTML
  * @param string $str direct HTML
@@ -213,7 +183,6 @@ function _esc_url($url) {
 function html_encode($str){
   return Sanitize::htmlEncode($str);
 }
-
 
 /**
  * Decode encoded HTML

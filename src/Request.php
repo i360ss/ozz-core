@@ -12,7 +12,6 @@ class Request extends Router {
   private $all;
   private static $instance;
 
-
   private function __construct() {
     $this->all = [
       'server'            => $this->server(),
@@ -41,8 +40,6 @@ class Request extends Router {
     ];
   }
 
-
-
   /**
    * Single Request instance
    */
@@ -52,8 +49,6 @@ class Request extends Router {
     }
     return self::$instance;
   }
-
-
 
   /**
    * Return all values of Request object as array
@@ -65,16 +60,12 @@ class Request extends Router {
       : $this->all;
   }
 
-
-
   /**
    * Return the Request server
    */
   public function server(){
     return $_SERVER['SERVER_NAME'];
   }
-
-
 
   /**
    * Return the Request URL
@@ -83,16 +74,12 @@ class Request extends Router {
     return $_SERVER['REQUEST_URI'] ?? null;
   }
 
-
-
   /**
    * Return the Request Port
    */
   public function port(){
     return $_SERVER['SERVER_PORT'] ?? null;
   }
-
-
 
   /**
    * Return the Request Protocol
@@ -101,16 +88,12 @@ class Request extends Router {
     return $_SERVER['SERVER_PROTOCOL'] ?? null;
   }
 
-
-
   /**
    * Return the Root
    */
   public function root(){
     return $_SERVER['DOCUMENT_ROOT'];
   }
-
-
 
   /**
    * Return the Root
@@ -119,8 +102,6 @@ class Request extends Router {
     return $_SERVER['HTTP_HOST'] ?? null;
   }
 
-
-
   /**
    * Request Time
    */
@@ -128,16 +109,12 @@ class Request extends Router {
     return date( 'M d, Y - H:i:s', $_SERVER['REQUEST_TIME']);
   }
 
-
-
   /**
    * Request Cookies
    */
   public function cookies(){
     return $_SERVER['HTTP_COOKIE'] ?? null;
   }
-
-
 
   /**
    * Request Cookies
@@ -147,16 +124,12 @@ class Request extends Router {
     return $key !== false ? $_SERVER['HTTP_COOKIE'][$key] : $_SERVER['HTTP_COOKIE'];
   }
 
-
-
   /**
    * Request Cache control
    */
   public function cache(){
     return $_SERVER['HTTP_CACHE_CONTROL'] ?? null;
   }
-
-
 
   /**
    * Request Language
@@ -165,16 +138,12 @@ class Request extends Router {
     return $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
   }
 
-
-
   /**
    * Request Encoding
    */
   public function encoding(){
     return $_SERVER['HTTP_ACCEPT_ENCODING'] ?? null;
   }
-
-
 
   /**
    * Check if HTTPS or not
@@ -183,16 +152,12 @@ class Request extends Router {
     return isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on';
   }
 
-
-
   /**
    * Check if HTTPS or not
    */
   public function is_ajax(){
     return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
   }
-
-
 
   /**
    * Check request is JSON
@@ -203,15 +168,12 @@ class Request extends Router {
     return $contentType === "application/json";
   }
 
-
-
   /**
    * HTTP Headers
    * @return array Array of headers
    */
   public function headers(){
     $headers = [];
-
     foreach ($_SERVER as $k => $value) {
       if(strpos($k, 'HTTP_') === 0){
         $headers[substr($k, 5)] = $value;
@@ -227,8 +189,6 @@ class Request extends Router {
     return $headers;
   }
 
-
-
   /**
    * Return HTTP Header value of provided key
    * @param string $key Key for select specific header value
@@ -236,8 +196,6 @@ class Request extends Router {
   public function header($key=false){
     return $key ? $this->headers()[$key] : $this->headers();
   }
-
-
 
   /**
    * Returns Request path
@@ -255,8 +213,6 @@ class Request extends Router {
     }
   }
 
-
-
   /**
    * Input data sent via request (Form data and Query string)
    * @param string|array|int $key key of the input value 
@@ -265,7 +221,6 @@ class Request extends Router {
    */
   public function input($key=false, $evil=false){
     $output = $_FILES;
-
     if($evil === true){
       $output = $_REQUEST;
     } else {
@@ -278,8 +233,6 @@ class Request extends Router {
 
     return $key ? $output[$key] : $output; // Sanitized Data
   }
-
-
 
   /**
    * Returns URL query strings array or string
@@ -306,8 +259,6 @@ class Request extends Router {
     }
   }
 
-
-
   /**
    * URL Parameters (Defined parameter keys and values on Route)
    * @param string $key the key of URL parameter
@@ -326,8 +277,6 @@ class Request extends Router {
     }
     return $data !== [] ? $data : null;
   }
-
-
 
   /**
    * URL part separated by ( / )
@@ -348,8 +297,6 @@ class Request extends Router {
     }
   }
 
-
-
   /**
    * Another way to call url_part()
    * @param int $q index of segment
@@ -358,16 +305,12 @@ class Request extends Router {
     return $this->url_part($q);
   }
 
-
-
   /**
    * Returns All Files sent over the request
    */
   public function files(){
     return $_FILES;
   }
-
-
 
   /**
    * Returns Files sent over the request
@@ -377,16 +320,12 @@ class Request extends Router {
     return isset($key) ? $_FILES[$key] : $_FILES;
   }
 
-
-
   /**
    * Returns the Request method (get, post, ect...)
    */
   public function method(){
     return strtolower($_SERVER['REQUEST_METHOD']);
   }
-
-
 
   /**
    * Check the request method
@@ -395,8 +334,6 @@ class Request extends Router {
   public function is_method($method){
     return $this->method() === strtolower($method);
   }
-
-
 
   /**
    * User agent info (Separated)
@@ -532,8 +469,6 @@ class Request extends Router {
     return $user_agent_info;
   }
 
-
-
   /**
    * Get Client IP address
    */
@@ -549,8 +484,6 @@ class Request extends Router {
 
     return $ip;
   }
-
-
 
   /**
    * Get client information
