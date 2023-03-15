@@ -16,17 +16,17 @@ body {
   background: $ozz-light1;
   padding: 24px;
   * {
-    font-family: $mono;
+    font-family: $default-font;
     overflow-wrap: break-word;
   }
   .ozz-exceptions-container {
     padding: 20px;
     max-width: 1360px;
-    margin: 0 auto;
+    margin: 0 auto 44px;
     background: $ozz-white;
     .trace-code-wrapper {
       display: grid;
-      grid-template-columns: 320px 1fr;
+      grid-template-columns: 340px 1fr;
       .trace-menu {
         position: sticky;
         top: 0;
@@ -38,8 +38,9 @@ body {
           border-bottom: 1px solid $ozz-light2;
           cursor: pointer;
           border: 1px solid transparent;
-          &:hover {
-            background: $ozz-light2;
+          font-size: 14px;
+          :hover {
+            background-color: $ozz-light2;
           }
           &.active {
             background: $ozz-blue;
@@ -78,8 +79,9 @@ body {
   .code-highlight {
     pre {
       font-size: 15px;
-      line-height: 1.5;
+      line-height: 1.2;
       code {
+        font-family: $mono;
         overflow-x: auto;
         white-space: pre-wrap;
         white-space: -moz-pre-wrap;
@@ -91,10 +93,13 @@ body {
     }
     &__line {
       border-bottom: 1px solid $ozz-light1;
-      padding: 7px 10px;
+      padding: 5px 10px;
       display: flex;
       align-items: baseline;
       font-weight: 500;
+      :hover {
+        background: $ozz-light1;
+      }
       .line-no {
         color: rgba($ozz-dark2, .5);
         font-weight: 400;
@@ -104,7 +109,7 @@ body {
         color: $ozz-error;
         background-color: rgba($ozz-error, .1);
         font-weight: 600;
-        box-shadow: 4px 0 0 inset $ozz-red;
+        box-shadow: 4px 0 0 inset $ozz-error;
         .line-no {
           color: $ozz-dark2;
         }

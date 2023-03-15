@@ -28,6 +28,11 @@ class AppInit {
     $this->config = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
 
     /**
+     * App configurations
+     */
+    require __DIR__.SPC_BACK['core'].'app/config/config.php';
+
+    /**
      * App session start
      */
     Session::init($this->config);
@@ -102,7 +107,14 @@ class AppInit {
     $valid_domains = explode(' ', $this->config['app']['APP_URLS']);
 
     if(in_array($this_host, $valid_domains)) {
-      $this->SSL = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') ? 'http://' : 'https://';
+      if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on'){
+        $this->SSL = 'http://';
+        define('HAS_SSL', false);
+      } else {
+        $this->SSL = 'https://';
+        define('HAS_SSL', true);
+      }
+
       defined('APP_URL') || define('APP_URL', $this_host.'/');
       defined('BASE_URL') || define('BASE_URL', $this->SSL.APP_URL);
     } else{

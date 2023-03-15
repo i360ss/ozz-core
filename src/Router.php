@@ -156,7 +156,7 @@ class Router extends AppInit {
 
     if(preg_match("~\{\s*(.*?)\s*\}~", $route) && $method == $request->method()){
       $realUrlVals['innerRoute'] = explode('/', $route);
-      $realUrlVals['url'] = $request->url_part();
+      $realUrlVals['url'] = $request->urlPart();
       $realUrlVals['final'] = [];
 
       if(count($realUrlVals['innerRoute']) == count($realUrlVals['url'])){
@@ -209,13 +209,13 @@ class Router extends AppInit {
     $method = $request->method();
 
     self::$context['request'] = $request->all();
-    self::$context['url_parts'] = $request->url_part();
+    self::$context['url_parts'] = $request->urlPart();
     self::$context['url'] = $request->url();
     self::$context['path'] = $path;
     self::$context['method'] = $method;
 
     // Rewrite URL
-    if($path != '/'){
+    if($path !== '/'){
       if(substr($path, -1) == '/'){
         $path = preg_replace('/(\/+)/','/', substr($path, 0, -1));
         return Router::redirect($path);
@@ -231,7 +231,7 @@ class Router extends AppInit {
 
     // Render 404 if callback is false
     if($callback === false || self::$ValidRoutes[$method][$path]['domain'] !== $host){
-      $response->set_status_code(404);
+      $response->setStatusCode(404);
       return self::view('404', [], 'layout');
     }
 
@@ -239,15 +239,12 @@ class Router extends AppInit {
     $thisMiddlewares = self::$ValidRoutes[$method][$path]['middlewares'] ?? false;
     if($thisMiddlewares && is_array($thisMiddlewares)){
       foreach ($thisMiddlewares as $mv) { Middleware::execute($mv); }
-    }
-    elseif($thisMiddlewares && is_string($thisMiddlewares)){
+    } elseif($thisMiddlewares && is_string($thisMiddlewares)){
       Middleware::execute($thisMiddlewares);
     }
 
     // Get base template for this request
-    self::$template = self::$ValidRoutes[$method][$path]['temp'] 
-    ? self::$ValidRoutes[$method][$path]['temp']
-    : false;
+    self::$template = self::$ValidRoutes[$method][$path]['temp'] ? self::$ValidRoutes[$method][$path]['temp'] : false;
 
     // Render View
     if(is_string($callback)){
@@ -273,16 +270,14 @@ class Router extends AppInit {
 
           if(is_callable($callback)){
             return call_user_func_array($callback, [$request, $response]); // Execute
-          }
-          else {
+          } else {
             Err::custom([
               'msg' => "Error on class [ ".get_class($callback[0])." ]",
               'info' => "Please check the class name in your route for any spelling mistakes. If you don't have a class already, please create it first",
               'note' => "Command to create a class [ php ozz c:c className ]"
             ]);
           }
-        }
-        else {
+        } else {
           // Method not found
           $DEBUG_BAR->set('ozz_controller', [
             'controller' => get_class($callback[0]),
@@ -294,8 +289,7 @@ class Router extends AppInit {
             'info' => "Please check the method name in your route for any spelling mistakes. If you don't have a [$callback[1]] method already, please create it first",
           ]);
         }
-      }
-      else {
+      } else {
         $DEBUG_BAR->set('ozz_controller', [
           'controller' => $callback[0] . '<f style="color:red;"> Class not found or invalid</f>',
           'method' => $callback[1]
@@ -307,8 +301,7 @@ class Router extends AppInit {
           'note' => "Command to create a class [ php ozz c:c className ]"
         ]);
       }
-    }
-    else {
+    } else {
       return call_user_func_array($callback, [$request, $response]); // Execute
     }
   }

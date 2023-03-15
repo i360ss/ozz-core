@@ -7,9 +7,9 @@ use Ozz\Core\Err;
 # ----------------------------------------------------
 /**
  * Short way to render view with Data
- * @param string $view // View file to be rendered
- * @param array $data // Data array to be accessible on defined view
- * @param string $template // Base template
+ * @param string $view View file to be rendered
+ * @param array $data Data array to be accessible on defined view
+ * @param string $template Base template
  */
 function view($view, $data=[], $template='') {
   return Router::view($view, $data, $template);
@@ -18,10 +18,19 @@ function view($view, $data=[], $template='') {
 /**
  * Short way to Redirect back
  * @param string $add Concat string after URL
- * @param int $status Redirect Status Code
+ * @param int $status HTTP Status Code
  */
 function back($add='', $status=301) {
   return Router::back($add, $status);
+}
+
+/**
+ * Short way to redirect anywhere
+ * @param string $to Path to redirect
+ * @param int $status HTTP status code
+ */
+function redirect($to, $status=301) {
+  return Router::redirect($to, $status);
 }
 
 /**

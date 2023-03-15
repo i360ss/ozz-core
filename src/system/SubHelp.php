@@ -66,7 +66,7 @@ class SubHelp {
     /* font size and family */
     .dumpr pre {
       color: #000000;
-      font-size: 9pt;
+      font-size: 14px;
       font-family: monospace;
       line-height: 1.1rem;
       margin: 0px;

@@ -22,8 +22,8 @@ class Request extends Router {
       'host'              => $this->host(),
       'time'              => $this->time(),
       'ip'                => $this->ip(),
-      'user_agent_string' => $this->user_agent(true),
-      'user_agent'        => $this->user_agent(),
+      'user_agent_string' => $this->userAgent(true),
+      'user_agent'        => $this->userAgent(),
       'headers'           => $this->headers(),
       'cookies'           => $this->cookies(),
       'cache'             => $this->cache(),
@@ -31,12 +31,12 @@ class Request extends Router {
       'encoding'          => $this->encoding(),
       'path'              => $this->path(),
       'url'               => $this->url(),
-      'url_parts'         => $this->url_part(),
-      'url_params'        => $this->url_param() !== [] ? $this->url_param() : null,
+      'url_parts'         => $this->urlPart(),
+      'url_params'        => $this->urlParam() !== [] ? $this->urlParam() : null,
       'query'             => $this->query(),
       'input'             => $this->input(),
       'files'             => $this->files(),
-      'secure'            => $this->is_secure(),
+      'secure'            => $this->isSecure(),
     ];
   }
 
@@ -148,21 +148,21 @@ class Request extends Router {
   /**
    * Check if HTTPS or not
    */
-  public function is_secure(){
+  public function isSecure(){
     return isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on';
   }
 
   /**
    * Check if HTTPS or not
    */
-  public function is_ajax(){
+  public function isAjax(){
     return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
   }
 
   /**
    * Check request is JSON
    */
-  public function is_json(){
+  public function isJson(){
     $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
 
     return $contentType === "application/json";
@@ -264,7 +264,7 @@ class Request extends Router {
    * @param string $key the key of URL parameter
    * @return array|string|int
    */
-  public function url_param($key=''){
+  public function urlParam($key=''){
     $path = $this->path() ?? false;
     $method = $this->method();
     if(isset(Router::$ValidRoutes[$method][$path]['urlParam'])){
@@ -282,7 +282,7 @@ class Request extends Router {
    * URL part separated by ( / )
    * @param int $q index of part
    */
-  public function url_part($q=''){
+  public function urlPart($q=''){
     $URL = $this->path() ?? false;
     if(isset($URL)){
       $parts = explode('/', $URL);
@@ -298,11 +298,11 @@ class Request extends Router {
   }
 
   /**
-   * Another way to call url_part()
+   * Another way to call urlPart()
    * @param int $q index of segment
    */
   public function segment($q=''){
-    return $this->url_part($q);
+    return $this->urlPart($q);
   }
 
   /**
@@ -331,7 +331,7 @@ class Request extends Router {
    * Check the request method
    * @param string $method (get, post, ect...)
    */
-  public function is_method($method){
+  public function isMethod($method){
     return $this->method() === strtolower($method);
   }
 
@@ -339,7 +339,7 @@ class Request extends Router {
    * User agent info (Separated)
    * @param boolean Return only the user-agent string if (true)
    */
-  public function user_agent($string=false){
+  public function userAgent($string=false){
 
     if($string === true){
       return $_SERVER['HTTP_USER_AGENT'] ?? null;
@@ -490,7 +490,7 @@ class Request extends Router {
    * javascript http://www.geoplugin.net/javascript.gp
    * @param string $key
    */
-  public function client_info($key=''){
+  public function clientInfo($key=''){
     $info = [];
     $userIp = $this->ip();
     $geo = unserialize(file_get_contents("http://www.geoplugin.net/php.gp?ip=$userIp"));

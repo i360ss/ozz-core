@@ -16,18 +16,18 @@ body {
   padding: 24px;
 }
 .ozz-exceptions * {
-  font-family: "monospace", sans-serif;
+  font-family: "ui-sans-serif", system-ui, "-apple-system", "Segoe UI", "Roboto", "Ubuntu", "Cantarell", "Noto Sans", sans-serif, "BlinkMacSystemFont", Helvetica;
   overflow-wrap: break-word;
 }
 .ozz-exceptions .ozz-exceptions-container {
   padding: 20px;
   max-width: 1360px;
-  margin: 0 auto;
+  margin: 0 auto 44px;
   background: #ffffff;
 }
 .ozz-exceptions .ozz-exceptions-container .trace-code-wrapper {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 340px 1fr;
 }
 .ozz-exceptions .ozz-exceptions-container .trace-code-wrapper .trace-menu {
   position: sticky;
@@ -41,9 +41,10 @@ body {
   border-bottom: 1px solid #dfe4ea;
   cursor: pointer;
   border: 1px solid transparent;
+  font-size: 14px;
 }
-.ozz-exceptions .ozz-exceptions-container .trace-code-wrapper .trace-menu .single-trace:hover {
-  background: #dfe4ea;
+.ozz-exceptions .ozz-exceptions-container .trace-code-wrapper .trace-menu .single-trace :hover {
+  background-color: #dfe4ea;
 }
 .ozz-exceptions .ozz-exceptions-container .trace-code-wrapper .trace-menu .single-trace.active {
   background: #666EE8;
@@ -75,9 +76,10 @@ body {
 }
 .ozz-exceptions .code-highlight pre {
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.2;
 }
 .ozz-exceptions .code-highlight pre code {
+  font-family: "monospace", sans-serif;
   overflow-x: auto;
   white-space: pre-wrap;
   white-space: -moz-pre-wrap;
@@ -88,10 +90,13 @@ body {
 }
 .ozz-exceptions .code-highlight__line {
   border-bottom: 1px solid #f1f2f6;
-  padding: 7px 10px;
+  padding: 5px 10px;
   display: flex;
   align-items: baseline;
   font-weight: 500;
+}
+.ozz-exceptions .code-highlight__line :hover {
+  background: #f1f2f6;
 }
 .ozz-exceptions .code-highlight__line .line-no {
   color: rgba(116, 125, 140, 0.5);
@@ -102,7 +107,7 @@ body {
   color: #ff4757;
   background-color: rgba(255, 71, 87, 0.1);
   font-weight: 600;
-  box-shadow: 4px 0 0 inset #B91E1D;
+  box-shadow: 4px 0 0 inset #ff4757;
 }
 .ozz-exceptions .code-highlight__line--active .line-no {
   color: #747d8c;

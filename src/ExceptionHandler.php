@@ -10,34 +10,56 @@ namespace Ozz\Core;
 use Ozz\Core\Help;
 use Ozz\Core\system\SubHelp;
 
-class OzzExceptions {
+class ExceptionHandler {
 
   private $config;
 
   public function __construct(){
+    if(OZZ_EXCEPTION_HANDLER === false){
+      return false;
+    }
+
     $this->config = parse_ini_file(__DIR__.'/../../../../'.'env.ini', true);
 
     if($this->config['app']['DEBUG']){
+      error_reporting(E_ALL | E_DEPRECATED);
+
+      // Enable error log and error display
+      if(ERROR_LOG === true){
+        ini_set('display_errors', 1);
+        ini_set('log_errors', 1);
+        ini_set('error_log', __DIR__.'/../../../../storage/log/error_log.log');
+      }
+
       // Handle exceptions
       set_exception_handler(function($exception){
         self::handler($exception);
       });
 
       // Handle Warnings
-      set_error_handler(function($errno, $errstr, $err_file, $err_line) {
-        if($errno == E_NOTICE || $errno == E_WARNING){
-          throw new \ErrorException($errstr, 0, $errno, $err_file, $err_line);
+      set_error_handler(function($type, $errstr, $err_file, $err_line) {
+        if(in_array($type, [E_NOTICE, E_WARNING, E_DEPRECATED])){
+          throw new \ErrorException($errstr, 0, $type, $err_file, $err_line);
         }
       });
-    } else {
-      return false;
+
+      register_shutdown_function(function(){
+        $f_error = error_get_last();
+        if(isset($f_error) && count($f_error) > 0){
+          // Temporary fatal error handler
+          $fatal_error = "<div class='ozz_errorOutput' style='padding:10px 20px; max-width: 900px; margin: 3px auto; border: 1px solid #FF5968; background: #FF5968;'><code><strong><h3 style='color: #fff;'>Error: ".$f_error['message']."</code></strong></h3></div>
+          <div style='padding:10px 20px; max-width: 900px; margin: 3px auto; color: #fff; font-size: 14px; line-height: 1.7; border: 1px solid #666EE8; background:#666EE8;'><code>File: ".$f_error['file']." : ".$f_error['line']."</code></div>";
+
+          echo $fatal_error;
+        }
+      });
     }
   }
 
   /**
    * Default Ozz exception handler
    */
-  public static function handler($exception) {    
+  public static function handler($exception) {
     // Print the context to the screen
     $style = '<style nonce="'.CSP_NONCE.'">'.Help::minifyCSS(file_get_contents(__DIR__.'/system/assets/css/exceptions.css')).'</style>';
     $script = '<script type="text/javascript" nonce="'.CSP_NONCE.'">'.file_get_contents(__DIR__.'/system/assets/js/exceptions.js').'</script>';
@@ -49,6 +71,8 @@ class OzzExceptions {
         $severity = 'Warning';
       } elseif($exception->getSeverity() == E_NOTICE){
         $severity = 'Notice';
+      } elseif($exception->getSeverity() == E_DEPRECATED){
+        $severity = 'Deprecated';
       }
     } else {
       $severity = 'Exception';
@@ -57,8 +81,7 @@ class OzzExceptions {
     $modified_exception .= '<div class="ozz-exception-heading">';
     $modified_exception .= '<pre class="label">'.$severity.'</pre>';
     $modified_exception .= '<pre class="title">'.$exception->getMessage().'</pre>';
-    $modified_exception .= '<pre class="file">File: '.$exception->getFile().'</pre>';
-    $modified_exception .= '<pre class="line">Line: '.$exception->getLine().'</pre>';
+    $modified_exception .= '<pre class="file">File: '.$exception->getFile().' : '.$exception->getLine().'</pre>';
     $modified_exception .= '</pre></div>';
 
     $modified_exception .= '<div class="trace-code-wrapper">';
@@ -89,8 +112,8 @@ class OzzExceptions {
     // Primary exception code highlight
     $primary_line = $exception->getLine();
     $lines = file($exception->getFile());
-    $start = max($primary_line - 25, 0);
-    $end = min($primary_line + 25, count($lines) - 1);
+    $start = max($primary_line - 15, 0);
+    $end = min($primary_line + 15, count($lines) - 1);
     $context = array_slice($lines, $start, $end - $start + 1);
 
     $modified_exception .= '<div class="single-code-snippet active code-snippet-0">'; // Code highlight class end
@@ -117,8 +140,8 @@ class OzzExceptions {
 
         if($t_file && $t_line){
           $t_lines = file($t_file);
-          $start = max($t_line - 25, 0);
-          $end = min($t_line + 25, count($t_lines) - 1);
+          $start = max($t_line - 15, 0);
+          $end = min($t_line + 15, count($t_lines) - 1);
           $t_context = array_slice($t_lines, $start, $end - $start + 1);
 
           $modified_exception .= '<div class="single-code-snippet trace-single-highlight code-snippet-'.($key+1).'">'; // Trace single code highlight start
@@ -144,6 +167,9 @@ class OzzExceptions {
     $modified_exception .= '</pre></div>'; // Code highlight class end
     $modified_exception .= '</div>'; // Trace code highlight wrapper end
     $modified_exception .= '</div></div>'; // Parent and container classed end
+
+    global $DEBUG_BAR;
+    $DEBUG_BAR->show();
 
     echo $style.$modified_exception.$script;
   }

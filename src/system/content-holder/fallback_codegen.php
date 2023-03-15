@@ -89,14 +89,14 @@ function ozz_content_ViewContent($data){
  * View Name: '.$name.'
  * Path: '.$path.'
  * 
- * @param array $data arguments passed from controller
- * 
+ * @param array $data arguments passed from controller or route
  */
 ?>
 {{ title        = "page_title_here" }}
 {{ keywords     = "meta_keywords_here" }}
 {{ description  = "meta_description_here" }}
-{{ bodyClass    = "body_classes_here" }}
+{{ body_class   = "view-'.$name.'" }}
+
 {{ content }}
   <!-- Page Content should be here -->
 {{ content-end }}';
@@ -136,7 +136,6 @@ function ozz_content_Component($data){
  * Path: '.$path.'
  * 
  * @param array $args Given arguments on component call
- * 
  */
 ?>
 
@@ -158,11 +157,10 @@ function ozz_content_Layout(){
   <meta name="robots" content="index, follow">
   <meta name="csrf-token" content="<?=CSRF_TOKEN?>">
   <meta name="url" content="<?=BASE_URL?>">
-  <meta name="copyright" content="<?=APP_NAME?>">
   <link rel="icon" type="image/x-icon" href="<?=BASE_URL?>assets/icons/favicon.ico">
   <link rel="stylesheet" href="<?=CSS?>styles.css" nonce="<?=CSP_NONCE?>">
 </head>
-<body class="{% bodyClass %}">
+<body class="{% body_class %}">
 <main>
   {% content %}
 </main>

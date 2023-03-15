@@ -12,7 +12,7 @@ trait Security {
   /**
    * Check the request AJAX or not (Allow only Ajax requests)
    */
-  protected function is_ajax(){
+  protected function isAjax(){
     if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest'){
       http_response_code(405);
       exit('Not an AJAX request'); // Not a Ajax request

@@ -108,10 +108,10 @@ class Templating extends AppInit {
   private static function render_final_view($base_layout){
     $base_layout = MINIFY_HTML ? Help::minifyHTML($base_layout) : $base_layout; // Minify HTML if required
     $response = Response::getInstance();
-    if(!$response->has_header('Content-Type')){
-      $response->set_header('Content-Type', 'text/html; charset='.CHARSET);
+    if(!$response->hasHeader('Content-Type')){
+      $response->setHeader('Content-Type', 'text/html; charset='.CHARSET);
     }
-    $response->set_content($base_layout);
+    $response->setContent($base_layout);
     $response->send();
   }
 

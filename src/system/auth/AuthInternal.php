@@ -42,7 +42,7 @@ trait AuthInternal {
     $request = Request::getInstance();
 
     $log_data['user_ip']    = $request->ip();
-    $log_data['user_agent'] = json_encode($request->user_agent());
+    $log_data['user_agent'] = json_encode($request->userAgent());
     $log_data['timestamp']  = time();
 
     self::$db->insert(AUTH_LOG_TABLE, $log_data);

@@ -275,14 +275,12 @@ class Auth extends Model {
               ? $user[self::$first_name_field].' '.$user[self::$last_name_field] 
               : $user[self::$username_field];
 
-            $args = [
+            $new_login_alert_args = [
               'name' => $full_name,
               'what' => $what,
               'info_dom' => $info_dom,
               'info' => $info,
             ];
-
-            self::notify('new-login-alert', $user[self::$email_field], $args);
           }
 
           // Log throttle as success login
@@ -291,6 +289,9 @@ class Auth extends Model {
 
           // Disable failed login attempts
           self::disableFailedAttempts($user[self::$id_field]);
+
+          // Email Notification if new login
+          isset($new_login_alert_args) ?  self::notify('new-login-alert', $user[self::$email_field], $new_login_alert_args) : false;
 
           return $return_status ? self::$auth_errors['success'] : Router::redirect($redirect_to);
         } else {
@@ -513,7 +514,7 @@ class Auth extends Model {
       $known_agents['browser'][$key]    = $ag['browser'];
     }
 
-    $current_agent              = $request->user_agent();
+    $current_agent              = $request->userAgent();
     $current_agent['ip']        = $request->ip();
     $current_agent['date_time'] = date("M d, Y | H:i:s");
     $new_entries                = [];
@@ -750,7 +751,7 @@ class Auth extends Model {
           ? $user[self::$first_name_field].' '.$user[self::$last_name_field] 
           : $user[self::$username_field];
 
-        $info = $request->user_agent();
+        $info = $request->userAgent();
         $info['ip'] = $request->ip();
 
         $info_dom = '<p><strong>IP Address: </strong>'.$info['ip'].'</p>';
@@ -839,6 +840,14 @@ class Auth extends Model {
     self::init();
 
     return array_keys(AUTH_USER_ROLES);
+  }
+
+  /**
+   * Get Current user landing page
+   * @param string $role
+   */
+  public static function getLandingPage($role=false){
+    return $role ? AUTH_USER_ROLES[$role]['landing_page'] : AUTH_USER_ROLES[Auth::getRole()]['landing_page'];
   }
 
   /**

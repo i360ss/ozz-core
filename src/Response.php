@@ -45,7 +45,7 @@ class Response {
    * Check header exist
    * @param string Header key
    */
-  public function has_header($key=false){
+  public function hasHeader($key=false){
     if(isset($key)){
       return isset($this->headers[$key]) && !empty($this->headers[$key]);
     } else {
@@ -58,7 +58,7 @@ class Response {
    * @param string $key Header key
    * @param string $val Header Value
    */
-  public function set_header(string $key, string $val){
+  public function setHeader(string $key, string $val){
     $this->headers[$key] = $val;
   }
 
@@ -66,7 +66,7 @@ class Response {
    * Set Response status code
    * @param int $status_code HTTP response status code
    */
-  public function set_status_code(int $status_code){
+  public function setStatusCode(int $status_code){
     $this->status_code = $status_code;
   }
 
@@ -74,7 +74,7 @@ class Response {
    * Set Response Content
    * @param $content response content
    */
-  public function set_content($content){
+  public function setContent($content){
     $this->content = $content;
   }
 
@@ -85,7 +85,9 @@ class Response {
     $show_debug_bar = false;
     $page_cache = false;
 
-    http_response_code($this->status_code);
+    !is_null($this->status_code)
+      ? http_response_code($this->status_code)
+      : false;
 
     if(isset($this->headers) && !empty($this->headers)){
       foreach ($this->headers as $key => $header) {
@@ -103,10 +105,12 @@ class Response {
     }
 
     // Render Exceptions
-    $exceptions = Err::getInstance();
-    if(isset($exceptions::$exception_doms) && !empty($exceptions::$exception_doms) && is_array($exceptions::$exception_doms) && DEBUG){
-      foreach ($exceptions::$exception_doms as $key => $exception) {
-        echo $exception;
+    if(DEBUG){
+      $exceptions = Err::getInstance();
+      if(isset($exceptions::$exception_doms) && !empty($exceptions::$exception_doms) && is_array($exceptions::$exception_doms)){
+        foreach ($exceptions::$exception_doms as $key => $exception) {
+          echo $exception;
+        }
       }
     }
 

@@ -24,7 +24,7 @@ class Cache {
   public function store($type, $key, $val){
     switch ($type) {
       case 'page':
-        return $this->page_cache($val);
+        return $this->pageCache($val);
         break;
     }
   }
@@ -66,7 +66,7 @@ class Cache {
    * Page Cache
    * @param string|HTML Full page content to cache
    */
-  private function page_cache($content){
+  private function pageCache($content){
     if(false !== ($f = @fopen($this->cache_file, 'w'))) {
       fwrite($f, "<!-- OZZ PAGE CACHED @ ".date('M d, Y h:m:s a', time())." /-->\n".$content);
       fclose($f);

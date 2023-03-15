@@ -51,7 +51,7 @@ class ".ucfirst($controllerName)." extends Controller {
    * Verify user account
    */
   public function verifyUserAccount(Request \$request){
-    \$data['status'] = Auth::verifyEmail(\$request->url_param('token'));
+    \$data['status'] = Auth::verifyEmail(\$request->urlParam('token'));
 
     return view('auth/verify-account', \$data);
   }
@@ -73,7 +73,7 @@ class ".ucfirst($controllerName)." extends Controller {
 
     \$validation->pass ? Auth::login(\$email, \$password) : false;
 
-    return Router::redirect('/login');
+    return Router::redirect('".AUTH_LOGIN_PATH."');
   }
 
 
@@ -91,7 +91,7 @@ class ".ucfirst($controllerName)." extends Controller {
 
     \$validation->pass ? Auth::passwordResetAttempt(\$form_data['email']) : false;
 
-    return Router::redirect('/forgot-password');
+    return Router::redirect('".AUTH_FORGOT_PASSWORD_PATH."');
   }
 
 
@@ -100,8 +100,8 @@ class ".ucfirst($controllerName)." extends Controller {
    * Reset password
    */
   public function resetPassword(Request \$request){
-    \$data['status'] = Auth::validateResetToken(\$request->url_param('token'));
-    \$data['token'] = \$request->url_param('token');
+    \$data['status'] = Auth::validateResetToken(\$request->urlParam('token'));
+    \$data['token'] = \$request->urlParam('token');
 
     return view('auth/reset-password', \$data);
   }

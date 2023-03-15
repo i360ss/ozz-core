@@ -117,7 +117,7 @@ class Validate {
           case 'strong_password':
           case 'strongPass':
           case 'strong_pass':
-            return self::password($val, $valueKey, true, $v);
+            return self::password($val, true, $valueKey, $v);
             break;
 
           case 'format':
@@ -201,14 +201,14 @@ class Validate {
 
         case 'password':
         case 'pass':
-          return self::password($val, $valueKey, false);
+          return self::password($val, false, $valueKey);
           break;
 
         case 'strongPassword':
         case 'strong_password':
         case 'strongPass':
         case 'strong_pass':
-          return self::password($val, $valueKey, true);
+          return self::password($val, true, $valueKey);
           break;
 
         default:
@@ -308,7 +308,7 @@ class Validate {
       : true;
   }
 
-  public static function password($v, $key='', $type, $minLength=6){
+  public static function password($v, $type, $key='', $minLength=6){
     if($type === true){
       // Strong Password (Check all)
       $password_errors = [];

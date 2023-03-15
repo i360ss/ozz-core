@@ -15,10 +15,10 @@ class Help extends AppInit {
    * Encode or Decode String (Base 64 encryption)
    * @param string $e
    */
-  public static function enc_base64($e){
+  public static function encBase64($e){
     return strtr(base64_encode($e), '+/=', '-_,');
   }
-  public static function dec_base64($e){
+  public static function decBase64($e){
     return base64_decode(strtr($e, '-_,', '+/='));
   }
 

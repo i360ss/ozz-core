@@ -26,7 +26,7 @@ class ".ucfirst($middlewareName)." {
     \$isDeniedPage = in_array(\$request->path(), \$deniedPages);
 
     if(\$loggedIn && \$isDeniedPage){
-      return Router::redirect(AUTH_USER_ROLES[Auth::getRole()]['landing_page']);
+      return Router::redirect(Auth::getLandingPage());
     } elseif(!\$loggedIn && !\$isDeniedPage){
       return Router::redirect(AUTH_LOGIN_PATH);
     }

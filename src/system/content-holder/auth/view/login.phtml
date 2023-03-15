@@ -14,13 +14,13 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
 {{ title        = "Login | <?=APP_NAME?>" }}
 {{ keywords     = "login" }}
 {{ description  = "Login" }}
-{{ bodyClass    = "auth" }}
+{{ body_class   = "auth" }}
 
 {{ content }}
   <section class="component auth-comp log-in center">
     <div class="container">
       <h1 class="component__heading-1">Login</h1>
-      <form action="<?=BASE_URL?>login" method="post" class="form">
+      <form action="<?=AUTH_LOGIN_PATH?>" method="post" class="form">
 
         <?=CSRF_FIELD?>
 
@@ -45,8 +45,8 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
   </section>
 
   <div class="off-bottom-link">
-    <a href="<?=BASE_URL?>sign-up" class="link">Create an account</a> 
+    <a href="<?=AUTH_SIGNUP_PATH?>" class="link">Create an account</a> 
     &nbsp;| &nbsp;
-    <a href="<?=BASE_URL?>forgot-password" class="link">Forgot Password?</a>
+    <a href="<?=AUTH_FORGOT_PASSWORD_PATH?>" class="link">Forgot Password?</a>
   </div>
 {{ content-end }}

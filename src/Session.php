@@ -24,14 +24,14 @@ class Session {
     if(!isset($_SESSION['SESSION_INIT_TIME'])){
       $_SESSION['SESSION_INIT_TIME'] = time();
     } elseif (time() - $_SESSION['SESSION_INIT_TIME'] > self::$refresh_after){
-      self::re_generate_id();
+      self::reGenerateId();
     }
   }
 
   /**
    * Re Generate Session ID
    */
-  public static function re_generate_id() {
+  public static function reGenerateId() {
     session_regenerate_id(true);
     $_SESSION['SESSION_INIT_TIME'] = time();
   }
@@ -117,7 +117,7 @@ class Session {
    * @param string|array|object|int|bool $v session value to store
    * @param bool $force overwrite existing value (default: true)
    */
-  public static function set_if_not($k, $v, $force=true) {
+  public static function setIfNot($k, $v, $force=true) {
     !self::has($k) ? self::set($k, $v, $force) : true;
   }
 

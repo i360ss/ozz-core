@@ -143,10 +143,10 @@ function json(array $data, $flags=null) {
   $content = !is_null($flags) ? json_encode($data, $flags) : json_encode($data);
   $response = Response::getInstance();
 
-  if(!$response->has_header('Content-Type')){
-    $response->set_header('Content-Type', 'application/json; charset='.CHARSET);
+  if(!$response->hasHeader('Content-Type')){
+    $response->setHeader('Content-Type', 'application/json; charset='.CHARSET);
   }
-  $response->set_content($content);
+  $response->setContent($content);
 
   return $response->send();
 }
