@@ -113,7 +113,7 @@ class Request extends Router {
    * Request Cookies
    */
   public function cookies(){
-    return $_SERVER['HTTP_COOKIE'] ?? null;
+    return $_COOKIE;
   }
 
   /**
@@ -121,7 +121,10 @@ class Request extends Router {
    * @param string $key Cookie key
    */
   public function cookie($key=false){
-    return $key !== false ? $_SERVER['HTTP_COOKIE'][$key] : $_SERVER['HTTP_COOKIE'];
+    if ($key === null) {
+      return $_COOKIE;
+    }
+    return isset($_COOKIE[$key]) ? $_COOKIE[$key] : null;
   }
 
   /**
@@ -286,10 +289,9 @@ class Request extends Router {
     $URL = $this->path() ?? false;
     if(isset($URL)){
       $parts = explode('/', $URL);
-      if($q==''){
+      if ($q=='') {
         return $parts;
-      }
-      elseif(count($parts) > $q){
+      } elseif (count($parts) > $q) {
         return $parts[$q];
       }
     } else {

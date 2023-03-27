@@ -231,8 +231,7 @@ class Router extends AppInit {
 
     // Render 404 if callback is false
     if($callback === false || self::$ValidRoutes[$method][$path]['domain'] !== $host){
-      $response->setStatusCode(404);
-      return self::view('404', [], 'layout');
+      render_error_page(404, 'Page Not Found');
     }
 
     // Get set and execute Middlewares

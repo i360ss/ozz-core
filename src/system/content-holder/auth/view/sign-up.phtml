@@ -20,7 +20,7 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
   <section class="component auth-comp sign-up center">
     <div class="container">
       <h1 class="component__heading-1">Sign Up</h1>
-      <form action="<?=AUTH_SIGNUP_PATH?>" method="post" class="form">
+      <form action="<?=AUTH_PATHS['signup']?>" method="post" class="form">
 
         <?=CSRF_FIELD?>
 
@@ -63,6 +63,6 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
   </section>
 
   <div class="off-bottom-link">
-    <p>Already have an account? <a href="<?=AUTH_LOGIN_PATH?>" class="link">Login</a></p>
+    <p>Already have an account? <a href="<?=AUTH_PATHS['login']?>" class="link">Login</a></p>
   </div>
 {{ content-end }}

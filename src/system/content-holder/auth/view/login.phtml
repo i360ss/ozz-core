@@ -20,7 +20,7 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
   <section class="component auth-comp log-in center">
     <div class="container">
       <h1 class="component__heading-1">Login</h1>
-      <form action="<?=AUTH_LOGIN_PATH?>" method="post" class="form">
+      <form action="<?=AUTH_PATHS['login']?>" method="post" class="form">
 
         <?=CSRF_FIELD?>
 
@@ -45,8 +45,8 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
   </section>
 
   <div class="off-bottom-link">
-    <a href="<?=AUTH_SIGNUP_PATH?>" class="link">Create an account</a> 
+    <a href="<?=AUTH_PATHS['signup']?>" class="link">Create an account</a> 
     &nbsp;| &nbsp;
-    <a href="<?=AUTH_FORGOT_PASSWORD_PATH?>" class="link">Forgot Password?</a>
+    <a href="<?=AUTH_PATHS['forgot_password']?>" class="link">Forgot Password?</a>
   </div>
 {{ content-end }}

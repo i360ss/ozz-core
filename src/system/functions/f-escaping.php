@@ -72,7 +72,15 @@ function esc_x($str){
   if (0 === strlen($str)) { return ''; }
   if (!preg_match('/[&<>"\']/', $str)) { return $str; }
 
-  return filter_var($str, FILTER_SANITIZE_STRING);
+  $search = array(
+    '@<script[^>]*?>.*?</script>@si',
+    '@<[\/\!]*?[^<>]*?>@si',
+    '@<style[^>]*?>.*?</style>@siU',
+    '@<![\s\S]*?--[ \t\n\r]*>@'
+  );
+  $rtn = preg_replace($search, '', $str);
+
+  return $rtn;
 }
 
 function esx($str){
@@ -94,7 +102,6 @@ function _esx($str) {
  */
 function esc_js($str) {
   if (0 === strlen($str)) { return ''; }
-
   if (!preg_match('/[&<>"\']/', $str)) { return $str; }
 
   $str = htmlspecialchars($str, ENT_COMPAT, CHARSET);

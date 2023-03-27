@@ -1,6 +1,7 @@
 <?php
 use Ozz\Core\Router;
 use Ozz\Core\Err;
+use Ozz\Core\Response;
 
 # ----------------------------------------------------
 // Short functions for Router related works
@@ -79,4 +80,21 @@ function component($component, $args=null) {
 
 function _component($component, $args=null) {
   echo component($component, $args);
+}
+
+/**
+ * Render Error pages
+ * @param int $errorCode HTTP Error code
+ * @param string $message
+ * @param mixed $args Additional arguments
+ */
+function render_error_page($errorCode, $message, $args=false, $base_layout=ADDITIONAL_CONFIG['DEFAULT_ERROR_PAGE_BASE_LAYOUT']) {
+  $response = Response::getInstance();
+  $response->setStatusCode($errorCode);
+  view('http-error', [
+    'error_code' => $errorCode,
+    'error_message' => $message,
+    'args' => $args,
+  ], $base_layout);
+  exit;
 }

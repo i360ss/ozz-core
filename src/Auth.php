@@ -13,8 +13,9 @@ use Ozz\Core\Response;
 use Ozz\Core\Router;
 
 class Auth extends Model {
-
+  
   use \Ozz\Core\DB;
+  use \Ozz\Core\TokenHandler;
   use \Ozz\Core\system\auth\AuthInternal;
 
   private static $db;
@@ -29,12 +30,15 @@ class Auth extends Model {
   private static $active_key_field;
   private static $auth_errors = [
     'success'                 => 'success',
+    'error'                   => 'error',
+    'meta_log_error'          => 'meta_log_error',
     'valid_token'             => 'valid_token',
     'invalid_username'        => 'invalid_username',
     'invalid_password'        => 'invalid_password',
     'unverified_account'      => 'unverified_account',
     'registration_failed'     => 'registration_failed',
     'email_already_exist'     => 'email_already_exist',
+    'email_error'             => 'email_error',
     'username_already_exist'  => 'username_already_exist',
     'account_locked_throttle' => 'account_locked_throttle',
     'account_locked'          => 'account_locked',
@@ -121,21 +125,19 @@ class Auth extends Model {
         ]);
 
         // Send Verification mail if enabled
-        if(AUTH_SEND_VERIFICATION_MAIL === true){
+        if(AUTH_SEND_VERIFICATION_MAIL === true && AUTH_ACTIVATE_AND_LOGIN_ONCE_SIGNUP === false){
           $full_name = isset($user_data[self::$first_name_field]) && isset($user_data[self::$last_name_field]) 
             ? $user_data[self::$first_name_field].' '.$user_data[self::$last_name_field]
             : $user_data[self::$username_field];
 
           $mail_args = [
             'name' => $full_name,
-            'verify_link' => clear_multi_slashes(AUTH_EMAIL_VERIFY_PATH.'/').$user_data[self::$active_key_field]
+            'verify_link' => clear_multi_slashes(AUTH_PATHS['verify_account'].'/').$user_data[self::$active_key_field]
           ];
 
-          return self::notify('email-verification', $user_data[self::$email_field], $mail_args);
-        }
-
-        // Activate and Login to account if enabled
-        if(AUTH_ACTIVATE_AND_LOGIN_ONCE_SIGNUP === true && AUTH_SEND_VERIFICATION_MAIL === false){
+          return self::notify('account-verification', $user_data[self::$email_field], $mail_args);
+        } elseif(AUTH_ACTIVATE_AND_LOGIN_ONCE_SIGNUP === true){
+          // Activate and Login to account if enabled
           self::activateAccount($user_data[self::$email_field]);
           self::login($user_data[self::$email_field], $temp_password);
 
@@ -157,11 +159,11 @@ class Auth extends Model {
   }
 
   /**
-   * Verify Account (Email)
+   * Verify User Account
    * @param string $token Verification token
    * @param string $return_status Return meaningful status or boolean
    */
-  public static function verifyEmail(string $token, $return_status=true){
+  public static function verifyAccount(string $token, $return_status=true){
     self::init();
 
     $status = $return_status ? 'error' : false;
@@ -198,7 +200,6 @@ class Auth extends Model {
    * @param array $args Additional arguments
    */
   public static function login(string $email, string $password, $return_status=true, $args=[]){
-
     // Redirect to landing page if already logged in
     if(self::isLoggedIn()){
       return Router::redirect(AUTH_USER_ROLES[$_SESSION['logged_user_role']]['landing_page']);
@@ -402,6 +403,10 @@ class Auth extends Model {
         'role'       => $_SESSION['logged_user_role'],
       ];
 
+      if($user['name'] == ' '){
+        $user['name'] = $_SESSION['logged_username'];
+      }
+
       return (isset($key) && $key !== false) ? $user[$key] : $user;
     } else {
       return false;
@@ -423,7 +428,7 @@ class Auth extends Model {
     unset($_SESSION['logged_user_first_name']);
     unset($_SESSION['logged_user_last_name']);
 
-    $to = $redirect ? $redirect : AUTH_LOGIN_PATH;
+    $to = $redirect ? $redirect : AUTH_PATHS['login'];
     clear_error();
 
     return Router::redirect($to);
@@ -436,9 +441,13 @@ class Auth extends Model {
 	 * @param string $default Default image set to use [ 404 | mp | identicon | monsterid | wavatar ]
 	 * @param string $r Maximum rating (inclusive) [ g | pg | r | x ]
 	 */
-  public static function getGravatar($email=false, $s=80, $d='identicon', $r='g') {
+  public static function getGravatar($email=false, $s=80, $d='mp', $r='g') {
     $url = 'https://www.gravatar.com/avatar/';
-    $url .= md5(strtolower(trim($email ? $email : $_SESSION['logged_user_email'])));
+    if($email == false && (!isset($_SESSION['logged_user_email']) || empty($_SESSION['logged_user_email']))){
+      $url .= md5(strtolower(random_str(5, 'a')));
+    } else {
+      $url .= md5(strtolower(trim($email ? $email : $_SESSION['logged_user_email'])));
+    }
     $url .= "?s=$s&d=$d&r=$r";
 
     return $url;
@@ -543,7 +552,7 @@ class Auth extends Model {
 
     if(isset($user)){
       $token = self::hashKey('password-reset', $email_username);
-      $reset_link = clear_multi_slashes(AUTH_RESET_PASSWORD_PATH.'/'.$token);
+      $reset_link = clear_multi_slashes(AUTH_PATHS['reset_password'].'/'.$token);
 
       // Full name or Username
       $name = isset($user[self::$first_name_field]) && $user[self::$first_name_field] !== ''
@@ -609,7 +618,7 @@ class Auth extends Model {
     $error = false;
 
     switch ($type) {
-      case 'email-verification':
+      case 'account-verification':
         $defaults = [
           'title' => trans('email_verification_mail_title'),
           'subject' => trans('email_verification_mail_subject'),
@@ -618,6 +627,26 @@ class Auth extends Model {
         $success = trans('email_verification_mail_sent', ['email' => $email]);
         $error = trans_e('email_verification_mail_error');
         $alt_fallback = trans('email_verification_mail_title').'<br> <a href="'.$args['verify_link'].'"></a>';
+        break;
+
+      case 'email-change-verification':
+        $defaults = [
+          'title' => trans('email_verification_mail_title'),
+          'subject' => trans('email_verification_mail_subject'),
+          'template' => AUTH_EMAIL_TEMPLATES['email-change-verification'],
+        ];
+        $success = trans('email_verification_mail_sent', ['email' => $email]);
+        $error = trans_e('email_verification_mail_error');
+        $alt_fallback = trans('email_verification_mail_title').'<br> <a href="'.$args['verify_link'].'"></a>';
+        break;
+
+      case 'email-changed-alert':
+        $defaults = [
+          'title' => trans('email_changed_alert_mail_title', ['new_email' => $email]),
+          'subject' => trans('email_changed_alert_mail_subject'),
+          'template' => AUTH_EMAIL_TEMPLATES['email-changed-alert'],
+        ];
+        $alt_fallback = trans('email_changed_alert_mail_title').'<br> Your email address changed to '.$email;
         break;
 
       case 'new-login-alert':
@@ -693,7 +722,7 @@ class Auth extends Model {
     $user_id = self::$db->get(AUTH_META_TABLE, 'user_id', [
       'meta_key'     => 'password_reset_token',
       'meta_value'   => $token,
-      'timestamp[>]' => time() - (PASSWORD_RESET_LINK_EXPIRE_IN + 1),
+      'timestamp[>]' => time() - (PASSWORD_RESET_LINK_LIFETIME + 1),
       'ORDER'        => ['id' => 'DESC']
     ]);
 
@@ -783,18 +812,129 @@ class Auth extends Model {
   }
 
   /**
-   * Change Email
-   * @param int $user_id User ID
-   * @param string $current_email
-   * @param string $new_email
+   * Email change request
+   * @param string $new_email New email address
    */
-  public static function changeEmail($user_id, $current_email, $new_email){
-    // 0. change account status to (pending)
-    // 1. Send verification mail to new email
-    // 2. Verify new Email account
-    // 3. Change the Email
-    // 4. Send Email change alert to old email
-    // 5. Send welcome mail to new Email
+  public static function emailChangeRequest($new_email, $return_status=true){
+    if(!self::isLoggedIn()){
+      return render_error_page(401, 'Unauthorized');
+    }
+
+    $user_id = self::info('id');
+    $verification_token = self::hashKey('verification');
+    $meta_val = json_encode(['email' => $new_email, 'token' => $verification_token]);
+
+    // Email change throttle check
+    if(self::isEmailChangeAttemptsExceeded($user_id)){
+      $last_attempt = self::$db->get(AUTH_META_TABLE, 'timestamp', [
+        'user_id'  => $user_id,
+        'meta_key' => 'email_change_verification',
+        'ORDER'    => ['id' => 'DESC']
+      ]);
+
+      $unlock_time = $last_attempt + AUTH_EMAIL_CHANGE_THROTTLE['DELAY_TIME'];
+      if($unlock_time >= time()){
+        $remaining_time = $unlock_time - time();
+        $remaining_time_string = (AUTH_EMAIL_CHANGE_THROTTLE['DELAY_TIME'] <= 60 || $remaining_time <= 60)
+          ? round($remaining_time).' seconds' 
+          : round($remaining_time / 60).' minutes';
+
+        set_error('error', trans_e('email_change_throttle', ['time' => $remaining_time_string]));
+        return $return_status ? self::$auth_errors['throttle_error'] : false;
+      }
+    }
+
+    if(self::addUserMeta($user_id, 'email_change_verification', $meta_val)){
+      $args = [
+        'name' => self::info('name'),
+        'current_email' => self::info('email'),
+        'new_email' => $new_email,
+        'verify_link' => clear_multi_slashes(AUTH_PATHS['verify_email'].'/').$verification_token,
+      ];
+
+      if(self::notify('email-change-verification', $new_email, $args)){
+        set_error('success', trans('email_verification_mail_sent'));
+        return $return_status ? self::$auth_errors['success'] : true;
+      }
+
+      set_error('error', trans_e('error'));
+      return $return_status ? self::$auth_errors['email_error'] : false;
+    }
+
+    set_error('error', trans_e('error'));
+    return $return_status ? self::$auth_errors['meta_log_error'] : false;
+  }
+
+  /**
+   * Verify and change email address
+   * @param string $token Verification token
+   * @param boolean $return_status
+   * @param boolean $notify Send email notification
+   */
+  public static function verifyAndChangeEmail($token, $notify=true, $return_status=true,){
+    self::init();
+
+    $meta = self::getUserMeta([
+      'meta_key' => 'email_change_verification',
+      'timestamp[>=]' => time() - EMAIL_VERIFICATION_LINK_LIFETIME,
+    ]);
+
+    list($user_id, $new_email) = false;
+    foreach ($meta as $k => $v) {
+      $tk = json_decode($v['meta_value'])->token;
+      if(hash_equals($tk, $token)){
+        $user_id = $v['user_id'];
+        $new_email = json_decode($v['meta_value'])->email;
+        break;
+      }
+    }
+
+    if($user_id && $new_email){
+      self::changeEmail($user_id, $new_email, false);
+      self::deleteUserMeta(['user_id' => $user_id, 'meta_key' => 'email_change_verification']);
+      if($notify){
+        $mail_args = [
+          'new_email' => $new_email,
+          'name' => strtok($new_email, '@'),
+        ];
+        self::notify('email-changed-alert', $new_email, $mail_args);
+      }
+
+      set_error('success', trans('email_change_success'));
+      return $return_status ? self::$auth_errors['success'] : true;
+    }
+
+    set_error('error', trans_e('invalid_token', ['type' => 'email reset']));
+    return $return_status ? self::$auth_errors['invalid_token'] : false;
+  }
+
+  /**
+   * Change Email
+   * @param string $user_id
+   * @param string $new_email
+   * @param boolean $authenticated_only allow only authenticated user (default: true)
+   * @param array $where Additional where arguments
+   * @param boolean $notify Send email notification
+   */
+  public static function changeEmail($user_id, $new_email, $authenticated_only=true, $where=[]){
+    self::init();
+
+    if($authenticated_only && !self::isLoggedIn()){
+      return render_error_page(401, 'Unauthorized');
+    }
+
+    $where_args = !empty($where)
+      ? array_merge([self::$id_field => $user_id ], $where) 
+      : [self::$id_field => $user_id ];
+
+    $changed = self::$db->update( AUTH_USERS_TABLE, [ self::$email_field => $new_email ], $where_args );
+
+    if($changed){
+      self::isLoggedIn() ? $_SESSION['logged_user_email'] = $new_email : false;
+      return true;
+    }
+
+    return false;
   }
 
   /**

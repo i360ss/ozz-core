@@ -16,10 +16,10 @@ class ".ucfirst($middlewareName)." {
   public function handle(Request \$request, Response \$response){
     // Pages to be denied to logged in users
     \$deniedPages = [
-      AUTH_LOGIN_PATH,
-      AUTH_SIGNUP_PATH,
-      AUTH_FORGOT_PASSWORD_PATH,
-      AUTH_RESET_PASSWORD_PATH,
+      AUTH_PATHS['login'],
+      AUTH_PATHS['signup'],
+      AUTH_PATHS['forgot_password'],
+      AUTH_PATHS['reset_password'],
     ];
 
     \$loggedIn = Auth::isLoggedIn();
@@ -28,7 +28,7 @@ class ".ucfirst($middlewareName)." {
     if(\$loggedIn && \$isDeniedPage){
       return Router::redirect(Auth::getLandingPage());
     } elseif(!\$loggedIn && !\$isDeniedPage){
-      return Router::redirect(AUTH_LOGIN_PATH);
+      return Router::redirect(AUTH_PATHS['login']);
     }
   }
 

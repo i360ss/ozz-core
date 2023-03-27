@@ -30,7 +30,6 @@ class Templating extends AppInit {
    */
   public static function render($vv, $customData, $base_template, $base_template_from_router, $context){
     global $DEBUG_BAR;
-    DEBUG ? self::$debug_view['view_data'] = $customData : false; // Log to debug bar
 
     $regComps = [];
     $data = Sanitize::templateContext($customData);
@@ -41,6 +40,7 @@ class Templating extends AppInit {
       : ($base_template_from_router ? $base_template_from_router : 'layout');
 
     require APP_DIR."/functions.php";
+    DEBUG ? self::$debug_view['view_data'] = $data : false; // Log to debug bar
     self::$cdt = [$context, $data];
 
     if(file_exists(VIEW . $vv . '.phtml')){
@@ -151,7 +151,7 @@ class Templating extends AppInit {
     $vars = get_defined_vars();
     $view = ob_get_contents();
     ob_end_clean();
-    
+
     // Clean HTML Comments on View file
     $view = preg_replace('/\<\!--.*?-->/', '', $view);
 

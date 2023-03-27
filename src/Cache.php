@@ -36,7 +36,7 @@ class Cache {
    */
   public function get($type, $key){
     if(!file_exists($this->cache_file)) return false;
-    if(filemtime($this->cache_file) < time() - PAGE_CACHE_TIME){
+    if(filemtime($this->cache_file) < time() - PAGE_CACHE_LIFETIME){
       unlink($this->cache_file);
       return false;
     }

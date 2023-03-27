@@ -11,6 +11,7 @@ use Ozz\Core\Request;
 use Ozz\Core\Router;
 use Ozz\Core\Auth;
 use Ozz\Core\Validate;
+use Ozz\Core\Csrf;
 
 class ".ucfirst($controllerName)." extends Controller {
 
@@ -18,6 +19,7 @@ class ".ucfirst($controllerName)." extends Controller {
    * Register / Create new user account
    */
   public function registerUser(Request \$request){
+    Csrf::validateToken();
     \$form_data = \$request->input();
     set_flash('form_data', \$form_data);
 
@@ -51,7 +53,7 @@ class ".ucfirst($controllerName)." extends Controller {
    * Verify user account
    */
   public function verifyUserAccount(Request \$request){
-    \$data['status'] = Auth::verifyEmail(\$request->urlParam('token'));
+    \$data['status'] = Auth::verifyAccount(\$request->urlParam('token'));
 
     return view('auth/verify-account', \$data);
   }
@@ -62,6 +64,7 @@ class ".ucfirst($controllerName)." extends Controller {
    * Login User
    */
   public function loginUser(Request \$request){
+    Csrf::validateToken();
     \$form_data = \$request->input();
     set_flash('form_data', \$form_data);
     extract(\$form_data);
@@ -73,7 +76,7 @@ class ".ucfirst($controllerName)." extends Controller {
 
     \$validation->pass ? Auth::login(\$email, \$password) : false;
 
-    return Router::redirect('".AUTH_LOGIN_PATH."');
+    return Router::redirect('".AUTH_PATHS['login']."');
   }
 
 
@@ -82,6 +85,7 @@ class ".ucfirst($controllerName)." extends Controller {
    * Password reset request
    */
   public function passwordResetRequest(Request \$request){
+    Csrf::validateToken();
     \$form_data = \$request->input();
     set_flash('form_data', \$form_data);
 
@@ -91,7 +95,7 @@ class ".ucfirst($controllerName)." extends Controller {
 
     \$validation->pass ? Auth::passwordResetAttempt(\$form_data['email']) : false;
 
-    return Router::redirect('".AUTH_FORGOT_PASSWORD_PATH."');
+    return Router::redirect('".AUTH_PATHS['forgot_password']."');
   }
 
 

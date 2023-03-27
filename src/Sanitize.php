@@ -10,7 +10,7 @@ namespace Ozz\Core;
 class Sanitize {
 
   public static function string($i){
-    return filter_var($i, FILTER_SANITIZE_STRING);
+    return htmlspecialchars($i, ENT_QUOTES);
   }
 
   public static function email($i){
@@ -124,6 +124,10 @@ class Sanitize {
    * Clear template to prevent template injection
    */
   public static function regExps($v){
+    if(is_callable($v, true)){
+      return $v;
+    }
+
     preg_match_all("~\{\{\s*(.*?)\s*\}\}~", $v, $clr['block_view']);
     preg_match_all("~\{\%\s*(.*?)\s*\%\}~", $v, $clr['block_base']);
     preg_match_all("~\{\:\s*(.*?)\s*\:\}~", $v, $clr['block_comp']);
@@ -136,6 +140,7 @@ class Sanitize {
         $v = str_replace("{: $vl :}", $vl, $v);
       }
     }
+
     return $v;
   }
 

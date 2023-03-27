@@ -14,27 +14,6 @@ use Ozz\Core\Email;
 trait AuthInternal {
 
   /**
-   * Generate common auth hashes
-   * @param string $type hash $type
-   * @param string $string string to include to hash
-   */
-  public static function hashKey($type='activation', $string=''){
-    switch ($type) {
-      case 'activation':
-        return sha1(random_str(36, 'A0').time().$string);
-        break;
-
-      case 'password-reset':
-        return rtrim(strtr(base64_encode(random_str(32, 'A0').time().$string), '+/', '-_'), '=');
-        break;
-
-      case 'password-hash':
-        return password_hash($string, PASSWORD_DEFAULT);
-        break;
-    }
-  }
-
-  /**
    * User activity log
    * @param array $log_data Information to be logged
    */
@@ -114,6 +93,26 @@ trait AuthInternal {
   }
 
   /**
+   * Check if Email change attempts exceeded
+   * @param int $user_id User ID
+   */
+  public static function isEmailChangeAttemptsExceeded($user_id){
+    self::init();
+
+    if(defined('AUTH_EMAIL_CHANGE_THROTTLE') && AUTH_EMAIL_CHANGE_THROTTLE['ENABLE'] === true){
+      $count_requests = self::$db->count( AUTH_META_TABLE, [
+        'user_id'       => $user_id,
+        'meta_key'      => 'email_change_verification',
+        'timestamp[>=]' => time() - AUTH_EMAIL_CHANGE_THROTTLE['PERIOD']
+      ]);
+
+      return $count_requests >= AUTH_EMAIL_CHANGE_THROTTLE['MAX_ATTEMPTS'];
+    } else {
+      return false;
+    }
+  }
+
+  /**
    * Check if password change attempts exceeded
    * @param int $user_id User ID
    */
@@ -151,7 +150,7 @@ trait AuthInternal {
       $decoded_token = base64_decode($token);
 
       if(str_contains($decoded_token, $user[self::$email_field])){
-        if($meta_data['timestamp'] >= time() - PASSWORD_RESET_LINK_EXPIRE_IN){
+        if($meta_data['timestamp'] >= time() - PASSWORD_RESET_LINK_LIFETIME){
           // Reset token validated
           return $return_status ? self::$auth_errors['valid_token'] : true;
         } else {
@@ -218,6 +217,16 @@ trait AuthInternal {
     ]);
 
     return $create ? true : false;
+  }
+
+  /**
+   * Gt from user meta
+   * @param array $where Where arguments
+   */
+  public static function getUserMeta($where){
+    $get = self::$db->select(AUTH_META_TABLE, '*', $where);
+
+    return $get;
   }
 
   /**

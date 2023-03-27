@@ -146,6 +146,12 @@ function json(array $data, $flags=null) {
   if(!$response->hasHeader('Content-Type')){
     $response->setHeader('Content-Type', 'application/json; charset='.CHARSET);
   }
+
+  // Set CSRF Token to header
+  if(isset($_SESSION['csrf_token'])){
+    $response->setHeader('X-CSRF-Token', $_SESSION['csrf_token']);
+  }
+
   $response->setContent($content);
 
   return $response->send();

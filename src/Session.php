@@ -7,23 +7,46 @@
 
 namespace Ozz\Core;
 
-class Session {
+if(defined('OZZ_FUNC') === false){
+  require 'system/ozz-func.php';
+}
 
-  private static $refresh_after;
+use Ozz\Core\system\session\FileBasedSessionHandler;
+
+class Session {
 
   /**
    * Initialize Application Session
    */
-  public static function init($config) {
-    self::$refresh_after = REFRESH_SESSION_ID_IN;
-
+  public static function init() {
+    // Initialize session driver
     if(session_status() == PHP_SESSION_NONE){
-      session_start();
+      if(strtolower(SESSION_DRIVER) == 'file'){
+        // File based session
+        $sessionHandler = new FileBasedSessionHandler(__DIR__.SPC_BACK['core'].SESSION_DIRECTORY, SESSION_SECRET_KEY);
+
+        // Configure session options as needed
+        session_set_save_handler(
+          [$sessionHandler, 'open'],
+          [$sessionHandler, 'close'],
+          [$sessionHandler, 'read'],
+          [$sessionHandler, 'write'],
+          [$sessionHandler, 'destroy'],
+          [$sessionHandler, 'gc']
+        );
+      }
+
+      if(SESSION_COOKIE_NAME !== ''){
+        session_name(SESSION_COOKIE_NAME);
+      }
+
+      session_set_cookie_params(SESSION_LIFETIME, SESSION_PATH, SESSION_DOMAIN, SESSION_SECURE_COOKIE, SESSION_HTTP_ONLY);
+      session_start(); // Start session
     }
 
     if(!isset($_SESSION['SESSION_INIT_TIME'])){
       $_SESSION['SESSION_INIT_TIME'] = time();
-    } elseif (time() - $_SESSION['SESSION_INIT_TIME'] > self::$refresh_after){
+    } elseif (time() - $_SESSION['SESSION_INIT_TIME'] > SESSION_LIFETIME){
       self::reGenerateId();
     }
   }
@@ -43,6 +66,10 @@ class Session {
    * @param bool $force overwrite existing value (default: true)
    */
   public static function set($k, $v, $force=true) {
+    if(!isset($_SESSION)){
+      return false;
+    }
+
     if ($force) {
       $_SESSION[$k] = $v;
     } else {
@@ -56,6 +83,10 @@ class Session {
    * @param string $k session key
    */
   public static function get($k=null) {
+    if(!isset($_SESSION)){
+      return false;
+    }
+
     if (isset($k)) {
       if (array_key_exists($k, $_SESSION)) {
         return $_SESSION[$k];
@@ -79,6 +110,10 @@ class Session {
    * @param string|array $k session key/keys
    */
   public static function remove($k=null) {
+    if(!isset($_SESSION)){
+      return false;
+    }
+
     if (isset($k)) {
       if (is_array($k)) {
         foreach ($k as $key) {
@@ -127,6 +162,10 @@ class Session {
    * @return bool
    */
   public static function has($k=null) {
+    if(!isset($_SESSION)){
+      return false;
+    }
+
     if (isset($k)) {
       return array_key_exists($k, $_SESSION) ? true : false;
     } else {
@@ -148,6 +187,10 @@ class Session {
    * @param bool $force overwrite existing value (default: true)
    */
   public static function flash(string $k, $v, $is_error=false) {
+    if(!isset($_SESSION)){
+      return false;
+    }
+
     if($is_error){
       $_SESSION['__error'][$k] = $v;
     } else {
