@@ -97,7 +97,7 @@ class Csrf {
     if(isset($_SESSION['csrf_token'])){
       return '<input type="hidden" name="csrf_token" value="'.$_SESSION['csrf_token'].'">';
     } else {
-      self::setToken(self::generateToken());
+      self::refreshToken();
       return '<input type="hidden" name="csrf_token" value="'.$_SESSION['csrf_token'].'">';
     }
   }

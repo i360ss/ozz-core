@@ -20,7 +20,7 @@ class Cookie {
    * @param bool $httpOnly When true, the cookie will be made accessible only through the HTTP protocol (default: true)
    * @return void
    */
-  public static function set($name, $value, $expires=0, $path='/', $domain=BASE_URL, $secure=false, $httpOnly=true){
+  public static function set($name, $value, $expires=0, $path='/', $domain='', $secure=false, $httpOnly=true){
     return setcookie($name, $value, $expires, $path, $domain, $secure, $httpOnly) ? true : false;
   }
 

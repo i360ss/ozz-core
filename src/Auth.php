@@ -11,6 +11,7 @@ use Ozz\Core\Email;
 use Ozz\Core\Request;
 use Ozz\Core\Response;
 use Ozz\Core\Router;
+use Ozz\Core\Csrf;
 
 class Auth extends Model {
   
@@ -242,6 +243,7 @@ class Auth extends Model {
       } else {
         if(password_verify($password, $user[self::$password_field])){
           // User logged in
+          session_regenerate_id();
           $redirect_to = (isset($redirect_path) && $redirect_path !== '') ? $redirect_path : AUTH_USER_ROLES[$user[self::$role_field]]['landing_page'];
           $_SESSION['logged_user_id']         = $user[self::$id_field];
           $_SESSION['logged_username']        = $user[self::$username_field];
@@ -427,6 +429,12 @@ class Auth extends Model {
     unset($_SESSION['logged_user_role']);
     unset($_SESSION['logged_user_first_name']);
     unset($_SESSION['logged_user_last_name']);
+
+    // Re generate session ID
+    session_regenerate_id();
+
+    // Re generate csrf token
+    Csrf::refreshToken();
 
     $to = $redirect ? $redirect : AUTH_PATHS['login'];
     clear_error();

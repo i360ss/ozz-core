@@ -47,16 +47,9 @@ class Session {
     if(!isset($_SESSION['SESSION_INIT_TIME'])){
       $_SESSION['SESSION_INIT_TIME'] = time();
     } elseif (time() - $_SESSION['SESSION_INIT_TIME'] > SESSION_LIFETIME){
-      self::reGenerateId();
+      session_regenerate_id();
+      $_SESSION['SESSION_INIT_TIME'] = time();
     }
-  }
-
-  /**
-   * Re Generate Session ID
-   */
-  public static function reGenerateId() {
-    session_regenerate_id(true);
-    $_SESSION['SESSION_INIT_TIME'] = time();
   }
 
   /**

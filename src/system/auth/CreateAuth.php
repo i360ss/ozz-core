@@ -69,7 +69,7 @@ class CreateAuth {
     $this->createAuthEmailTemplate('new-login-alert-mail', AUTH_EMAIL_TEMPLATES['new-login-alert']);
     $this->createAuthEmailTemplate('register-alert-mail', AUTH_EMAIL_TEMPLATES['register-alert']);
     $this->createAuthEmailTemplate('password-changed-alert-mail', AUTH_EMAIL_TEMPLATES['password-changed-alert']);
-    $this->createAuthEmailTemplate('email-verification-mail', AUTH_EMAIL_TEMPLATES['email-verification']);
+    $this->createAuthEmailTemplate('email-verification-mail', AUTH_EMAIL_TEMPLATES['email-change-verification']);
     $this->createAuthEmailTemplate('email-changed-alert-mail', AUTH_EMAIL_TEMPLATES['email-changed-alert']);
 
     // Generate Routes
