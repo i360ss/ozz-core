@@ -24,7 +24,7 @@ trait AuthInternal {
     $log_data['user_agent'] = json_encode($request->userAgent());
     $log_data['timestamp']  = time();
 
-    self::$db->insert(AUTH_LOG_TABLE, $log_data);
+    self::$db->insert(CONFIG['AUTH_LOG_TABLE'], $log_data);
   }
 
   /**
@@ -57,7 +57,7 @@ trait AuthInternal {
 
       $request = Request::getInstance();
 
-      $failed_attempts = self::$db->count(AUTH_LOG_TABLE, [
+      $failed_attempts = self::$db->count(CONFIG['AUTH_LOG_TABLE'], [
         'user_id'       => $user_id,
         'status'        => 'failed',
         'type'          => 'login',
@@ -80,7 +80,7 @@ trait AuthInternal {
     self::init();
 
     if(defined('AUTH_PASSWORD_RESET_THROTTLE') && AUTH_PASSWORD_RESET_THROTTLE['ENABLE'] === true){
-      $count_requests = self::$db->count( AUTH_META_TABLE, [
+      $count_requests = self::$db->count( CONFIG['AUTH_META_TABLE'], [
         'user_id'       => $user_id,
         'meta_key'      => 'password_reset_token',
         'timestamp[>=]' => time() - AUTH_PASSWORD_RESET_THROTTLE['PERIOD']
@@ -100,7 +100,7 @@ trait AuthInternal {
     self::init();
 
     if(defined('AUTH_EMAIL_CHANGE_THROTTLE') && AUTH_EMAIL_CHANGE_THROTTLE['ENABLE'] === true){
-      $count_requests = self::$db->count( AUTH_META_TABLE, [
+      $count_requests = self::$db->count( CONFIG['AUTH_META_TABLE'], [
         'user_id'       => $user_id,
         'meta_key'      => 'email_change_verification',
         'timestamp[>=]' => time() - AUTH_EMAIL_CHANGE_THROTTLE['PERIOD']
@@ -120,7 +120,7 @@ trait AuthInternal {
     self::init();
 
     if(defined('AUTH_PASSWORD_RESET_THROTTLE') && AUTH_PASSWORD_RESET_THROTTLE['ENABLE'] === true){
-      $count_changes = self::$db->count( AUTH_LOG_TABLE, [
+      $count_changes = self::$db->count( CONFIG['AUTH_LOG_TABLE'], [
         'user_id'       => $user_id,
         'type'          => 'password_change',
         'timestamp[>=]' => time() - AUTH_PASSWORD_RESET_THROTTLE['PERIOD']
@@ -140,7 +140,7 @@ trait AuthInternal {
   public static function validateResetToken($token, $return_status=true){
     self::init();
 
-    $meta_data = self::$db->get(AUTH_META_TABLE, '*', [
+    $meta_data = self::$db->get(CONFIG['AUTH_META_TABLE'], '*', [
       'meta_key' => 'password_reset_token',
       'meta_value' => $token
     ]);
@@ -150,7 +150,7 @@ trait AuthInternal {
       $decoded_token = base64_decode($token);
 
       if(str_contains($decoded_token, $user[self::$email_field])){
-        if($meta_data['timestamp'] >= time() - PASSWORD_RESET_LINK_LIFETIME){
+        if($meta_data['timestamp'] >= time() - CONFIG['PASSWORD_RESET_LINK_LIFETIME']){
           // Reset token validated
           return $return_status ? self::$auth_errors['valid_token'] : true;
         } else {
@@ -172,7 +172,7 @@ trait AuthInternal {
   public static function disableFailedAttempts($user_id){
     self::init();
 
-    $delete_failed_attempts = self::$db->update(AUTH_LOG_TABLE, ['is_active' => 0], [
+    $delete_failed_attempts = self::$db->update(CONFIG['AUTH_LOG_TABLE'], ['is_active' => 0], [
       'user_id'   => $user_id,
       'status'    => 'failed',
       'type'      => 'login',
@@ -209,7 +209,7 @@ trait AuthInternal {
    * @param string|int|bool|object|array|json $meta_value
    */
   public static function addUserMeta($user_id, $meta_key, $meta_value){
-    $create = self::$db->insert(AUTH_META_TABLE, [
+    $create = self::$db->insert(CONFIG['AUTH_META_TABLE'], [
       'user_id' => $user_id,
       'meta_key' => $meta_key,
       'meta_value' => $meta_value,
@@ -224,7 +224,7 @@ trait AuthInternal {
    * @param array $where Where arguments
    */
   public static function getUserMeta($where){
-    $get = self::$db->select(AUTH_META_TABLE, '*', $where);
+    $get = self::$db->select(CONFIG['AUTH_META_TABLE'], '*', $where);
 
     return $get;
   }
@@ -234,7 +234,7 @@ trait AuthInternal {
    * @param array $where Where arguments
    */
   public static function deleteUserMeta($where){
-    $deleted = self::$db->delete(AUTH_META_TABLE, $where);
+    $deleted = self::$db->delete(CONFIG['AUTH_META_TABLE'], $where);
 
     return $deleted ? true : false;
   }

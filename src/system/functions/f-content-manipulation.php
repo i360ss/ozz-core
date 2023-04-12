@@ -66,7 +66,7 @@ function to_snakecase($str) {
  * @param string $delimiter Delimiter to replace (Optional)
  */
 function to_slug($str, $delimiter='-') {
-  return strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv(CHARSET, 'ASCII//TRANSLIT', urldecode($str)))))), $delimiter));
+  return strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv(CONFIG['CHARSET'], 'ASCII//TRANSLIT', urldecode($str)))))), $delimiter));
 }
 
 /**
@@ -144,7 +144,7 @@ function json(array $data, $flags=null) {
   $response = Response::getInstance();
 
   if(!$response->hasHeader('Content-Type')){
-    $response->setHeader('Content-Type', 'application/json; charset='.CHARSET);
+    $response->setHeader('Content-Type', 'application/json; charset='.CONFIG['CHARSET']);
   }
 
   // Set CSRF Token to header

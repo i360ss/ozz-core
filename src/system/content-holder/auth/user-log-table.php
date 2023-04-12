@@ -4,14 +4,14 @@
  */
 $content = "<?php
 /**
- * ".ucfirst(AUTH_LOG_TABLE)." migration
+ * ".ucfirst(CONFIG['AUTH_LOG_TABLE'])." migration
  */
 use Ozz\Core\system\migration\Schema;
 
-class ".ucfirst(AUTH_LOG_TABLE)." {
+class ".ucfirst(CONFIG['AUTH_LOG_TABLE'])." {
   
   public function up(){
-    Schema::createTable('".AUTH_LOG_TABLE."', [
+    Schema::createTable('".CONFIG['AUTH_LOG_TABLE']."', [
       'id'             => ['bigint', 'ai', 'primary', 'nn'],
       'user_id'        => ['bigint', 'nn'],
       'user_ip'        => ['str:255', 'nn'],
@@ -24,7 +24,7 @@ class ".ucfirst(AUTH_LOG_TABLE)." {
   }
   
   public function down(){
-    Schema::dropTable('".AUTH_LOG_TABLE."');
+    Schema::dropTable('".CONFIG['AUTH_LOG_TABLE']."');
   }
 }
 ";

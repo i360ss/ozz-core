@@ -101,7 +101,7 @@ class Email extends AppInit {
 
       # Content
       $mail->isHTML(true);
-      $mail->CharSet = "UTF-8";
+      $mail->CharSet = CONFIG['EMAIL_CHARSET'];
       $mail->WordWrap = 50;
       $mail->Subject = $subject;
       $mail->Body = $mailBody;

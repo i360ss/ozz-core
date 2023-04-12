@@ -2,7 +2,7 @@
 /**
  * Auth Controller generative content
  */
-$controllerName = substr(AUTH_CONTROLLER, -4) == '.php' ? substr(AUTH_CONTROLLER, 0, -4) : AUTH_CONTROLLER;
+$controllerName = substr(CONFIG['AUTH_CONTROLLER'], -4) == '.php' ? substr(CONFIG['AUTH_CONTROLLER'], 0, -4) : CONFIG['AUTH_CONTROLLER'];
 $content = "<?php
 namespace App\controller;
 

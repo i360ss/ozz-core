@@ -20,7 +20,7 @@ class FileBasedSessionHandler implements \SessionHandlerInterface {
   public function open($savePath, $sessionName){
     // Delete expired session files
     foreach (glob($this->savePath . '/*') as $file) {
-      if(filemtime($file) + SESSION_LIFETIME < time()){
+      if(filemtime($file) + CONFIG['SESSION_LIFETIME'] < time()){
         unlink($file);
       }
     }
@@ -108,7 +108,7 @@ class FileBasedSessionHandler implements \SessionHandlerInterface {
    * Get session file name
    */
   private function getFilename($sessionId){
-    return $this->savePath . '/'.SESSION_PREFIX. $sessionId;
+    return $this->savePath . '/'.CONFIG['SESSION_PREFIX']. $sessionId;
   }
 
 }

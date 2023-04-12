@@ -21,9 +21,9 @@ class Session {
   public static function init() {
     // Initialize session driver
     if(session_status() == PHP_SESSION_NONE){
-      if(strtolower(SESSION_DRIVER) == 'file'){
+      if(strtolower(CONFIG['SESSION_DRIVER']) == 'file'){
         // File based session
-        $sessionHandler = new FileBasedSessionHandler(__DIR__.SPC_BACK['core'].SESSION_DIRECTORY, SESSION_SECRET_KEY);
+        $sessionHandler = new FileBasedSessionHandler(__DIR__.SPC_BACK['core'].CONFIG['SESSION_DIRECTORY'], CONFIG['SESSION_SECRET_KEY']);
 
         // Configure session options as needed
         session_set_save_handler(
@@ -36,17 +36,17 @@ class Session {
         );
       }
 
-      if(SESSION_COOKIE_NAME !== ''){
-        session_name(SESSION_COOKIE_NAME);
+      if(CONFIG['SESSION_COOKIE_NAME'] !== ''){
+        session_name(CONFIG['SESSION_COOKIE_NAME']);
       }
 
-      session_set_cookie_params(SESSION_LIFETIME, SESSION_PATH, SESSION_DOMAIN, SESSION_SECURE_COOKIE, SESSION_HTTP_ONLY);
+      session_set_cookie_params(CONFIG['SESSION_LIFETIME'], CONFIG['SESSION_PATH'], CONFIG['SESSION_DOMAIN'], CONFIG['SESSION_SECURE_COOKIE'], CONFIG['SESSION_HTTP_ONLY']);
       session_start(); // Start session
     }
 
     if(!isset($_SESSION['SESSION_INIT_TIME'])){
       $_SESSION['SESSION_INIT_TIME'] = time();
-    } elseif (time() - $_SESSION['SESSION_INIT_TIME'] > SESSION_LIFETIME){
+    } elseif (time() - $_SESSION['SESSION_INIT_TIME'] > CONFIG['SESSION_LIFETIME']){
       session_regenerate_id();
       $_SESSION['SESSION_INIT_TIME'] = time();
     }

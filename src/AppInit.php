@@ -13,9 +13,9 @@ use Ozz\Core\Csrf;
 
 class AppInit {
 
-  private $SSL;      // Check (http or https)
-  private $config;   // Config App
-  private $csp;      // CSP
+  private $SSL;   // Check (http or https)
+  private $env;   // Env App
+  private $csp;   // CSP
 
   use \Ozz\Core\TokenHandler;
 
@@ -26,11 +26,16 @@ class AppInit {
       'core_2' => '/../../../../../../',
     ]);
 
-    // Get content from env.ini and assign to $this->config
-    $this->config = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
+    // Get content from env.ini and assign to $this->env
+    $this->env = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
 
     // App configurations
-    require __DIR__.SPC_BACK['core'].'app/config/config.php';
+    $devConfig = include __DIR__.SPC_BACK['core'].'app/config.php';
+    $defConfig = require __DIR__.'/system/default-config.php';
+    define('CONFIG', array_merge($defConfig, $devConfig));
+
+    // More Reused
+    defined('AUTH_PATHS') || define('AUTH_PATHS', CONFIG['AUTH_PATHS']);
 
     // Initialize session
     Session::init();
@@ -49,17 +54,17 @@ class AppInit {
     defined('DS') || define('DS', '/');
 
     // App environment (local, dev, prod)
-    defined('APP_ENV') || define('APP_ENV', $this->config['app']['APP_ENV']);
+    defined('APP_ENV') || define('APP_ENV', $this->env['app']['APP_ENV']);
 
     // The Name of the app defined in env.ini
-    defined('APP_NAME') || define('APP_NAME', $this->config['app']['APP_NAME']);
+    defined('APP_NAME') || define('APP_NAME', $this->env['app']['APP_NAME']);
 
     // App Version defined in env.ini
-    defined('APP_VERSION') || define('APP_VERSION', $this->config['app']['APP_VERSION']);
+    defined('APP_VERSION') || define('APP_VERSION', $this->env['app']['APP_VERSION']);
 
     // App current language
     if(!Session::has('app_lang')){
-      Session::set('app_lang', $this->config['app']['APP_LANG']);
+      Session::set('app_lang', $this->env['app']['APP_LANG']);
     }
     defined('APP_LANG') || define('APP_LANG', Session::get('app_lang'));
 
@@ -68,7 +73,7 @@ class AppInit {
 
     // Set Base URL
     $this_host = $_SERVER['HTTP_HOST'];
-    $valid_domains = explode(' ', $this->config['app']['APP_URLS']);
+    $valid_domains = explode(' ', $this->env['app']['APP_URLS']);
 
     if(in_array($this_host, $valid_domains)) {
       if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on'){
@@ -102,10 +107,10 @@ class AppInit {
     defined('ASSETS') || define('ASSETS', BASE_URL . "assets".DS);
 
     // Upload directory, Inside public directory (for internal use)
-    defined('UPLOAD_TO') || define('UPLOAD_TO', '../'.$this->config['app']['UPLOAD_DIR']);
+    defined('UPLOAD_TO') || define('UPLOAD_TO', '../'.$this->env['app']['UPLOAD_DIR']);
 
     // Upload directory, point to URL
-    defined('UPLOAD_DIR_PUBLIC') || define('UPLOAD_DIR_PUBLIC', $this->config['app']['UPLOAD_DIR_PUBLIC']);
+    defined('UPLOAD_DIR_PUBLIC') || define('UPLOAD_DIR_PUBLIC', $this->env['app']['UPLOAD_DIR_PUBLIC']);
 
     // CSS directory, all CSS files should be here
     defined('CSS') || define('CSS', ASSETS . 'css'.DS);
@@ -114,13 +119,13 @@ class AppInit {
     defined('JS') || define('JS', ASSETS . 'js'.DS);
 
     // Debug mode, defined in env.ini
-    defined('DEBUG') || define('DEBUG', $this->config['app']['DEBUG'] == 1 ? true : false);
+    defined('DEBUG') || define('DEBUG', $this->env['app']['DEBUG'] == 1 ? true : false);
 
     // Enable/Disable Debug bar, defined in env.ini
-    defined('SHOW_DEBUG_BAR') || define('SHOW_DEBUG_BAR', $this->config['app']['SHOW_DEBUG_BAR'] == 1 ? true : false);
+    defined('SHOW_DEBUG_BAR') || define('SHOW_DEBUG_BAR', $this->env['app']['SHOW_DEBUG_BAR'] == 1 ? true : false);
 
     // Debug Email template output, defined in env.ini
-    defined('DEBUG_EMAIL_TEMP') || define('DEBUG_EMAIL_TEMP', $this->config['app']['DEBUG_EMAIL_TEMP'] == 1 ? true : false);
+    defined('DEBUG_EMAIL_TEMP') || define('DEBUG_EMAIL_TEMP', $this->env['app']['DEBUG_EMAIL_TEMP'] == 1 ? true : false);
 
     // Create initial CSRF token
     if(empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token']) || (isset($_SESSION['csrf_token_expire']) && time() > $_SESSION['csrf_token_expire'])){

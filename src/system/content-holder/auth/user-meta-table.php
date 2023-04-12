@@ -4,14 +4,14 @@
  */
 $content = "<?php
 /**
- * ".ucfirst(AUTH_META_TABLE)." migration
+ * ".ucfirst(CONFIG['AUTH_META_TABLE'])." migration
  */
 use Ozz\Core\system\migration\Schema;
 
-class ".ucfirst(AUTH_META_TABLE)." {
+class ".ucfirst(CONFIG['AUTH_META_TABLE'])." {
   
   public function up(){
-    Schema::createTable('".AUTH_META_TABLE."', [
+    Schema::createTable('".CONFIG['AUTH_META_TABLE']."', [
       'id'             => ['bigint', 'ai', 'primary', 'nn'],
       'user_id'        => ['bigint', 'nn'],
       'meta_key'       => ['str:255', 'nn'],
@@ -21,7 +21,7 @@ class ".ucfirst(AUTH_META_TABLE)." {
   }
   
   public function down(){
-    Schema::dropTable('".AUTH_META_TABLE."');
+    Schema::dropTable('".CONFIG['AUTH_META_TABLE']."');
   }
 }
 ";

@@ -2,7 +2,7 @@
 /**
  * Auth Middleware generative content
  */
-$middlewareName = substr(AUTH_MIDDLEWARE_NAME, -4) == '.php' ? substr(AUTH_MIDDLEWARE_NAME, 0, -4) : AUTH_MIDDLEWARE_NAME;
+$middlewareName = substr(CONFIG['AUTH_MIDDLEWARE_NAME'], -4) == '.php' ? substr(CONFIG['AUTH_MIDDLEWARE_NAME'], 0, -4) : CONFIG['AUTH_MIDDLEWARE_NAME'];
 $content = "<?php
 namespace App\middleware;
 

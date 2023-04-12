@@ -149,7 +149,7 @@ function ozz_content_Layout(){
   return '<!DOCTYPE html>
 <html lang="<?=APP_LANG?>">
 <head>
-  <meta charset=<?=CHARSET?>>
+  <meta charset=<?=CONFIG[\'CHARSET\']?>>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% title %}</title>
   <meta name="keywords" content="{% keywords %}">

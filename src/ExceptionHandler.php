@@ -15,7 +15,7 @@ class ExceptionHandler {
   private $config;
 
   public function __construct(){
-    if(OZZ_EXCEPTION_HANDLER === false){
+    if(CONFIG['OZZ_EXCEPTION_HANDLER'] === false){
       return false;
     }
 
@@ -25,7 +25,7 @@ class ExceptionHandler {
       error_reporting(E_ALL | E_DEPRECATED);
 
       // Enable error log and error display
-      if(ERROR_LOG === true){
+      if(CONFIG['ERROR_LOG'] === true){
         ini_set('display_errors', 1);
         ini_set('log_errors', 1);
         ini_set('error_log', __DIR__.'/../../../../storage/log/error_log.log');

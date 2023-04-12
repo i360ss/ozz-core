@@ -4,14 +4,14 @@
  */
 $content = "<?php
 /**
- * ".ucfirst(AUTH_USERS_TABLE)." Migration
+ * ".ucfirst(CONFIG['AUTH_USERS_TABLE'])." Migration
  */
 use Ozz\Core\system\migration\Schema;
 
-class ".ucfirst(AUTH_USERS_TABLE)." {
+class ".ucfirst(CONFIG['AUTH_USERS_TABLE'])." {
 
   public function up(){
-    Schema::createTable('".AUTH_USERS_TABLE."', [
+    Schema::createTable('".CONFIG['AUTH_USERS_TABLE']."', [
       'user_id'           => ['bigint', 'ai', 'primary', 'nn'],
       'username'          => ['str:150', 'unique', 'nn'],
       'first_name'        => ['str:150', 'nn'],
@@ -29,6 +29,6 @@ class ".ucfirst(AUTH_USERS_TABLE)." {
   }
 
   public function down(){
-    Schema::dropTable('".AUTH_USERS_TABLE."');
+    Schema::dropTable('".CONFIG['AUTH_USERS_TABLE']."');
   }
 }";

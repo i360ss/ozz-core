@@ -344,7 +344,7 @@ class GenerateSql {
           $comma = ',';
         }
 
-        $allTablesSQL[$key] = 'CREATE TABLE IF NOT EXISTS '.$key.' ('.$sql_fields.$comma.' '.$constr.') ENGINE='.DB_DEFAULT_ENGINE.' DEFAULT CHARSET='.DB_DEFAULT_CHARSET.' COLLATE '.DB_DEFAULT_COLLATION.';';
+        $allTablesSQL[$key] = 'CREATE TABLE IF NOT EXISTS '.$key.' ('.$sql_fields.$comma.' '.$constr.') ENGINE='.CONFIG['DB_DEFAULT_ENGINE'].' DEFAULT CHARSET='.CONFIG['DB_DEFAULT_CHARSET'].' COLLATE '.CONFIG['DB_DEFAULT_COLLATION'].';';
       }
       return $allTablesSQL;
     }

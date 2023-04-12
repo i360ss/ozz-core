@@ -55,15 +55,21 @@ class Auth extends Model {
    */
   private static function init(){
     self::$db               = (new static)->DB();
-    self::$id_field         = AUTH_CORE_FIELDS['ID_FIELD'];
-    self::$username_field   = AUTH_CORE_FIELDS['USERNAME_FIELD'];
-    self::$email_field      = AUTH_CORE_FIELDS['EMAIL_FIELD'];
-    self::$first_name_field = AUTH_CORE_FIELDS['FIRST_NAME_FIELD'];
-    self::$last_name_field  = AUTH_CORE_FIELDS['LAST_NAME_FIELD'];
-    self::$password_field   = AUTH_CORE_FIELDS['PASSWORD_FIELD'];
-    self::$status_field     = AUTH_CORE_FIELDS['STATUS_FIELD'];
-    self::$role_field       = AUTH_CORE_FIELDS['ROLE_FIELD'];
-    self::$active_key_field = AUTH_CORE_FIELDS['ACTIVATION_KEY_FIELD'];
+    self::$id_field         = CONFIG['AUTH_CORE_FIELDS']['ID_FIELD'];
+    self::$username_field   = CONFIG['AUTH_CORE_FIELDS']['USERNAME_FIELD'];
+    self::$email_field      = CONFIG['AUTH_CORE_FIELDS']['EMAIL_FIELD'];
+    self::$first_name_field = CONFIG['AUTH_CORE_FIELDS']['FIRST_NAME_FIELD'];
+    self::$last_name_field  = CONFIG['AUTH_CORE_FIELDS']['LAST_NAME_FIELD'];
+    self::$password_field   = CONFIG['AUTH_CORE_FIELDS']['PASSWORD_FIELD'];
+    self::$status_field     = CONFIG['AUTH_CORE_FIELDS']['STATUS_FIELD'];
+    self::$role_field       = CONFIG['AUTH_CORE_FIELDS']['ROLE_FIELD'];
+    self::$active_key_field = CONFIG['AUTH_CORE_FIELDS']['ACTIVATION_KEY_FIELD'];
+
+    defined('AUTH_PASSWORD_RESET_THROTTLE') || define('AUTH_PASSWORD_RESET_THROTTLE', CONFIG['AUTH_PASSWORD_RESET_THROTTLE']);
+    defined('AUTH_LOGIN_THROTTLE') || define('AUTH_LOGIN_THROTTLE', CONFIG['AUTH_LOGIN_THROTTLE']);
+    defined('AUTH_EMAIL_CHANGE_THROTTLE') || define('AUTH_EMAIL_CHANGE_THROTTLE', CONFIG['AUTH_EMAIL_CHANGE_THROTTLE']);
+    defined('AUTH_USER_ROLES') || define('AUTH_USER_ROLES', CONFIG['AUTH_USER_ROLES']);
+    defined('AUTH_EMAIL_TEMPLATES') || define('AUTH_EMAIL_TEMPLATES', CONFIG['AUTH_EMAIL_TEMPLATES']);
   }
 
   /**
@@ -80,7 +86,7 @@ class Auth extends Model {
     $user_data[self::$active_key_field] = isset($user_data[self::$active_key_field]) ? $user_data[self::$active_key_field] : self::hashKey('activation');
 
     // Check if table fields are configured
-    if(!empty($invalid_fields = array_diff(array_keys($user_data), AUTH_ALLOWED_FIELDS))){
+    if(!empty($invalid_fields = array_diff(array_keys($user_data), CONFIG['AUTH_ALLOWED_FIELDS']))){
       $error_fields = implode(', ', $invalid_fields);
       set_error('error', trans_e('registration_failed'));
       return DEBUG
@@ -92,8 +98,8 @@ class Auth extends Model {
         : false;
     }
 
-    $user_count_email = self::$db->count(AUTH_USERS_TABLE, [self::$email_field => $user_data[self::$email_field]]);
-    $user_count_username = self::$db->count(AUTH_USERS_TABLE, [self::$username_field => $user_data[self::$username_field]]);
+    $user_count_email = self::$db->count(CONFIG['AUTH_USERS_TABLE'], [self::$email_field => $user_data[self::$email_field]]);
+    $user_count_username = self::$db->count(CONFIG['AUTH_USERS_TABLE'], [self::$username_field => $user_data[self::$username_field]]);
 
     if($user_count_email == 0 && $user_count_username == 0){
       // Temp Password (For instance Login)
@@ -108,11 +114,11 @@ class Auth extends Model {
       }
 
       // Create account
-      if(self::$db->insert(AUTH_USERS_TABLE, $user_data)){
+      if(self::$db->insert(CONFIG['AUTH_USERS_TABLE'], $user_data)){
         set_error('success', trans('signup_success'));
 
         // Get this user's ID
-        $get_this_user = self::$db->select(AUTH_USERS_TABLE, [self::$id_field], [
+        $get_this_user = self::$db->select(CONFIG['AUTH_USERS_TABLE'], [self::$id_field], [
           'OR' => [
             self::$email_field => $user_data[self::$email_field],
             self::$username_field => $user_data[self::$username_field],
@@ -126,7 +132,7 @@ class Auth extends Model {
         ]);
 
         // Send Verification mail if enabled
-        if(AUTH_SEND_VERIFICATION_MAIL === true && AUTH_ACTIVATE_AND_LOGIN_ONCE_SIGNUP === false){
+        if(CONFIG['AUTH_SEND_VERIFICATION_MAIL'] === true && CONFIG['AUTH_ACTIVATE_AND_LOGIN_ONCE_SIGNUP'] === false){
           $full_name = isset($user_data[self::$first_name_field]) && isset($user_data[self::$last_name_field]) 
             ? $user_data[self::$first_name_field].' '.$user_data[self::$last_name_field]
             : $user_data[self::$username_field];
@@ -137,7 +143,7 @@ class Auth extends Model {
           ];
 
           return self::notify('account-verification', $user_data[self::$email_field], $mail_args);
-        } elseif(AUTH_ACTIVATE_AND_LOGIN_ONCE_SIGNUP === true){
+        } elseif(CONFIG['AUTH_ACTIVATE_AND_LOGIN_ONCE_SIGNUP'] === true){
           // Activate and Login to account if enabled
           self::activateAccount($user_data[self::$email_field]);
           self::login($user_data[self::$email_field], $temp_password);
@@ -168,10 +174,10 @@ class Auth extends Model {
     self::init();
 
     $status = $return_status ? 'error' : false;
-    $rows = self::$db->count(AUTH_USERS_TABLE, [self::$status_field => 'pending', self::$active_key_field => $token]);
+    $rows = self::$db->count(CONFIG['AUTH_USERS_TABLE'], [self::$status_field => 'pending', self::$active_key_field => $token]);
 
     if($rows > 0){
-      if(self::$db->update(AUTH_USERS_TABLE, [
+      if(self::$db->update(CONFIG['AUTH_USERS_TABLE'], [
         self::$status_field => 'active', 'email_verified_at' => time(),
         self::$active_key_field => ''
       ], [
@@ -179,7 +185,7 @@ class Auth extends Model {
         $status = $return_status ? self::$auth_errors['success'] : true; // Account Activated
       }
     } else {
-      $disabled_rows = self::$db->count(AUTH_USERS_TABLE, [
+      $disabled_rows = self::$db->count(CONFIG['AUTH_USERS_TABLE'], [
         self::$status_field => 'disabled',
         self::$active_key_field => $token
       ]);
@@ -223,7 +229,7 @@ class Auth extends Model {
     ];
 
     $main_query = $query ? array_merge($main_query, $query) : $main_query;
-    $user = self::$db->select(AUTH_USERS_TABLE, AUTH_ALLOWED_FIELDS, $main_query);
+    $user = self::$db->select(CONFIG['AUTH_USERS_TABLE'], CONFIG['AUTH_ALLOWED_FIELDS'], $main_query);
 
     if(count($user) === 1){
       $user = $user[0];
@@ -256,7 +262,7 @@ class Auth extends Model {
           set_error('success', trans('login_success'));
 
           // Send New Login alert (IP/Device/OS/Browser) if changed
-          if(AUTH_NEW_LOGIN_ALERT === true && self::isNewLogin()){
+          if(CONFIG['AUTH_NEW_LOGIN_ALERT'] === true && self::isNewLogin()){
             $info = self::isNewLogin();
             $changed = $info['info'];
 
@@ -308,7 +314,7 @@ class Auth extends Model {
       }
     } else {
       // Check if user locked
-      $locked_user = self::$db->select(AUTH_USERS_TABLE, self::$id_field, [
+      $locked_user = self::$db->select(CONFIG['AUTH_USERS_TABLE'], self::$id_field, [
         'OR' => [
           self::$username_field => $email,
           self::$email_field => $email,
@@ -318,7 +324,7 @@ class Auth extends Model {
 
       if(count($locked_user) === 1){
         // Check if temporary locked (Throttle)
-        $is_temp_lock = self::$db->get(AUTH_LOG_TABLE, ['id', 'user_id', 'timestamp'], [
+        $is_temp_lock = self::$db->get(CONFIG['AUTH_LOG_TABLE'], ['id', 'user_id', 'timestamp'], [
           'user_id'   => $locked_user[0],
           'status'    => 'locked',
           'type'      => 'throttle_error',
@@ -332,7 +338,7 @@ class Auth extends Model {
 
           if($unlock_time <= time()){
             // Disable lock on users_log and Unlock account
-            self::$db->update(AUTH_LOG_TABLE, ['is_active' => false], ['id' => $is_temp_lock['id']]);
+            self::$db->update(CONFIG['AUTH_LOG_TABLE'], ['is_active' => false], ['id' => $is_temp_lock['id']]);
             self::activateAccount($is_temp_lock['user_id']);
             self::disableFailedAttempts($is_temp_lock['user_id']);
 
@@ -354,7 +360,7 @@ class Auth extends Model {
         }
       } else {
         // Check if email not verified
-        $unverified_user = self::$db->count(AUTH_USERS_TABLE, self::$id_field, [
+        $unverified_user = self::$db->count(CONFIG['AUTH_USERS_TABLE'], self::$id_field, [
           'OR' => [
             self::$username_field => $email,
             self::$email_field => $email,
@@ -473,7 +479,7 @@ class Auth extends Model {
       $email_username_id = $_SESSION['logged_user_id'];
     }
 
-    $user_data = self::$db->get(AUTH_USERS_TABLE, '*', [ 
+    $user_data = self::$db->get(CONFIG['AUTH_USERS_TABLE'], '*', [ 
       'OR' => [
         self::$id_field => $email_username_id,
         self::$email_field => $email_username_id,
@@ -509,7 +515,7 @@ class Auth extends Model {
 
     self::init();
 
-    $last_log = self::$db->select(AUTH_LOG_TABLE, ['user_ip', 'user_agent'], [
+    $last_log = self::$db->select(CONFIG['AUTH_LOG_TABLE'], ['user_ip', 'user_agent'], [
       'user_id' => $_SESSION['logged_user_id'],
       'status' => 'success',
       'type' => ['login', 'signup'],
@@ -576,7 +582,7 @@ class Auth extends Model {
 
       // Throttle Check
       if(self::isResetAttemptsExceeded($user[self::$id_field])){
-        $last_attempt = self::$db->get(AUTH_META_TABLE, 'timestamp', [
+        $last_attempt = self::$db->get(CONFIG['AUTH_META_TABLE'], 'timestamp', [
           'user_id'   => $user[self::$id_field],
           'meta_key'  => 'password_reset_token',
           'ORDER'     => ['id' => 'DESC']
@@ -727,10 +733,10 @@ class Auth extends Model {
   public static function changePasswordByToken($token, $new_password){
     self::init();
 
-    $user_id = self::$db->get(AUTH_META_TABLE, 'user_id', [
+    $user_id = self::$db->get(CONFIG['AUTH_META_TABLE'], 'user_id', [
       'meta_key'     => 'password_reset_token',
       'meta_value'   => $token,
-      'timestamp[>]' => time() - (PASSWORD_RESET_LINK_LIFETIME + 1),
+      'timestamp[>]' => time() - (CONFIG['PASSWORD_RESET_LINK_LIFETIME'] + 1),
       'ORDER'        => ['id' => 'DESC']
     ]);
 
@@ -751,7 +757,7 @@ class Auth extends Model {
 
     // Check password change throttle
     if(self::isPasswordChangeAttemptsExceeded($user_id)){
-      $last_attempt = self::$db->get(AUTH_LOG_TABLE, 'timestamp', [
+      $last_attempt = self::$db->get(CONFIG['AUTH_LOG_TABLE'], 'timestamp', [
         'user_id' => $user_id,
         'type'    => 'password_change',
         'ORDER'   => ['id' => 'DESC']
@@ -772,7 +778,7 @@ class Auth extends Model {
 
     $request = Request::getInstance();
     $pass = self::hashKey('password-hash', $new_password);
-    $changed = self::$db->update(AUTH_USERS_TABLE, [ self::$password_field => $pass ], [
+    $changed = self::$db->update(CONFIG['AUTH_USERS_TABLE'], [ self::$password_field => $pass ], [
       self::$id_field => $user_id
     ]);
 
@@ -782,7 +788,7 @@ class Auth extends Model {
 
       set_error('success', trans('password_changed'));
 
-      if(AUTH_PASSWORD_CHANGED_ALERT === true){
+      if(CONFIG['AUTH_PASSWORD_CHANGED_ALERT'] === true){
         $user = self::getUser($user_id);
         $name = isset($user[self::$first_name_field]) && $user[self::$first_name_field] !== ''
           ? $user[self::$first_name_field].' '.$user[self::$last_name_field] 
@@ -807,7 +813,7 @@ class Auth extends Model {
         self::notify('password-changed-alert', $user[self::$email_field], $args);
       }
 
-      if(AUTH_LOGOUT_ON_PASSWORD_CHANGE === true && self::isLoggedIn()){
+      if(CONFIG['AUTH_LOGOUT_ON_PASSWORD_CHANGE'] === true && self::isLoggedIn()){
         self::logout();
       }
 
@@ -834,7 +840,7 @@ class Auth extends Model {
 
     // Email change throttle check
     if(self::isEmailChangeAttemptsExceeded($user_id)){
-      $last_attempt = self::$db->get(AUTH_META_TABLE, 'timestamp', [
+      $last_attempt = self::$db->get(CONFIG['AUTH_META_TABLE'], 'timestamp', [
         'user_id'  => $user_id,
         'meta_key' => 'email_change_verification',
         'ORDER'    => ['id' => 'DESC']
@@ -884,7 +890,7 @@ class Auth extends Model {
 
     $meta = self::getUserMeta([
       'meta_key' => 'email_change_verification',
-      'timestamp[>=]' => time() - EMAIL_VERIFICATION_LINK_LIFETIME,
+      'timestamp[>=]' => time() - CONFIG['EMAIL_VERIFICATION_LINK_LIFETIME'],
     ]);
 
     list($user_id, $new_email) = false;
@@ -935,7 +941,7 @@ class Auth extends Model {
       ? array_merge([self::$id_field => $user_id ], $where) 
       : [self::$id_field => $user_id ];
 
-    $changed = self::$db->update( AUTH_USERS_TABLE, [ self::$email_field => $new_email ], $where_args );
+    $changed = self::$db->update( CONFIG['AUTH_USERS_TABLE'], [ self::$email_field => $new_email ], $where_args );
 
     if($changed){
       self::isLoggedIn() ? $_SESSION['logged_user_email'] = $new_email : false;
@@ -958,7 +964,7 @@ class Auth extends Model {
       ? array_merge([self::$id_field => $user_id ], $where) 
       : [self::$id_field => $user_id ];
 
-    $changed = self::$db->update( AUTH_USERS_TABLE, [ self::$status_field => $new_status ], $where_args );
+    $changed = self::$db->update( CONFIG['AUTH_USERS_TABLE'], [ self::$status_field => $new_status ], $where_args );
 
     return $changed ? true : false;
   }
@@ -976,7 +982,7 @@ class Auth extends Model {
       ? array_merge([self::$id_field => $user_id ], $where) 
       : [self::$id_field => $user_id ];
 
-    $changed = self::$db->update(AUTH_USERS_TABLE, [ self::$role_field => $new_role ], $where_args );
+    $changed = self::$db->update(CONFIG['AUTH_USERS_TABLE'], [ self::$role_field => $new_role ], $where_args );
 
     return $changed ? true : false;
   }
@@ -1022,7 +1028,7 @@ class Auth extends Model {
     if(self::isLoggedIn() && $id_or_email === false){
       return $_SESSION['logged_user_role'];
     } else {
-      $role = self::$db->get(AUTH_USERS_TABLE, self::$role_field, [
+      $role = self::$db->get(CONFIG['AUTH_USERS_TABLE'], self::$role_field, [
         'OR' => [
           self::$email_field => $id_or_email,
           self::$id_field => $id_or_email,
@@ -1059,7 +1065,7 @@ class Auth extends Model {
       ? array_merge([self::$id_field => $user_id ], $where) 
       : [self::$id_field => $user_id ];
 
-    $locked = self::$db->update(AUTH_USERS_TABLE, [
+    $locked = self::$db->update(CONFIG['AUTH_USERS_TABLE'], [
       self::$status_field => 'locked',
       self::$active_key_field => self::hashKey('activation', $user_id)
     ], $where_args );
@@ -1085,7 +1091,7 @@ class Auth extends Model {
       ? array_merge($initial_where, $where) 
       : $initial_where;
 
-    $unlock = self::$db->update(AUTH_USERS_TABLE, [
+    $unlock = self::$db->update(CONFIG['AUTH_USERS_TABLE'], [
       self::$status_field => 'active',
       self::$active_key_field => ''
     ], $where_args );
@@ -1111,7 +1117,7 @@ class Auth extends Model {
       ? array_merge($initial_where, $where) 
       : $initial_where;
 
-    $disabled = self::$db->update(AUTH_USERS_TABLE, [
+    $disabled = self::$db->update(CONFIG['AUTH_USERS_TABLE'], [
       self::$status_field => 'disable',
       self::$active_key_field => self::hashKey('activation', $user_id)
     ], $where_args );
@@ -1137,7 +1143,7 @@ class Auth extends Model {
       ? array_merge($initial_where, $where) 
       : $initial_where;
 
-    $deleted = self::$db->delete(AUTH_USERS_TABLE, $where_args);
+    $deleted = self::$db->delete(CONFIG['AUTH_USERS_TABLE'], $where_args);
 
     return $deleted ? true : false;
   }

@@ -49,10 +49,10 @@ $ozz_htmlSpecialChar = [
 function esc($str){
   if (0 === strlen($str)) { return ''; }
   if (!preg_match('/[&<>"\']/', $str)) { return $str; }
-  if (isset($ozz_htmlSpecialChar[CHARSET])) {
-    return htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, CHARSET);
-  } elseif (isset($ozz_htmlSpecialChar[strtoupper(CHARSET)])) {
-    return htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, CHARSET);
+  if (isset($ozz_htmlSpecialChar[CONFIG['CHARSET']])) {
+    return htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, CONFIG['CHARSET']);
+  } elseif (isset($ozz_htmlSpecialChar[strtoupper(CONFIG['CHARSET'])])) {
+    return htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, CONFIG['CHARSET']);
   } else {
     return htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
   }
@@ -104,7 +104,7 @@ function esc_js($str) {
   if (0 === strlen($str)) { return ''; }
   if (!preg_match('/[&<>"\']/', $str)) { return $str; }
 
-  $str = htmlspecialchars($str, ENT_COMPAT, CHARSET);
+  $str = htmlspecialchars($str, ENT_COMPAT, CONFIG['CHARSET']);
   $str = preg_replace('/&#(x)?0*(?(1)27|39);?/i', "'", stripslashes($str));
   $str = str_replace("\r", '', $str);
   $str = str_replace("\n", '\\n', addslashes($str));
@@ -149,7 +149,7 @@ function _esc_attr($str) {
  * @param string $str
  */
 function esc_textarea($str) {
-  $str = htmlspecialchars($str, ENT_QUOTES, CHARSET);
+  $str = htmlspecialchars($str, ENT_QUOTES, CONFIG['CHARSET']);
   return $str;
 }
 
