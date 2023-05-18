@@ -88,7 +88,7 @@ function _component($component, $args=null) {
  * @param string $message
  * @param mixed $args Additional arguments
  */
-function render_error_page($errorCode, $message, $args=false, $base_layout=CONFIG['DEFAULT_ERROR_PAGE_BASE_LAYOUT']) {
+function render_error_page($errorCode=404, $message='Page not found ', $args=false, $base_layout=CONFIG['DEFAULT_ERROR_PAGE_BASE_LAYOUT']) {
   $response = Response::getInstance();
   $response->setStatusCode($errorCode);
   view('http-error', [

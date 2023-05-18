@@ -64,7 +64,7 @@ class CreateAuth {
     $this->createAuthViewFile('forgot-password', AUTH_VIEWS['forgot-password']);
     $this->createAuthViewFile('reset-password', AUTH_VIEWS['reset-password']);
     $this->createAuthViewFile('verify-account', AUTH_VIEWS['verify-account']);
-    $this->createAuthViewFile('dashboard', AUTH_VIEWS['dashboard']);
+    $this->createAuthViewFile('admin', AUTH_VIEWS['admin']);
 
     // Generate Email Templates
     $this->createAuthEmailTemplate('account-verification-mail', AUTH_EMAIL_TEMPLATES['account-verification']);

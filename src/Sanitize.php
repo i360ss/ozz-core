@@ -128,16 +128,18 @@ class Sanitize {
       return $v;
     }
 
-    preg_match_all("~\{\{\s*(.*?)\s*\}\}~", $v, $clr['block_view']);
-    preg_match_all("~\{\%\s*(.*?)\s*\%\}~", $v, $clr['block_base']);
-    preg_match_all("~\{\:\s*(.*?)\s*\:\}~", $v, $clr['block_comp']);
+    if(!is_null($v)){
+      preg_match_all("~\{\{\s*(.*?)\s*\}\}~", $v, $clr['block_view']);
+      preg_match_all("~\{\%\s*(.*?)\s*\%\}~", $v, $clr['block_base']);
+      preg_match_all("~\{\:\s*(.*?)\s*\:\}~", $v, $clr['block_comp']);
 
-    foreach ($clr as $typ) {
-      foreach ($typ[1] as $vl) {
-        $v = trim($vl);
-        $v = str_replace("{% $vl %}", $vl, $v);
-        $v = str_replace("{{ $vl }}", $vl, $v);
-        $v = str_replace("{: $vl :}", $vl, $v);
+      foreach ($clr as $typ) {
+        foreach ($typ[1] as $vl) {
+          $v = trim($vl);
+          $v = str_replace("{% $vl %}", $vl, $v);
+          $v = str_replace("{{ $vl }}", $vl, $v);
+          $v = str_replace("{: $vl :}", $vl, $v);
+        }
       }
     }
 

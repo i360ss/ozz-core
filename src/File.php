@@ -35,7 +35,7 @@ class File {
     self::$errors = new Lang;
 
     // Validator
-    self::$validator = DEFAULT_FILE_VALIDATION;
+    self::$validator = CONFIG['DEFAULT_FILE_VALIDATION'];
     
     // Invalid File type defined in function call
     if(!array_key_exists($typ, self::$validator)){

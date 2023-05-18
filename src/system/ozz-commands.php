@@ -87,6 +87,12 @@ elseif(count($com) == 2){
       $class = "auth/CreateAuth";
       break;
 
+    case 'c:cms':
+    case 'make:cms':
+    case 'create:cms':
+      $class = "cms/CreateCms";
+      break;
+
     case 'migrate':
     case 'migrate:run':
     case 'migrate:clear':

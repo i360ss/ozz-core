@@ -422,6 +422,13 @@ class Auth extends Model {
   }
 
   /**
+   * Logged in user ID
+   */
+    public static function id(){
+      return self::info('id');
+    }
+
+  /**
    * Logout User
    * @param string $redirect path to redirect after Logout
    */

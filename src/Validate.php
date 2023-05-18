@@ -77,7 +77,7 @@ class Validate {
     }
 
     return (object) [
-      'pass' => in_array(false, $validity) ? false : true,
+      'pass' => !in_array(false, $validity),
       'errors' => Errors::get(),
       'data' => $validatedData,
     ];
@@ -163,9 +163,12 @@ class Validate {
 
         case 'txt':
         case 'text':
+          return self::text($val, $valueKey);
+          break;
+
         case 'letters':
         case 'letter':
-          return self::text($val, $valueKey);
+          return self::letters($val, $valueKey);
           break;
 
         case 'email':
@@ -181,6 +184,7 @@ class Validate {
           break;
 
         case 'string':
+        case 'str':
           return self::string($val, $valueKey);
           break;
 
@@ -261,7 +265,13 @@ class Validate {
 
   public static function text($v, $key=''){
     return $v!==''
-      ? self::response((preg_match ("/^[a-zA-z]*$/", $v)), $key, self::$lang->error('text', ['field' => $key, 'value' => $v]))
+      ? self::response((preg_match ('/^[a-zA-Z0-9\s\.\,\!\@\#\$\%\^\&\*\(\)\-\_\+\=\;\:\'\"\[\]\{\}\|\`\~]+$/', $v)), $key, self::$lang->error('text', ['field' => $key, 'value' => $v]))
+      : true;
+  }
+
+  public static function letters($v, $key=''){
+    return $v!==''
+      ? self::response((preg_match ("/^[a-zA-z]*$/", $v)), $key, self::$lang->error('letters', ['field' => $key, 'value' => $v]))
       : true;
   }
 
@@ -512,7 +522,7 @@ class Validate {
    * Internal Responser
    */
   private static function response($bool, $key, $errMsg) {
-    if($bool === false){
+    if($bool == false){
       Errors::set($key, $errMsg);
     }
     return $bool;

@@ -16,7 +16,7 @@ Router::getGroup(['auth'], null, [
   AUTH_PATHS['login']    => fn() => view('auth/login'),
   AUTH_PATHS['signup']   => fn() => view('auth/sign-up'),
   AUTH_PATHS['forgot_password'] => fn() => view('auth/forgot-password'),
-  '/dashboard'       => fn() => view('auth/dashboard', Auth::info())
+  '/admin' => fn() => view('auth/admin', Auth::info())
 ]);
 
 Router::postGroup(['auth'], [

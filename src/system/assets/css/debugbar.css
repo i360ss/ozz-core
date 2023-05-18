@@ -39,6 +39,7 @@
 }
 .ozz-fw-debug-bar.open {
   height: 350px;
+  bottom: 0 !important;
 }
 .ozz-fw-debug-bar span.label {
   all: unset;

@@ -32,9 +32,10 @@ class Request extends Router {
       'path'              => $this->path(),
       'url'               => $this->url(),
       'url_parts'         => $this->urlPart(),
-      'url_params'        => $this->urlParam() !== [] ? $this->urlParam() : null,
+      'url_params'        => $this->urlParam(),
       'query'             => $this->query(),
       'input'             => $this->input(),
+      'content'           => $this->content(),
       'files'             => $this->files(),
       'secure'            => $this->isSecure(),
     ];
@@ -235,6 +236,27 @@ class Request extends Router {
     }
 
     return $key ? $output[$key] : $output; // Sanitized Data
+  }
+
+  /**
+   * Return Raw Data data
+   * @param string $key
+   */
+  public function content($key=false){
+    $output = [];
+    $data = json_decode(file_get_contents('php://input'), true);
+
+    if(is_null($data)){
+      return false;
+    }
+
+    foreach ($data as $k => $v) {
+      (is_array($v))
+        ? $output[$k] = Sanitize::array($v)
+        : $output[$k] = is_json($v) ? $v : Sanitize::specialChar($v);
+    }
+
+    return $key ? $output[$key] : $output;
   }
 
   /**

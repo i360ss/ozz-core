@@ -49,7 +49,9 @@ class DebugBar {
   public function show() {
     $request = Request::getInstance();
     $subHelp = new SubHelp();
-    $this->set('ozz_request', $request->all());
+    $all = $request->all();
+    $all['url_params'] = $request->urlParam();
+    $this->set('ozz_request', $all);
     $subHelp->renderDebugBar($this->get());
   }
 

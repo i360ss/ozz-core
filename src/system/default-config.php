@@ -80,8 +80,8 @@ return [
   ],
   'AUTH_USER_ROLES' => [
     'admin' => [
-      'landing_page' => '/dashboard',
-      'permissions' => [],
+      'landing_page' => '/admin',
+      'permissions' => []
     ]
   ],
   'AUTH_VIEWS' => [
@@ -90,7 +90,7 @@ return [
     'forgot-password' => 'forgot-password.phtml',
     'reset-password' => 'reset-password.phtml',
     'verify-account' => 'verify-account.phtml',
-    'dashboard' => 'dashboard.phtml'
+    'admin' => 'admin.phtml'
   ],
   'AUTH_PATHS' => [
     'login' => '/login',
@@ -113,5 +113,12 @@ return [
 
   // Validation
   'DEFAULT_INPUT_VALIDATION' => [],
-  'DEFAULT_FILE_VALIDATION' => []
+
+  'DEFAULT_FILE_VALIDATION' => [
+    'image'     => [ '1M', 'jpg|jpeg|png|svg|webp' ],
+    'document'  => [ '500k', 'pdf|docx|txt|csv|ttf|otf' ],
+    'audio'     => [ '6M', 'mp3' ],
+    'video'     => [ '12M', 'mp4' ],
+    'font'      => [ '60K', 'ttf|otf' ]
+  ]
 ];

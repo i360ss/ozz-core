@@ -113,13 +113,22 @@ function show_errors($wrapper=null, $all=true) {
 }
 
 /**
+ * Return error (Do not echo)
+ * @param string $key Error key
+ * @param string $wrapper HTML wrapper for each error ( ## ) will be the placeholder
+ */
+function return_error(string $key, $wrapper=null) {
+  if(Errors::has($key)){
+    $err = is_array(get_error($key)) ? get_error($key)[0] : get_error($key);
+    return is_null($wrapper) ? $err : str_replace('##', $err, $wrapper);
+  }
+}
+
+/**
  * Show single error by key
  * @param string $key Error key
  * @param string $wrapper HTML wrapper for each error ( ## ) will be the placeholder
  */
 function show_error(string $key, $wrapper=null) {
-  if(Errors::has($key)){
-    $err = is_array(get_error($key)) ? get_error($key)[0] : get_error($key);
-    echo is_null($wrapper) ? $err : str_replace('##', $err, $wrapper);
-  }
+  echo return_error($key, $wrapper);
 }

@@ -46,9 +46,9 @@ trait FileSettings {
     }
 
     if (isset($copies) && $copies === true) {
-      return $im;
+      return isset($im) ? $im : false;
     } else {
-      return $image ? true : false; // imagedestroy($im);
+      return isset($image) ? true : false; // imagedestroy($im);
     }
   }
 
@@ -106,7 +106,7 @@ trait FileSettings {
 
       $dir = self::$moveTo.basename($name);
       $quality = isset(self::$settings['quality']) && self::$settings['quality'] !=='' ? self::$settings['quality'] : -1;
-      
+
       if(file_exists($dir)){
         $finalOut['image']['error'] = self::$errors->error('file_already_exist');
       } else {
@@ -168,34 +168,37 @@ trait FileSettings {
           $newName = ($copy['rename']=='rand' || $copy['rename'] == 'random') ? rand(1000, time()) : $copy['rename'];
           $fileName = $prifix.$newName.$nameSize.'.'.pathinfo($imgName, PATHINFO_EXTENSION);
         } else {
-          $prifix.pathinfo($imgName, PATHINFO_FILENAME).$nameSize.pathinfo($imgName, PATHINFO_EXTENSION);
+          $fileName = $prifix.pathinfo($imgName, PATHINFO_FILENAME).$nameSize.pathinfo($imgName, PATHINFO_EXTENSION);
         }
 
         // Final Copy DIR + NAME
-        $copyDir = isset($copy['dir']) ? UPLOAD_TO.$copy['dir'].$fileName : UPLOAD_TO.$fileName;
+        $copyDir = isset($copy['dir']) ? UPLOAD_TO.$copy['dir'] : UPLOAD_TO;
+        $copyDirWithName = $copyDir.$fileName;
 
         // Make Copy
         if($gdImage){
-          $newCopy = imagecreatetruecolor($newWidth, $newHeight);
-          imagecopyresampled($newCopy, $gdImage, $dstX, $dstY, $srcX, $srcY, $newWidth, $newHeight, $origWidth, $origHeight);
+          $newCopy = imagecreatetruecolor(intval($newWidth), intval($newHeight));
+          imagecopyresampled($newCopy, $gdImage, $dstX, $dstY, $srcX, $srcY, intval($newWidth), intval($newHeight), $origWidth, $origHeight);
           $qlt = $copy['quality'] ?? 100;
+
+          !is_dir($copyDir) ? mkdir($copyDir, 0777, true) : false; // Make directory if not exist
 
           switch ($ext) {
             case 'gif':
-              $finalCopy = @imagegif($newCopy, $copyDir, $qlt);
+              $finalCopy = @imagegif($newCopy, $copyDirWithName, $qlt);
               break;
             case 'jpg':
             case 'jpeg':
-              $finalCopy = @imagejpeg($newCopy, $copyDir, $qlt);
+              $finalCopy = @imagejpeg($newCopy, $copyDirWithName, $qlt);
               break;
             case 'png':
-              $finalCopy = @imagepng($newCopy, $copyDir);
+              $finalCopy = @imagepng($newCopy, $copyDirWithName);
               break;
             case 'bmp':
-              $finalCopy = @imagebmp($newCopy, $copyDir, $qlt);
+              $finalCopy = @imagebmp($newCopy, $copyDirWithName, $qlt);
               break;
             case 'webp':
-              $finalCopy = @imagewebp($newCopy, $copyDir, $qlt);
+              $finalCopy = @imagewebp($newCopy, $copyDirWithName, $qlt);
               break;
           }
         }

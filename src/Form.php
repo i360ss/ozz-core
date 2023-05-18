@@ -57,12 +57,14 @@ class Form {
     $form_class = isset($args['class']) ? " class=\"${args['class']}\"" : '';
     $name       = isset($args['name']) ? " name=\"${args['name']}\"" : '';
     $id         = isset($args['id']) ? " id=\"${args['id']}\"" : '';
+    $enctype    = isset($args['enctype']) ? " enctype=\"${args['enctype']}\"" : '';
 
     $formAttributes = ' action="'.$action.'"';
     $formAttributes .= ' method="'.$method.'"';
     $formAttributes .= $name;
     $formAttributes .= $id;
     $formAttributes .= $form_class;
+    $formAttributes .= $enctype;
 
     if(isset($args['attr']) && !empty($args['attr'])){
       foreach ($args['attr'] as $key => $value) {
@@ -122,24 +124,36 @@ class Form {
         $eachInputDOM = self::input($fld_val['type'], $fld_val, true);
         $thisField = $eachInputDOM['field'];
         $thisLabel = $eachInputDOM['label'];
+        $thisNote = $eachInputDOM['note'];
 
         // Wrap input only (Internal)
         if(isset($fld_val['input_wrapper'])){
-          $thisField = str_replace('###', "\n$thisField", $fld_val['input_wrapper']);
+          $thisField = str_replace('##', "\n$thisField", $fld_val['input_wrapper']);
         }
 
         // Wrap input and label
         $formInnerDOM = '';
+
+        // Add an element Before field
+        if(isset($fld_val['before'])){
+          $formInnerDOM .= $fld_val['before'];
+        }
+
         if(isset($fld_val['wrapper'])){
-          $formInnerDOM .= str_replace('###', "\n".$thisLabel.$thisField."\n", $fld_val['wrapper'])."\n";
+          $formInnerDOM .= str_replace('##', "\n".$thisLabel.$thisNote.$thisField."\n", $fld_val['wrapper'])."\n";
         } else {
-          $formInnerDOM .= $thisLabel.$thisField;
+          $formInnerDOM .= $thisLabel.$thisNote.$thisField;
+        }
+
+        // Add an element After field
+        if(isset($fld_val['after'])){
+          $formInnerDOM .= $fld_val['after'];
         }
 
         // Global each element wrapper
         if(isset($args['field_options'])){
           if(isset($args['field_options']['wrapper'])){
-            $formInnerDOM = str_replace('###', "\n".$formInnerDOM."\n", $args['field_options']['wrapper'])."\n";
+            $formInnerDOM = str_replace('##', "\n".$formInnerDOM."\n", $args['field_options']['wrapper'])."\n";
           }
         }
 
@@ -167,6 +181,12 @@ class Form {
       $attrs_only['optgroup'],
       $attrs_only['wrapper'],
       $attrs_only['input_wrapper'],
+      $attrs_only['note'],
+      $attrs_only['note_class'],
+      $attrs_only['validate'],
+      $attrs_only['media_settings'],
+      $attrs_only['before'],
+      $attrs_only['after'],
     );
 
     // Label
@@ -183,12 +203,21 @@ class Form {
     $labelFor = isset($args['id']) ? " for=\"${args['id']}\"" : '';
     $thisLabel = isset($args['label']) ? '<label'.$labelFor.$labelAttrs.'>'.$args['label'].'</label>'."\n" : '';
 
+    // Field Note
+    $thisNote = '';
+    if(isset($args['note'])){
+      $note_class = isset($args['note_class']) ? 'field_note '.$args['note_class'] : 'field_note';
+      $thisNote = '<span class="'.$note_class.'">'.$args['note'].'</span>';
+    }
+
     // Set up field by input type
     if(in_array($type, self::$inputTypes)){
       // Input field
       $this_attrs = '';
       foreach ($attrs_only as $ky => $vl) {
-        $this_attrs .= " ${ky}=\"${vl}\"";
+        if(is_string($vl)){
+          $this_attrs .= " ${ky}=\"${vl}\"";
+        }
       }
       $thisField = '<input type="'.$type.'"'.$this_attrs.'>'."\n";
     } elseif(in_array($type, self::$tagTypes)){
@@ -244,10 +273,10 @@ class Form {
     }
 
     if($field_label_spr === true){
-      return ['label' => $thisLabel, 'field' => $thisField];
+      return ['label' => $thisLabel, 'field' => $thisField, 'note' => $thisNote];
     }
 
-    return $thisLabel.$thisField;
+    return $thisLabel.$thisNote.$thisField;
   }
 
   /**
