@@ -7,6 +7,8 @@
 
 namespace Ozz\Core;
 
+use Ozz\Core\Request;
+
 class Form {
 
   public static $inputTypes = [
@@ -95,8 +97,11 @@ class Form {
   /**
    * Create a complete form using given information
    * @param array $args
+   * @param array $values Assign values to fields (field_name as key and value as value)
    */
-  public static function create($args){
+  public static function create($args, $values=[]){
+    $request = Request::getInstance();
+
     // Start form
     $form = self::start($args);
 
@@ -118,6 +123,13 @@ class Form {
             $fld_val['label_class'] = $fld_val['label_class'].' '.$args['field_options']['label_class'];
           } else {
             $fld_val['label_class'] = $args['field_options']['label_class'];
+          }
+        }
+
+        // Assign value if provided as second argument
+        if(!empty($values) && isset($values[$fld_val['name']])){
+          if(!isset($fld_val['value'])){
+            $fld_val['value'] = $values[$fld_val['name']];
           }
         }
 

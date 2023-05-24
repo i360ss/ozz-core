@@ -26,6 +26,9 @@ class AppInit {
       'core_2' => '/../../../../../../',
     ]);
 
+    // Dependency check
+    $this->dependencyCheck();
+
     // Get content from env.ini and assign to $this->env
     $this->env = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
 
@@ -125,7 +128,7 @@ class AppInit {
     defined('SHOW_DEBUG_BAR') || define('SHOW_DEBUG_BAR', $this->env['app']['SHOW_DEBUG_BAR'] == 1 ? true : false);
 
     // Debug Email template output, defined in env.ini
-    defined('DEBUG_EMAIL_TEMP') || define('DEBUG_EMAIL_TEMP', $this->env['app']['DEBUG_EMAIL_TEMP'] == 1 ? true : false);
+    defined('DEBUG_EMAIL') || define('DEBUG_EMAIL', $this->env['app']['DEBUG_EMAIL'] == 1 ? true : false);
 
     // Create initial CSRF token
     if(empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token']) || (isset($_SESSION['csrf_token_expire']) && time() > $_SESSION['csrf_token_expire'])){
@@ -148,6 +151,51 @@ class AppInit {
 
     // Resolve Route
     return Router::resolve();
+  }
+
+  /**
+   * Dependency check
+   */
+  private function dependencyCheck(){
+    $dependency_errors = [];
+    if(phpversion() < 8.0){
+      $dependency_errors['PHP version error'] = 'PHP version should be 8.0 or above. Please upgrade your PHP version';
+    }
+
+    $required_extensions = [
+      'hash',
+      'json',
+      'session',
+      'PDO',
+      'curl',
+      'dom',
+      'mbstring',
+      'fileinfo',
+      'mysqli',
+      'pdo_mysql',
+      'pdo_sqlite',
+      'sqlite3',
+    ];
+
+    foreach ($required_extensions as $ext) {
+      if (!in_array($ext, get_loaded_extensions())) {
+        $dependency_errors['PHP extension error'] = 'PHP Extension missing ['.$ext.']';
+      }
+    }
+
+    // Render dependency errors
+    if(count($dependency_errors) > 0){
+      $err_dom = '<div style="max-width: 800px; margin: 32px auto">';
+      foreach ($dependency_errors as $error => $message) {
+        $err_dom .= '<div style="padding: 10px; background: #fff;border-bottom: 1px solid #ddd;line-height: 1.6rem; font-size: 16px;">
+        <pre><strong style="color: #ff4757;">'.$error.'</strong><br>'.$message.'</pre>
+        </div>';
+      }
+      $err_dom .= '</div>';
+
+      echo $err_dom;
+      exit;
+    }
   }
 
 }

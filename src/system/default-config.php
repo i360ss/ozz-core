@@ -111,12 +111,10 @@ return [
     'password-changed-alert' => 'password-changed-alert.phtml',
   ],
 
-  // Validation
-  'DEFAULT_INPUT_VALIDATION' => [],
-
+  // Default File Validation
   'DEFAULT_FILE_VALIDATION' => [
     'image'     => [ '1M', 'jpg|jpeg|png|svg|webp' ],
-    'document'  => [ '500k', 'pdf|docx|txt|csv|ttf|otf' ],
+    'document'  => [ '500K', 'pdf|docx|txt|csv|ttf|otf' ],
     'audio'     => [ '6M', 'mp3' ],
     'video'     => [ '12M', 'mp4' ],
     'font'      => [ '60K', 'ttf|otf' ]

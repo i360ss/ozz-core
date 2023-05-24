@@ -65,8 +65,7 @@ class File {
     self::$uploadedTo = preg_replace("/\/+/", "/", self::$uploadedTo);
 
     // Current File(s)
-    $ReqFiles = $files !== null ? $files : $_FILES;
-    self::$thisFiles = $ReqFiles[array_key_first($ReqFiles)];
+    self::$thisFiles = $files !== null ? $files : $_FILES;
 
     if(is_string(self::$thisFiles['name']) && self::$thisFiles['name'] == ''){
       return [

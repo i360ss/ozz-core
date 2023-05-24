@@ -24,7 +24,6 @@ class Email extends AppInit {
    * Send The Email
    */
   public static function send($info){
-
     self::index();
 
     // Email Parameters
@@ -43,9 +42,8 @@ class Email extends AppInit {
     // Set Up Mail Body
     $mailBody = self::setEmailTemplate($template, $data);
 
-    if(DEBUG && DEBUG_EMAIL_TEMP){
+    if(DEBUG && DEBUG_EMAIL){
       echo $mailBody;
-      exit;
     }
 
     $mail = new PHPMailer(true);
@@ -65,11 +63,25 @@ class Email extends AppInit {
         $mail->Password   = self::$conf['sMTP']['SMTP_PASSWORD'];    // SMTP password
         $mail->Port       = self::$conf['sMTP']['SMTP_PORT'];        // Port
         $mail->SMTPSecure = self::$conf['sMTP']['SECURE'];           // Secure Connection
+      } else {
+        $mail->isMail();
       }
 
-      # Recipients
+      # Mail from
       $mail->setFrom($mailFrom, $mailFromName);
-      $mail->addAddress($to); // Add a recipient
+
+      # Recipients
+      if(is_string($to)){
+        $mail->addAddress($to);
+      } elseif(is_array($to)) {
+        foreach ($to as $email => $name_or_mail) {
+          if(is_string($email)){
+            $mail->addAddress($email, $name_or_mail);
+          } else {
+            $mail->addAddress($name_or_mail);
+          }
+        }
+      }
 
       # Set ReplyTo
       if(isset($reply_to)){
@@ -102,8 +114,8 @@ class Email extends AppInit {
       # Content
       $mail->isHTML(true);
       $mail->CharSet = CONFIG['EMAIL_CHARSET'];
-      $mail->WordWrap = 50;
-      $mail->Subject = $subject;
+      $mail->WordWrap = isset($word_wrap) ? $word_wrap : 50;
+      $mail->Subject = isset($subject) ? $subject : 'New message from '.APP_NAME;
       $mail->Body = $mailBody;
       $mail->AltBody = strip_tags($alt);
 
@@ -124,16 +136,21 @@ class Email extends AppInit {
       # Finally Send the Mail
       if($mail->send()){
         return true;
-      }
-      else{
+      } else {
         return false;
       }
     } catch (Exception $e) {
-      if(DEBUG){
+      if(DEBUG && DEBUG_EMAIL){
         echo "Mailer Error: {$mail->ErrorInfo}";
       }
-      return false;
     }
+
+    if(DEBUG && DEBUG_EMAIL){
+      dump($mail);
+      exit;
+    }
+
+    return false;
   }
 
   /**
@@ -141,6 +158,7 @@ class Email extends AppInit {
    */
   private static function setEmailTemplate($tmp, $data){
     $placeHolders = []; // Placeholders in Template
+    $tmp = (strpos($tmp, '.') !== false) ? $tmp : $tmp.'.phtml';
     if(file_exists(APP_DIR .'email_template/'.$tmp)){
       $htmlMSG = file_get_contents(APP_DIR .'email_template/'.$tmp);
     } else {
@@ -158,8 +176,7 @@ class Email extends AppInit {
     foreach ($placeHolders[1] as $val) {
       if(array_key_exists($val, $data)){
         $htmlMSG = str_replace("{{ $val }}", $data[$val], $htmlMSG);
-      }
-      else{
+      } else {
         if(!DEBUG){
           $htmlMSG = str_replace("{{ $val }}", "", $htmlMSG);
         }
