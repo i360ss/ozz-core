@@ -128,7 +128,46 @@ class Form {
 
         // Assign value if provided as second argument
         if(!empty($values) && isset($values[$fld_val['name']])){
-          if(!isset($fld_val['value'])){
+          if(in_array($fld_val['type'], ['radio', 'checkbox'])){
+            // Assign values for checkbox and radio
+            if(is_array($values[$fld_val['name']])){
+              foreach ($values[$fld_val['name']] as $checked_val) {
+                $fld_val['value'] == $checked_val
+                  ? $fld_val['checked'] = 'checked'
+                  : false;
+              }
+            } else {
+              if($fld_val['value'] == $values[$fld_val['name']]){
+                $fld_val['checked'] = 'checked';
+              }
+            }
+          } elseif($fld_val['type'] == 'file'){
+            !isset($fld_val['show_image']) ? $fld_val['show_image'] = true : false;
+
+            // Show Images if available
+            if($fld_val['show_image'] !== false){
+              $uploaded_img = '';
+              if(is_array($values[$fld_val['name']])){
+                $uploaded_img = '<div class="uploaded-file">';
+                foreach ($values[$fld_val['name']] as $img) {
+                  $uploaded_img .= '<div class="uploaded-file__single"><img src="'.$img.'" alt="'.$img.'" /></div>';
+                }
+                $uploaded_img .= '</div>';
+              } else {
+                $uploaded_img = '<div class="uploaded-file"><img src="'.$values[$fld_val['name']].'" alt="'.$values[$fld_val['name']].'" /></div>';
+              }
+
+              if(isset($fld_val['before'])){
+                $fld_val['before'] .= $uploaded_img;
+              } else {
+                $fld_val['before'] = $uploaded_img;
+              }
+            }
+          } elseif(in_array($fld_val['type'], ['select', 'datalist'])){
+            // Assign values to Selections
+            $fld_val['selected'] = $values[$fld_val['name']];
+          } elseif(!isset($fld_val['value'])){
+            // Assign values to other fields
             $fld_val['value'] = $values[$fld_val['name']];
           }
         }
@@ -199,6 +238,7 @@ class Form {
       $attrs_only['media_settings'],
       $attrs_only['before'],
       $attrs_only['after'],
+      $attrs_only['selected'],
     );
 
     // Label
@@ -263,10 +303,17 @@ class Form {
 
       if(isset($args['options'])){
         foreach ($args['options'] as $k => $option) {
+          $selected = '';
+          if(isset($args['selected'])){
+            if($args['selected'] == $k || $args['selected'] == $option) {
+              $selected = 'selected';
+            }
+          }
+
           if($type == 'datalist'){
-            $optionField .= '<option value="'.$option.'"></option>'."\n";
+            $optionField .= '<option value="'.$option.'" '.$selected.'></option>'."\n";
           } else {
-            $optionField .= '<option value="'.$k.'">'.$option.'</option>'."\n";
+            $optionField .= '<option value="'.$k.'" '.$selected.'>'.$option.'</option>'."\n";
           }
         }
       }

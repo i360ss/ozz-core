@@ -7,7 +7,7 @@
 
 namespace Ozz\Core;
 
-use Ozz\Core\Email;
+use Ozz\Core\Mail;
 use Ozz\Core\Request;
 use Ozz\Core\Response;
 use Ozz\Core\Router;
