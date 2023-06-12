@@ -9,7 +9,7 @@ namespace Ozz\Core\system\auth;
 
 use Ozz\Core\Request;
 use Ozz\Core\Medoo;
-use Ozz\Core\Email;
+use Ozz\Core\Mail;
 
 trait AuthInternal {
 
@@ -188,7 +188,7 @@ trait AuthInternal {
    * @param string $alt_mail Text version of the mail
    */
   private static function sendMail($args, $alt_mail=''){
-    $mail = Email::send([
+    $mail = Mail::send([
       'to'        => $args['email'],
       'title'     => $args['title'],
       'subject'   => $args['subject'],

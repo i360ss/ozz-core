@@ -12,7 +12,7 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 use Ozz\Core\Err;
 
-class Email extends AppInit {
+class Mail extends AppInit {
 
   private static $conf;
 
