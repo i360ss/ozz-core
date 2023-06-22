@@ -1,0 +1,51 @@
+<?php
+/**
+ * View Name: posts
+ * Path: view/admin/posts
+ * 
+ * @param array $data arguments passed from controller or route
+ */
+?>
+{{ title        = "Post types" }}
+{{ body_class   = "post-types" }}
+
+{{ content }}
+  <h1 class="heading">Post types</h1>
+
+  <div class="listing-s1">
+    <div class="table">
+      <?php foreach ($post_data as $type => $value) : ?>
+        <div class="table__tr-wrapper">
+          <a href="/admin/posts/<?=$type?>" class="table__row">
+            <div class="table__cell">
+              <span class="listing-s1__title">
+                <strong><?=$value['label']?></strong>
+              </span>
+              <span>Name: <?=$type?></span><br>
+              <span class="light-text"><?=$value['note']?></span>
+            </div>
+
+            <div class="table__cell align-right">
+              <strong><?=$value['post_count']?></strong> Posts
+              &nbsp; | &nbsp;
+              <strong><?=$value['fields']?></strong> Fields
+            </div>
+          </a>
+
+          <div class="table__action">
+            <div class="table__cell align-right">
+              <a href="/admin/posts/create/<?=$type?>" class="button small">Add New Post</a>
+            </div>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+
+    <div class="listing-s1__bottom">
+      <div class="align-right">
+        <span>Post Types: <strong><?=count($post_data)?></strong></span> | 
+        <span>Total Posts: <strong><?=$total_posts?></strong></span>
+      </div>
+    </div>
+  </div>
+{{ content-end }}

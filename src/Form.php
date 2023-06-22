@@ -107,6 +107,7 @@ class Form {
 
     if(isset($args['fields'])){
       foreach ($args['fields'] as $key => $fld_val) {
+        $has_error = has_error($fld_val['name']);
 
         // Add global field each class
         if(isset($args['field_options']['class'])){
@@ -124,6 +125,11 @@ class Form {
           } else {
             $fld_val['label_class'] = $args['field_options']['label_class'];
           }
+        }
+
+        // Add error class if has error
+        if($has_error){
+          $fld_val['class'] = isset($fld_val['class']) ? $fld_val['class'].' error' : 'error';
         }
 
         // Assign value if provided as second argument
@@ -182,6 +188,13 @@ class Form {
           $thisField = str_replace('##', "\n$thisField", $fld_val['input_wrapper']);
         }
 
+        // Set field error if available
+        if($has_error){
+          $thisField .= isset($fld_val['field_error_wrapper']) 
+            ? str_replace('##', error($fld_val['name']), $fld_val['field_error_wrapper'])
+            : '<span class="field-error">'.error($fld_val['name']).'</span>';
+        }
+
         // Wrap input and label
         $formInnerDOM = '';
 
@@ -190,7 +203,7 @@ class Form {
           $formInnerDOM .= $fld_val['before'];
         }
 
-        if(isset($fld_val['wrapper'])){
+        if(isset($fld_val['wrapper']) && $fld_val['wrapper'] !== false){
           $formInnerDOM .= str_replace('##', "\n".$thisLabel.$thisNote.$thisField."\n", $fld_val['wrapper'])."\n";
         } else {
           $formInnerDOM .= $thisLabel.$thisNote.$thisField;
@@ -204,7 +217,13 @@ class Form {
         // Global each element wrapper
         if(isset($args['field_options'])){
           if(isset($args['field_options']['wrapper'])){
-            $formInnerDOM = str_replace('##', "\n".$formInnerDOM."\n", $args['field_options']['wrapper'])."\n";
+            if(isset($fld_val['wrapper'])){
+              if($fld_val['wrapper'] !== false){
+                $formInnerDOM = str_replace('##', "\n".$formInnerDOM."\n", $args['field_options']['wrapper'])."\n";
+              }
+            } else {
+              $formInnerDOM = str_replace('##', "\n".$formInnerDOM."\n", $args['field_options']['wrapper'])."\n";
+            }
           }
         }
 
@@ -239,6 +258,7 @@ class Form {
       $attrs_only['before'],
       $attrs_only['after'],
       $attrs_only['selected'],
+      $attrs_only['field_error_wrapper'],
     );
 
     // Label

@@ -1,0 +1,174 @@
+.breadcrumb {
+  span {
+    &:not(:last-child) {
+      position: relative;
+      margin-right: 32px;
+      &:after {
+        @include icon-arrow1('primary');
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        right: -27px;
+        top: 30%;
+        content: '';
+      }
+    }
+    &:nth-last-child(1) {
+      &,
+      a {
+        color: color(primary);
+      }
+    }
+  }
+}
+a {
+  color: color(secondary);
+  text-decoration: none;
+}
+.light-text {
+  color: color(gray1);
+  font-size: $font-normal;
+}
+.align-right {
+  text-align: right;
+}
+
+.icon-button {
+  display: inline-block;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 60%;
+  width: 28px;
+  height: 28px;
+  border-radius: 3px;
+  font-size: 0;
+  &:hover {
+    filter: brightness(.8);
+  }
+  &.edit {
+    @include icon-edit();
+    background-color: rgba(color(success), .2);
+  }
+  &.delete {
+    @include icon-delete();
+    background-color: rgba(color(danger), .2);
+  }
+  &.publish {
+    @include icon-publish();
+    background-color: rgba(color(success), .2);
+  }
+  &.draft {
+    @include icon-draft();
+    background-color: rgba(color(warning), .2);
+  }
+}
+
+// Info Labels (Danger, Warning, Success, Info)
+.label {
+  padding: 3px 8px;
+  font-size: 14px;
+  border-radius: 5px;
+  font-weight: 500;
+  text-transform: capitalize;
+  &.trash,
+  &.danger {
+    color: color(danger);
+    background-color: rgba(color(danger), .1);
+  }
+  &.published,
+  &.success {
+    color: color(success);
+    background-color: rgba(color(success), .1);
+  }
+  &.draft,
+  &.warning {
+    color: color(warning);
+    background-color: rgba(color(warning), .1);
+  }
+  &.info {
+    color: color(blue);
+    background-color: rgba(color(blue), .1);
+  }
+}
+
+// Forms
+.ozz-form {
+  &__field {
+    background: color(white);
+    padding: 18px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+    label {
+      display: inline-block;
+      padding-bottom: 8px;
+      font-weight: 500;
+    }
+    .field_note {
+      float: right;
+      color: color(gray1);
+      font-style: italic;
+      font-size: $font-small-2;
+    }
+    select,
+    textarea,
+    input {
+      width: 100%;
+      background-color: transparent;
+    }
+  }
+  &__switch-checkbox {
+    label {
+      transform: translateY(-5px);
+    }
+  }
+  input[type="checkbox"] {
+    cursor: pointer;
+    position: relative;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: color(light1);
+    border-radius: 3px;
+    border: 1px solid rgba(color(gray1), 0.7);
+    &:checked {
+      &:after {
+        content: '';
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: color(primary);
+        left: 2px;
+        top: 2px;
+        border-radius: 2px;
+      }
+    }
+    &.switch {
+      width: 46px;
+      height: 28px;
+      transform: translate(6px, 10px);
+      border-radius: 20px;
+      background: color(light1);
+      &:after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        background: color(white);
+        left: 1px;
+        top: 1px;
+        transition: .2s ease-in-out;
+      }
+      &:checked {
+        background: color(primary);
+        &:after {
+          left: 19px;
+        }
+      }
+    }
+  }
+  .field-error {
+    font-size: $font-small;
+    color: color(danger);
+  }
+}

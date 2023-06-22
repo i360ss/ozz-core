@@ -1,0 +1,24 @@
+<?php
+/**
+ * View Name: create_post
+ * Path: view/admin/create_post
+ * 
+ * @param array $data arguments passed from controller or route
+ */
+?>
+{{ title        = "Create post" }}
+{{ body_class   = "view-create_post" }}
+
+{{ content }}
+  <section>
+    <div class="container">
+      <h1 class="heading breadcrumb">
+        <span><a href="/admin/posts">Post</a></span>
+        <span><a href="/admin/posts/<?=$post_type?>"><?=$post_config['label']?></a></span>
+        <span>Create</span>
+      </h1>
+      <p class="light-text"><?=$post_config['note']?></p>
+      <?=$form?>
+    </div>
+  </section>
+{{ content-end }}

@@ -1,0 +1,131 @@
+// Listings
+.listing-s1 {
+  &__title {
+    display: block;
+    margin: 0 0 6px;
+    font-size: $font-semi-normal;
+  }
+  .table {
+    width: 100%;
+    &__tr-wrapper {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      background: color(white);
+      margin-bottom: 10px;
+      border: 1px solid color(white);
+      border-left: 6px solid rgba(color(primary), 0.3);
+      &:hover {
+        border-color: color(primary);
+        .listing-s1__title {
+          color: color(primary);
+        }
+      }
+    }
+    &__row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      grid-template-rows: 100% auto;
+      align-items: center;
+    }
+    &__cell {
+      display: block;
+      align-items: center;
+      width: 100%;
+      padding: 14px;
+    }
+    &__action {
+      display: grid;
+      height: 100%;
+      align-items: center;
+    }
+  }
+  &__bottom {
+    padding: 10px 14px;
+    background: color(primary);
+    color: color(white);
+    .align-right {
+      text-align: right;
+    }
+  }
+}
+
+// Listing type 2
+.listing-s2 {
+  &__header {
+    background: color(white);
+    padding: 14px;
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+  }
+  table {
+    border-collapse: separate;
+    border-spacing: 0 2px;
+    width: 100%;
+    thead {
+      position: sticky;
+      top: 60px;
+      tr {
+        background: color(primary);
+        padding: 14px;
+        th {
+          text-align: left;
+          padding: 14px;
+          color: color(white);
+        }
+      }
+    }
+    tbody {
+      tr {
+        background: color(white);
+        cursor: pointer;
+        .row-number {
+          padding: 14px;
+          margin-top: 2px;
+          font-weight: 500;
+          color: color(gray1);
+        }
+        &:hover {
+          box-shadow: 0 0 0 2px color(primary) inset;
+          .title {
+            color: color(primary);
+          }
+          .tr-action {
+            .show-on-hover {
+              display: flex;
+            }
+          }
+        }
+        th,
+        td {
+          padding: 14px;
+          border: none;
+        }
+      }
+      .tr-action {
+        text-align: right;
+        .show-on-hover {
+          display: none;
+          justify-content: right;
+          gap: 4px;
+          height: 28px;
+          padding: 0;
+        }
+      }
+    }
+  }
+  .action-form {
+    button {
+      cursor: pointer;
+      padding: 0;
+      border: none;
+      background: transparent;
+    }
+  }
+  &__empty {
+    padding: 42px 24px;
+    text-align: center;
+    color: color(gray1);
+    background: color(white);
+  }
+}

@@ -92,7 +92,6 @@ class Session {
         ])
         : false;
       }
-      
     } else {
       return $_SESSION;
     }

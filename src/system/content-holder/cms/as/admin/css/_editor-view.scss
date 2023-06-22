@@ -1,0 +1,29 @@
+.post-edit-view {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-gap: 24px;
+  &__form {
+
+  }
+  &__info {
+    width: 300px;
+    padding: 24px;
+    background: color(white);
+    border-radius: 5px;
+    margin-bottom: auto;
+    h3 {
+      margin: 0 0 16px;
+    }
+    .item {
+      margin: 12px 0 0;
+      padding-bottom: 12px;
+      font-size: $font-normal;
+      &:not(:last-child) {
+        border-bottom: 1px solid color(silver);
+      }
+      strong {
+        font-size: $font-small-2;
+      }
+    }
+  }
+}

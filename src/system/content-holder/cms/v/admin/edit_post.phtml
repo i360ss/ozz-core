@@ -1,0 +1,54 @@
+<?php
+/**
+ * View Name: edit_post
+ * Path: view/admin/edit_post
+ * 
+ * @param array $data arguments passed from controller or route
+ */
+// dd($data);
+?>
+{{ title        = "Edit Post" }}
+{{ body_class   = "view-edit-post" }}
+
+{{ content }}
+  <section>
+    <div class="container">
+      <h1 class="heading breadcrumb">
+        <span><a href="/admin/posts">Post</a></span>
+        <span><a href="/admin/posts/<?=$post_type?>"><?=$post_config['label']?></a></span>
+        <span class="j-title-onchange"><?=$form_data['title']?></span>
+      </h1>
+
+      <div class="post-edit-view">
+        <div class="post-edit-view__form">
+          <div class="common-alert-bar">
+            <?=has_error('success') || has_error('error') ? show_errors() : ''?>
+          </div>
+          <?=$form?>
+        </div>
+        <div class="post-edit-view__info">
+          <h3>Post Info</h3>
+          <?php if($form_data['first_name']) :?>
+            <p class="item"><strong>Author:</strong> <br><?=$form_data['first_name'].' '.$form_data['last_name']?></p>
+          <?php endif; ?>
+
+          <?php if($form_data['created_at']) :?>
+            <p class="item"><strong>Created:</strong> <br><?=date('M d, Y | h:i a', $form_data['created_at'])?></p>
+          <?php endif; ?>
+
+          <?php if($form_data['modified_at']) :?>
+            <p class="item"><strong>Last modified:</strong> <br><?=date('M d, Y | h:i a', $form_data['modified_at'])?></p>
+          <?php endif; ?>
+
+          <p class="item"><strong>Current Language:</strong> <br><?=lang_name($form_data['lang'])?></p>
+
+          <p class="item"><strong>Translated:</strong> <br>
+            <?php foreach ($form_data['translated_to'] as $code => $language) : ?>
+              <a href="/lang/<?=$code?>" class="button mini light<?=$code == APP_LANG ? ' active' : '';?>"><?=$language?></a>
+            <?php endforeach; ?>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+{{ content-end }}

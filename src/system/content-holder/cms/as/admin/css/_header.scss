@@ -1,0 +1,199 @@
+.cms-header {
+  z-index: 999;
+  padding: 14px 24px;
+  &__language-switch {
+    float: right;
+    width: auto;
+    margin: 0 0 0 auto;
+    cursor: pointer;
+    &:hover {
+      .dropdown {
+        display: block;
+      }
+    }
+    .current-lang {
+      position: relative;
+      display: inline-block;
+      font-weight: 500;
+      padding: 6px 35px 6px 6px;
+      &:after {
+        @include icon-arrow1();
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        transform: rotate(90deg);
+        right: 0;
+        content: '';
+      }
+    }
+    .dropdown {
+      display: none;
+      background: color(white);
+      margin: 14px 0 0;
+      padding: 0;
+      text-align: left;
+      box-shadow: $shadow1;
+      li {
+        list-style: none;
+        a {
+          display: inline-block;
+          width: 100%;
+          padding: 6px 20px;
+          background: color(white);
+          &:hover {
+            background: color(primary);
+            color: color(white);
+          }
+        }
+      }
+    }
+  }
+}
+.cms-nav {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  height: 100vh;
+  width: 200px;
+  padding-top: 60px;
+  background: color(primary);
+  z-index: 998;
+  > ul {
+    position: relative;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    &:before {
+      content: '';
+      position: absolute;
+      width: 46px;
+      height: 100%;
+      left: 0;
+      top: 0;
+      background: color(primary-dark);
+    }
+    > li {
+      padding: 0;
+      list-style: none;
+      &.has-child {
+        &:hover {
+          > a {
+            color: color(white);
+            background: color(primary-dark);
+          }
+          > ul {
+            display: block;
+          }
+        }
+      }
+      &.active {
+        > a {
+          color: color(white);
+          background: color(primary-dark);
+        }
+      }
+      > a {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        padding: 12px 8px 12px 60px;
+        color: color(light1);
+        font-weight: 600;
+        &:before {
+          position: absolute;
+          width: 46px;
+          height: 45px;
+          left: 0;
+          top: 0;
+          content: '';
+        }
+        &.dashboard::before {
+          @include icon-dashboard('light1');
+        }
+        &.posts::before {
+          @include icon-posts('light1');
+        }
+        &.blocks::before {
+          @include icon-blocks('light1');
+        }
+        &.terms::before {
+          @include icon-terms('light1');
+        }
+        &.settings::before {
+          @include icon-settings('light1');
+        }
+        &:hover {
+          color: color(white);
+          background: color(primary-dark);
+          &:before {
+            background-color: color(secondary);
+          }
+        }
+      }
+      > ul {
+        display: none;
+        position: absolute;
+        width: 200px;
+        height: 100%;
+        left: 100%;
+        top: 0;
+        padding: 0;
+        background: color(white);
+        border-right: 1px solid color(light1);
+        > li {
+          padding: 0;
+          list-style: none;
+          a {
+            color: color(secondary);
+            font-weight: 400;
+            padding: 10px;
+            display: inline-block;
+            width: 100%;
+            &:hover {
+              background: color(secondary);
+              color: color(white);
+            }
+          }
+        }
+      }
+    }
+  }
+  &__bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 46px;
+    background: color(primary);
+    .nav-collapse-trigger {
+      display: inline-block;
+      border: none;
+      width: 46px;
+      height: 46px;
+      cursor: pointer;
+      background: url("data:image/svg+xml,%3Csvg width='8' height='14' viewBox='0 0 8 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.17192 6.99999L0.221924 2.04999L1.63592 0.635986L7.99992 6.99999L1.63592 13.364L0.221924 11.95L5.17192 6.99999Z' fill='#{encodecolor(color(light1))}'/%3E%3C/svg%3E%0A") center center no-repeat, color(primary-dark);
+      transform: rotate(180deg);
+      &:hover {
+        background-color: color(secondary);
+      }
+    }
+  }
+  &.collapsed {
+    width: 46px;
+    > ul {
+      > li {
+        > a {
+          color: transparent;
+          font-size: 0;
+          height: 29px;
+          padding: 0;
+          &:before {
+            top: -16px;
+          }
+        }
+      }
+    }
+    .nav-collapse-trigger {
+      transform: rotate(0deg);
+    }
+  }
+}
