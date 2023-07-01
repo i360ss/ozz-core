@@ -24,25 +24,13 @@ class Lang {
     if(file_exists(APP_LANG_PATH.'errors.php')){
       $this->errors = include APP_LANG_PATH.'errors.php';
     } else {
-      return DEBUG
-        ? Err::custom([
-          'msg' => "errors.php Not found in current language directory ( app/lang/".APP_LANG."/ )",
-          'info' => 'You need to create error message files for each language that your application using',
-          'note' => "You can just copy <strong>app/lang/en/errors.php</strong> to <strong>app/lang/".APP_LANG."/</strong> and translate content",
-        ])
-        : false;
+      $this->errors = include APP_DIR.'lang/en/errors.php';
     }
 
     if(file_exists(APP_LANG_PATH.'messages.php')){
       $this->messages = include APP_LANG_PATH.'messages.php';
     } else {
-      return DEBUG
-        ? Err::custom([
-          'msg' => "messages.php Not found in current language directory ( app/lang/".APP_LANG."/ )",
-          'info' => 'You need to create message content files for each language that your application using',
-          'note' => "You can just copy <strong>app/lang/en/messages.php</strong> to <strong>app/lang/".APP_LANG."/</strong> and translate content",
-        ])
-        : false;
+      $this->messages = include APP_DIR.'lang/en/messages.php';
     }
   }
 
@@ -62,7 +50,7 @@ class Lang {
    * @param string|array $param arguments to replace the string with
    */
   public function error($key, $param=false){
-    $res = isset($this->errors[$key]) ? $this->errors[$key] : $this->errors['invalid_array_key'];
+    $res = isset($this->errors[$key]) ? $this->errors[$key] : 'Something went wrong!';
     return $this->setOutput($res, $param);
   }
 
@@ -72,7 +60,7 @@ class Lang {
    * @param string|array $param arguments to replace the string with
    */
   public function message($key, $param=false){
-    $res = isset($this->messages[$key]) ? $this->messages[$key] : $this->errors['invalid_array_key'];
+    $res = isset($this->messages[$key]) ? $this->messages[$key] : 'Something went wrong!';
     return $this->setOutput($res, $param);
   }
 

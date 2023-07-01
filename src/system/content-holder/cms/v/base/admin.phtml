@@ -1,19 +1,26 @@
+<?php
+/**
+ * Base layout for Ozz CMS admin
+ */
+
+use Ozz\Core\Auth;
+$user = (object) Auth::info();
+
+?>
 <!DOCTYPE html>
 <html lang="<?=APP_LANG?>">
 <head>
   <meta charset=<?=CONFIG['CHARSET']?>>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% title %}</title>
-  <meta name="keywords" content="{% keywords %}">
-  <meta name="description" content="{% description %}">
-  <meta name="robots" content="index, follow">
   <meta name="csrf-token" content="<?=CSRF_TOKEN?>">
-  <meta name="url" content="<?=BASE_URL?>">
   <link rel="icon" type="image/x-icon" href="<?=ASSETS?>icons/favicon.svg">
   <link rel="stylesheet" href="<?=ASSETS?>admin/css/admin.css" nonce="<?=CSP_NONCE?>">
 </head>
 <body class="ozz-cms {% body_class %}">
   <div class="app-container">
+
+    <!-- Main navigation -->
     <nav class="cms-nav">
       <ul data-active-link="<?= $context['url_parts'][2] ?? 'dashboard' ?>">
         <li class="dashboard">
@@ -23,9 +30,9 @@
           <a href="/admin/posts" class="posts">Posts</a>
           <ul>
             <li><a href="/admin/posts">All</a></li>
-            <?php foreach ($data['post_types'] as $key => $value) : ?>
-              <li><a href="/admin/posts/<?=$key?>"><?=ucfirst($value['label'])?></a></li>
-            <?php endforeach; ?>
+              <?php foreach ($data['post_types'] as $key => $value) : ?>
+                <li><a href="/admin/posts/<?=$key?>"><?=ucfirst($value['label'])?></a></li>
+              <?php endforeach; ?>
           </ul>
         </li>
         <li class="blocks">
@@ -46,19 +53,46 @@
     <main>
       <header class="cms-header">
         <div class="cms-header__container">
-          <div class="cms-header__language-switch align-right">
-            <span class="current-lang"><?=$data['languages'][APP_LANG]?></span>
-            <ul class="dropdown">
-              <?php foreach ($data['languages'] as $code => $language) : ?>
-                <li><a href="/lang/<?=$code?>"><?=$language?></a></li>
-              <?php endforeach; ?>
-            </ul>
+          <div class="cms-header__left-content">
+            <!-- empty -->
+          </div>
+
+          <div class="cms-header__right-content">
+            <!-- Language switcher -->
+            <div class="cms-header__language-switch">
+              <span class="current-lang"><?=APP_LANG?></span>
+              <ul class="dropdown">
+                <?php foreach ($data['languages'] as $code => $language) : ?>
+                  <li><a href="/lang/<?=$code?>"><?=$language?></a></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+
+            <!-- User information (dropdown) -->
+            <div class="cms-header__user-info">
+              <div class="cms-header__avatar">
+                <img src="<?=get_gravatar($user->email, 80);?>" alt="Avatar">
+                <span class="cms-header__avatar-arrow"></span>
+              </div>
+              <div class="cms-header__info">
+                <p>
+                  <strong><?=$user->first_name.' '.$user->last_name?></strong><br>
+                  <span class="light-text">@<?=$user->username?></span>
+                </p>
+                <p><?=$user->email?></p>
+                <a href="<?=AUTH_PATHS['logout']?>" class="button small">Logout</a>
+              </div>
+            </div>
           </div>
         </div>
       </header>
+
     {% content %}
+
+    <?php include __DIR__.'/../admin/partial/block-editor-hidden-dom.php'; ?>
     </main>
   </div>
+<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/vendor/sortable.min.js"></script>
 <script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/admin.js"></script>
 </body>
 </html>

@@ -41,6 +41,9 @@ class CMS_AdminController extends CMS {
   }
 
 
+  // =============================================
+  // Posts
+  // =============================================
   /**
    * Post type listing
    */
@@ -51,7 +54,7 @@ class CMS_AdminController extends CMS {
         'label'       => $value['label'],
         'post_count'  => isset($post_count['posts_by_type'][$key]) ? $post_count['posts_by_type'][$key] : 0,
         'fields'      => count($value['form']['fields']) + count($this->post_default_fields),
-        'note'        => isset($value['note']) ? $value['note'] : '',
+        'note'        => $value['note'],
       ];
     }
     $this->data['total_posts'] = $post_count['total_posts'];
@@ -82,6 +85,7 @@ class CMS_AdminController extends CMS {
    */
   public function post_create_view() {
     $current_values = has_flash('form_data') ? get_flash('form_data') : [];
+    $this->data['blocks_forms'] = $this->cms_block_forms();
     $this->data['form'] = $this->cms_post_form('create', null,  $current_values);
 
     return view('admin/create_post', $this->data);
@@ -95,6 +99,7 @@ class CMS_AdminController extends CMS {
     $post = $this->cms_get_post_to_edit( $request->urlParam('post_id') );
     $current_values = has_flash('form_data') ? array_merge($post, get_flash('form_data')) : $post;
     $this->data['form_data'] = $current_values;
+    $this->data['blocks_forms'] = $this->cms_block_forms();
 
     // Create new post in current language if not already exist
     if(isset($post['id'])){
@@ -139,5 +144,14 @@ class CMS_AdminController extends CMS {
     $trash = $request->input('delete_type') == 'delete' ? false : true;
     $this->delete_post($request->input('post_id'), $trash);
   }
+
+
+  // =============================================
+  // Blocks
+  // =============================================
+  public function blocks_listing() {
+    return view('admin/blocks', $this->data);
+  }
+
 
 }

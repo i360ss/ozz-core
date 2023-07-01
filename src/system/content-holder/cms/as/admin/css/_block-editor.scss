@@ -1,0 +1,150 @@
+.ozz-block-editor-hidden-form-dom {
+  display: none;
+}
+.ozz-block-editor {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-gap: 7px;
+  background: color(light1);
+  padding: 14px;
+  border-radius: 5px;
+  // Block stock
+  &__block-picker {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 8px;
+    padding: 0 12px 60px 0;
+    margin-bottom: auto;
+    position: sticky;
+    top: 74px;
+    max-height: 100vh;
+    overflow-y: auto;
+    li.pick-block {
+      padding: 14px 14px 14px 26px;
+      background: color(white);
+      list-style: none;
+      border: 1px solid rgba(color(primary), 0.5);
+      border-radius: 5px;
+      text-align: left;
+      font-size: $font-small-2;
+      position: relative;
+      cursor: grab;
+      &:before {
+        @include icon-draggable();
+        content: '';
+        width: 15px;
+        height: 15px;
+        position: absolute;
+        left: 6px;
+        top: 16px;
+        background-size: contain;
+      }
+      &:hover {
+        background: color(primary);
+        color: color(white);
+        &:before {
+          @include icon-draggable(white);
+        }
+      }
+    }
+  }
+  &__form-loader {
+    padding: 14px;
+    border: 1px solid color(gray1);
+    border-style: dashed;
+    border-radius: 5px;
+    .missing-block {
+      padding: 14px 24px;
+      background: rgba(color(danger), 0.1);
+      border-radius: 5px;
+      margin-bottom: 14px;
+      p {
+        margin: 0;
+        strong {
+          color: color(danger);
+        }
+      }
+      .light-text {
+        color: rgba(color(danger), 0.8);
+      }
+    }
+    li {
+      list-style: none;
+    }
+    .sortable-ghost {
+      background: color(white);
+      padding: 14px;
+      border-radius: 5px;
+      margin-bottom: 14px;
+      font-size: 18px;
+      color: color(primary);
+      font-weight: 600;
+    }
+    .ozz-used-block {
+      background: color(white);
+      border-radius: 5px;
+      &:not(:last-child) {
+        margin-bottom: 14px;
+      }
+      &:hover {
+        .ozz-block-accordion-bar {
+          .ozz-block-delete-trigger {
+            display: block;
+          }
+        }
+      }
+      .ozz-block-accordion-bar {
+        display: grid;
+        grid-template-columns: 42px 1fr 18px 24px;
+        grid-gap: 14px;
+        padding: 14px;
+        align-items: center;
+        cursor: grab;
+        > div {
+          h4,
+          p {
+            margin: 0;
+          }
+          h4 {
+            color: color(primary);
+          }
+        }
+        .ozz-handle {
+          @include icon-draggable();
+          width: 42px;
+          height: 42px;
+        }
+        .ozz-block-delete-trigger {
+          @include icon-delete();
+          width: 18px;
+          height: 24px;
+          background-size: contain;
+          cursor: pointer;
+        }
+        .ozz-accordion-arrow {
+          @include icon-arrow1();
+          width: 24px;
+          height: 24px;
+          transform: rotate(90deg);
+        }
+        &.active {
+          .ozz-accordion-arrow {
+            transform: rotate(-90deg);
+          }
+        }
+      }
+      .ozz-accordion-body {
+        display: none;
+        padding: 14px;
+        &.active {
+          display: block;
+        }
+      }
+    }
+  }
+}
+.block-editor-field {
+  &:not(:last-child) {
+    margin-bottom: 16px;
+  }
+}

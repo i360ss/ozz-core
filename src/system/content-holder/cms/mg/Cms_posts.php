@@ -14,6 +14,7 @@ class Cms_posts {
       'slug'        => ['str:200', 'nn'],
       'title'       => ['txt', 'nn'],
       'content'     => ['bigtxt', 'nn'],
+      'blocks'      => ['bigtxt', 'nn'],
       'tags'        => ['txt', 'nn'],
       'post_status' => ['str:20', 'nn'],
       'created_at'  => ['str:30', 'nn'],

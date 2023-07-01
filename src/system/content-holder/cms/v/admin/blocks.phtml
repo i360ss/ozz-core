@@ -1,0 +1,38 @@
+<?php
+/**
+ * View Name: blocks
+ * Path: view/admin/blocks
+ * 
+ * @param array $data arguments passed from controller or route
+ */
+?>
+{{ title        = "Blocks" }}
+{{ body_class   = "view-blocks" }}
+
+{{ content }}
+  <h1 class="heading">Blocks</h1>
+
+  <div class="listing-s1">
+    <div class="table">
+      <?php foreach ($blocks as $type => $block) : ?>
+        <div class="table__tr-wrapper">
+          <a href="/admin/blocks/<?=$type?>" class="table__row">
+            <div class="table__cell">
+              <span class="listing-s1__title">
+                <strong><?=$block['label']?></strong>
+              </span>
+              <span>Name: <?=$block['name']?></span><br>
+              <span class="light-text"><?=$block['note']?></span>
+            </div>
+          </a>
+        </div>
+      <?php endforeach; ?>
+    </div>
+
+    <div class="listing-s1__bottom">
+      <div class="align-right">
+        
+      </div>
+    </div>
+  </div>
+{{ content-end }}

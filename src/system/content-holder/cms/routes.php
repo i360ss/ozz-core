@@ -4,8 +4,8 @@ $route_content = "
 // CMS Routes
 use App\controller\admin\CMS_AdminController;
 
-Router::get('/lang/{lang}', function(Request \$request){
-  switch_language(\$request->urlParam('lang'));
+Router::get('/lang/{lang}', function(Request $request){
+  switch_language($request->urlParam('lang'));
   return back();
 });
 
@@ -15,6 +15,8 @@ Router::getGroup(['auth'], 'admin', [
   '/admin/posts/create/{post_type}'           => [CMS_AdminController::class, 'post_create_view'],
   '/admin/posts/edit/{post_type}/{post_id}'   => [CMS_AdminController::class, 'post_edit_view'],
   '/admin/posts/{post_type}'                  => [CMS_AdminController::class, 'post_listing'],
+
+  '/admin/blocks'                             => [CMS_AdminController::class, 'blocks_listing'],
 ]);
 
 Router::postGroup(['auth'], [

@@ -189,14 +189,20 @@ class Form {
         }
 
         // Set field error if available
-        if($has_error){
-          $thisField .= isset($fld_val['field_error_wrapper']) 
+        if($has_error && is_string($fld_val['name']) && !empty($fld_val['name'])){
+          $error_msg = isset($fld_val['field_error_wrapper']) 
             ? str_replace('##', error($fld_val['name']), $fld_val['field_error_wrapper'])
             : '<span class="field-error">'.error($fld_val['name']).'</span>';
+          $thisField .= $error_msg;
         }
 
         // Wrap input and label
         $formInnerDOM = '';
+
+        // Render Raw HTML
+        if(isset($fld_val['raw_html'])){
+          $formInnerDOM = $fld_val['raw_html'];
+        }
 
         // Add an element Before field
         if(isset($fld_val['before'])){

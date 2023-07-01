@@ -1,10 +1,62 @@
 .cms-header {
   z-index: 999;
-  padding: 14px 24px;
+  padding: 0 42px;
+  &__container {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+  &__right-content {
+    max-height: 65px;
+    padding: 6px 0;
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    grid-gap: 50px;
+  }
+  &__user-info {
+    position: relative;
+    padding: 0 20px 11px 20px;
+    &:hover {
+      .cms-header__info {
+        display: block;
+      }
+    }
+  }
+  &__avatar {
+    width: 47px;
+    height: 47px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    img {
+      object-fit: cover;
+      max-width: 100%;
+    }
+  }
+  &__info {
+    display: none;
+    position: absolute;
+    padding: 20px;
+    top: 56px;
+    right: 0;
+    background: color(white);
+    box-shadow: $shadow1;
+    p {
+      display: block;
+      padding: 0 0 16px 0;
+      margin: 0;
+      font-size: $font-normal;
+    }
+    a.button {
+      text-align: center;
+      background: rgba(color(danger), 0.8);
+      &:hover {
+        background: color(danger);
+      }
+    }
+  }
   &__language-switch {
-    float: right;
-    width: auto;
-    margin: 0 0 0 auto;
+    padding: 6px 0 14px 0;
     cursor: pointer;
     &:hover {
       .dropdown {
@@ -28,11 +80,14 @@
     }
     .dropdown {
       display: none;
-      background: color(white);
+      position: absolute;
+      max-height: 80vh;
+      overflow-y: auto;
       margin: 14px 0 0;
       padding: 0;
       text-align: left;
       box-shadow: $shadow1;
+      background: color(white);
       li {
         list-style: none;
         a {

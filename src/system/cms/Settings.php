@@ -7,8 +7,8 @@
 
 namespace Ozz\Core\system\cms;
 
-use Ozz\Core\Cms;
 use Ozz\Core\Form;
+use Ozz\Core\Auth;
 
 trait Settings {
   

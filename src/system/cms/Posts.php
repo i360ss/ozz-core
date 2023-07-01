@@ -7,11 +7,9 @@
 
 namespace Ozz\Core\system\cms;
 
-use Ozz\Core\Cms;
-use Ozz\Core\Medoo;
 use Ozz\Core\Form;
-use Ozz\Core\Auth;
 use Ozz\Core\Validate;
+use Ozz\Core\Auth;
 
 trait Posts {
 
@@ -22,7 +20,7 @@ trait Posts {
    * Post count (return the number of posts)
    * @param string $by Group by columns
    */
-  public function cms_post_count($by='post_types', $post_type=null, $lang=APP_LANG) {
+  protected function cms_post_count($by='post_types', $post_type=null, $lang=APP_LANG) {
     $return = [];
     $post_type = is_null($post_type) ? $this->post_type : $post_type;
 
@@ -68,7 +66,7 @@ trait Posts {
    * @param string $post_type
    * @param string $lang Language code
    */
-  public function cms_get_posts($where=[], $post_type=null, $lang=APP_LANG) {
+  protected function cms_get_posts($where=[], $post_type=null, $lang=APP_LANG) {
     $post_type = is_null($post_type) ? $this->post_type : $post_type;
     $where = array_merge([
       'post_type' => $post_type,
@@ -88,6 +86,7 @@ trait Posts {
       'cms_posts.created_at',
       'cms_posts.modified_at',
       'cms_posts.content',
+      'cms_posts.blocks',
       'cms_posts.tags',
       'user.first_name',
       'user.last_name',
@@ -104,7 +103,7 @@ trait Posts {
    * @param array $where SQL where arguments
    * @param string $lang Language code
    */
-  public function cms_get_post_to_edit($post_id, $post_type=null, $where=[], $lang=APP_LANG) {
+  protected function cms_get_post_to_edit($post_id, $post_type=null, $where=[], $lang=APP_LANG) {
     $post_type = is_null($post_type) ? $this->post_type : $post_type;
     $where_1 = [
       'post_id' => $post_id,
@@ -125,6 +124,7 @@ trait Posts {
       'cms_posts.created_at',
       'cms_posts.modified_at',
       'cms_posts.content',
+      'cms_posts.blocks',
       'cms_posts.tags',
       'user.first_name',
       'user.last_name',
@@ -149,6 +149,7 @@ trait Posts {
         'created_at' => false,
         'modified_at' => false,
         'content' => [],
+        'blocks' => [],
         'tags' => '',
       ];
       $post = $empty_post;
@@ -172,16 +173,30 @@ trait Posts {
    */
   protected function cms_store_post($form_data) {
     set_flash('form_data', $form_data);
-    $validate = Validate::check($form_data, $this->post_validate);
 
-    if($validate->pass){
+    $block_data = $this->cms_filter_block_data($form_data); // Filtered block data and add block validation rules
+
+    if(Validate::check($form_data, $this->post_validate)->pass){
       $title = $form_data['title'];
       $slug = $form_data['slug'];
       $status = isset($form_data['post_status']) ? $form_data['post_status'] : 'draft';
       $post_id = $form_data['post_id'];
-      unset($form_data['csrf_token'], $form_data['post_status'], $form_data['title'], $form_data['slug'], $form_data['submit_post'], $form_data['post_id']);
 
-      $post_content = json_encode($form_data);
+      // Prevent these fields from adding into content
+      unset(
+        $form_data['csrf_token'],
+        $form_data['post_status'],
+        $form_data['title'],
+        $form_data['slug'],
+        $form_data['submit_post'],
+        $form_data['post_id']
+      );
+
+      // Post Content (Post type specific fields)
+      $content_field_names = array_column($this->post_config['form']['fields'], 'name');
+      $post_content = json_encode(array_intersect_key($form_data, array_flip($content_field_names)));
+
+      // Save the post
       $post_created = $this->DB()->insert('cms_posts', [
         'lang' => APP_LANG,
         'post_type' => $this->post_type,
@@ -191,6 +206,7 @@ trait Posts {
         'slug' => $slug,
         'post_status' => $status,
         'content' => $post_content,
+        'blocks' => json_encode($block_data),
         'created_at' => time(),
         'modified_at' => time(),
       ]);
@@ -214,20 +230,34 @@ trait Posts {
    */
   protected function cms_update_post($post_id, $form_data) {
     set_flash('form_data', $form_data);
-    $validate = Validate::check($form_data, $this->post_validate);
 
-    if($validate->pass){
+    $block_data = $this->cms_filter_block_data($form_data); // Filtered block data and add block validation rules
+
+    if(Validate::check($form_data, $this->post_validate)->pass){
       $title = $form_data['title'];
       $slug = $form_data['slug'];
       $status = isset($form_data['post_status']) ? $form_data['post_status'] : 'draft';
-      unset($form_data['csrf_token'], $form_data['post_status'], $form_data['title'], $form_data['slug'], $form_data['submit_post']);
 
-      $post_content = json_encode($form_data);
+      // Prevent these fields from adding into content
+      unset(
+        $form_data['csrf_token'],
+        $form_data['post_status'],
+        $form_data['title'],
+        $form_data['slug'],
+        $form_data['submit_post']
+      );
+
+      // Post Content (Post type specific fields)
+      $content_field_names = array_column($this->post_config['form']['fields'], 'name');
+      $post_content = json_encode(array_intersect_key($form_data, array_flip($content_field_names)));
+
+      // Update the post
       $post_updated = $this->DB()->update('cms_posts', [
         'title' => $title,
         'slug' => $slug,
         'post_status' => $status,
         'content' => $post_content,
+        'blocks' => json_encode($block_data),
         'modified_at' => time(),
       ],[
         'id' => $post_id
@@ -251,7 +281,7 @@ trait Posts {
    * @param string $post_type
    * @param array $values Post values if exist
    */
-  public function cms_post_form($form_type='create', $post_type=null, $values=[]) {
+  protected function cms_post_form($form_type='create', $post_type=null, $values=[]) {
     $post_type = is_null($post_type) ? $this->post_type : $post_type;
     $form = $this->cms_post_types[$post_type]['form'];
 
@@ -293,6 +323,15 @@ trait Posts {
       }
     }
 
+    // If flash blocks available
+    if(has_flash('form_data')){
+      $flash_blocks = json_encode($this->cms_filter_block_data(get_flash('form_data')));
+      // dd($flash_blocks);
+      $form['fields'][] = $this->cms_block_editor_field($flash_blocks);
+    } else {
+      $form['fields'][] = isset($values['blocks']) ? $this->cms_block_editor_field($values['blocks']) : $this->cms_block_editor_field();
+    }
+
     // Add Post status checkbox
     $status_checkbox = [
       'name' => 'post_status',
@@ -332,7 +371,7 @@ trait Posts {
    * @param array $where SQL where arguments
    * @param string $lang Language code
    */
-  public function get_post($post_id_slug, $where=[], $lang=APP_LANG) {
+  protected function get_post($post_id_slug, $where=[], $lang=APP_LANG) {
     $where = array_merge([
       'OR' => [
         'id' => $post_id_slug,
@@ -354,6 +393,7 @@ trait Posts {
       'cms_posts.created_at',
       'cms_posts.modified_at',
       'cms_posts.content',
+      'cms_posts.blocks',
       'cms_posts.tags',
       'user.first_name',
       'user.last_name',
