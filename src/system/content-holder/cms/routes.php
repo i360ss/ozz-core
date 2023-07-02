@@ -4,8 +4,8 @@ $route_content = "
 // CMS Routes
 use App\controller\admin\CMS_AdminController;
 
-Router::get('/lang/{lang}', function(Request $request){
-  switch_language($request->urlParam('lang'));
+Router::get('/lang/{lang}', function(Request \$request){
+  switch_language(\$request->urlParam('lang'));
   return back();
 });
 
