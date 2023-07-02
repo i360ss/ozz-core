@@ -24,5 +24,6 @@ Router::postGroup(['auth'], [
   '/admin/posts/update/{post_type}/{post_id}' => [CMS_AdminController::class, 'post_update'],
   '/admin/posts/delete'                       => [CMS_AdminController::class, 'post_delete'],
   '/admin/post/change-status'                 => [CMS_AdminController::class, 'post_change_status'],
+  '/admin/post/duplicate'                     => [CMS_AdminController::class, 'post_duplicate'],
 ]);
 ";

@@ -52,24 +52,34 @@
     <tbody>
       <?php foreach ($posts['listing'] as $key => $value) : ?>
         <tr>
-          <td class="row-number"><?=$key + 1?></td>
+          <td width="120px" class="row-number"><?=$key + 1?></td>
           <td>
             <span class="title"><strong><?=$value['title']?></strong></span><br>
             <span><?=$value['slug']?></span>
           </td>
-          <td>
+          <td width="140px">
             <span class="label <?=$value['post_status']?>">
               <?=ucfirst($value['post_status'])?>
             </span>
           </td>
           <td width="140px"><span class="light-text"><?=date('M d, Y <br> h:i a', $value['created_at'])?></span></td>
           <td width="140px"><span class="light-text"><?=date('M d, Y <br> h:i a', $value['modified_at'])?></span></td>
-          <td><?=$value['first_name'].' '.$value['last_name']?></td>
-          <td class="tr-action" width="130px">
+          <td width="180px"><?=$value['first_name'].' '.$value['last_name']?></td>
+          <td class="tr-action" width="180px">
             <div class="show-on-hover">
               <a href="/admin/posts/edit/<?=$value['post_type']?>/<?=$value['post_id']?>" title="Edit">
                 <span class="icon-button edit"></span>
               </a>
+
+              <?php if($value['post_status'] !== 'trash') : ?>
+                <form action="/admin/post/duplicate" method="post" class="action-form duplicate-form">
+                  <?=CSRF_FIELD?>
+                  <input type="hidden" name="post_id" value="<?=$value['id']?>">
+                  <button type="submit" title="Duplicate">
+                    <span class="icon-button duplicate"></span>
+                  </button>
+                </form>
+              <?php endif; ?>
 
               <?php if($value['post_status'] == 'published') : ?>
                 <form action="/admin/post/change-status" method="post" class="action-form draft-form">

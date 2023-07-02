@@ -146,6 +146,14 @@ class CMS_AdminController extends CMS {
   }
 
 
+  /**
+   * Duplicate post
+   */
+  public function post_duplicate(Request $request) {
+    $this->cms_duplicate_post($request->input('post_id'));
+  }
+
+
   // =============================================
   // Blocks
   // =============================================

@@ -362,6 +362,51 @@ trait Posts {
   }
 
 
+  /**
+   * Duplicate Post
+   */
+  public function cms_duplicate_post($post_id) {
+    $post = $this->DB()->get('cms_posts', [
+      'lang',
+      'post_type',
+      'slug',
+      'title',
+      'content',
+      'blocks',
+      'tags',
+      'post_status',
+    ], [
+      'id' => $post_id
+    ]);
+
+    if(!is_null($post)){
+      $post_created = $this->DB()->insert('cms_posts', [
+        'lang' => $post['lang'],
+        'post_type' => $post['post_type'],
+        'post_id' => random_str(4, 0).time(),
+        'author' => Auth::id(),
+        'title' => $post['title'].'-copy',
+        'slug' => $post['slug'].'-copy',
+        'tags' => $post['tags'],
+        'post_status' => $post['post_status'],
+        'content' => $post['content'],
+        'blocks' => $post['blocks'],
+        'created_at' => time(),
+        'modified_at' => time(),
+      ]);
+
+      if($post_created){
+        remove_flash('form_data');
+        set_error('success', 'Post duplicated successfully!');
+      } else {
+        set_error('error', 'Error on duplicating the post');
+      }
+    }
+
+    return back();
+  }
+
+
   // ========================================================= //
   // Common usage methods
   // ========================================================= //
