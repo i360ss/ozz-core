@@ -5,7 +5,6 @@
  * 
  * @param array $data arguments passed from controller or route
  */
-// dd($data);
 ?>
 {{ title        = "Edit Post" }}
 {{ body_class   = "view-edit-post" }}
@@ -29,24 +28,61 @@
         <div class="post-edit-view__info">
           <h3>Post Info</h3>
           <?php if($form_data['first_name']) :?>
-            <p class="item"><strong>Author:</strong> <br><?=$form_data['first_name'].' '.$form_data['last_name']?></p>
+            <p class="item"><strong>Status:</strong> <span class="label <?=$form_data['post_status']?>"><?=ucfirst($form_data['post_status'])?></span></p>
+          <?php endif; ?>
+
+          <?php if($form_data['first_name']) :?>
+            <p class="item"><strong>Author:</strong> <?=$form_data['first_name'].' '.$form_data['last_name']?></p>
           <?php endif; ?>
 
           <?php if($form_data['created_at']) :?>
-            <p class="item"><strong>Created:</strong> <br><?=date('M d, Y | h:i a', $form_data['created_at'])?></p>
+            <p class="item"><strong>Created:</strong> <?=date('M d, Y | h:i a', $form_data['created_at'])?></p>
           <?php endif; ?>
 
           <?php if($form_data['modified_at']) :?>
-            <p class="item"><strong>Last modified:</strong> <br><?=date('M d, Y | h:i a', $form_data['modified_at'])?></p>
+            <p class="item"><strong>Modified:</strong> <?=date('M d, Y | h:i a', $form_data['modified_at'])?></p>
           <?php endif; ?>
 
-          <p class="item"><strong>Current Language:</strong> <br><?=lang_name($form_data['lang'])?></p>
+          <p class="item"><strong>Language:</strong> <?=lang_name($form_data['lang'])?></p>
 
-          <p class="item"><strong>Translated:</strong> <br>
+          <p class="item available-translations separator"><strong>Available Translations:</strong> <br>
             <?php foreach ($form_data['translated_to'] as $code => $language) : ?>
               <a href="/lang/<?=$code?>" class="button mini light<?=$code == APP_LANG ? ' active' : '';?>"><?=$language?></a>
             <?php endforeach; ?>
           </p>
+
+          <?php if (isset($form_data['id'])) :?>
+            <div class="item language-duplicator separator"><strong>Duplicate to:</strong> <br>
+              <form action="/admin/post/duplicate" method="post" class="ozz-form">
+                <?=CSRF_FIELD?>
+                <input type="hidden" name="post_id" value="<?=$form_data['id']?>">
+                <input type="hidden" name="post_id_lang" value="<?=$form_data['post_id']?>">
+                <div class="inner">
+                  <div class="ozz-form__field">
+                    <select name="language">
+                      <?php foreach ($data['languages'] as $code => $language) : ?>
+                        <?php if($form_data['lang'] !== $code) : ?>
+                          <option value="<?=$code?>"><?=$language?></option>
+                        <?php endif; ?>
+                      <?php endforeach; ?>
+                    </select>
+                  </div>
+                  <button type="submit" title="Duplicate">
+                    <span class="icon-button duplicate"></span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div class="item delete-post separator">
+              <form action="/admin/posts/delete" method="post" class="action-form post-delete-form">
+                <?=CSRF_FIELD?>
+                <input type="hidden" name="post_id" value="<?=$form_data['id']?>">
+                <input type="hidden" name="delete_type" value="<?=$form_data['post_status'] == 'trash' ? 'delete' : 'trash'; ?>">
+                <button type="submit" title="Delete" class="button small danger"><?=$form_data['post_status'] == 'trash' ? 'Delete Post' : 'Move to Trash'; ?></button>
+              </form>
+            </div>
+          <?php endif; ?>
         </div>
       </div>
     </div>

@@ -364,8 +364,11 @@ trait Posts {
 
   /**
    * Duplicate Post
+   * @param string $post_id Post ID (id)
+   * @param string $post_lang_id Language ID (post_id)
+   * @param string $translation_to Language
    */
-  public function cms_duplicate_post($post_id) {
+  public function cms_duplicate_post($post_id, $post_lang_id=null, $translation_to=null) {
     $post = $this->DB()->get('cms_posts', [
       'lang',
       'post_type',
@@ -380,10 +383,24 @@ trait Posts {
     ]);
 
     if(!is_null($post)){
+      if(isset($post_lang_id)){
+        $check = $this->DB()->select('cms_posts', ['id'], [
+          'lang' => isset($translation_to) ? $translation_to : $post['lang'],
+          'post_id' => $post_lang_id
+        ]);
+
+        if(!is_null($check) && count($check) > 0) {
+          // Already have a translation
+          $lang_name = lang_name($translation_to);
+          set_error('success', 'Translated version already available for '.$lang_name.'. Click <a href="/lang/'.$translation_to.'" class="link"><strong>Here</strong></a> to edit');
+          return back();
+        }
+      }
+
       $post_created = $this->DB()->insert('cms_posts', [
-        'lang' => $post['lang'],
+        'lang' => isset($translation_to) ? $translation_to : $post['lang'],
         'post_type' => $post['post_type'],
-        'post_id' => random_str(4, 0).time(),
+        'post_id' => isset($post_lang_id) ? $post_lang_id : random_str(4, 0).time(),
         'author' => Auth::id(),
         'title' => $post['title'].'-copy',
         'slug' => $post['slug'].'-copy',
@@ -397,7 +414,10 @@ trait Posts {
 
       if($post_created){
         remove_flash('form_data');
-        set_error('success', 'Post duplicated successfully!');
+        set_error('success', 'Post duplicated into '.lang_name($translation_to).' successfully!');
+        if(isset($translation_to)) {
+          switch_language($translation_to);
+        }
       } else {
         set_error('error', 'Error on duplicating the post');
       }

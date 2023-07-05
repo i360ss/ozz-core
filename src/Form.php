@@ -250,6 +250,14 @@ class Form {
     // Set input field
     $thisField = '';
     $attrs_only = $args;
+
+    // Validation Attrs
+    if(isset($args['validate'])) {
+      if(str_contains($args['validate'], 'req') || str_contains($args['validate'], 'required')) {
+        $args['label'] .= '<span class="required-star">*</span>';
+      }
+    }
+
     unset(
       $attrs_only['type'],
       $attrs_only['label'],

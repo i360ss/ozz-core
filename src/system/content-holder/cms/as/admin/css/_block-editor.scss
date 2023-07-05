@@ -7,7 +7,7 @@
   grid-gap: 7px;
   background: color(light1);
   padding: 14px;
-  border-radius: 5px;
+  border-radius: $radius1;
   // Block stock
   &__block-picker {
     display: grid;
@@ -24,10 +24,11 @@
       background: color(white);
       list-style: none;
       border: 1px solid rgba(color(primary), 0.5);
-      border-radius: 5px;
+      border-radius: $radius1;
       text-align: left;
       font-size: $font-small-2;
       position: relative;
+      box-shadow: $shadow1;
       cursor: grab;
       &:before {
         @include icon-draggable();
@@ -52,11 +53,11 @@
     padding: 14px;
     border: 1px solid color(gray1);
     border-style: dashed;
-    border-radius: 5px;
+    border-radius: $radius1;
     .missing-block {
       padding: 14px 24px;
       background: rgba(color(danger), 0.1);
-      border-radius: 5px;
+      border-radius: $radius1;
       margin-bottom: 14px;
       p {
         margin: 0;
@@ -74,7 +75,7 @@
     .sortable-ghost {
       background: color(white);
       padding: 14px;
-      border-radius: 5px;
+      border-radius: $radius1;
       margin-bottom: 14px;
       font-size: 18px;
       color: color(primary);
@@ -82,7 +83,8 @@
     }
     .ozz-used-block {
       background: color(white);
-      border-radius: 5px;
+      border-radius: $radius1;
+      box-shadow: $shadow1;
       &:not(:last-child) {
         margin-bottom: 14px;
       }

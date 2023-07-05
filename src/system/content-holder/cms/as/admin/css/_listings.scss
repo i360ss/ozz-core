@@ -12,8 +12,9 @@
       grid-template-columns: 1fr auto;
       background: color(white);
       margin-bottom: 10px;
-      border: 1px solid color(white);
-      border-left: 6px solid rgba(color(primary), 0.3);
+      border: 1px solid transparent;
+      border-left: 6px solid color(primary);
+      box-shadow: $shadow1;
       &:hover {
         border-color: color(primary);
         .listing-s1__title {
@@ -57,6 +58,7 @@
     display: grid;
     grid-template-columns: auto auto;
     align-items: center;
+    box-shadow: $shadow1;
   }
   table {
     border-collapse: separate;
@@ -78,6 +80,7 @@
     tbody {
       tr {
         background: color(white);
+        box-shadow: $shadow1;
         cursor: pointer;
         .row-number {
           padding: 14px;

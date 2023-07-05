@@ -96,12 +96,29 @@ a {
 }
 
 // Forms
+.form,
 .ozz-form {
+  border-radius: $radius1;
+  box-shadow: $shadow1;
+  background: color(white);
+  * {
+    font-size: 15px;
+  }
+  .ozz-form__field {
+    &:first-child {
+      border-radius: 5px 5px 0 0;
+    }
+    &:last-child {
+      padding-bottom: 18px;
+      border-radius: 0 0 $radius1 $radius1;
+    }
+  }
   &__field {
-    background: color(white);
-    padding: 18px;
-    margin-bottom: 6px;
-    border-radius: 6px;
+    // background: color(white);
+    padding: 18px 18px 0;
+    // margin-bottom: 6px;
+    // border-radius: $radius1;
+    // box-shadow: $shadow1;
     label {
       display: inline-block;
       padding-bottom: 8px;
@@ -117,7 +134,8 @@ a {
     textarea,
     input {
       width: 100%;
-      background-color: transparent;
+      padding: 8px;
+      background-color: rgba(color(primary), 0.03);
     }
   }
   &__switch-checkbox {

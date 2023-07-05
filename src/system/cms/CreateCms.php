@@ -19,7 +19,7 @@ class CreateCms {
     global $utils;
     $app_dir = __DIR__.SPC_BACK['core_2'].'app/';
     $mig_dir = __DIR__.SPC_BACK['core_2'].'database/migration/';
-    $assets_dir = __DIR__.SPC_BACK['core_2'].env('app')['PUBLIC_DIR'].'/assets/admin/';
+    $assets_dir = __DIR__.SPC_BACK['core_2'].env('app', 'PUBLIC_DIR').'/assets/admin/';
     $cms_dir = __DIR__.'/../content-holder/cms/';
 
     // Controllers
@@ -33,6 +33,9 @@ class CreateCms {
 
     // Assets files
     $this->copy_directory($cms_dir.'as/admin/', $assets_dir);
+
+    // CMS Routes
+    $this->copy_directory($cms_dir.'cms-route.php', $app_dir);
 
     // Migrations
     $mig_from = $cms_dir.'mg/';
@@ -52,12 +55,6 @@ class CreateCms {
       } else {
         $utils->console_return("Error on creating CMS Config file [ app/cms-config.php ]", 'red');
       }
-    }
-
-    // Copy CMS Routes
-    require $cms_dir.'routes.php';
-    if(file_put_contents($app_dir.'Route.php', $route_content, FILE_APPEND | LOCK_EX)){
-      $utils->console_return("CMS routes added to Route file", 'green');
     }
   }
 

@@ -150,7 +150,11 @@ class CMS_AdminController extends CMS {
    * Duplicate post
    */
   public function post_duplicate(Request $request) {
-    $this->cms_duplicate_post($request->input('post_id'));
+    if(isset($request->input()['post_id_lang']) && isset($request->input()['language'])){
+      $this->cms_duplicate_post($request->input('post_id'), $request->input('post_id_lang'), $request->input('language'));
+    } else {
+      $this->cms_duplicate_post($request->input('post_id'));
+    }
   }
 
 

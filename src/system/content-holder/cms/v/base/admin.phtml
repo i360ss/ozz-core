@@ -22,6 +22,9 @@ $user = (object) Auth::info();
 
     <!-- Main navigation -->
     <nav class="cms-nav">
+      <div class="cms-nav__logo">
+        <img src="<?=ASSETS?>icons/favicon.svg" alt="Ozz CMS">
+      </div>
       <ul data-active-link="<?= $context['url_parts'][2] ?? 'dashboard' ?>">
         <li class="dashboard">
           <a href="/admin" class="dashboard">Dashboard</a>
@@ -29,6 +32,7 @@ $user = (object) Auth::info();
         <li class="posts has-child">
           <a href="/admin/posts" class="posts">Posts</a>
           <ul>
+            <label>Post types</label>
             <li><a href="/admin/posts">All</a></li>
               <?php foreach ($data['post_types'] as $key => $value) : ?>
                 <li><a href="/admin/posts/<?=$key?>"><?=ucfirst($value['label'])?></a></li>
@@ -80,7 +84,7 @@ $user = (object) Auth::info();
                   <span class="light-text">@<?=$user->username?></span>
                 </p>
                 <p><?=$user->email?></p>
-                <a href="<?=AUTH_PATHS['logout']?>" class="button small">Logout</a>
+                <a href="<?=AUTH_PATHS['logout']?>" class="button small danger">Logout</a>
               </div>
             </div>
           </div>
