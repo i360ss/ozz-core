@@ -134,6 +134,8 @@
             background: color(primary);
             &:before {
               background-color: color(primary);
+              background-position-y: -30px !important;
+              opacity: 1;
             }
           }
           > ul {
@@ -147,6 +149,8 @@
           background: color(primary-dark);
           &:before {
             background-color: color(primary-dark);
+            background-position-y: -30px !important;
+            opacity: 1;
           }
         }
       }
@@ -155,7 +159,7 @@
         display: inline-block;
         width: 100%;
         padding: 12px 8px 12px 60px;
-        color: color(light1);
+        color: color(semi-blue);
         font-weight: 600;
         &:before {
           position: absolute;
@@ -163,28 +167,65 @@
           height: 45px;
           left: 0;
           top: 0;
+          opacity: 0.7;
           content: '';
         }
-        &.dashboard::before {
-          @include icon-dashboard('light1');
+        &.dashboard {
+          &:before {
+            @include icon-dashboard;
+          }
+          &:hover {
+            &:before {
+              background-position: 12px -30px;
+            }
+          }
         }
-        &.posts::before {
-          @include icon-posts('light1');
+        &.posts {
+          &:before {
+            @include icon-posts;
+          }
+          &:hover {
+            &:before {
+              background-position: -27px -30px;
+            }
+          }
         }
-        &.blocks::before {
-          @include icon-blocks('light1');
+        &.blocks {
+          &:before {
+            @include icon-blocks;
+          }
+          &:hover {
+            &:before {
+              background-position: -68px -30px;
+            }
+          }
         }
-        &.terms::before {
-          @include icon-terms('light1');
+        &.terms {
+          &:before {
+            @include icon-terms;
+          }
+          &:hover {
+            &:before {
+              background-position: -105px -32px;
+            }
+          }
         }
-        &.settings::before {
-          @include icon-settings('light1');
+        &.settings {
+          &:before {
+            @include icon-settings;
+          }
+          &:hover {
+            &:before {
+              background-position: -142px -31px;
+            }
+          }
         }
         &:hover {
           color: color(white);
           background: color(primary) !important;
           &:before {
             background-color: color(primary) !important;
+            opacity: 1;
           }
         }
       }

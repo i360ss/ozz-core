@@ -126,6 +126,38 @@ function search_in_array($value, $array, $getOnlyKey=false) {
 }
 
 /**
+ * Return all strings from an array
+ */
+function get_all_strings_from_array($arr) {
+  $paths = [];
+  foreach ($arr as $val) {
+    if(is_array($val)){
+      $paths = array_merge($paths, get_all_strings_from_array($val));
+    } elseif (is_string($val)){
+      $paths[] = $val;
+    }
+  }
+
+  return $paths;
+}
+
+/**
+ * Return multidimensional array as a single dimensional array
+ */
+function to_single_dimensional_array($arr) {
+  $paths = [];
+  foreach ($arr as $val) {
+    if(is_array($val)){
+      $paths = array_merge($paths, to_single_dimensional_array($val));
+    } else {
+      $paths[] = $val;
+    }
+  }
+
+  return $paths;
+}
+
+/**
  * Check string is JSON or not
  * @param string @str
  * @return bool

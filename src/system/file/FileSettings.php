@@ -161,12 +161,12 @@ trait FileSettings {
         }
 
         // Rename the Copy (with prefix)
-        $nameSize = '-'.round($newWidth).'x'.round($newHeight);
+        $nameSize = '-'.round($newWidth).'x'.round($newHeight).'.';
         $prifix = isset(self::$settings['prefix']) ? self::$settings['prefix'] : '';
 
         if((isset($copy['rename']) &&  $copy['rename'] !== '')){
           $newName = ($copy['rename']=='rand' || $copy['rename'] == 'random') ? rand(1000, time()) : $copy['rename'];
-          $fileName = $prifix.$newName.$nameSize.'.'.pathinfo($imgName, PATHINFO_EXTENSION);
+          $fileName = $prifix.$newName.$nameSize.pathinfo($imgName, PATHINFO_EXTENSION);
         } else {
           $fileName = $prifix.pathinfo($imgName, PATHINFO_FILENAME).$nameSize.pathinfo($imgName, PATHINFO_EXTENSION);
         }
@@ -206,7 +206,7 @@ trait FileSettings {
         // Copies Response
         if($finalCopy){
           $imgurl = isset($copy['dir']) ? $copy['dir'].$fileName : $fileName;
-          $finalOut['copies']['url'][$key] = 'uploads/'.$imgurl;
+          $finalOut['copies']['url'][$key] = '/uploads/'.$imgurl;
         }
         else{
           $finalOut['copies']['error'] = 1;

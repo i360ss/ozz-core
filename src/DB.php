@@ -14,10 +14,11 @@ trait DB {
 
   private $DBconfig;
   private $db_type;
+  private $db_name;
+  private $db_port;
   private $db_host;
   private $db_user;
   private $db_pass;
-  private $db_base;
   private $db_prefix;
   private $connect = null;
   private $current_connection;
@@ -60,7 +61,8 @@ trait DB {
 
     /**
    * The Database connection method
-   * This will look for a new DB connection first, if it is not available on env.ini it will look for another DB on same server
+   * This will look for a new DB connection first, if it is not available on env.ini it will look for another DB
+   * on same server
    * @param string $db Database key to DB credentials (provided on env.ini) or Database name on same connection
    * @return object Database connection
    */

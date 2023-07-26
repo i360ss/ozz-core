@@ -8,6 +8,7 @@
 namespace Ozz\Core;
 
 use Ozz\Core\Request;
+use Ozz\Core\CMS;
 
 class Form {
 
@@ -56,10 +57,10 @@ class Form {
     // Set up form attributes
     $action     = isset($args['action']) ? $args['action'] : '/';
     $method     = isset($args['method']) ? $args['method'] : 'get';
-    $form_class = isset($args['class']) ? " class=\"${args['class']}\"" : '';
-    $name       = isset($args['name']) ? " name=\"${args['name']}\"" : '';
-    $id         = isset($args['id']) ? " id=\"${args['id']}\"" : '';
-    $enctype    = isset($args['enctype']) ? " enctype=\"${args['enctype']}\"" : '';
+    $form_class = isset($args['class']) ? " class=\"{$args['class']}\"" : '';
+    $name       = isset($args['name']) ? " name=\"{$args['name']}\"" : '';
+    $id         = isset($args['id']) ? " id=\"{$args['id']}\"" : '';
+    $enctype    = isset($args['enctype']) ? " enctype=\"{$args['enctype']}\"" : '';
 
     $formAttributes = ' action="'.$action.'"';
     $formAttributes .= ' method="'.$method.'"';
@@ -70,7 +71,7 @@ class Form {
 
     if(isset($args['attr']) && !empty($args['attr'])){
       foreach ($args['attr'] as $key => $value) {
-        $formAttributes .= " ${key}=\"${value}\"";
+        $formAttributes .= " {$key}=\"{$value}\"";
       }
     }
 
@@ -101,6 +102,14 @@ class Form {
    */
   public static function create($args, $values=[]){
     $request = Request::getInstance();
+
+    if(env('app', 'ENABLE_CMS')) {
+      $cms = new CMS;
+      $args = $cms->cms_related_form_modifies($args);
+
+      // Add CMS Specific Input fields
+      array_push(self::$inputTypes, 'media');
+    }
 
     // Start form
     $form = self::start($args);
@@ -147,28 +156,6 @@ class Form {
                 $fld_val['checked'] = 'checked';
               }
             }
-          } elseif($fld_val['type'] == 'file'){
-            !isset($fld_val['show_image']) ? $fld_val['show_image'] = true : false;
-
-            // Show Images if available
-            if($fld_val['show_image'] !== false){
-              $uploaded_img = '';
-              if(is_array($values[$fld_val['name']])){
-                $uploaded_img = '<div class="uploaded-file">';
-                foreach ($values[$fld_val['name']] as $img) {
-                  $uploaded_img .= '<div class="uploaded-file__single"><img src="'.$img.'" alt="'.$img.'" /></div>';
-                }
-                $uploaded_img .= '</div>';
-              } else {
-                $uploaded_img = '<div class="uploaded-file"><img src="'.$values[$fld_val['name']].'" alt="'.$values[$fld_val['name']].'" /></div>';
-              }
-
-              if(isset($fld_val['before'])){
-                $fld_val['before'] .= $uploaded_img;
-              } else {
-                $fld_val['before'] = $uploaded_img;
-              }
-            }
           } elseif(in_array($fld_val['type'], ['select', 'datalist'])){
             // Assign values to Selections
             $fld_val['selected'] = $values[$fld_val['name']];
@@ -176,9 +163,21 @@ class Form {
             // Assign values to other fields
             $fld_val['value'] = $values[$fld_val['name']];
           }
+
+          // Show/Embed file after the field (Image, video, audio, doc, ect)
+          if(isset($fld_val['view_file']) && $fld_val['view_file'] === true){
+            $uploaded_file_DOM = embed_files_to_dom($values[$fld_val['name']]);
+
+            if(isset($fld_val['after'])){
+              $fld_val['after'] .= $uploaded_file_DOM;
+            } else {
+              $fld_val['after'] = $uploaded_file_DOM;
+            }
+          }
         }
 
-        $eachInputDOM = self::input($fld_val['type'], $fld_val, true);
+        $type = isset($fld_val['type']) ? $fld_val['type'] : 'text';
+        $eachInputDOM = self::input($type, $fld_val, true);
         $thisField = $eachInputDOM['field'];
         $thisLabel = $eachInputDOM['label'];
         $thisNote = $eachInputDOM['note'];
@@ -199,11 +198,6 @@ class Form {
         // Wrap input and label
         $formInnerDOM = '';
 
-        // Render Raw HTML
-        if(isset($fld_val['raw_html'])){
-          $formInnerDOM = $fld_val['raw_html'];
-        }
-
         // Add an element Before field
         if(isset($fld_val['before'])){
           $formInnerDOM .= $fld_val['before'];
@@ -213,6 +207,14 @@ class Form {
           $formInnerDOM .= str_replace('##', "\n".$thisLabel.$thisNote.$thisField."\n", $fld_val['wrapper'])."\n";
         } else {
           $formInnerDOM .= $thisLabel.$thisNote.$thisField;
+        }
+
+        // Render Raw HTML
+        if(isset($fld_val['html'])){
+          $formInnerDOM .= $fld_val['html'];
+        }
+        if(isset($fld_val['raw_html'])){
+          $formInnerDOM .= $fld_val['raw_html'];
         }
 
         // Add an element After field
@@ -243,6 +245,7 @@ class Form {
     return $form;
   }
 
+
   /**
    * Default input field generator
    */
@@ -269,10 +272,12 @@ class Form {
       $attrs_only['note_class'],
       $attrs_only['validate'],
       $attrs_only['media_settings'],
+      $attrs_only['settings'],
       $attrs_only['before'],
       $attrs_only['after'],
       $attrs_only['selected'],
       $attrs_only['field_error_wrapper'],
+      $attrs_only['view_file'],
     );
 
     // Label
@@ -281,12 +286,12 @@ class Form {
     foreach($args as $key => $val) {
       if(strpos($key, 'label_') === 0){
         $attrKey = str_replace('label_', "", $key);
-        $labelAttrs .= " ${attrKey}=\"${val}\"";
+        $labelAttrs .= " {$attrKey}=\"{$val}\"";
         unset($attrs_only[$key]);
       }
     }
 
-    $labelFor = isset($args['id']) ? " for=\"${args['id']}\"" : '';
+    $labelFor = isset($args['id']) ? " for=\"{$args['id']}\"" : '';
     $thisLabel = isset($args['label']) ? '<label'.$labelFor.$labelAttrs.'>'.$args['label'].'</label>'."\n" : '';
 
     // Field Note
@@ -301,8 +306,9 @@ class Form {
       // Input field
       $this_attrs = '';
       foreach ($attrs_only as $ky => $vl) {
-        if(is_string($vl)){
-          $this_attrs .= " ${ky}=\"${vl}\"";
+        if(!is_array($vl)){
+          $vl = is_bool($vl) ? ($vl ? 'true' : 'false') : $vl;
+          $this_attrs .= " {$ky}=\"{$vl}\"";
         }
       }
       $thisField = '<input type="'.$type.'"'.$this_attrs.'>'."\n";
@@ -310,7 +316,10 @@ class Form {
       // Tag input field
       $this_attrs = '';
       foreach ($attrs_only as $ky => $vl) {
-        $this_attrs .= " ${ky}=\"${vl}\"";
+        if(!is_array($vl)){
+          $vl = is_bool($vl) ? ($vl ? 'true' : 'false') : $vl;
+          $this_attrs .= " {$ky}=\"{$vl}\"";
+        }
       }
 
       $thisField = '<'.$type.$this_attrs.'>';
@@ -324,13 +333,19 @@ class Form {
       // Datalist
       if($type == 'datalist'){
         foreach ($attrs_only as $ky => $vl) {
-          $this_attrs .= ($ky !== 'id') ? " ${ky}=\"${vl}\"" : '';
+          if(!is_array($vl)){
+            $vl = is_bool($vl) ? ($vl ? 'true' : 'false') : $vl;
+            $this_attrs .= ($ky !== 'id') ? " {$ky}=\"{$vl}\"" : '';
+          }
         }
-        $optionField .= "<input list=\"${args['id']}\"${this_attrs}>";
+        $optionField .= "<input list=\"{$args['id']}\"{$this_attrs}>";
         $optionField .= '<'.$type.' id="'.$args['id'].'"'.$this_attrs.'>'."\n";
       } else {
         foreach ($attrs_only as $ky => $vl) {
-          $this_attrs .= " ${ky}=\"${vl}\"";
+          if(!is_array($vl)){
+            $vl = is_bool($vl) ? ($vl ? 'true' : 'false') : $vl;
+            $this_attrs .= " {$ky}=\"{$vl}\"";
+          }
         }
         $optionField .= '<'.$type.$this_attrs.'>'."\n";
       }
@@ -371,6 +386,7 @@ class Form {
 
     return $thisLabel.$thisNote.$thisField;
   }
+
 
   /**
    * Return input fields

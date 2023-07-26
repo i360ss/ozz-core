@@ -10,6 +10,7 @@ namespace Ozz\Core\system\cms;
 use Ozz\Core\Form;
 use Ozz\Core\Validate;
 use Ozz\Core\Auth;
+use Ozz\Core\File;
 
 trait Posts {
 
@@ -131,7 +132,7 @@ trait Posts {
     ], $where_1);
 
     if (!is_null($post)) {
-      $post = array_merge($post, json_decode($post['content'], true));
+      $post = array_merge($post, is_array(json_decode($post['content'], true)) ? json_decode($post['content'], true) : []);
     } else {
       $where_2 = [
         'post_id' => $post_id,
@@ -231,7 +232,8 @@ trait Posts {
   protected function cms_update_post($post_id, $form_data) {
     set_flash('form_data', $form_data);
 
-    $block_data = $this->cms_filter_block_data($form_data); // Filtered block data and add block validation rules
+    // Filtered block data and add block validation rules
+    $block_data = $this->cms_filter_block_data($form_data);
 
     if(Validate::check($form_data, $this->post_validate)->pass){
       $title = $form_data['title'];
@@ -465,7 +467,7 @@ trait Posts {
     ], $where);
 
     if(!is_null($post)){
-      $post = array_merge($post, json_decode($post['content'], true));
+      $post = array_merge($post, is_array(json_decode($post['content'], true)) ? json_decode($post['content'], true) : []);
     }
 
     return $post;

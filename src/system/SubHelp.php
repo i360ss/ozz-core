@@ -18,26 +18,34 @@ class SubHelp {
     $debug = debug_backtrace();
     $callingFile = $debug[0]['file'];
     $callingFileLine = $debug[0]['line'];
-    
+
+    ini_set('xdebug.var_display_max_depth', 50);
+    ini_set('xdebug.var_display_max_children', 256);
+    ini_set('xdebug.var_display_max_data', 1024);
+
     ob_start();
     var_dump($data);
     $c = ob_get_contents();
     ob_end_clean();
-    
+
     $c = preg_replace("/\r\n|\r/", "\n", $c);
     $c = str_replace("]=>\n", '] = ', $c);
     $c = preg_replace('/= {2,}/', '= ', $c);
     $c = preg_replace("/\[\"(.*?)\"\] = /i", "[$1] = ", $c);
-    $c = preg_replace('/  /', "    ", $c);
+    $c = preg_replace('/  /', "  ", $c);
     $c = preg_replace("/\"\"(.*?)\"/i", "\"$1\"", $c);
     $c = preg_replace("/(int|float)\(([0-9\.]+)\)/i", "$1() <span class=\"number\">$2</span>", $c);
-    
-    // Syntax Highlighting of Strings. This seems cryptic, but it will also allow non-terminated strings to get parsed.
+    $c = preg_replace("/\(length=(\d+)\)/", "<span class=\"length\">(ln:$1)</span>", $c);
+    $c = preg_replace("/\(size=(\d+)\)/", "<span class=\"size\">(sz:$1)</span>", $c);
+    $c = str_replace("<b>array</b>", "<b class=\"low-opc\">array</b>", $c);
+    $c = str_replace("<b>object</b>", "<b class=\"low-opc\">object</b>", $c);
+
+    // Syntax Highlighting of Strings
     $c = preg_replace("/(\[[\w ]+\] = string\([0-9]+\) )\"(.*?)/sim", "$1<span class=\"string\">\"", $c);
     $c = preg_replace("/(\"\n{1,})( {0,}\})/sim", "$1</span>$2", $c);
     $c = preg_replace("/(\"\n{1,})( {0,}\[)/sim", "$1</span>$2", $c);
     $c = preg_replace("/(string\([0-9]+\) )\"(.*?)\"\n/sim", "$1<span class=\"string\">\"$2\"</span>\n", $c);
-    
+
     $regex = array(
       // Numbers
       'numbers' => array('/(^|] = )(array|float|int|string|resource|object\(.*\)|\&amp;object\(.*\))\(([0-9\.]+)\)/i', '$1$2(<span class="number">$3</span>)'),
@@ -51,11 +59,11 @@ class SubHelp {
       // Function
       'function' => array('/(^|] = )(array|string|int|float|bool|resource|object|\&amp;object)\(/i', '$1<span class="function">$2</span>('),
     );
-    
+
     foreach ($regex as $x) {
       $c = preg_replace($x[0], $x[1], $c);
     }
-    
+
     $style = '
     /* outside div - it will float and match the screen */
     .dumpr {
@@ -86,24 +94,30 @@ class SubHelp {
     .dumpr span.function {color: #0000c4;}
     .dumpr span.object {color: #ac00ac;}
     .dumpr span.type {color: #0072c4;}
+    .dumpr span.length, .dumpr span.size {color: rgba(0,0,0,0.3);font-size: 12px; opacity: 0;}
+    .dumpr span.length:hover, .dumpr span.size:hover {opacity: 1;}
+    .dumpr b.low-opc {color: #1b8d2b;font-size: 12px;}
+    .dumpr b.low-opc:hover {cursor: default;}
+    .dumpr b.low-opc:hover + i span.size {opacity:1;}
+    .dumpr font:hover + i span.length {opacity:1;}
     ';
-    
+
     $style = preg_replace("/ {2,}/", "", $style);
     $style = preg_replace("/\t|\r\n|\r|\n/", "", $style);
     $style = preg_replace("/\/\*.*?\*\//i", '', $style);
     $style = str_replace('}', '} ', $style);
     $style = str_replace(' {', '{', $style);
     $style = trim($style);
-      
+
     $c = trim($c);
     $c = preg_replace("/\n<\/span>/", "</span>", $c);
-    
+
     if ($label == ''){
       $line1 = '';
     } else {
       $line1 = "<strong>$label</strong> \n";
     }
-    
+
     $lineInfo = $noLine ? '' : "$line1 $callingFile : $callingFileLine \n";
 
     $out = "\n<!-- Dumpr Begin -->\n".

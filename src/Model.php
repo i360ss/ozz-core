@@ -11,6 +11,8 @@ class Model {
 
   use DB;
 
+  private $table;
+
   function __construct() {
     $this->table = $this->getTable();
   }

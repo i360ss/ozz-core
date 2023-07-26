@@ -27,12 +27,21 @@ class File {
   /**
    * Upload Files
    * @param string $typ file Type (image, document, font, audio, video)
-   * @param $files Single/Multiple files to Upload (By default it will get from $_FILES)
-   * @param string $to Upload to this directory
-   * @param array $settings File upload settings
+   * @param array $files Single/Multiple files to Upload (By default it will get from $_FILES)
+   * @param mixed $settings File upload settings or just upload path
    */
-  public static function upload(string $typ, $files=null, $to=null, $settings=false, $customExts=null){
+  public static function upload(string $typ, $files=null, $settings=false, $customExts=null){
     self::$errors = new Lang;
+
+    // Set path
+    $to = '';
+    if($settings !== false){
+      if(is_array($settings)) {
+        $to = isset($settings['path']) ? $settings['path'].'/' : '';
+      } elseif(is_string($settings)) {
+        $to = $settings; // In this case, Settings is just the path to upload
+      }
+    }
 
     // Validator
     self::$validator = CONFIG['DEFAULT_FILE_VALIDATION'];
@@ -50,19 +59,18 @@ class File {
     if(isset($customExts) && is_array($customExts)){
       $validFormats = $customExts[1];
       self::$maxSize = $customExts[0];
-    }
-    elseif(isset($customExts) && is_string($customExts)){
+    } elseif(isset($customExts) && is_string($customExts)){
       $validFormats = $customExts;
     }
 
     self::$formats = array_map('trim', explode('|', $validFormats));
 
     // Upload Directory
-    self::$moveTo = $to !== null ? UPLOAD_TO.$to : UPLOAD_TO;
+    self::$moveTo = $to !== null ? UPLOAD_TO.$to.DIRECTORY_SEPARATOR : UPLOAD_TO;
     self::$moveTo = preg_replace("/\/+/", "/", self::$moveTo);
 
-    self::$uploadedTo = $to !== null ? UPLOAD_DIR_PUBLIC.$to : UPLOAD_DIR_PUBLIC;
-    self::$uploadedTo = preg_replace("/\/+/", "/", self::$uploadedTo);
+    self::$uploadedTo = $to !== null ? UPLOAD_DIR_PUBLIC.$to.'/' : UPLOAD_DIR_PUBLIC;
+    self::$uploadedTo = '/'.preg_replace("/\/+/", "/", self::$uploadedTo);
 
     // Current File(s)
     self::$thisFiles = $files !== null ? $files : $_FILES;
@@ -209,7 +217,7 @@ class File {
                 if(file_exists(self::$moveTo.basename($val))){
                   $response['error'][$k] = 1;
                   $response['message'][$k] = self::$errors->error('file_already_exist');
-                  $response['uploaded'][$k] = null;
+                  $response['uploaded'][$k] = self::$uploadedTo.basename($val);
                 }
                 elseif (move_uploaded_file(self::$thisFiles['tmp_name'][$k], self::$moveTo.basename($val))) {
                   $response['error'][$k] = 0;
@@ -293,6 +301,7 @@ class File {
             if(is_dir(self::$moveTo)){
               if(file_exists(self::$moveTo.basename(self::$thisFiles['name']))){
                 $response['message'] = self::$errors->error('file_already_exist');
+                $response['uploaded'] = self::$uploadedTo.basename(self::$thisFiles['name']);
               }
               elseif (move_uploaded_file(self::$thisFiles['tmp_name'], self::$moveTo.basename(self::$thisFiles['name']))) {
                 $response = [
@@ -350,6 +359,7 @@ class File {
               if(is_dir(self::$moveTo)){
                 if(file_exists(self::$moveTo.basename($val))){
                   $response['message'][$k] = self::$errors->error('file_already_exist');
+                  $response['uploaded'][$k] = self::$uploadedTo.basename($val);
                 }
                 elseif (move_uploaded_file(self::$thisFiles['tmp_name'][$k], self::$moveTo.basename($val))) {
                   $response['error'][$k] = 0;
@@ -387,7 +397,7 @@ class File {
               if(is_dir(self::$moveTo)){
                 if(file_exists(self::$moveTo.basename(self::$thisFiles['name']))){
                   $response['message'] = self::$errors->error('file_already_exist');
-                  $response['uploaded'] = null;
+                  $response['uploaded'] = self::$uploadedTo.basename(self::$thisFiles['name']);
                 }
                 elseif (move_uploaded_file(self::$thisFiles['tmp_name'], self::$moveTo.basename(self::$thisFiles['name']))) {
                   $response = [
@@ -443,6 +453,7 @@ class File {
               if(is_dir(self::$moveTo)){
                 if(file_exists(self::$moveTo.basename($val))){
                   $response['message'][$k] = self::$errors->error('file_already_exist');
+                  $response['uploaded'][$k] = self::$uploadedTo.basename($val);
                 }
                 elseif (move_uploaded_file(self::$thisFiles['tmp_name'][$k], self::$moveTo.basename($val))) {
                   $response['error'][$k] = 0;
@@ -480,6 +491,7 @@ class File {
               if(is_dir(self::$moveTo)){
                 if(file_exists(self::$moveTo.basename(self::$thisFiles['name']))){
                   $response['message'] = self::$errors->error('file_already_exist');
+                  $response['uploaded'] = self::$uploadedTo.basename(self::$thisFiles['name']);
                 }
                 elseif (move_uploaded_file(self::$thisFiles['tmp_name'], self::$moveTo.basename(self::$thisFiles['name']))) {
                   $response = [

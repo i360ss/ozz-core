@@ -24,6 +24,7 @@ if(!function_exists('ozz_func_loaded')) {
     }
   }
 
+  require __DIR__.'/functions/f-utils.php'; // Utilities
   require __DIR__.'/functions/f-escaping.php'; // Escaping
   require __DIR__.'/functions/f-content-manipulation.php'; // Var, Array, JSON, String, ect Manipulation
   require __DIR__.'/functions/f-router.php'; // Router
@@ -34,6 +35,7 @@ if(!function_exists('ozz_func_loaded')) {
   require __DIR__.'/functions/f-cache.php'; // Cache
   require __DIR__.'/functions/f-auth.php'; // Auth
   require __DIR__.'/functions/f-debug-bar.php'; // Debug bar
+  require __DIR__.'/functions/f-dom-support.php'; // Dom support
 
 
   function ozz_func_loaded() {
