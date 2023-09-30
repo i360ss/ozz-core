@@ -91,6 +91,22 @@ function find_in_array($key, $array) {
 }
 
 /**
+ * Find Value in array by provided keys (keys as tree)
+ * @param array $keys Keys tree to find
+ * @param array $value The actual array to find on
+ */
+function find_in_array_by_key_tree($keys, $value) {
+  foreach ($keys as $key) {
+    if (isset($value[$key])) {
+      $value = $value[$key];
+    } else {
+      return false;
+    }
+  }
+  return $value;
+}
+
+/**
  * Get sub-classes of a class
  * @param object $parent
  */
@@ -297,4 +313,15 @@ function _random_str($n=10, $type=null) {
  */
 function clear_multi_slashes($str) {
   return preg_replace("/\/+/", "/", $str);
+}
+
+/**
+ * Character limit on a string
+ * @param string $str String to limit
+ * @param int $max Max characters
+ * @param string $postfix Postfix
+ * @param string $prefix Prefix
+ */
+function char_limit($str, $max, $postfix='', $prefix='') {
+  return strlen($str) > $max ? $prefix.substr($str, 0, $max).$postfix : $str;
 }

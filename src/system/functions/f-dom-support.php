@@ -1,5 +1,4 @@
 <?php
-
 # ----------------------------------------------------
 // HTML DOM support
 # ----------------------------------------------------
@@ -23,50 +22,47 @@ function embed_files_to_dom($value, $thumb_only=false) {
     $file_type = get_file_type_by_url($path);
 
     $viewDOM .= '<div class="ozz-embed-file__single '.$file_type.'">';
-    if($file_type == 'image' || $file_type == 'svg') {
-      // Embed Image
+    if($file_type == 'image') {
       $viewDOM .= '<img src="'.$path.'">';
-    } elseif($file_type == 'video') {
-      
-    } elseif($file_type == 'youtube') {
-      
-    } elseif($file_type == 'vimeo') {
-      
-    } elseif($file_type == 'audio' || $file_type == 'mp3') {
-      
-    } elseif($file_type == 'pdf') {
-      
-    } elseif($file_type == 'word') {
-      
-    } elseif($file_type == 'excel') {
-      
-    } elseif($file_type == 'powerpoint') {
-      
-    } elseif($file_type == 'text') {
-      
-    } elseif($file_type == 'zip') {
-      
-    } elseif($file_type == 'json') {
-      
-    } elseif($file_type == 'binary') {
-      
-    } elseif($file_type == 'gzip') {
-      
-    } elseif($file_type == 'tar') {
-      
-    } elseif($file_type == 'odt') {
-      
-    } elseif($file_type == 'ods') {
-      
-    } elseif($file_type == 'pptx') {
-      
-    } elseif($file_type == 'swf') {
-      
-    } elseif($file_type == 'unknown') {
+    }
+    elseif ($file_type == 'svg') {
+      $viewDOM .= '<object type="image/svg+xml" data="'.$path.'">
+        <img src="'.$path.'" />
+      </object>';
+    }
+    elseif($file_type == 'video') {
+      $viewDOM .= '<video width="400" height="250" controls>
+        <source src="'.$path.'" type="video/mp4">
+        <source src="'.$path.'" type="video/ogg">
+      </video>';
+    }
+    elseif($file_type == 'youtube') {
+      $viewDOM .= '<iframe width="400" height="250" src="'.$path.'"></iframe>';
+    }
+    elseif($file_type == 'vimeo') {
+      $viewDOM .= '<iframe src="'.$path.'" width="400" height="250" frameborder="0" picture-in-picture" allowfullscreen></iframe>';
+    }
+    elseif($file_type == 'audio' || $file_type == 'mp3') {
+      $viewDOM .= '<audio controls>
+        <source src="'.$path.'" type="audio/ogg">
+        <source src="'.$path.'" type="audio/mpeg">
+      </audio>';
+    }
+    elseif($file_type == 'pdf') {
+      $viewDOM .= '<object data="'.$path.'" type="application/pdf" width="100%" height="500px">
+        <p>Unable to display PDF file. <a href="'.$path.'">Download</a> instead.</p>
+      </object>';
+    }
+    elseif(in_array($file_type, ['word', 'excel', 'powerpoint', 'text', 'pptx', 'odt', 'ods', 'zip', 'tar', 'gzip', 'swf', 'json'])) {
+      $viewDOM .= '<a href="'.$path.'" target="_blank">'.$path.'</a>';
+    }
+    elseif($file_type == 'unknown') {
       // Unknown file type
-    } elseif($file_type == 'file_not_found') {
+      $viewDOM .= '<span class="unknown-file-type"></span>';
+    }
+    elseif($file_type == 'file_not_found') {
       // File not found
-      
+      $viewDOM .= '<span class="file-not-found"></span>';
     }
     $viewDOM .= '</div>';
   }

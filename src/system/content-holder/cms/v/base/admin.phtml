@@ -45,6 +45,9 @@ $user = (object) Auth::info();
         <li class="terms">
           <a href="/admin/terms" class="terms">Terms</a>
         </li>
+        <li class="media">
+          <a href="/admin/media" class="media">Media</a>
+        </li>
         <li class="settings">
           <a href="/admin/settings" class="settings">Settings</a>
         </li>
@@ -62,6 +65,9 @@ $user = (object) Auth::info();
           </div>
 
           <div class="cms-header__right-content">
+            <!-- Specific action injection -->
+            <div class="cms-header__action-injection"></div>
+
             <!-- Language switcher -->
             <div class="cms-header__language-switch">
               <span class="current-lang"><?=APP_LANG?></span>

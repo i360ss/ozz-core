@@ -1,3 +1,10 @@
+// Media query
+@mixin screen ($size) {
+  @media screen and ( min-width: map-get($breakpoints, $size) ) {
+    @content;
+  }
+}
+
 // Icons
 @mixin icon {
   background-repeat: no-repeat;
@@ -19,6 +26,10 @@
   @include icon-sprite;
   background-position: -68px 10px;
 }
+@mixin icon-media {
+  @include icon-sprite;
+  background-position: -180px 10px;
+}
 @mixin icon-terms {
   @include icon-sprite;
   background-position: -105px 8px;
@@ -26,6 +37,22 @@
 @mixin icon-settings {
   @include icon-sprite;
   background-position: -142px 9px;
+}
+@mixin icon-home {
+  @include icon-sprite;
+  background-position: 0 -82px;
+}
+@mixin icon-folder {
+  @include icon-sprite;
+  background-position: -84px -214px;
+  background-size: 580px;
+  @include screen(xl) {
+    background-position: -74px -204px;
+  }
+  @include screen(xxl) {
+    background-position: -95px -244px;
+    background-size: 730px;
+  }
 }
 @mixin icon-delete($color: danger) {
   @include icon;

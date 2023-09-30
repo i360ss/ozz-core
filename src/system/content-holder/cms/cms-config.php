@@ -8,11 +8,23 @@ return [
     'pages' => [
       'label' => 'Pages',
       'note' => 'This post type can be used to create pages',
+      'fields' => [
+        [
+          'name' => 'test_image',
+          'type' => 'media',
+          'label' => 'Primary Image',
+        ],
+        [
+          'name' => 'test_name',
+          'type' => 'text',
+          'label' => 'Test Name',
+        ]
+      ]
     ],
     'news' => [
       'label' => 'News',
       'singular_label' => 'News',
-      'note' => 'This is a default post type provided by ozz CMS. You can overwrite or remove this post type if not required.',
+      'note' => 'This is a default post type. You can overwrite or remove this.',
       'fields' => [
         [
           'name' => 'description',
@@ -45,7 +57,7 @@ return [
     'blog' => [
       'label' => 'Blogs',
       'singular_label' => 'Blog',
-      'note' => 'This is a default post type provided by ozz CMS. You can overwrite or remove this post type if not required.',
+      'note' => 'This is a default post type. You can overwrite or remove this.',
       'form' => [
         'fields' => [
           [
@@ -69,6 +81,10 @@ return [
       'template' => 'view/blocks/home-hero',
       'form' => [
         'fields' => [
+          [
+            'name' => 'hero_image',
+            'type' => 'media',
+          ],
           [
             'name' => 'title',
             'type' => 'text',
@@ -103,6 +119,11 @@ return [
             'label' => 'CTA description'
           ],
           [
+            'name' => 'test_image2',
+            'type' => 'media',
+            'label' => 'Primary Image'
+          ],
+          [
             'name' => 'cta_link_url',
             'type' => 'text',
             'label' => 'CTA Link (URL)'
@@ -125,7 +146,8 @@ return [
           [
             'name' => 'title',
             'type' => 'text',
-            'label' => 'Title'
+            'label' => 'Title',
+            'note' => 'Vision title text here'
           ],
           [
             'name' => 'description',
@@ -135,7 +157,6 @@ return [
         ]
       ]
     ]
-
   ],
   'languages' => [
     'en' => 'English',

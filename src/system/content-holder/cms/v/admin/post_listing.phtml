@@ -17,7 +17,8 @@
   </div>
 
   <div class="listing-s2__header">
-    <div class="listing-s2__filter" data-active-tab="<?=isset($context['query']['status']) ? $context['query']['status'] : '';?>">
+    <div class="listing-s2__filter" 
+      data-active-tab="<?=isset($context['query']['status']) ? $context['query']['status'] : '';?>">
       <a class="button mini light tab-button all" href="/admin/posts/<?=$post_type?>">
         <span>All <strong><?=$posts['count']['all']?></strong></span>
       </a>

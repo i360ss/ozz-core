@@ -19,6 +19,8 @@ class SubHelp {
     $callingFile = $debug[0]['file'];
     $callingFileLine = $debug[0]['line'];
 
+    // var_dump($data); // temp
+
     ini_set('xdebug.var_display_max_depth', 50);
     ini_set('xdebug.var_display_max_children', 256);
     ini_set('xdebug.var_display_max_data', 1024);

@@ -49,9 +49,7 @@ class CMS {
     $request = Request::getInstance();
 
     $this->cms_config = require __DIR__.SPC_BACK['core'].'app/cms-config.php';
-    $this->cms_config['languages'] = array_merge(['en' => 'English'], isset($this->cms_config['languages'])
-      ? $this->cms_config['languages']
-      : []);
+    $this->cms_config['languages'] = array_merge(['en' => 'English'], isset($this->cms_config['languages']) ? $this->cms_config['languages'] : []);
     $this->cms_post_types = $this->cms_config['post_types'];
 
     // Config post types to prevent some unwanted errors (This will allow to use 'form' or 'fields' directly)

@@ -1,0 +1,84 @@
+<?php
+/**
+ * View Name: media
+ * Path: view/admin/media
+ * --
+ * @param array $data arguments passed from controller or route
+ */
+?>
+{{ title        = "Media" }}
+{{ body_class   = "view-media" }}
+
+{{ content }}
+  <h1 class="heading">Media Manager</h1>
+
+  <div class="ozz-media-manager">
+    <div class="ozz-media-manager__breadcrumb">
+      <a href="/admin/media" class="ozz-media-manager__breadcrumb-home"><span></span></a>
+      <?php
+      $current_dir = '';
+      foreach ($media_directory_tree as $key => $dir) :
+        $separator = $key !== 0 && $key !== count($media_directory_tree) ? '/' : '';
+        $current_dir .= $separator.$dir;
+      ?>
+        <a href="/admin/media?dir=<?=urlencode($current_dir)?>" title="<?=$dir?>">
+          <?= char_limit($dir, 10, '..') ?>
+        </a> /
+      <?php endforeach; ?>
+    </div>
+
+    <div class="ozz-media-manager__actions">
+      <!-- File Crud options and other file manager options should go here -->
+      <!-- <div class="ozz-media-manager__actions-action"></div> -->
+    </div>
+
+    <div class="ozz-media-manager__media-wrapper">
+      <div class="ozz-media-manager__media">
+        <?php if(is_array($media_items) && count($media_items) > 0) : ?>
+          <div class="ozz-media-manager__items">
+            <?php
+              foreach ($media_items as $key => $item) :
+                if ($item['type'] == 'file') :
+              ?>
+                <div class="ozz-media-manager__item media-file" data-fileInfo='<?=json_encode($item, true)?>'>
+                  <div class="ozz-media-manager__item-file">
+                    <div class="ozz-media-manager__item-thumbnail">
+                      <?php if($item['format'] == 'image') :?>
+                        <img src="/<?=$item['url'] ?>" alt="<?=$item['name']?>" width="150px" />
+                      <?php elseif($item['format'] == 'svg') :?>
+                        <object type="image/svg+xml" data="/<?=$item['url'] ?>">
+                          <img src="/<?=$item['url'] ?>" alt="<?=$item['name'] ?>" />
+                        </object>
+                      <?php else : ?>
+                        <div class="icon <?=$item['format']?>">
+                          <strong><?=$item['format']?></strong>
+                          <span class="name"><?=$item['name']?></span>
+                        </div>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+                </div>
+              <?php else: ?>
+                <div class="ozz-media-manager__item media-folder">
+                  <a href="?dir=<?=urlencode($item['url'])?>"
+                    class="ozz-media-manager__item-folder" title="<?=$item['name']?>">
+                    <span class="ozz-media-manager__item-name"><?= char_limit($item['name'], 15, '..') ?></span>
+                  </a>
+                </div>
+              <?php
+              endif;
+              endforeach;
+              ?>
+          </div>
+        <?php elseif(!$media_items) : ?>
+          <div class="listing-s2__empty">
+            <p>Empty</p>
+          </div>
+        <?php endif; ?>
+      </div>
+
+      <!-- File viewer -->
+      <div class="ozz-media-manager__viewer" id="ozz_media_viewer"></div>
+    </div>
+  </div>
+{{ content-end }}

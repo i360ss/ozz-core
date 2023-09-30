@@ -60,6 +60,11 @@
     align-items: center;
     box-shadow: $shadow1;
   }
+  &__filter {
+    .tab-button {
+      margin-right: 5px;
+    }
+  }
   table {
     border-collapse: separate;
     border-spacing: 0 2px;

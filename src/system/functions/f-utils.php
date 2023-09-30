@@ -20,8 +20,12 @@ function is_absolute_url($url) {
 function get_file_type_by_url($url) {
   $type = 'unknown';
 
-  if(empty($url)) {
+  if (empty($url)) {
     return $type;
+  }
+
+  if (strpos($url, BASE_URL) !== false) {
+    $url = str_replace(BASE_URL, '', $url);
   }
 
   if (strpos($url, 'youtube.com') !== false || strpos($url, 'youtu.be') !== false) {
@@ -39,6 +43,7 @@ function get_file_type_by_url($url) {
     $contentType = $fileInfo->buffer(file_get_contents($url));
     if($contentType){
       $type = match (true) {
+        (strpos($contentType, 'image/svg+xml') === 0) => 'svg',
         (strpos($contentType, 'image/') === 0) => 'image',
         (strpos($contentType, 'video/') === 0) => 'video',
         (strpos($contentType, 'audio/') === 0) => 'audio',
@@ -58,11 +63,79 @@ function get_file_type_by_url($url) {
         (strpos($contentType, 'application/vnd.oasis.opendocument.spreadsheet') === 0) => 'ods',
         (strpos($contentType, 'application/vnd.openxmlformats-officedocument.presentationml.slideshow') === 0) => 'pptx',
         (strpos($contentType, 'application/vnd.adobe.flash-movie') === 0) => 'swf',
-        (strpos($contentType, 'image/svg+xml') === 0) => 'svg',
         default => 'unknown',
       };
     }
   }
 
   return $type;
+}
+
+/**
+ * Get All Items paths inside a directory as array
+ * @param string $dir Directory to scan
+ */
+function get_directory_content($dir, $nested=true) {
+  $result = [];
+  $contents = scandir($dir);
+  foreach ($contents as $item) {
+    if($item === '.' || $item === '..'){
+      continue;
+    }
+    $itemPath = $dir . DIRECTORY_SEPARATOR . $item;
+    if(is_dir($itemPath)){
+      $result[$item] = $nested ? get_directory_content($itemPath) : [];
+    } else {
+      $result[] = $item;
+    }
+  }
+
+  return $result;
+}
+
+/**
+ * Size Units (Add units to bytes)
+ * @param int $bytes
+ */
+function format_size_units($bytes) {
+  $units = ['B', 'KB', 'MB', 'GB'];
+  $exp = (int) floor(log($bytes, 1024)) ?: 0;
+  return round($bytes / (1024 ** $exp), 2) . ' ' . $units[$exp];
+}
+
+/**
+ * Convert youtube URL to embed URL
+ * @param string $url
+ */
+function youtube_embed_url($inputURL) {
+  if (strpos($inputURL, 'youtube.com') !== false) {
+    $query = parse_url($inputURL, PHP_URL_QUERY);
+    parse_str($query, $params);
+    if (isset($params['v'])) {
+      $videoID = $params['v'];
+    } else {
+      return "Invalid YouTube URL";
+    }
+  } elseif (strpos($inputURL, 'youtu.be') !== false) {
+    $videoID = substr($inputURL, strrpos($inputURL, '/') + 1);
+  } elseif (strpos($inputURL, 'embed') !== false) {
+    return $inputURL;
+  } else {
+    return "Invalid YouTube URL";
+  }
+
+  return "https://www.youtube.com/embed/$videoID";
+}
+
+/**
+ * Vimeo embed URL
+ * @param string $url
+ */
+function vimeo_embed_url($vimeoURL) {
+  if (strpos($vimeoURL, 'vimeo.com') === false) {
+    return "Invalid Vimeo URL";
+  }
+  $videoID = substr($vimeoURL, strrpos($vimeoURL, '/') + 1);
+
+  return "https://player.vimeo.com/video/$videoID";
 }

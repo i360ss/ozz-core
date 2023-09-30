@@ -28,7 +28,11 @@
         <div class="post-edit-view__info">
           <h3>Post Info</h3>
           <?php if($form_data['first_name']) :?>
-            <p class="item"><strong>Status:</strong> <span class="label <?=$form_data['post_status']?>"><?=ucfirst($form_data['post_status'])?></span></p>
+            <p class="item"><strong>Status:</strong>&nbsp;
+              <span class="label <?=$form_data['post_status']?>">
+                <?=ucfirst($form_data['post_status'])?>
+              </span>
+            </p>
           <?php endif; ?>
 
           <?php if($form_data['first_name']) :?>
@@ -47,7 +51,9 @@
 
           <p class="item available-translations separator"><strong>Available Translations:</strong> <br>
             <?php foreach ($form_data['translated_to'] as $code => $language) : ?>
-              <a href="/lang/<?=$code?>" class="button mini light<?=$code == APP_LANG ? ' active' : '';?>"><?=$language?></a>
+              <a href="/lang/<?=$code?>" class="button mini light<?=$code == APP_LANG ? ' active' : '';?>">
+                <?=$language?>
+              </a>
             <?php endforeach; ?>
           </p>
 

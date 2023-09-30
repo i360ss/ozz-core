@@ -61,8 +61,7 @@ trait DB {
 
     /**
    * The Database connection method
-   * This will look for a new DB connection first, if it is not available on env.ini it will look for another DB
-   * on same server
+   * This will look for a new DB connection first, if it is not available on env.ini it will look for another DB on same server
    * @param string $db Database key to DB credentials (provided on env.ini) or Database name on same connection
    * @return object Database connection
    */

@@ -4,12 +4,12 @@ namespace App\controller\admin;
 use Ozz\Core\Request;
 use Ozz\Core\CMS;
 
-class CMS_AdminController extends CMS {
+class CMSAdminController extends CMS {
 
   /**
    * This is the Ozz micro CMS Controller
    * You have access to following properties and methods to customize your CMS
-   * 
+   * --
    * # Properties
    * $this->data   ------------------- Data can be used inside the CMS view files
    * $this->cms_config   ------------- Complete output of app/cms-config.php
@@ -18,17 +18,22 @@ class CMS_AdminController extends CMS {
    * $this->post_type  --------------- Current post type
    * $this->post_config  ------------- Current post type's settings
    * $this->post_labels  ------------- Post labels
-   * 
+   * --
    * # Methods (CMS specific methods)
-   * $this->cms_get_posts() ---------- Returns all posts (params: post type. language) default: current post type and current language
-   * $this->cms_get_post_to_edit() --- Return single post (params: post ID (post_id), where:optional (sql where), language:default(Current language))
-   * $this->cms_post_form() ---------- Returns the generated form for post create/update (params: form, values) default: current post's form and empty array for values
-   * $this->cms_post_count() --------- Return post count (params: By (post_type or post_status), post type default:current post type, Language default: current language )
+   * $this->cms_get_posts() ---------- Returns all posts (params: post type. language) default: current post type
+   *                                   and current language
+   * $this->cms_get_post_to_edit() --- Return single post (params: post ID (post_id), where:optional (sql where),
+   *                                   language:default(Current language))
+   * $this->cms_post_form() ---------- Returns the generated form for post create/update (params: form, values)
+   *                                   default: current post's form and empty array for values
+   * $this->cms_post_count() --------- Return post count (params: By (post_type or post_status), post type
+   *                                   default:current post type, Language default: current language )
    * $this->cms_store_post() --------- Store post (params: form_data (the data to be stored))
    * $this->cms_update_post() -------- Update post (params: post ID (id), form_data (new updated data))
-   * 
+   * --
    * # Methods (common methods)
-   * $this->get_post() --------------- Return single post (params: Post ID (id) or post slug, SQL where args, Language) 1st param is required. Others are optional
+   * $this->get_post() --------------- Return single post (params: Post ID (id) or post slug, SQL where args, Language)
+   *                                   1st param is required. Others are optional
    * $this->delete_post()  ----------- Delete post (params: post ID (id), trash (move to trash if true. else delete))
    * $this->change_post_status() ----- Change post statue (params: post ID (id), status (status to be))
    */
@@ -151,7 +156,11 @@ class CMS_AdminController extends CMS {
    */
   public function post_duplicate(Request $request) {
     if(isset($request->input()['post_id_lang']) && isset($request->input()['language'])){
-      $this->cms_duplicate_post($request->input('post_id'), $request->input('post_id_lang'), $request->input('language'));
+      $this->cms_duplicate_post(
+        $request->input('post_id'),
+        $request->input('post_id_lang'),
+        $request->input('language')
+      );
     } else {
       $this->cms_duplicate_post($request->input('post_id'));
     }
@@ -165,5 +174,49 @@ class CMS_AdminController extends CMS {
     return view('admin/blocks', $this->data);
   }
 
+
+  // =============================================
+  // Media
+  // =============================================
+  public function media_manager(Request $request) {
+    $items = get_directory_content(UPLOAD_TO);
+    $directory = $request->input()['dir'] ?? '';
+
+    if(isset($directory) && !empty($directory)){
+      $dir_order = explode('/', $directory);
+      $this->data['media_directory_tree'] = $dir_order;
+      $this->data['media_items'] = find_in_array_by_key_tree($dir_order, $items);
+    } else {
+      $this->data['media_directory_tree'] = [];
+      $this->data['media_items'] = $items;
+    }
+
+    // Include file info
+    $modified = [];
+    foreach ($this->data['media_items'] as $key => $item) {
+      if(!in_array($item, ['.gitkeep'])) {
+        if(!is_array($item)) {
+          $url = UPLOAD_DIR_PUBLIC.$directory.'/'.$item;
+          $modified[$key] = [
+            'name' => $item,
+            'type' => 'file',
+            'size' => format_size_units(filesize($url)),
+            'format' => get_file_type_by_url($url),
+            'url' => $url,
+            'absolute_url' => BASE_URL.$url,
+          ];
+        } else {
+          $modified[$key] = [
+            'name' => $key,
+            'type' => 'folder',
+            'url' => $directory ? $directory.'/'.$key : $key,
+          ];
+        }
+      }
+    }
+    $this->data['media_items'] = $modified;
+
+    return view('admin/media', $this->data);
+  }
 
 }

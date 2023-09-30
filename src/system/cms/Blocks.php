@@ -79,7 +79,10 @@ trait Blocks {
     return [
       'name' => '',
       'type' => '',
-      'raw_html' => '<label>Block Editor</label><div class="ozz-block-editor" data-blocks="'.htmlspecialchars(json_encode($this->cms_blocks), ENT_QUOTES, 'UTF-8').'">
+      'raw_html' => '<div class="ozz-block-editor-head">
+      <label>Block Editor</label>
+      <span class="ozz-block-editor-expand-button" title="Expand Block Editor"></span></div>
+      <div class="ozz-block-editor" data-blocks="'.htmlspecialchars(json_encode($this->cms_blocks), ENT_QUOTES, 'UTF-8').'">
       <div class="ozz-block-editor__block-picker"></div>
       <div class="ozz-block-editor__form-loader">'.$block_dom.'</div>
       </div>'

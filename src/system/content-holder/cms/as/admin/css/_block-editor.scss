@@ -1,6 +1,61 @@
 .ozz-block-editor-hidden-form-dom {
   display: none;
 }
+.ozz-block-editor-wrapper {
+  .ozz-block-editor-head {
+    display: grid;
+    grid-template-columns: 1fr 30px;
+    .ozz-block-editor-expand-button {
+      @include icon-sprite;
+      width: 30px;
+      height: 30px;
+      padding-bottom: 10px;
+      background-position: -110px -79px;
+      transition: opacity .2s ease-in;
+      opacity: 0.5;
+      cursor: pointer;
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+  &.expanded {
+    position: fixed;
+    width: calc(100% - 200px);
+    height: 100vh;
+    top: 60px;
+    left: 200px;
+    background: color(light1);
+    overflow-y: auto;
+    z-index: 997;
+    .ozz-block-editor-head {
+      position: fixed;
+      top: 60px;
+      width: calc(100% - 240px);
+      grid-template-columns: 1fr 40px;
+      padding-top: 10px;
+      z-index: 996;
+      .ozz-block-editor-expand-button {
+        background-position: -148px -79px;
+      }
+    }
+    .ozz-block-editor {
+      margin-top: 30px;
+      padding: 0 0 120px;
+      width: calc(100% - 50px);
+      &__block-picker {
+        top: 30px;
+      }
+    }
+    &.collapsed {
+      width: calc(100% - 46px);
+      left: 46px;
+      .ozz-block-editor-head {
+        width: calc(100% - 86px);
+      }
+    }
+  }
+}
 .ozz-block-editor {
   display: grid;
   grid-template-columns: 280px 1fr;
