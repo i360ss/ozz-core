@@ -162,22 +162,26 @@ function _esc_textarea($str) {
  * Escape URL
  * @param string $url
  */
-function esc_url($url) {
+function esc_url(string $url) {
   if ($url === '') {
     return $url;
   }
 
+  $url = preg_replace('/(?:\.\.\/)+/', '', $url);
+  $url = preg_replace('/\.{2,}/', '', $url);
+  $url = preg_replace('/\.\//', '', $url);
   $url = str_replace(' ', '%20', ltrim($url));
   $url = preg_replace('|[^a-z0-9-~+_.?#=!&;,/:%@$\|*\'()\[\]\\x80-\\xff]|i', '', $url);
   $url = str_replace(';//', '://', $url);
   $url = str_replace(':/','://', trim(preg_replace('/\/+/', '/', $url), '/'));
+  $url = preg_replace("/\/+/", "/", $url);
   $url = filter_var($url, FILTER_SANITIZE_URL);
 
   return $url;
 }
 
 // Direct echo
-function _esc_url($url) {
+function _esc_url(string $url) {
   echo esc_url($url);
 }
 

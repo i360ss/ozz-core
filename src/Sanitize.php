@@ -46,6 +46,7 @@ class Sanitize {
   }
 
   public static function url($i){
+    $i = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $i);
     return filter_var($i, FILTER_SANITIZE_URL);
   }
 

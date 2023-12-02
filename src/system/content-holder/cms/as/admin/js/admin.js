@@ -5,6 +5,7 @@ let ozz_app_state = {
   nav_collapsed: false,
   block_editor_expanded: false,
   block_editor_collapsed: false,
+  popup_opened: false,
 };
 
 
@@ -241,7 +242,8 @@ function ozzCmsMediaManager() {
     const
     ozzMediaManager = document.querySelector('.ozz-media-manager'),
     mediaFileItems = ozzMediaManager.querySelectorAll('.ozz-media-manager__item.media-file'),
-    mediaViewer = ozzMediaManager.querySelector('.ozz-media-manager__viewer');
+    mediaViewer = ozzMediaManager.querySelector('.ozz-media-manager__viewer'),
+    actionButtons = ozzMediaManager.querySelectorAll('.ozz-media-manager .popup-trigger');
 
     mediaFileItems.forEach(mediaFile => {
       mediaFile.addEventListener('click', (e) => {
@@ -306,6 +308,15 @@ function ozzCmsMediaManager() {
             <li><strong>Name:</strong> ${fileInfo.name}</li>
             <li><strong>Size:</strong> ${fileInfo.size}</li>
             <li><strong>URL:</strong> <a href="${fileInfo.absolute_url}" class="link" target="_blank">${fileInfo.absolute_url}</a></li>
+            <li><strong>Created:</strong> ${fileInfo.created}</li>
+            <li><strong>Modified:</strong> ${fileInfo.modified}</li>
+            <li><strong>Access:</strong> ${fileInfo.access}</li>
+            <li>
+              <form action="/admin/media/action?q=delete_file" method="post">
+                <input type="hidden" value="${fileInfo.dir + fileInfo.name}" name="ozz_media_file_name">
+                <input type="submit" value="Delete File" class="button mini danger">
+              </form>
+            </li>
           </ul>
         </div>`;
         mediaViewer.innerHTML = fileInfoDOM;
@@ -313,8 +324,62 @@ function ozzCmsMediaManager() {
         mediaViewer.classList.add('active');
       });
     });
+
+    // Media Actions
+    actionButtons.forEach(action => {
+      const actionFormDOM = action.querySelector('.hidden-action-form');
+      if (actionFormDOM) {
+        action.addEventListener('click', () => {
+          ozzOpenPopup(actionFormDOM.outerHTML);
+        })
+      }
+    });
   }
 }
+
+
+// ===============================================
+// Ozz Close Popup
+// ===============================================
+function ozzClosePopup() {
+  const
+    popup = document.querySelector('.ozz-cms-popup'),
+    popupContent = document.querySelector('#cms-popup-content');
+
+  popupContent.innerHTML = '';
+  popup.classList.remove('active');
+  ozz_app_state.popup_opened = false;
+}
+
+
+// ===============================================
+// Ozz Open Popup
+// ===============================================
+function ozzOpenPopup(popupDOM) {
+  const
+    popup = document.querySelector('.ozz-cms-popup'),
+    popupContent = popup.querySelector('#cms-popup-content'),
+    closeTrigger = popup.querySelector('#cms-popup-close');
+
+  popupContent.innerHTML = popupDOM;
+  popup.classList.add('active');
+  ozz_app_state.popup_opened = true;
+
+  // Focus field
+  const inputsOnPopup = popupContent.querySelectorAll('input[type="text"]');
+  if ( inputsOnPopup.length > 0 ) {
+    inputsOnPopup[0].focus();
+  }
+
+  // Close popup
+  closeTrigger.addEventListener('click', ozzClosePopup);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      ozzClosePopup();
+    }
+  });
+}
+
 
 (function() {
   ozzCmsNavBar();

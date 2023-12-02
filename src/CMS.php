@@ -20,14 +20,24 @@ class CMS {
   public $cms_post_content_fields = [];
   public $post_config=[];
   public $cms_blocks;
+  public $cms_media;
   public $post_type = null;
   public $post_validate = [];
+
+  // Default Media manager Config
+  public $media_default = [
+    'pagination_items_per_page' => 30,
+    'validation' => ['20M', 'jpg|png|jpeg|svg|webp|mp4|mp3|ogg|pdf|json']
+  ];
+
+  // Default post labels
   public $post_labels = [
     'create_button' => 'Create',
     'update_button' => 'Save',
     'delete_button' => 'Delete',
   ];
 
+  // Default post fields
   public $post_default_fields = [
     [
       'name' => 'title',
@@ -48,9 +58,12 @@ class CMS {
   public function __construct() {
     $request = Request::getInstance();
 
+    // Initialize CMS Configurations
     $this->cms_config = require __DIR__.SPC_BACK['core'].'app/cms-config.php';
     $this->cms_config['languages'] = array_merge(['en' => 'English'], isset($this->cms_config['languages']) ? $this->cms_config['languages'] : []);
     $this->cms_post_types = $this->cms_config['post_types'];
+    $this->cms_config['media'] = array_merge($this->media_default, isset($this->cms_config['media']) ? $this->cms_config['media'] : []);
+    $this->cms_media = $this->cms_config['media'];
 
     // Config post types to prevent some unwanted errors (This will allow to use 'form' or 'fields' directly)
     foreach ($this->cms_config['post_types'] as $key => $type) {
@@ -89,6 +102,7 @@ class CMS {
     $this->data['blocks'] = $this->cms_blocks;
     $this->data['languages'] = $this->cms_config['languages'];
     $this->data['post_types'] = $this->cms_post_types;
+    $this->data['media'] = $this->cms_config['media'];
 
     // if post type available
     if(isset($request->urlParam()['post_type'])){
@@ -120,11 +134,14 @@ class CMS {
     if(isset($form['fields'])){
       // Change file fields into Media Manager opening trigger
       foreach ($form['fields'] as $key => $value) {
-        if(isset($value['type']) && in_array($value['type'], ['file', 'files', 'media'])){
+        if(isset($value['type']) && in_array($value['type'], ['files', 'media'])){
+          $field_label = isset($form['fields'][$key]['button_label']) ? $form['fields'][$key]['button_label'] : 'Select File';
+          $field_value = isset($form['fields'][$key]['value']) ? $form['fields'][$key]['value'] : '';
+
           $form['fields'][$key]['type'] = 'html';
           $form['fields'][$key]['html'] = '<div class="ozz-form__media-selector">
-          <span class="button mini" data-fieldName="'.$value['name'].'">Select File</span>
-          <input type="hidden" name="'.$value['name'].'" id="'.$value['name'].'" />
+          <span class="button mini" data-fieldName="'.$value['name'].'">'.$field_label.'</span>
+          <input type="hidden" name="'.$value['name'].'" id="'.$value['name'].'" value="'.$field_value.'" />
           </div>';
         }
       }

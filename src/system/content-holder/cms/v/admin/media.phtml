@@ -10,7 +10,10 @@
 {{ body_class   = "view-media" }}
 
 {{ content }}
-  <h1 class="heading">Media Manager</h1>
+  <br>
+  <div class="common-alert-bar">
+    <?=show_errors()?>
+  </div>
 
   <div class="ozz-media-manager">
     <div class="ozz-media-manager__breadcrumb">
@@ -27,17 +30,142 @@
       <?php endforeach; ?>
     </div>
 
+    <!-- Media Actions -->
     <div class="ozz-media-manager__actions">
-      <!-- File Crud options and other file manager options should go here -->
-      <!-- <div class="ozz-media-manager__actions-action"></div> -->
+      <div class="ozz-media-manager__actions-action popup-trigger create-folder">
+        <button class="button mini">+ New Folder</button>
+        <div class="hidden-action-form">
+          <h2>Create New Directory</h2>
+          <?php _create_form([
+          'method' => 'post',
+          'action' => '/admin/media/action?q=create_folder',
+          'class' => 'ozz-form',
+          'fields' => [
+            [
+              'name' => 'ozz_media_current_directory',
+              'type' => 'hidden',
+              'value' => $current_dir
+            ],[
+              'name' => 'ozz_media_folder_name',
+              'type' => 'text',
+              'label' => 'Folder Name',
+              'note' => $current_dir.'/'
+            ],[
+              'name' => 'ozz_media_create_folder_submit',
+              'type' => 'submit',
+              'value' => 'Create',
+              'class' => 'button small'
+            ]
+          ]
+        ]); ?>
+        </div>
+      </div>
+      <div class="ozz-media-manager__actions-action popup-trigger create-file">
+        <button class="button mini">+ New File</button>
+        <div class="hidden-action-form">
+          <h2>Create New File</h2>
+          <?php _create_form([
+          'method' => 'post',
+          'action' => '/admin/media/action?q=create_file',
+          'class' => 'ozz-form',
+          'fields' => [
+            [
+              'name' => 'ozz_media_current_directory',
+              'type' => 'hidden',
+              'value' => $current_dir
+            ],[
+              'name' => 'ozz_media_file_name',
+              'type' => 'text',
+              'label' => 'File Name',
+              'note' => $current_dir.'/'
+            ],[
+              'name' => 'ozz_media_create_file_submit',
+              'type' => 'submit',
+              'value' => 'Create',
+              'class' => 'button small'
+            ]
+          ]
+        ]); ?>
+        </div>
+      </div>
+      <div class="ozz-media-manager__actions-action popup-trigger upload">
+        <button class="button mini">Upload</button>
+        <div class="hidden-action-form">
+          <h2>Upload File</h2>
+          <?php _create_form([
+            'method' => 'post',
+            'enctype' => 'multipart/form-data',
+            'action' => '/admin/media/action?q=upload_file',
+            'class' => 'ozz-form',
+            'fields' => [
+              [
+                'name' => 'ozz_media_current_directory',
+                'type' => 'hidden',
+                'value' => $current_dir
+              ],[
+                'name' => 'ozz_media_upload_file[]',
+                'type' => 'file',
+                'class' => 'ozz-upload-button',
+                'multiple' => 'multiple'
+              ],[
+                'name' => 'ozz_media_upload_file_submit',
+                'type' => 'submit',
+                'class' => 'button small',
+                'value' => 'Upload'
+              ]
+            ]
+          ]); ?>
+        </div>
+      </div>
+      <?php if ($current_dir !== '') : ?>
+      <div class="ozz-media-manager__actions-action popup-trigger delete-dir">
+        <?php _create_form([
+          'method' => 'post',
+          'action' => '/admin/media/action?q=delete_dir',
+          'class' => 'ozz-form',
+          'fields' => [
+            [
+              'name' => 'ozz_media_current_directory',
+              'type' => 'hidden',
+              'value' => $current_dir
+            ],[
+              'name' => 'ozz_media_create_file_submit',
+              'type' => 'submit',
+              'value' => 'Delete Directory',
+              'class' => 'button mini danger'
+            ]
+          ]
+        ]); ?>
+      </div>
+      <?php endif; ?>
+
+      <div class="ozz-media-manager__actions-action search">
+        <?php _create_form([
+          'method' => 'post',
+          'class' => 'ozz-form',
+          'fields' => [
+            [
+              'name' => 'ozz_media_upload_file',
+              'type' => 'search',
+              'placeholder' => 'Search',
+              'class' => 'ozz-upload-button'
+            ],[
+              'name' => 'ozz_media_search',
+              'value' => 'Search',
+              'type' => 'submit',
+              'class' => 'button mini'
+            ]
+          ]
+        ]); ?>
+      </div>
     </div>
 
     <div class="ozz-media-manager__media-wrapper">
       <div class="ozz-media-manager__media">
-        <?php if(is_array($media_items) && count($media_items) > 0) : ?>
+        <?php if(is_array($media_items['data']) && count($media_items['data']) > 0) : ?>
           <div class="ozz-media-manager__items">
             <?php
-              foreach ($media_items as $key => $item) :
+              foreach ($media_items['data'] as $key => $item) :
                 if ($item['type'] == 'file') :
               ?>
                 <div class="ozz-media-manager__item media-file" data-fileInfo='<?=json_encode($item, true)?>'>
@@ -65,12 +193,17 @@
                     <span class="ozz-media-manager__item-name"><?= char_limit($item['name'], 15, '..') ?></span>
                   </a>
                 </div>
-              <?php
-              endif;
-              endforeach;
-              ?>
+              <?php endif; ?>
+              <?php endforeach; ?>
           </div>
-        <?php elseif(!$media_items) : ?>
+
+          <!-- Pagination -->
+          <div class="ozz-media-manager__pagination ozz-pagination">
+            <span><?= pagination_dom($media_items['number_of_pages'], $media_items['current_page']); ?></span>
+            <span class="light-text"><strong><?= count($media_items['data']); ?></strong> Items</span>
+          </div>
+
+        <?php elseif(empty($media_items['data'])) : ?>
           <div class="listing-s2__empty">
             <p>Empty</p>
           </div>

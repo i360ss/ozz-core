@@ -96,6 +96,7 @@
 .ozz-fw-debug-bar__body {
   overflow-x: auto;
   max-height: 320px;
+  padding-bottom: 30px;
 }
 .ozz-fw-debug-bar__body.tab-body {
   all: unset;

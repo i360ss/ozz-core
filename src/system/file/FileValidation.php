@@ -56,7 +56,7 @@ trait FileValidation {
       $mime = finfo_file($finfo, $tmp);
       finfo_close($finfo);
 
-      require 'mime_types.php';
+      require __DIR__.'/../utils/mime_types.php';
 
       if(isset($MIME_TYPES[$ext])){
         return in_array($mime, $MIME_TYPES[$ext]);
@@ -81,7 +81,7 @@ trait FileValidation {
     $mime = finfo_file($finfo, $tmp);
     finfo_close($finfo);
 
-    require 'image_mime_types.php';
+    require __DIR__.'/../utils/image_mime_types.php';
 
     if(isset($IMAGE_MIME_TYPES[$ext])){
       return in_array($mime, $IMAGE_MIME_TYPES[$ext]);

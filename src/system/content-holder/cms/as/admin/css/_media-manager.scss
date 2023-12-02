@@ -1,4 +1,10 @@
 .ozz-media-manager {
+  &__breadcrumb,
+  &__actions,
+  &__media,
+  &__viewer {
+    border-radius: 4px;
+  }
   &__breadcrumb {
     padding: 14px;
     margin-bottom: 4px;
@@ -23,16 +29,48 @@
     }
   }
   &__actions {
+    display: flex;
+    flex-direction: row;
+    background: color(white);
+    padding: 10px;
+    margin-bottom: 4px;
     &-action {
-
+      form {
+        box-shadow: none;
+        padding: 0;
+        input {
+          padding: 5px;
+          margin-top: 1px;
+        }
+      }
+      &.search {
+        margin: 0 0 0 auto;
+        form {
+          display: grid;
+          grid-template-columns: 200px auto;
+          gap: 5px;
+          input[type="search"] {
+            width: 100%;
+          }
+        }
+      }
+      .hidden-action-form {
+        display: none;
+      }
     }
+  }
+  &__pagination {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    margin-top: 16px;
+    border-top: 1px solid color(silver);
+    padding: 10px 0 0;
   }
   &__media-wrapper {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    grid-gap: 4px;
+    grid-template-columns: 2fr auto;
     @include screen(xxl) {
-      grid-template-columns: 2.3fr 430px;
+      grid-template-columns: 2.3fr auto;
     }
   }
   // Media items container
@@ -43,14 +81,13 @@
   }
   &__items {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    grid-template-columns: repeat(auto-fill, 100px);
     grid-gap: 10px;
-    padding: 5px;
-    @include screen(lg) {
-      grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+    @include screen(xl) {
+      grid-template-columns: repeat(auto-fill, 120px);
     }
     @include screen(xxl) {
-      grid-template-columns: repeat(auto-fill, minmax(146px, 1fr));
+      grid-template-columns: repeat(auto-fill, 150px);
     }
   }
   &__item {
@@ -59,12 +96,12 @@
     background: color(light1);
     border-radius: 4px;
     overflow: hidden;
-    border: 2px solid color(white);
     cursor: pointer;
-    &.active,
     &:hover {
-      border-color: color(primary);
       box-shadow: 0 0 0 4px rgba(color(blue), 0.3);
+    }
+    &.active {
+      box-shadow: 0 0 0 4px color(primary);
     }
     @include screen(xl) {
       width: 120px;
@@ -146,7 +183,7 @@
           text-transform: uppercase;
           color: color('primary');
           @include screen(lg) {
-            font-size: $font-normal;
+            font-size: $font-small-2;
           }
         }
         .name {
@@ -166,11 +203,19 @@
   // Media item viewer
   &__viewer {
     position: sticky;
+    display: none;
+    width: 308px;
     top: 60px;
     margin: 0 0 auto;
     padding: 14px;
-    border-radius: 4px;
+    border-left: 4px solid color(light1);
     background: color(white);
+    @include screen(xxl) {
+      width: 330px;
+    }
+    &.active {
+      display: block;
+    }
   }
   &__info {
     position: relative;
@@ -204,13 +249,23 @@
       margin: 0;
       max-width: 100%;
       li {
-        list-style: none;
         margin: 5px 0;
         display: grid;
         grid-template-columns: 1fr 4fr;
+        overflow-wrap: anywhere;
+        list-style: none;
+        &,
+        a {
+          font-size: $font-small-2;
+        }
         &:not(:last-child) {
           padding-bottom: 5px;
           border-bottom: 1px solid color(light1);
+        }
+        strong {
+          min-width: 80px;
+          padding-right: 5px;
+          overflow-wrap: break-word;
         }
       }
     }

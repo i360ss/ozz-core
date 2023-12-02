@@ -93,11 +93,11 @@ function show_errors($wrapper=null, $all=true) {
     foreach (get_error() as $key => $err_msg) {
       $err_msg = is_array($err_msg) ? array_values($err_msg)[0] : $err_msg;
 
-      if(!in_array($key, ['success', 'warning', 'info'])){
+      if(is_string($err_msg) && !in_array($key, ['success', 'warning', 'info'])){
         if($all === true){
           echo is_null($wrapper) 
-            ? '<span class="message danger">'.$err_msg.'</span>' 
-            : str_replace('##', '<span class="message danger">'.$err_msg.'</span>', $wrapper);
+            ? '<span class="message danger '.$key.'">'.$err_msg.'</span>' 
+            : str_replace('##', '<span class="message danger '.$key.'">'.$err_msg.'</span>', $wrapper);
         } else {
           $errs[] = $err_msg;
         }

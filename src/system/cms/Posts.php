@@ -328,7 +328,6 @@ trait Posts {
     // If flash blocks available
     if(has_flash('form_data')){
       $flash_blocks = json_encode($this->cms_filter_block_data(get_flash('form_data')));
-      // dd($flash_blocks);
       $form['fields'][] = $this->cms_block_editor_field($flash_blocks);
     } else {
       $form['fields'][] = isset($values['blocks']) ? $this->cms_block_editor_field($values['blocks']) : $this->cms_block_editor_field();
@@ -355,8 +354,8 @@ trait Posts {
     // Add Submit button
     $form['fields'][] = [
       'name' => 'submit_post',
-      'type' => 'submit',
-      'class' => 'button',
+      'type' => 'button',
+      'class' => 'button small ozz-default-save-button '.$form_type,
       'value' => $form_type == 'create' ? $this->post_labels['create_button'] : $this->post_labels['update_button']
     ];
 

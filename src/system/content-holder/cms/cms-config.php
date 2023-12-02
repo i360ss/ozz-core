@@ -162,5 +162,9 @@ return [
     'en' => 'English',
     'fr' => 'French',
     'ru' => 'Russian',
+  ],
+  'media' => [
+    'pagination_items_per_page' => 49,
+    'validation' => ['20M', 'jpg|png|jpeg|svg|webp|mp4|mp3|ogg|pdf']
   ]
 ];

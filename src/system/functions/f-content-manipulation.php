@@ -99,6 +99,8 @@ function find_in_array_by_key_tree($keys, $value) {
   foreach ($keys as $key) {
     if (isset($value[$key])) {
       $value = $value[$key];
+    } elseif(isset($value['/'.$key])) {
+      $value = $value['/'.$key];
     } else {
       return false;
     }

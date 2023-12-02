@@ -43,6 +43,9 @@ class AppInit {
     // Initialize session
     Session::init();
 
+    // Set default timezone
+    date_default_timezone_set(@date_default_timezone_get());
+
     // Content security policy configuration
     $csp_nonce = self::hashKey('csp-nonce');
     defined('CSP_NONCE') || define('CSP_NONCE', $csp_nonce);
@@ -110,7 +113,7 @@ class AppInit {
     defined('ASSETS') || define('ASSETS', BASE_URL . "assets".DS);
 
     // Upload directory, Inside public directory (for internal use)
-    defined('UPLOAD_TO') || define('UPLOAD_TO', '../'.$this->env['app']['UPLOAD_DIR']);
+    defined('UPLOAD_TO') || define('UPLOAD_TO', __DIR__.SPC_BACK['core'].$this->env['app']['UPLOAD_DIR']);
 
     // Upload directory, point to URL
     defined('UPLOAD_DIR_PUBLIC') || define('UPLOAD_DIR_PUBLIC', $this->env['app']['UPLOAD_DIR_PUBLIC']);

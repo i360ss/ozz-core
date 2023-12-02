@@ -207,7 +207,7 @@ class Request extends Router {
   public function path(){
     if(isset($_SERVER['REQUEST_URI'])){
       $path = Sanitize::url($_SERVER['REQUEST_URI']);
-      $pos = strpos($path, '?');
+      $pos = is_string($path) ? strpos($path, '?') : false;
       if(!$pos){
         return $path;
       }
@@ -235,7 +235,11 @@ class Request extends Router {
       }
     }
 
-    return $key ? $output[$key] : $output; // Sanitized Data
+    if ($key !== false) {
+      return isset($output[$key]) ? $output[$key] : '';
+    } else {
+      return $output;
+    }
   }
 
   /**
@@ -256,31 +260,33 @@ class Request extends Router {
         : $output[$k] = is_json($v) ? $v : Sanitize::specialChar($v);
     }
 
-    return $key ? $output[$key] : $output;
+    return ($key && isset($output[$key])) ? $output[$key] : $output;
   }
 
   /**
    * Returns URL query strings array or string
    * @param string|int $key
+   * @param array|string|int|bool $fallback
    * @param boolean $evil ignore sanitization if this is true
    * @return array|string|int|bool
    */
-  public function query($key=null, $evil=false){
+  public function query($key=false, $fallback=false, $evil=false){
     if (isset($_SERVER['QUERY_STRING'])) {
       parse_str($_SERVER['QUERY_STRING'], $query_string);
 
       if($evil === true){
-        return (isset($key) && $key !== null)
+        $output = ($key && isset($query_string[$key]))
           ? $query_string[$key]
           : $query_string;
       } else {
-        return (isset($key) && $key !== null)
-          ? filter_var($query_string[$key], FILTER_SANITIZE_URL)
+        $output = ($key && isset($query_string[$key]))
+          ? Sanitize::url($query_string[$key])
           : Sanitize::array($query_string, 'url');
       }
 
+      return (is_array($output) && $key !== false) ? $fallback : $output;
     } else {
-      return false;
+      return $fallback;
     }
   }
 
@@ -294,8 +300,8 @@ class Request extends Router {
     $method = $this->method();
     if(isset(Router::$ValidRoutes[$method][$path]['urlParam'])){
       $data = $key !== '' 
-      ? Router::$ValidRoutes[$method][$path]['urlParam'][$key]
-      : Router::$ValidRoutes[$method][$path]['urlParam'];
+        ? Router::$ValidRoutes[$method][$path]['urlParam'][$key]
+        : Router::$ValidRoutes[$method][$path]['urlParam'];
     }
     else{
       $data = null;
@@ -340,8 +346,8 @@ class Request extends Router {
    * Returns Files sent over the request
    * @param $key the key for specific file
    */
-  public function file($key=null){
-    return isset($key) ? $_FILES[$key] : $_FILES;
+  public function file($key=false){
+    return ($key !== false && isset($_FILES[$key])) ? $_FILES[$key] : $_FILES;
   }
 
   /**

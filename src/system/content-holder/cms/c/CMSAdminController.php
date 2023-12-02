@@ -3,6 +3,7 @@ namespace App\controller\admin;
 
 use Ozz\Core\Request;
 use Ozz\Core\CMS;
+use Ozz\Core\File;
 
 class CMSAdminController extends CMS {
 
@@ -15,6 +16,7 @@ class CMSAdminController extends CMS {
    * $this->cms_config   ------------- Complete output of app/cms-config.php
    * $this->cms_post_types  ---------- Defined post types in app/cms-config.php
    * $this->cms_blocks  -------------- Defined blocks in app/cms-config.php
+   * $this->cms_media  --------------- Defined media settings in app/cms-config.php
    * $this->post_type  --------------- Current post type
    * $this->post_config  ------------- Current post type's settings
    * $this->post_labels  ------------- Post labels
@@ -179,33 +181,49 @@ class CMSAdminController extends CMS {
   // Media
   // =============================================
   public function media_manager(Request $request) {
-    $items = get_directory_content(UPLOAD_TO);
-    $directory = $request->input()['dir'] ?? '';
+    $all_items = get_directory_content(UPLOAD_TO);
+    $directory = $request->query('dir', '');
 
-    if(isset($directory) && !empty($directory)){
+    if(!is_dir(UPLOAD_TO.$directory)){
+      return redirect('/admin/media');
+    }
+
+    if($directory !== ''){
       $dir_order = explode('/', $directory);
       $this->data['media_directory_tree'] = $dir_order;
-      $this->data['media_items'] = find_in_array_by_key_tree($dir_order, $items);
+      $items = find_in_array_by_key_tree($dir_order, $all_items);
     } else {
       $this->data['media_directory_tree'] = [];
-      $this->data['media_items'] = $items;
+      $items = $all_items;
     }
+
+    // Media items Pagination
+    $this->data['media_items'] = array_pagination(
+      $items,
+      $this->cms_media['pagination_items_per_page'],
+      $request->query('p', 1)
+    );
 
     // Include file info
     $modified = [];
-    foreach ($this->data['media_items'] as $key => $item) {
+    foreach ($this->data['media_items']['data'] as $key => $item) {
       if(!in_array($item, ['.gitkeep'])) {
         if(!is_array($item)) {
-          $url = UPLOAD_DIR_PUBLIC.$directory.'/'.$item;
+          $url = clear_multi_slashes(UPLOAD_DIR_PUBLIC.$directory.'/'.$item);
           $modified[$key] = [
             'name' => $item,
+            'dir' => $directory.'/',
             'type' => 'file',
             'size' => format_size_units(filesize($url)),
             'format' => get_file_type_by_url($url),
             'url' => $url,
             'absolute_url' => BASE_URL.$url,
+            'created' => date('M d, Y | h:i a', filectime($url)),
+            'modified' => date('M d, Y | h:i a', filemtime($url)),
+            'access' => date('M d, Y | h:i a', fileatime($url)),
           ];
         } else {
+          $key = trim($key, '/');
           $modified[$key] = [
             'name' => $key,
             'type' => 'folder',
@@ -214,9 +232,35 @@ class CMSAdminController extends CMS {
         }
       }
     }
-    $this->data['media_items'] = $modified;
+    $this->data['media_items']['data'] = $modified;
 
     return view('admin/media', $this->data);
+  }
+
+  /**
+   * Media Manager Actions
+   */
+  public function media_action(Request $request) {
+    $action = $request->query('q');
+    $current_dir = esc_url($request->input('ozz_media_current_directory')).DS;
+    $base_dir = UPLOAD_TO . $current_dir;
+
+    match ($action) {
+      'create_folder' => File::create_dir($base_dir, $request->input('ozz_media_folder_name')),
+      'create_file' => File::create($base_dir, $request->input('ozz_media_file_name')),
+      'delete_file' => File::delete(clear_multi_slashes($base_dir.$request->input('ozz_media_file_name'))),
+      'delete_dir' => File::delete($base_dir),
+      'upload_file' => File::upload(
+        $request->file('ozz_media_upload_file'),
+        [
+          'dir' => $current_dir
+        ],
+        $this->cms_media['validation']
+      ),
+      default => render_error_page(404, 'Page Not Found')
+    };
+
+    return back();
   }
 
 }

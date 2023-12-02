@@ -215,7 +215,7 @@ class Router extends AppInit {
     self::$context['method'] = $method;
 
     // Rewrite URL
-    if($path !== '/'){
+    if($path && $path !== '/'){
       if(substr($path, -1) == '/'){
         $path = preg_replace('/(\/+)/','/', substr($path, 0, -1));
         return Router::redirect($path);

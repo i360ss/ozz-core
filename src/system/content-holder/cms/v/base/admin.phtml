@@ -100,6 +100,15 @@ $user = (object) Auth::info();
     {% content %}
 
     <?php include __DIR__.'/../admin/partials/block-editor-hidden-dom.php'; ?>
+
+    <div class="ozz-cms-popup">
+      <div class="container">
+        <div class="ozz-cms-popup__box">
+          <span id="cms-popup-close"></span>
+          <div id="cms-popup-content"></div>
+        </div>
+      </div>
+    </div>
     </main>
   </div>
 <script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/vendor/sortable.min.js"></script>

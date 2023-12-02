@@ -28,4 +28,6 @@ Router::postGroup(['auth'], [
   '/admin/posts/delete'                       => [CMSAdminController::class, 'post_delete'],
   '/admin/post/change-status'                 => [CMSAdminController::class, 'post_change_status'],
   '/admin/post/duplicate'                     => [CMSAdminController::class, 'post_duplicate'],
+
+  '/admin/media/action'                       => [CMSAdminController::class, 'media_action'],
 ]);

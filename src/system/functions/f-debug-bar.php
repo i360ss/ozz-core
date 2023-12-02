@@ -15,3 +15,7 @@ function console_log($value=null) : void {
     $DEBUG_BAR->set('ozz_message', $new_log);
   }
 }
+// Short hand
+function c_log($val=null) {
+  return console_log($val);
+}

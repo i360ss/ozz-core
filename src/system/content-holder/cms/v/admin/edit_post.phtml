@@ -81,12 +81,27 @@
             </div>
 
             <div class="item delete-post separator">
-              <form action="/admin/posts/delete" method="post" class="action-form post-delete-form">
-                <?=CSRF_FIELD?>
-                <input type="hidden" name="post_id" value="<?=$form_data['id']?>">
-                <input type="hidden" name="delete_type" value="<?=$form_data['post_status'] == 'trash' ? 'delete' : 'trash'; ?>">
-                <button type="submit" title="Delete" class="button small danger"><?=$form_data['post_status'] == 'trash' ? 'Delete Post' : 'Move to Trash'; ?></button>
-              </form>
+              <?php _create_form([
+                'action' => '/admin/posts/delete',
+                'method' => 'post',
+                'class' => 'action-form post-delete-form',
+                'fields' => [
+                  [
+                    'name' => 'post_id',
+                    'type' => 'hidden',
+                    'value' => $form_data['id']
+                  ],[
+                    'name' => 'delete_type',
+                    'type' => 'hidden',
+                    'value' => $form_data['post_status'] == 'trash' ? 'delete' : 'trash'
+                  ],[
+                    'name' => 'delete_post',
+                    'type' => 'submit',
+                    'value' => $form_data['post_status'] == 'trash' ? 'Delete Post' : 'Move to Trash',
+                    'class' => 'button small danger'
+                  ]
+                ]
+              ]); ?>
             </div>
           <?php endif; ?>
         </div>
