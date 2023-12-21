@@ -38,48 +38,49 @@ function redirect($to, $status=301) {
  * Render component with parameters
  * @param string $component Component name
  * @param array|string|object $args Parameters
+ * @param string $instance Instance directory (eg: app/, cms/)
  */
-function component($component, $args=null) {
+function component($component, $args = null, $instance = 'app/') {
   $dom = '';
+  $dir = BASE_DIR . $instance . 'view/components/';
+  $comp = $dir . $component;
   $component_info = has_flash('ozz_components') ? get_flash('ozz_components') : [];
   $comp_key = count($component_info);
 
-  if(file_exists(VIEW.'components/'.$component.'.phtml')){
-    if(isset($args) && is_array($args)){
+  // Check for both file types in a single call
+  $file_phtml = $comp . '.phtml';
+  $file_html = $comp . '.html';
+
+  if (file_exists($file_phtml) || file_exists($file_html)) {
+    if (isset($args) && is_array($args)) {
       extract($args);
     }
 
     ob_start();
-    include VIEW.'components/'.$component.'.phtml';
+    include file_exists($file_phtml) ? $file_phtml : $file_html;
     $dom = ob_get_contents();
     ob_end_clean();
 
     // Set up to log into debug bar
-    if(DEBUG){
+    if (DEBUG) {
       $component_info[$comp_key] = [
-        'file' => "view/components/$component.phtml",
+        'file' => $instance . 'view/components/' . $component . (file_exists($file_phtml) ? '.phtml' : '.html'),
         'args' => $args,
       ];
     }
-  }
-  elseif(file_exists(VIEW.'components/'.$component.'.html')){
-    $dom = file_get_contents(VIEW.'components/'.$component.'.html');
-    DEBUG ? $component_info[$comp_key]['file'] = "view/components/$component.html" : false; // Log to debug bar
-  }
-  else {
-    return DEBUG
-    ? Err::componentNotFound($component)
-    : false;
+  } else {
+    return DEBUG ? Err::componentNotFound($component) : false;
   }
 
-  // Log into flash session
+  // Log into flash session (moved inside the block)
   set_flash('ozz_components', $component_info);
 
   return $dom;
 }
 
-function _component($component, $args=null) {
-  echo component($component, $args);
+
+function _component($component, $args=null, $instance='app/') {
+  echo component($component, $args, $instance);
 }
 
 /**

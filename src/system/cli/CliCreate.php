@@ -36,7 +36,7 @@ class CliCreate {
       $this->createView($r2);
     } elseif( in_array($r1, ['c:middleware', 'c:md', 'create:middleware', 'make:middleware']) ) {
       $this->createMiddleware($r2);
-    } elseif( in_array($r1, ['c:et', 'c:email-temp', 'c:email-template', 'create:email-template', 'create:email-temp', 'make:email-template', 'make:email-temp', 'c:email-view']) ) {
+    } elseif( in_array($r1, ['c:et', 'c:mail', 'c:email-temp', 'c:email-template', 'create:email-template', 'create:email-temp', 'make:email-template', 'make:email-temp', 'c:email-view']) ) {
       $this->createEmailTemplate($r2);
     } elseif( in_array($r1, ['c:layout', 'c:lay', 'c:base-layout']) ) {
       $this->createLayout($r2);
@@ -138,11 +138,11 @@ class CliCreate {
       return false;
     }
 
-    $fileName = $this->createTo.'email_template/'.$name.'.phtml';
+    $fileName = $this->createTo.'mail/'.$name.'.phtml';
     $nameFinal = explode("/", $name);
     $file_data = [
       'name' => end($nameFinal),
-      'path' => 'email_template/'.$name
+      'path' => 'mail/'.$name
     ];
 
     return $this->common_create('email_template', $fileName, $fileName, $name, $file_data);

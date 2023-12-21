@@ -44,15 +44,31 @@ trait Blocks {
         if(!empty($b)) {
           // Modify value keys
           $values = [];
+          $bk = 'i-'.$block['i'].'_block_'.$block['b'].'_';
           foreach ($block['f'] as $ky => $value) {
-            $values['i-'.$block['i'].'___block___'.$block['b'].'___'.$ky] = $value;
+            if(is_array($value) && is_string(key($value))){
+              $values[$bk.$ky.'_'.key($value)] = $value[key($value)];
+            } else {
+              $values[$bk.$ky] = $value;
+            }
           }
 
           // Modify block field names
-          // dump($b);
           $new_form = $b['form'];
-          foreach ($b['form']['fields'] as $ky => $value) {
-            $new_form['fields'][$ky]['name'] = 'i-'.$block['i'].'___'.$value['name'];
+          $b_name = 'i-'.$block['i'].'_';
+          $rps = ['repeat', 'repeater', 'repeatable'];
+          foreach ($new_form['fields'] as $ky => $value) {
+            $new_form['fields'][$ky]['name'] = $b_name.$value['name'];
+
+            $is_repeatable = (
+              (($new_form['fields'][$ky]['repeat'] ?? false) === true || in_array(($value['type'] ?? ''), $rps)) &&
+              isset($new_form['fields'][$ky]['fields'])
+            );
+
+            // Modify Repeatable fields names
+            if($is_repeatable){
+              $new_form['fields'][$ky]['fields'] = ozz_i_add_block_naming_prefix($new_form['fields'][$ky]['fields'], '');
+            }
           }
 
           // Generate block's form with values
@@ -60,15 +76,20 @@ trait Blocks {
           $form = preg_replace('/<form[^>]*>/', '', $form);
           $form = preg_replace('/<\/form>/', '', $form);
 
+          $is_expand = isset($b['expand']) && $b['expand'] === true;
+          $expanded = $is_expand ? ' active' : '';
+
           // Append each single block
-          $block_dom .= '<li class="pick-block '.$b['name'].' ozz-used-block" data-blockname="'.$b['name'].'">
-            <div class="ozz-block-accordion-bar">
+          $note = (isset($b['note']) && $b['note'] !== '') ? "<p class=\"light-text\">{$b['note']}</p>" : '';
+          $block_dom .= '<li class="pick-block '.$b['name'].' ozz-used-block" data-blockname="'.$b['name'].'" 
+          data-expand="'.($is_expand ? 'true' : 'false').'">
+            <div class="ozz-block-accordion-bar'.$expanded.'">
               <span class="ozz-handle"></span>
-              <div><h4>'.$b['label'].'</h4><p class="light-text">'.$b['note'].'</p></div>
+              <div><h4>'.$b['label'].'</h4>'.$note.'</div>
               <div><span class="ozz-block-delete-trigger"></span></div>
               <span class="ozz-accordion-arrow"></span>
             </div>
-            <div class="ozz-accordion-body">'.$form.'</div>
+            <div class="ozz-accordion-body'.$expanded.'">'.$form.'</div>
           </li>';
         } else {
           $block_dom .= '<div class="missing-block"><p><strong>Block not found!</strong> <br></p><span class="light-text">This block has removed or renamed from the cms-config.php</span></div>';
@@ -77,9 +98,7 @@ trait Blocks {
     }
 
     return [
-      'name' => '',
-      'type' => '',
-      'raw_html' => '<div class="ozz-block-editor-head">
+      'html' => '<div class="ozz-block-editor-head">
       <label>Block Editor</label>
       <span class="ozz-block-editor-expand-button" title="Expand Block Editor"></span></div>
       <div class="ozz-block-editor" data-blocks="'.htmlspecialchars(json_encode($this->cms_blocks), ENT_QUOTES, 'UTF-8').'">
@@ -91,40 +110,22 @@ trait Blocks {
 
 
   /**
-   * Filter Block data and update validation rules
-   */
-  protected function cms_filter_block_data($form_data) {
-    $block_data = array_filter($form_data, function($key) {
-      return preg_match('/^'.preg_quote('i-').'\d+___block___/', $key);
-    }, ARRAY_FILTER_USE_KEY);
-
-    foreach ($block_data as $key => $value) {
-      $newKey = preg_replace('/^i-\d+___/', '', $key);
-      (isset($this->post_validate[$newKey]) && $this->post_validate[$newKey] !== '')
-        ? $this->post_validate[$key] = $this->post_validate[$newKey] 
-        : false;
-    }
-
-    return $this->cms_organize_block_content($block_data);
-  }
-
-
-  /**
    * Organize and set block content to insert
    * @param array $form_data Complete form data
    */
   protected function cms_organize_block_content($block_data) {
     $blocks = [];
-    foreach ($block_data as $key => $value) {
-      $parts = explode('___', $key);
-      $ind = intval(substr($parts[0], 2));
-      $blocks[$ind]['i'] = $ind;
-      $blocks[$ind]['b'] = $parts[2];
-      $blocks[$ind]['f'][$parts[3]] = $value;
+    $b = ozz_i_convert_str_to_array_1($block_data);
+    foreach ($b as $k => $v) {
+      $i = intval(substr($k, 2));
+      $b_name = array_key_first($v['block']);
+      $b_values = $v['block'][$b_name];
+      $blocks[$i]['i'] = $i;
+      $blocks[$i]['b'] = $b_name;
+      $blocks[$i]['f'] = $b_values;
     }
 
     return $blocks;
   }
-
 
 }

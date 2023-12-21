@@ -24,6 +24,7 @@ if(!function_exists('ozz_func_loaded')) {
     }
   }
 
+  require __DIR__.'/functions/ozz-f-internal.php'; // Ozz internal functions
   require __DIR__.'/functions/f-utils.php'; // Utilities
   require __DIR__.'/functions/f-escaping.php'; // Escaping
   require __DIR__.'/functions/f-content-manipulation.php'; // Var, Array, JSON, String, ect Manipulation

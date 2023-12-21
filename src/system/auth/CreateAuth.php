@@ -14,7 +14,7 @@ class CreateAuth {
   private $controller_dir      = __DIR__.SPC_BACK['core_2'].'app/controller/';
   private $view_dir            = __DIR__.SPC_BACK['core_2'].'app/view/';
   private $middleware_dir      = __DIR__.SPC_BACK['core_2'].'app/middleware/';
-  private $email_template_dir  = __DIR__.SPC_BACK['core_2'].'app/email_template/';
+  private $email_template_dir  = __DIR__.SPC_BACK['core_2'].'app/mail/';
   private $auth_content_holder = __DIR__.'/../content-holder/auth';
 
   public function index($com){

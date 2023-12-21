@@ -40,7 +40,7 @@ function ozzCmsNavBar() {
     } else {
       collapseNav(navbar);
     }
-    const ozzBlockEditorWrapper = document.querySelector('.ozz-block-editor').closest('.ozz-form__field');
+    const ozzBlockEditorWrapper = document.querySelector('.ozz-block-editor').closest('.ozz-fm__field');
     toggleBlockEditorCollapse(ozzBlockEditorWrapper);
   });
 
@@ -88,7 +88,7 @@ function ozzCmsBlockEditor() {
     const ozzBlockEditor = document.querySelectorAll('.ozz-block-editor');
     ozzBlockEditor.forEach(blockEditor => {
       // Add wrapper class
-      const blockEditorWrapper = blockEditor.closest('.ozz-form__field');
+      const blockEditorWrapper = blockEditor.closest('.ozz-fm__field');
       blockEditorWrapper.classList.add('ozz-block-editor-wrapper');
       addCommonEvents();
 
@@ -150,7 +150,7 @@ function ozzCmsBlockEditor() {
       });
 
       // On Submit with block editor
-      blockEditor.closest('form.ozz-form').addEventListener('submit', ozzCmsFormHandler);
+      blockEditor.closest('form.ozz-fm').addEventListener('submit', ozzCmsFormHandler);
 
       // Add index to field names
       function indexFieldNames() {
@@ -158,7 +158,7 @@ function ozzCmsBlockEditor() {
         usedBlocks.forEach((block, ind) => {
           const thisBlockFields = block.querySelectorAll('input, textarea, button, progress, meter, select, datalist');
           thisBlockFields.forEach((field) => {
-            const newName = `i-${ind}___${ field.name.replace(/^i-\d+___/, '') }`;
+            const newName = `i-${ind}__${ field.name.replace(/^i-\d+__/, '') }`;
             field.name = newName;
           });
         });
@@ -220,12 +220,12 @@ function ozzCmsSlugUpdate() {
   // Update Slug in Title change
   const
     updateThis = document.querySelector('.j-title-onchange'),
-    getFrom = document.querySelector('.ozz-form .default-post-title');
+    getFrom = document.querySelector('.ozz-fm .default-post-title');
 
   if (getFrom) {
     getFrom.addEventListener('keyup', () => {
       const slug = getFrom.value.replace(/\s+/g, '-').toLowerCase().replace(/[^\w\-]+/g, '');
-      document.querySelector('.ozz-form .default-post-slug').value = slug;
+      document.querySelector('.ozz-fm .default-post-slug').value = slug;
       if (getFrom && updateThis) {
         updateThis.innerHTML = getFrom.value;
       }

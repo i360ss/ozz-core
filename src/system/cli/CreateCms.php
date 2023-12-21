@@ -5,7 +5,7 @@
 * Contact: shakeerwahid@gmail.com
 */
 
-namespace Ozz\Core\system\cms;
+namespace Ozz\Core\system\cli;
 
 class CreateCms {
 
@@ -18,24 +18,32 @@ class CreateCms {
   private function create_cms() {
     global $utils;
     $app_dir = __DIR__.SPC_BACK['core_2'].'app/';
+    $cms_dir = __DIR__.SPC_BACK['core_2'].'cms/';
     $mig_dir = __DIR__.SPC_BACK['core_2'].'database/migration/';
     $assets_dir = __DIR__.SPC_BACK['core_2'].env('app', 'PUBLIC_DIR').'/assets/admin/';
-    $cms_dir = __DIR__.'/../content-holder/cms/';
+    $cms_hold_dir = __DIR__.'/../content-holder/cms/';
+
+    // Create CMS directory
+    if (!is_dir($cms_dir)) {
+      if (!mkdir($cms_dir, 0777, true)) {
+        $utils->console_return("Error on creating directory [ $cms_hold_dir ]", 'red');
+        die();
+      } else {
+        $utils->console_return("CMS directory created [ ".$cms_hold_dir." ]", 'green');
+      }
+    }
 
     // Controllers
-    $this->copy_directory($cms_dir.'c/', $app_dir.'controller/admin/');
+    $this->copy_directory($cms_hold_dir.'c/', $cms_dir.'controller/');
 
     // View files
-    $this->copy_directory($cms_dir.'v/', $app_dir.'view/');
-
-    // Migration files
-    $this->copy_directory($cms_dir.'v/', $app_dir.'view/');
+    $this->copy_directory($cms_hold_dir.'v/', $cms_dir.'view/');
 
     // Assets files
-    $this->copy_directory($cms_dir.'as/admin/', $assets_dir);
+    $this->copy_directory($cms_hold_dir.'as/', $assets_dir);
 
     // Migrations
-    $mig_from = $cms_dir.'mg/';
+    $mig_from = $cms_hold_dir.'mg/';
     $mig_files = array_filter(glob("$mig_from*"), "is_file");
     foreach ($mig_files as $f) {
       if(copy($f, $mig_dir . 'mg_'.date('d_m_Y_').basename($f))){
@@ -47,7 +55,7 @@ class CreateCms {
 
     // CMS Config
     if(!file_exists($app_dir.'cms-config.php')){
-      if(copy($cms_dir.'cms-config.php', $app_dir.'cms-config.php')){
+      if(copy($cms_hold_dir.'cms-config.php', $app_dir.'cms-config.php')){
         $utils->console_return("CMS Config file created [ app/cms-config.php ]", 'green');
       } else {
         $utils->console_return("Error on creating CMS Config file [ app/cms-config.php ]", 'red');
@@ -55,11 +63,11 @@ class CreateCms {
     }
 
     // CMS Routes
-    if(!file_exists($app_dir.'cms-route.php')){
-      if(copy($cms_dir.'cms-route.php', $app_dir.'cms-route.php')){
-        $utils->console_return("CMS Route file created [ app/cms-route.php ]", 'green');
+    if(!file_exists($cms_dir.'cms-route.php')){
+      if(copy($cms_hold_dir.'cms-route.php', $cms_dir.'cms-route.php')){
+        $utils->console_return("CMS Route file created [ cms/cms-route.php ]", 'green');
       } else {
-        $utils->console_return("Error on creating CMS Routes file [ app/cms-route.php ]", 'red');
+        $utils->console_return("Error on creating CMS Routes file [ cms/cms-route.php ]", 'red');
       }
     }
   }

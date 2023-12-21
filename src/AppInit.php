@@ -100,6 +100,9 @@ class AppInit {
     // Root directory
     defined('ROOT') || define('ROOT', $_SERVER['DOCUMENT_ROOT'] . DS);
 
+    // Base directory
+    defined('BASE_DIR') || define('BASE_DIR', __DIR__.SPC_BACK['core']);
+
     // App directory
     defined('APP_DIR') || define('APP_DIR', __DIR__.SPC_BACK['core'].'app/');
 
@@ -117,12 +120,6 @@ class AppInit {
 
     // Upload directory, point to URL
     defined('UPLOAD_DIR_PUBLIC') || define('UPLOAD_DIR_PUBLIC', $this->env['app']['UPLOAD_DIR_PUBLIC']);
-
-    // CSS directory, all CSS files should be here
-    defined('CSS') || define('CSS', ASSETS . 'css'.DS);
-
-    // Javascript directory, all JS files should be here
-    defined('JS') || define('JS', ASSETS . 'js'.DS);
 
     // Debug mode, defined in env.ini
     defined('DEBUG') || define('DEBUG', $this->env['app']['DEBUG'] == 1 ? true : false);

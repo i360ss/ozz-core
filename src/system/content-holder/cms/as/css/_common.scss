@@ -97,7 +97,7 @@ a {
 
 // Forms
 .form,
-.ozz-form {
+.ozz-fm {
   border-radius: $radius1;
   box-shadow: $shadow1;
   background: color(white);
@@ -133,7 +133,7 @@ a {
       }
     }
   }
-  .ozz-form__field {
+  .ozz-fm__field {
     &:first-child {
       border-radius: 5px 5px 0 0;
     }

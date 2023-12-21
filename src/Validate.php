@@ -27,22 +27,39 @@ class Validate {
     self::$current_input = $input;
     $validity = [];
     $validatedData = [];
+
     if(is_array($input) && is_array($checkup)){
-      foreach ($checkup as $ky => $val) {
-        if(explode('|', $val) > 0){
-          $rules = array_reverse(array_map('trim', explode('|', $val)));
-          foreach ($rules as $rule) {
-            if(isset($input[$ky])){
-              $validity[] = self::checkRule($input[$ky], $rule, $ky); // If multiple rules provided
-              $validatedData[$ky] = isset($input[$ky]) ? $input[$ky] : false;
+      // if both array
+      foreach ($input as $ky => $val) {
+        $n_key = preg_replace('/_\d+_/', '_', $ky);
+        $n_key = preg_replace('/^i-\d+_/', '', $n_key);
+
+        // Get Rule
+        $this_rule = isset($checkup[$n_key]) ? $checkup[$n_key] : (isset($checkup[$ky]) ? $checkup[$ky] : false);
+
+        if($this_rule !== false) {
+          if(explode('|', $this_rule) > 0){
+            $rules = array_reverse(array_map('trim', explode('|', $this_rule)));
+            foreach ($rules as $rule) {
+              if(is_array($val)) {
+                foreach ($val as $vl) {
+                  $validity[] = self::checkRule($vl, $rule, $ky); // If multiple rules provided + Multiple values (Single repeater field)
+                  $validatedData[$ky] = $val;
+                }
+              } else {
+                $validity[] = self::checkRule($val, $rule, $ky); // If multiple rules provided
+                $validatedData[$ky] = $val;
+              }
             }
+          } else {
+            $validity[] = self::checkRule($val, $this_rule, $ky); // If only one rule provided per one key
+            $validatedData[$ky] = $val;
           }
-        } else {
-          $validity[] = self::checkRule($input[$ky], $val, $ky); // If only one rule provided per one key
-          $validatedData[$ky] = $input[$ky];
         }
       }
+
     } elseif(is_array($input) && is_string($checkup)){
+      // if array string
       $rules = (explode('|', $checkup) > 0) ? array_reverse(explode('|', $checkup)) : $checkup;
       foreach ($input as $ky => $val) {
         if(is_array($rules)){
@@ -56,6 +73,7 @@ class Validate {
         }
       }
     } elseif(is_string($input) && is_string($checkup)){
+      // if string string
       $rules = (explode('|', $checkup) > 0) ? array_reverse(explode('|', $checkup)) : $checkup;
       if(is_array($rules)){
         foreach ($rules as $rule) {
@@ -215,6 +233,13 @@ class Validate {
           return self::password($val, true, $valueKey);
           break;
 
+        case 'no-space':
+        case 'no-spc':
+        case 'nospace':
+        case 'nospc':
+          return self::noSpace($val, $valueKey);
+          break;
+
         default:
           return self::invalidRule($rule);
           break;
@@ -240,7 +265,8 @@ class Validate {
   public static function required($v, $key=''){
     // If File
     if(is_array($v) && isset($v['name'])){
-      return self::response($v['name'] !== '', $key, self::$lang->error('file_required', ['field' => $key, 'value' => 'file']));
+      $file_req = (is_string($v['name']) && $v['name'] !== '') || (is_array($v['name']) && count($v['name']) === 1 && $v['name'][0] !== '');
+      return self::response($file_req, $key, self::$lang->error('file_required', ['field' => $key, 'value' => 'file']));
     }
     return self::response(!empty($v), $key, self::$lang->error('required', ['field' => $key, 'value' => $v]));
   }
@@ -315,6 +341,12 @@ class Validate {
   public static function int($v, $key=''){
     return $v!==''
       ? self::response(is_int($v), $key, self::$lang->error('integer', ['field' => $key, 'value' => $v]))
+      : true;
+  }
+
+  public static function noSpace($v, $key='') {
+    return $v!==''
+      ? self::response((strpos($v, ' ') === false), $key, self::$lang->error('no_space', ['field' => $key, 'value' => $v]))
       : true;
   }
 

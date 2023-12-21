@@ -12,10 +12,13 @@ use Ozz\Core\Response;
 use Ozz\Core\Err;
 
 class Templating extends AppInit {
-  
+
   protected static $cdt=[]; // Current Data to load on view
   private static $debug_view = [];
-  
+  private static $view_file = false; // View File
+  private static $view_dir = '';
+  private static $view_outer_use = '';
+
   /**
    * Render Template
    * @param string  $vv                         View file (phtml/html)
@@ -31,6 +34,24 @@ class Templating extends AppInit {
   public static function render($vv, $customData, $base_template, $base_template_from_router, $context){
     global $DEBUG_BAR;
 
+    // Find current view file
+    $base_cms_viv = BASE_DIR.'cms/view/'.$vv.'.phtml';
+    $base_app_viv = BASE_DIR.'app/view/'.$vv.'.phtml';
+
+    if(file_exists($base_cms_viv) && env('app', 'ENABLE_CMS')){
+      // CMS instance
+      self::$view_dir = BASE_DIR.'cms/view/';
+      self::$view_file = $base_cms_viv;
+      self::$view_outer_use = 'cms/view/';
+      $context['instance'] = 'cms/';
+    } elseif(file_exists($base_app_viv)){
+      // App instance
+      self::$view_dir = BASE_DIR.'app/view/';
+      self::$view_file = $base_app_viv;
+      self::$view_outer_use = 'app/view/';
+      $context['instance'] = 'app/';
+    }
+
     $regComps = [];
     $data = Sanitize::templateContext($customData);
     $context['view'] = $vv;
@@ -43,8 +64,8 @@ class Templating extends AppInit {
     DEBUG ? self::$debug_view['view_data'] = $data : false; // Log to debug bar
     self::$cdt = [$context, $data];
 
-    if(file_exists(VIEW . $vv . '.phtml')){
-      DEBUG ? self::$debug_view['view_file'] = "view/$vv.phtml" : false; // Log to debug bar
+    if(file_exists(self::$view_file)){
+      DEBUG ? self::$debug_view['view_file'] = self::$view_outer_use."$vv.phtml" : false; // Log to debug bar
 
       $viewContentAll = self::setView($vv);
       $viewContent = $viewContentAll[0];
@@ -125,10 +146,10 @@ class Templating extends AppInit {
     $context = self::$cdt[0];
     $data = self::$cdt[1];
 
-    if(file_exists(VIEW.'base/'. $temp . '.phtml')){
+    if(file_exists(self::$view_dir.'base/'. $temp . '.phtml')){
       extract($vars);
-      require VIEW.'base/'. $temp.'.phtml';
-      DEBUG ? self::$debug_view['base_file'] = "view/base/$temp.phtml" : false; // Log to debug bar
+      require self::$view_dir.'base/'. $temp.'.phtml';
+      DEBUG ? self::$debug_view['base_file'] = self::$view_outer_use."base/$temp.phtml" : false; // Log to debug bar
     } else{
       return Err::baseTemplateNotFound($temp);
     }
@@ -147,7 +168,7 @@ class Templating extends AppInit {
     $context = self::$cdt[0];
     $data = self::$cdt[1];
     extract($data); // Extract data to view
-    require VIEW.$v.'.phtml';
+    require self::$view_dir.$v.'.phtml';
     $vars = get_defined_vars();
     $view = ob_get_contents();
     ob_end_clean();
@@ -162,8 +183,8 @@ class Templating extends AppInit {
     foreach ($comps[1] as $k => $c) {
       $parts = array_map('trim', explode('|', $c));
 
-      if(file_exists(VIEW.'components/'.$parts[0].'.phtml')){
-        DEBUG ? self::$debug_view['components'][$k]['file'] = "view/components/$parts[0].phtml" : false; // Log to debug bar
+      if(file_exists(self::$view_dir.'components/'.$parts[0].'.phtml')){
+        DEBUG ? self::$debug_view['components'][$k]['file'] = self::$view_outer_use."components/$parts[0].phtml" : false; // Log to debug bar
 
         ob_start();
 
@@ -216,13 +237,13 @@ class Templating extends AppInit {
         DEBUG ? self::$debug_view['components'][$k]['args'] = $args : false; // Log to debug bar
 
         $args && is_array($args) ? extract($args) : false; // Extract args
-        include VIEW.'components/'.$parts[0].'.phtml';
+        include self::$view_dir.'components/'.$parts[0].'.phtml';
         $component = ob_get_contents();
         ob_end_clean();
       }
-      elseif(file_exists(VIEW.'components/'.$parts[0].'.html')){
-        $component = file_get_contents(VIEW.'components/'.$parts[0].'.html'); 
-        DEBUG ? self::$debug_view['components'][$k]['file'] = "view/components/$parts[0].html" : false; // Log to debug bar
+      elseif(file_exists(self::$view_dir.'components/'.$parts[0].'.html')){
+        $component = file_get_contents(self::$view_dir.'components/'.$parts[0].'.html'); 
+        DEBUG ? self::$debug_view['components'][$k]['file'] = self::$view_outer_use."components/$parts[0].html" : false; // Log to debug bar
       }
       else{ 
         Err::componentNotFound($parts[0]);

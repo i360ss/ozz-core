@@ -90,7 +90,7 @@ elseif(count($com) == 2){
     case 'c:cms':
     case 'make:cms':
     case 'create:cms':
-      $class = "cms/CreateCms";
+      $class = "cli/CreateCms";
       break;
 
     case 'migrate':

@@ -139,8 +139,9 @@ trait Posts {
         'post_type' => $post_type,
       ] + $where;
       $other_lang_post = $this->DB()->get('cms_posts', ['post_id'], $where_2);
+      $other_language_post_is = isset($other_lang_post) ? (string) $other_lang_post['post_id'] : false;
       $empty_post = [
-        'post_id' => (string) $other_lang_post['post_id'],
+        'post_id' => $other_language_post_is,
         'post_type' => $this->post_type,
         'post_status' => 'published',
         'lang' => $lang,
@@ -174,8 +175,7 @@ trait Posts {
    */
   protected function cms_store_post($form_data) {
     set_flash('form_data', $form_data);
-
-    $block_data = $this->cms_filter_block_data($form_data); // Filtered block data and add block validation rules
+    set_error('error', 'Error on creating your post');
 
     if(Validate::check($form_data, $this->post_validate)->pass){
       $title = $form_data['title'];
@@ -193,9 +193,10 @@ trait Posts {
         $form_data['post_id']
       );
 
-      // Post Content (Post type specific fields)
-      $content_field_names = array_column($this->post_config['form']['fields'], 'name');
-      $post_content = json_encode(array_intersect_key($form_data, array_flip($content_field_names)));
+      // Filtered data (Block and Post content)
+      $filtered_data = $this->cms_filter_form_data($form_data);
+      $block_data = json_encode($filtered_data['block']);
+      $post_content = json_encode($filtered_data['post']);
 
       // Save the post
       $post_created = $this->DB()->insert('cms_posts', [
@@ -207,16 +208,15 @@ trait Posts {
         'slug' => $slug,
         'post_status' => $status,
         'content' => $post_content,
-        'blocks' => json_encode($block_data),
+        'blocks' => $block_data,
         'created_at' => time(),
         'modified_at' => time(),
       ]);
 
       if($post_created){
         remove_flash('form_data');
+        remove_error('error');
         set_error('success', 'Post created successfully!');
-      } else {
-        set_error('error', 'Error on creating your post');
       }
     }
 
@@ -231,9 +231,7 @@ trait Posts {
    */
   protected function cms_update_post($post_id, $form_data) {
     set_flash('form_data', $form_data);
-
-    // Filtered block data and add block validation rules
-    $block_data = $this->cms_filter_block_data($form_data);
+    set_error('error', 'Error on updating your post');
 
     if(Validate::check($form_data, $this->post_validate)->pass){
       $title = $form_data['title'];
@@ -249,9 +247,10 @@ trait Posts {
         $form_data['submit_post']
       );
 
-      // Post Content (Post type specific fields)
-      $content_field_names = array_column($this->post_config['form']['fields'], 'name');
-      $post_content = json_encode(array_intersect_key($form_data, array_flip($content_field_names)));
+      // Filtered data (Block and Post content)
+      $filtered_data = $this->cms_filter_form_data($form_data);
+      $block_data = json_encode($filtered_data['block']);
+      $post_content = json_encode($filtered_data['post']);
 
       // Update the post
       $post_updated = $this->DB()->update('cms_posts', [
@@ -259,7 +258,7 @@ trait Posts {
         'slug' => $slug,
         'post_status' => $status,
         'content' => $post_content,
-        'blocks' => json_encode($block_data),
+        'blocks' => $block_data,
         'modified_at' => time(),
       ],[
         'id' => $post_id
@@ -267,9 +266,8 @@ trait Posts {
 
       if($post_updated){
         remove_flash('form_data');
+        remove_error('error');
         set_error('success', 'Post updated successfully!');
-      } else {
-        set_error('error', 'Error on updating your post');
       }
     }
 
@@ -288,7 +286,7 @@ trait Posts {
     $form = $this->cms_post_types[$post_type]['form'];
 
     // Add form class
-    $form_class = 'ozz-form';
+    $form_class = 'ozz-fm';
     $form['class'] = isset($form['class']) ? $form['class'].' '.$form_class : $form_class;
 
     // Add default fields
@@ -327,7 +325,7 @@ trait Posts {
 
     // If flash blocks available
     if(has_flash('form_data')){
-      $flash_blocks = json_encode($this->cms_filter_block_data(get_flash('form_data')));
+      $flash_blocks = json_encode($this->cms_filter_form_data(get_flash('form_data'))['block']);
       $form['fields'][] = $this->cms_block_editor_field($flash_blocks);
     } else {
       $form['fields'][] = isset($values['blocks']) ? $this->cms_block_editor_field($values['blocks']) : $this->cms_block_editor_field();
@@ -355,7 +353,7 @@ trait Posts {
     $form['fields'][] = [
       'name' => 'submit_post',
       'type' => 'button',
-      'class' => 'button small ozz-default-save-button '.$form_type,
+      'class' => 'button small ozz-default-save-button green '.$form_type,
       'value' => $form_type == 'create' ? $this->post_labels['create_button'] : $this->post_labels['update_button']
     ];
 
@@ -415,7 +413,8 @@ trait Posts {
 
       if($post_created){
         remove_flash('form_data');
-        set_error('success', 'Post duplicated into '.lang_name($translation_to).' successfully!');
+        $duplicated_lang = isset($translation_to) ? 'into '.lang_name($translation_to) : '';
+        set_error('success', 'Post duplicated '.$duplicated_lang.' successfully!');
         if(isset($translation_to)) {
           switch_language($translation_to);
         }
@@ -425,6 +424,15 @@ trait Posts {
     }
 
     return back();
+  }
+
+
+  /**
+   * Organize post content
+   * @param array $data Post data (except block data)
+   */
+  public function cms_organize_post_content($data) {
+    return ozz_i_convert_str_to_array_1($data);
   }
 
 

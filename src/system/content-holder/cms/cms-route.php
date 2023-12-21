@@ -2,7 +2,7 @@
 use Ozz\Core\Router;
 use Ozz\Core\Request;
 use Ozz\Core\Response;
-use App\controller\admin\CMSAdminController;
+use Cms\controller\CMSAdminController;
 
 // CMS Routes
 Router::get('/lang/{lang}', function(Request $request){

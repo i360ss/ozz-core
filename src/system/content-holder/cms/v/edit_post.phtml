@@ -20,9 +20,6 @@
 
       <div class="post-edit-view">
         <div class="post-edit-view__form">
-          <div class="common-alert-bar">
-            <?=has_error('success') || has_error('error') ? show_errors() : ''?>
-          </div>
           <?=$form?>
         </div>
         <div class="post-edit-view__info">
@@ -59,12 +56,12 @@
 
           <?php if (isset($form_data['id'])) :?>
             <div class="item language-duplicator separator"><strong>Duplicate to:</strong> <br>
-              <form action="/admin/post/duplicate" method="post" class="ozz-form">
+              <form action="/admin/post/duplicate" method="post" class="ozz-fm">
                 <?=CSRF_FIELD?>
                 <input type="hidden" name="post_id" value="<?=$form_data['id']?>">
                 <input type="hidden" name="post_id_lang" value="<?=$form_data['post_id']?>">
                 <div class="inner">
-                  <div class="ozz-form__field">
+                  <div class="ozz-fm__field">
                     <select name="language">
                       <?php foreach ($data['languages'] as $code => $language) : ?>
                         <?php if($form_data['lang'] !== $code) : ?>

@@ -6,8 +6,8 @@
 return [
   'post_types' => [
     'pages' => [
-      'label' => 'Pages',
-      'note' => 'This post type can be used to create pages',
+      'label' => 'Leadership team',
+      // 'note' => 'This post type can be used to create pages',
       'fields' => [
         [
           'name' => 'test_image',
@@ -15,16 +15,51 @@ return [
           'label' => 'Primary Image',
         ],
         [
-          'name' => 'test_name',
+          'name' => 'post_information',
           'type' => 'text',
-          'label' => 'Test Name',
+          'label' => 'Post Information',
+          'validate' => 'req|max:20',
+        ],
+        [
+          'name' => 'c-test',
+          'type' => 'repeater',
+          'label' => 'Country',
+          'fields' => [
+            [
+              'name' => 'country',
+              'type' => 'select',
+              'label' => 'Country',
+              'validate' => 'req',
+              'id' => 'country',
+              'options' => [
+                'Sri Lanka',
+                'Afganistan',
+                'United Kingdom',
+                'Russia',
+                'Saudi Arabia',
+              ]
+            ]
+          ]
+        ],
+        [
+          'name' => 'another-rp-field2',
+          'type' => 'select',
+          'label' => 'Another Repeater Field',
+          'repeat_label' => 'Add Item',
+          'validate' => 'req',
+          // 'repeat' => true,
+          'options' => [
+            '' => '-- Select a value --',
+            't1' => 'Test One',
+            't2' => 'Test Two',
+            't3' => 'Test Three'
+          ]
         ]
       ]
     ],
     'news' => [
       'label' => 'News',
       'singular_label' => 'News',
-      'note' => 'This is a default post type. You can overwrite or remove this.',
       'fields' => [
         [
           'name' => 'description',
@@ -54,6 +89,238 @@ return [
         'create_button' => 'Add News',
       ]
     ],
+    'resources' => [
+      'label' => 'Resources',
+      'singular_label' => 'Resource',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'post_body',
+            'type' => 'textarea',
+            'label' => 'Post Body',
+            'validate' => 'req'
+          ]
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Create blog post',
+      ],
+    ],
+    'articles' => [
+      'label' => 'Global Settings',
+      'singular_label' => 'Global setting',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'post_body',
+            'type' => 'textarea',
+            'label' => 'Post Body',
+            'validate' => 'req'
+          ]
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Create blog post',
+      ],
+    ],
+    'events' => [
+      'label' => 'Events',
+      'singular_label' => 'Event',
+      'note' => 'This is a default post type. You can overwrite or remove this.',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'post_body',
+            'type' => 'textarea',
+            'label' => 'Post Body',
+            'validate' => 'req'
+          ]
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Create blog post',
+      ],
+    ],
+    'additional-configurations' => [
+      'label' => 'Additional Configurations',
+      'singular_label' => 'Additional Configuration',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'post_body',
+            'type' => 'textarea',
+            'label' => 'Post Body',
+            'validate' => 'req'
+          ]
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Create blog post',
+      ],
+    ],
+    'resources2' => [
+      'label' => 'Resources',
+      'singular_label' => 'Resource',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'post_body',
+            'type' => 'textarea',
+            'label' => 'Post Body',
+            'validate' => 'req'
+          ]
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Create blog post',
+      ],
+    ],
+    'articles2' => [
+      'label' => 'Global Settings',
+      'singular_label' => 'Global setting',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'post_body',
+            'type' => 'textarea',
+            'label' => 'Post Body',
+            'validate' => 'req'
+          ]
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Create blog post',
+      ],
+    ],
+    'events2' => [
+      'label' => 'Events',
+      'singular_label' => 'Event',
+      'note' => 'This is a default post type. You can overwrite or remove this.',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'post_body',
+            'type' => 'textarea',
+            'label' => 'Post Body',
+            'validate' => 'req'
+          ]
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Create blog post',
+      ],
+    ],
+    'additional-configurations2' => [
+      'label' => 'Additional Configurations',
+      'singular_label' => 'Additional Configuration',
+      'note' => 'This is a default post type. You can overwrite or remove this.',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'post_body',
+            'type' => 'textarea',
+            'label' => 'Post Body',
+            'validate' => 'req'
+          ]
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Create blog post',
+      ],
+    ],
+    'resources3' => [
+      'label' => 'Resources',
+      'singular_label' => 'Resource',
+      'note' => 'This is a default post type. You can overwrite or remove this.',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'post_body',
+            'type' => 'textarea',
+            'label' => 'Post Body',
+            'validate' => 'req'
+          ]
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Create blog post',
+      ],
+    ],
+    'articles3' => [
+      'label' => 'Global Settings',
+      'singular_label' => 'Global setting',
+      'note' => 'This is a default post type. You can overwrite or remove this.',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'post_body',
+            'type' => 'textarea',
+            'label' => 'Post Body',
+            'validate' => 'req'
+          ]
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Create blog post',
+      ],
+    ],
+    'events3' => [
+      'label' => 'Events',
+      'singular_label' => 'Event',
+      'note' => 'This is a default post type. You can overwrite or remove this.',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'post_body',
+            'type' => 'textarea',
+            'label' => 'Post Body',
+            'validate' => 'req'
+          ]
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Create blog post',
+      ],
+    ],
+    'additional-configurations3' => [
+      'label' => 'Additional Configurations',
+      'singular_label' => 'Additional Configuration',
+      'note' => 'This is a default post type. You can overwrite or remove this.',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'post_body',
+            'type' => 'textarea',
+            'label' => 'Post Body',
+            'validate' => 'req'
+          ]
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Create blog post',
+      ],
+    ],
+    'resources4' => [
+      'label' => 'Resources',
+      'singular_label' => 'Resource',
+      'note' => 'This is a default post type. You can overwrite or remove this.',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'post_body',
+            'type' => 'textarea',
+            'label' => 'Post Body',
+            'validate' => 'req'
+          ]
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Create blog post',
+      ],
+    ],
+
+
+
     'blog' => [
       'label' => 'Blogs',
       'singular_label' => 'Blog',
@@ -69,7 +336,7 @@ return [
         ]
       ],
       'labels' => [
-        'create_button' => 'Create blog post',
+        'create_button' => 'Create event',
       ],
     ]
   ],
@@ -82,8 +349,9 @@ return [
       'form' => [
         'fields' => [
           [
-            'name' => 'hero_image',
+            'name' => 'hero__image',
             'type' => 'media',
+            'label' => 'Hero Image'
           ],
           [
             'name' => 'title',
@@ -96,6 +364,39 @@ return [
             'type' => 'textarea',
             'label' => 'Hero banner description',
             'validate' => 'req'
+          ],
+          [
+            'name' => 'rp1',
+            'label' => 'Repeater Test',
+            'type' => 'repeater',
+            'fields' => [
+              [
+                'name' => 'card-title',
+                'type' => 'text',
+                'label' => 'Card Title',
+                'validate' => 'req'
+              ], [
+                'name' => 'card_tags',
+                'type' => 'repeater',
+                'label' => 'Card Tags',
+                'fields' => [
+                  [
+                    'name' => 'tag_name',
+                    'type' => 'text',
+                    'label' => 'Tag name',
+                    'note' => 'Sample tag name test repeater field',
+                    'validate' => 'req|max:25'
+                  ],
+                  [
+                    'name' => 'tag_url',
+                    'type' => 'text',
+                    'label' => 'Tag URL',
+                    'note' => 'Sample tag name',
+                    'validate' => 'req|min:15'
+                  ]
+                ]
+              ]
+            ]
           ]
         ]
       ]
@@ -103,8 +404,9 @@ return [
     [
       'name' => 'cta-section',
       'label' => 'CTA Section',
-      'note' => 'Call to action component',
+      // 'note' => 'Call to action component',
       'template' => 'view/blocks/cta',
+      'expand' => true,
       'form' => [
         'fields' => [
           [
@@ -117,6 +419,17 @@ return [
             'name' => 'description',
             'type' => 'textarea',
             'label' => 'CTA description'
+          ],
+          [
+            'name' => 'gender',
+            'type' => 'checkbox',
+            'label' => 'Gender',
+            'validate' => 'req',
+            // 'repeat' => true,
+            'options' => [
+              'Male',
+              'Female'
+            ]
           ],
           [
             'name' => 'test_image2',

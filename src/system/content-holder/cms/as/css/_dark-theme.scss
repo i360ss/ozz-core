@@ -1,0 +1,303 @@
+// Dark theme
+body.ozz-cms.dark-theme {
+  background: color(dark);
+  color: color(light2);
+  // Common
+  .light-text {
+    color: color(light1);
+  }
+  label {
+    color: color(semi-blue);
+  }
+  // Buttons
+  .button {
+    &.light {
+      background: color(dark2);
+      color: color(silver);
+      border-color: rgba(color(gray1), 0.5);
+      &:hover {
+        background: rgba(color(gray2), 0.5);
+        color: color(white);
+      }
+      &.active {
+        background: color(primary);
+        border-color: transparent;
+        color: color(white);
+      }
+    }
+  }
+  // Header
+  .cms-header {
+    background: color(dark1);
+    border-bottom-color: transparent;
+    box-shadow: 0 0 3px 0 rgba(0,0,0,0.3);
+    &__info {
+      background: color(dark2);
+    }
+    &__language-switch {
+      .dropdown {
+        li {
+          a {
+            background: color(dark2);
+            color: color(light2);
+            &:hover {
+              background: color(primary);
+              color: color(white);
+            }
+          }
+        }
+      }
+      .current-lang {
+        &:after {
+          filter: brightness(6);
+        }
+      }
+    }
+  }
+  // CMS NAV
+  .cms-nav {
+    background: color(dark);
+    border-right: 1px solid color(dark1);
+    > ul {
+      > li {
+        &.active > a {
+          background: color(dark1);
+        }
+        &:hover {
+          > a {
+            background: color(primary);
+          }
+        }
+        > ul {
+          border-right: 1px solid color(dark2);
+          > label {
+            background: color(dark1);
+          }
+        }
+      }
+    }
+    &.collapsed {
+      > ul {
+        > li {
+          width: 45px;
+        }
+      }
+    }
+  }
+  // Common alert bar
+  .common-alert-bar {
+    .message {
+      background: rgba(color(dark1), 0.9);
+    }
+  }
+  // breadcrumb
+  .breadcrumb {
+    a {
+      color: color(light2);
+    }
+  }
+  // Listing 01
+  .listing-s1 {
+    .table {
+      &__tr-wrapper {
+        background: color(dark1);
+        border: 1px solid color(dark2);
+        &:hover {
+          background: color(dark2);
+          border-left-color: color(primary);
+          .listing-s1__title {
+            color: color(white);
+          }
+        }
+      }
+      &__cell {
+        color: color(light2);
+      }
+      .slug {
+        background: color(dark);
+      }
+      .note {
+        color: color(silver);
+      }
+    }
+  }
+  // Listing 02
+  .listing-s2 {
+    &__header,
+    &__empty {
+      background: color(dark1);
+    }
+    table {
+      thead {
+        tr {
+          background: color(dark2);
+          th {
+            color: color(gray2);
+          }
+        }
+      }
+      tbody {
+        tr {
+          background: color(dark1);
+          &:hover {
+            background: color(dark);
+          }
+        }
+      }
+    }
+  }
+  // Post view
+  .post-edit-view {
+    &__info {
+      background: color(dark1);
+      border: 1px solid color(dark2);
+      .item {
+        strong {
+          color: color(semi-blue);
+        }
+        &.separator {
+          border-color: transparent;
+        }
+      }
+      .form,
+      .ozz-fm {
+        border: none;
+      }
+    }
+  }
+  // Forms
+  .form,
+  .ozz-fm {
+    background: color(dark1);
+    border: 1px solid color(dark2);
+    select,
+    textarea,
+    input {
+      &:not([type="submit"]) {
+        color: color(white);
+        border-color: rgba(color(silver), 0.2);
+        background: rgba(0,0,0,0.1);
+      }
+      &:not(input[type="submit"]) {
+        &:focus {
+          border-color: color(primary);
+        }
+      }
+    }
+    input[type="checkbox"] {
+      &.switch {
+        background: color(dark);
+        &:checked {
+          background: color(primary);
+        }
+      }
+    }
+    &__repeat-head {
+      background: rgba(color(dark2), 0.5);
+    }
+    &__repeat-remove {
+      background: rgba(color(silver), 0.2);
+      &:hover {
+        background: color(danger);
+      }
+    }
+  }
+  // Block Editor
+  .ozz-block-editor {
+    background: color(dark);
+    &__form-loader {
+      &.empty {
+        border-color: color(dark2);
+        .ozz-block-editor__empty-block {
+          color: rgba(color(semi-blue), 0.5);
+        }
+      }
+      .ozz-used-block {
+        background: color(dark1);
+        border: 1px solid color(dark2);
+        .ozz-block-accordion-bar {
+          & > div h4 {
+            color: color(semi-blue);
+          }
+          .ozz-accordion-arrow {
+            filter: brightness(5);
+          }
+        }
+      }
+      .sortable-ghost {
+        background: color(dark1);
+      }
+    }
+    &__block-picker {
+      li {
+        &.pick-block {
+          background: color(dark2);
+          &:hover {
+            background: color(primary);
+          }
+        }
+      }
+    }
+  }
+  .ozz-block-editor-wrapper {
+    &.expanded {
+      background: color(dark);
+    }
+  }
+  // Media Manager
+  .ozz-media-manager {
+    &__actions,
+    &__viewer,
+    &__media {
+      background: color(dark1);
+      border: 1px solid color(dark2);
+    }
+    &__viewer {
+      width: 320px;
+      margin-left: 5px;
+    }
+    &__item {
+      background: color(dark);
+    }
+    &__info-info {
+      li {
+        border-color: transparent;
+        strong {
+          color: color(semi-blue);
+        }
+      }
+    }
+    &__breadcrumb {
+      &-home {
+        filter: brightness(5);
+      }
+      a {
+        color: color(semi-blue);
+      }
+    }
+    &__pagination {
+      border-top-color: transparent;
+    }
+    .form,
+    .ozz-fm {
+      border: none;
+      background: transparent;
+    }
+  }
+  // Popup
+  .ozz-cms-popup {
+    &__box {
+      background: color(dark1);
+      border: 1px solid color(dark2);
+      #cms-popup-close {
+        background-color: transparent;
+        filter: brightness(5);
+      }
+      .form,
+      .ozz-fm {
+        border: none;
+        background: transparent;
+      }
+    }
+  }
+}

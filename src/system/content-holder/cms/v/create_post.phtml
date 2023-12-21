@@ -18,10 +18,12 @@
         <span>Create</span>
       </h1>
       <p class="light-text"><?=$post_config['note']?></p>
-      <div class="common-alert-bar">
-        <?=has_error('success') || has_error('error') ? show_errors() : ''?>
+
+      <div class="post-edit-view">
+        <div class="post-edit-view__form">
+          <?=$form?>
+        </div>
       </div>
-      <?=$form?>
     </div>
   </section>
 {{ content-end }}

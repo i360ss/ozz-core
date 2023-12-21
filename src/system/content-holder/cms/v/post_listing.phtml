@@ -12,10 +12,6 @@
 {{ content }}
 <h1>Post: <?=$post_type_label?></h1>
 <div class="listing-s2">
-  <div class="common-alert-bar">
-    <?=show_errors()?>
-  </div>
-
   <div class="listing-s2__header">
     <div class="listing-s2__filter" 
       data-active-tab="<?=isset($context['query']['status']) ? $context['query']['status'] : '';?>">
@@ -33,14 +29,13 @@
       </a>
     </div>
     <div class="align-right">
-      <a href="/admin/posts/create/<?=$post_type?>" class="button">Create New</a>
+      <a href="/admin/posts/create/<?=$post_type?>" class="button small green">Create New</a>
     </div>
   </div>
 
   <table>
     <thead>
       <tr>
-        <th>#</th>
         <th>Title</th>
         <th>Status</th>
         <th>Created</th>
@@ -53,19 +48,17 @@
     <tbody>
       <?php foreach ($posts['listing'] as $key => $value) : ?>
         <tr>
-          <td width="120px" class="row-number"><?=$key + 1?></td>
           <td>
-            <span class="title"><strong><?=$value['title']?></strong></span><br>
-            <span><?=$value['slug']?></span>
+            <span class="title"><?=$value['title']?></span>
           </td>
-          <td width="140px">
+          <td width="120px">
             <span class="label <?=$value['post_status']?>">
               <?=ucfirst($value['post_status'])?>
             </span>
           </td>
-          <td width="140px"><span class="light-text"><?=date('M d, Y <br> h:i a', $value['created_at'])?></span></td>
-          <td width="140px"><span class="light-text"><?=date('M d, Y <br> h:i a', $value['modified_at'])?></span></td>
-          <td width="180px"><?=$value['first_name'].' '.$value['last_name']?></td>
+          <td width="120px"><span class="light-text"><?=date('M d, Y', $value['created_at'])?></span></td>
+          <td width="120px"><span class="light-text"><?=date('M d, Y', $value['modified_at'])?></span></td>
+          <td width="180px" class="f-14"><?=$value['first_name'].' '.$value['last_name']?></td>
           <td class="tr-action" width="180px">
             <div class="show-on-hover">
               <a href="/admin/posts/edit/<?=$value['post_type']?>/<?=$value['post_id']?>" title="Edit">

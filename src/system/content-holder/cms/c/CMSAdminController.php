@@ -1,9 +1,10 @@
 <?php
-namespace App\controller\admin;
+namespace Cms\controller;
 
 use Ozz\Core\Request;
 use Ozz\Core\CMS;
 use Ozz\Core\File;
+use Ozz\Core\Validate;
 
 class CMSAdminController extends CMS {
 
@@ -44,7 +45,7 @@ class CMSAdminController extends CMS {
    * Admin dashboard
    */
   public function dashboard() {
-    return view('admin/dashboard', $this->data);
+    return view('dashboard', $this->data);
   }
 
 
@@ -66,7 +67,7 @@ class CMSAdminController extends CMS {
     }
     $this->data['total_posts'] = $post_count['total_posts'];
 
-    return view('admin/posts', $this->data);
+    return view('posts', $this->data);
   }
 
 
@@ -83,7 +84,7 @@ class CMSAdminController extends CMS {
     $this->data['posts'] = $this->cms_get_posts($filter);
     $this->data['post_type_label'] = $this->cms_post_types[$this->post_type]['label'];
 
-    return view('admin/post_listing', $this->data);
+    return view('post_listing', $this->data);
   }
 
 
@@ -95,7 +96,7 @@ class CMSAdminController extends CMS {
     $this->data['blocks_forms'] = $this->cms_block_forms();
     $this->data['form'] = $this->cms_post_form('create', null,  $current_values);
 
-    return view('admin/create_post', $this->data);
+    return view('create_post', $this->data);
   }
 
 
@@ -116,7 +117,7 @@ class CMSAdminController extends CMS {
       $this->data['form'] = $this->cms_post_form('create', null, $current_values);
     }
 
-    return view('admin/edit_post', $this->data);
+    return view('edit_post', $this->data);
   }
 
 
@@ -173,7 +174,7 @@ class CMSAdminController extends CMS {
   // Blocks
   // =============================================
   public function blocks_listing() {
-    return view('admin/blocks', $this->data);
+    return view('blocks', $this->data);
   }
 
 
@@ -234,7 +235,7 @@ class CMSAdminController extends CMS {
     }
     $this->data['media_items']['data'] = $modified;
 
-    return view('admin/media', $this->data);
+    return view('media', $this->data);
   }
 
   /**
@@ -245,20 +246,28 @@ class CMSAdminController extends CMS {
     $current_dir = esc_url($request->input('ozz_media_current_directory')).DS;
     $base_dir = UPLOAD_TO . $current_dir;
 
-    match ($action) {
-      'create_folder' => File::create_dir($base_dir, $request->input('ozz_media_folder_name')),
-      'create_file' => File::create($base_dir, $request->input('ozz_media_file_name')),
-      'delete_file' => File::delete(clear_multi_slashes($base_dir.$request->input('ozz_media_file_name'))),
-      'delete_dir' => File::delete($base_dir),
-      'upload_file' => File::upload(
-        $request->file('ozz_media_upload_file'),
-        [
-          'dir' => $current_dir
-        ],
-        $this->cms_media['validation']
-      ),
-      default => render_error_page(404, 'Page Not Found')
-    };
+    $validation = Validate::check($request->input(), [
+      'ozz_media_folder_name' => 'req|no-space|max:30',
+      'ozz_media_file_name' => 'req|no-space|max:30',
+      'ozz_media_upload_file' => 'req'
+    ]);
+
+    if ($validation->pass) {
+      match ($action) {
+        'create_folder' => File::create_dir($base_dir, $request->input('ozz_media_folder_name')),
+        'create_file' => File::create($base_dir, $request->input('ozz_media_file_name')),
+        'delete_file' => File::delete(clear_multi_slashes($base_dir.$request->input('ozz_media_file_name'))),
+        'delete_dir' => File::delete($base_dir),
+        'upload_file' => File::upload(
+          $request->file('ozz_media_upload_file'),
+          [
+            'dir' => $current_dir
+          ],
+          $this->cms_media['validation']
+        ),
+        default => render_error_page(404, 'Page Not Found')
+      };
+    }
 
     return back();
   }

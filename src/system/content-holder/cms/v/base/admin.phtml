@@ -32,10 +32,17 @@ $user = (object) Auth::info();
         <li class="posts has-child">
           <a href="/admin/posts" class="posts">Posts</a>
           <ul>
-            <label>Post types</label>
-            <li><a href="/admin/posts">All</a></li>
-              <?php foreach ($data['post_types'] as $key => $value) : ?>
-                <li><a href="/admin/posts/<?=$key?>"><?=ucfirst($value['label'])?></a></li>
+            <label>
+              <span>Post types</span>
+              <a href="/admin/posts"><span class="button mini">All</span></a>
+            </label>
+              <?php
+                foreach ($data['post_types'] as $key => $value) :
+                  $active_cls = (isset($context['url_parts'][3]) && $context['url_parts'][3] == $key) ? 'active' : '';
+              ?>
+                <li class="<?=$active_cls?>">
+                  <a href="/admin/posts/<?=$key?>"><?=ucfirst($value['label'])?></a>
+                </li>
               <?php endforeach; ?>
           </ul>
         </li>
@@ -90,6 +97,7 @@ $user = (object) Auth::info();
                   <span class="light-text">@<?=$user->username?></span>
                 </p>
                 <p><?=$user->email?></p>
+                <p>Dark Mode <input type="checkbox" class="ozz-color-theme-switcher switch"></p>
                 <a href="<?=AUTH_PATHS['logout']?>" class="button small danger">Logout</a>
               </div>
             </div>
@@ -97,9 +105,13 @@ $user = (object) Auth::info();
         </div>
       </header>
 
+      <div class="common-alert-bar">
+        <?=has_error('success') || has_error('error') ? show_errors(null, false) : ''?>
+      </div>
+
     {% content %}
 
-    <?php include __DIR__.'/../admin/partials/block-editor-hidden-dom.php'; ?>
+    <?php include __DIR__.'/../partials/block-editor-hidden-dom.php'; ?>
 
     <div class="ozz-cms-popup">
       <div class="container">
@@ -112,6 +124,7 @@ $user = (object) Auth::info();
     </main>
   </div>
 <script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/vendor/sortable.min.js"></script>
+<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>js/ozz.js"></script>
 <script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/admin.js"></script>
 </body>
 </html>

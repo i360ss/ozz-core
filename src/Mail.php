@@ -159,12 +159,12 @@ class Mail extends AppInit {
   private static function setEmailTemplate($tmp, $data){
     $placeHolders = []; // Placeholders in Template
     $tmp = (strpos($tmp, '.') !== false) ? $tmp : $tmp.'.phtml';
-    if(file_exists(APP_DIR .'email_template/'.$tmp)){
-      $htmlMSG = file_get_contents(APP_DIR .'email_template/'.$tmp);
+    if(file_exists(APP_DIR .'mail/'.$tmp)){
+      $htmlMSG = file_get_contents(APP_DIR .'mail/'.$tmp);
     } else {
       return DEBUG
         ? Err::custom([
-          'msg' => "Email template [ app/email_template/$tmp ] not found",
+          'msg' => "Email template [ app/mail/$tmp ] not found",
           'info' => 'Please check your email template name or create one if it is not exist.',
           'note' => "You can create an email template by running this command <br> [ php ozz c:email-temp template_name ]",
         ])

@@ -158,13 +158,14 @@ function ozz_content_Layout(){
   <meta name="csrf-token" content="<?=CSRF_TOKEN?>">
   <meta name="url" content="<?=BASE_URL?>">
   <link rel="icon" type="image/x-icon" href="<?=BASE_URL?>assets/icons/favicon.ico">
-  <link rel="stylesheet" href="<?=CSS?>styles.css" nonce="<?=CSP_NONCE?>">
+  <link rel="stylesheet" href="<?=ASSETS?>css/styles.css" nonce="<?=CSP_NONCE?>">
 </head>
 <body class="{% body_class %}">
 <main>
   {% content %}
 </main>
-<script nonce="<?=CSP_NONCE?>" src="<?=JS?>app.js"></script>
+<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>js/ozz.js"></script>
+<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>js/app.js"></script>
 </body>
 </html>';
 }

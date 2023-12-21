@@ -8,6 +8,7 @@
 namespace Ozz\Core;
 
 use Ozz\Core\Session;
+use Ozz\Core\Err;
 
 class Errors {
 
@@ -47,15 +48,7 @@ class Errors {
     if ( Session::has('__error') ) {
       $all = Session::get('__error');
       if ($key !== '') {
-        if (array_key_exists($key, $all)) {
-          return $all[$key];
-        } else {
-          if (DEBUG) {
-            return ERR::invalidArrayKey($key);
-          } else {
-            return false;
-          }
-        }
+        return isset($all[$key]) ? $all[$key] : '';
       } else {
         return $all;
       }

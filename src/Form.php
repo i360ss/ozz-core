@@ -12,7 +12,7 @@ use Ozz\Core\CMS;
 
 class Form {
 
-  public static $inputTypes = [
+  public static $input_types = [
     "text",
     "password",
     "submit",
@@ -36,17 +36,19 @@ class Form {
     "number",
   ];
 
-  public static $tagTypes = [
+  public static $tag_types = [
     "textarea",
     "button",
     "progress",
     "meter",
   ];
 
-  public static $tagOptionTypes = [
+  public static $tag_option_types = [
     "select",
     "datalist",
   ];
+
+  private static $initial_form;
 
   /**
    * Start a form
@@ -102,141 +104,21 @@ class Form {
    */
   public static function create($args, $values=[]){
     $request = Request::getInstance();
+    self::$initial_form = $args;
 
     if(env('app', 'ENABLE_CMS')) {
-      $cms = new CMS;
+      $cms = CMS::getInstance();
       $args = $cms->cms_related_form_modifies($args);
 
       // Add CMS Specific Input fields
-      array_push(self::$inputTypes, 'media');
+      array_push(self::$input_types, 'media');
     }
 
     // Start form
     $form = self::start($args);
 
     if(isset($args['fields'])){
-      foreach ($args['fields'] as $key => $fld_val) {
-        $has_error = has_error($fld_val['name']);
-
-        // Add global field each class
-        if(isset($args['field_options']['class'])){
-          if(isset($fld_val['class'])){
-            $fld_val['class'] = $fld_val['class'].' '.$args['field_options']['class'];
-          } else {
-            $fld_val['class'] = $args['field_options']['class'];
-          }
-        }
-
-        // Add global label each class
-        if(isset($args['field_options']['label_class'])){
-          if(isset($fld_val['label_class'])){
-            $fld_val['label_class'] = $fld_val['label_class'].' '.$args['field_options']['label_class'];
-          } else {
-            $fld_val['label_class'] = $args['field_options']['label_class'];
-          }
-        }
-
-        // Add error class if has error
-        if($has_error){
-          $fld_val['class'] = isset($fld_val['class']) ? $fld_val['class'].' error' : 'error';
-        }
-
-        // Assign value if provided as second argument
-        if(!empty($values) && isset($values[$fld_val['name']])){
-          if(in_array($fld_val['type'], ['radio', 'checkbox'])){
-            // Assign values for checkbox and radio
-            if(is_array($values[$fld_val['name']])){
-              foreach ($values[$fld_val['name']] as $checked_val) {
-                $fld_val['value'] == $checked_val
-                  ? $fld_val['checked'] = 'checked'
-                  : false;
-              }
-            } else {
-              if($fld_val['value'] == $values[$fld_val['name']]){
-                $fld_val['checked'] = 'checked';
-              }
-            }
-          } elseif(in_array($fld_val['type'], ['select', 'datalist'])){
-            // Assign values to Selections
-            $fld_val['selected'] = $values[$fld_val['name']];
-          } elseif(!isset($fld_val['value'])){
-            // Assign values to other fields
-            $fld_val['value'] = $values[$fld_val['name']];
-          }
-
-          // Show/Embed file after the field (Image, video, audio, doc, ect)
-          if(isset($fld_val['view_file']) && $fld_val['view_file'] === true){
-            $uploaded_file_DOM = embed_files_to_dom($values[$fld_val['name']]);
-
-            if(isset($fld_val['after'])){
-              $fld_val['after'] .= $uploaded_file_DOM;
-            } else {
-              $fld_val['after'] = $uploaded_file_DOM;
-            }
-          }
-        }
-
-        $type = isset($fld_val['type']) ? $fld_val['type'] : 'text';
-        $eachInputDOM = self::input($type, $fld_val, true);
-        $thisField = $eachInputDOM['field'];
-        $thisLabel = $eachInputDOM['label'];
-        $thisNote = $eachInputDOM['note'];
-
-        // Wrap input only (Internal)
-        if(isset($fld_val['input_wrapper'])){
-          $thisField = str_replace('##', "\n$thisField", $fld_val['input_wrapper']);
-        }
-
-        // Set field error if available
-        if($has_error && is_string($fld_val['name']) && !empty($fld_val['name'])){
-          $error_msg = isset($fld_val['field_error_wrapper']) 
-            ? str_replace('##', error($fld_val['name']), $fld_val['field_error_wrapper'])
-            : '<span class="field-error">'.error($fld_val['name']).'</span>';
-          $thisField .= $error_msg;
-        }
-
-        // Wrap input and label
-        $formInnerDOM = '';
-
-        // Add an element Before field
-        if(isset($fld_val['before'])){
-          $formInnerDOM .= $fld_val['before'];
-        }
-
-        if(isset($fld_val['wrapper']) && $fld_val['wrapper'] !== false){
-          $formInnerDOM .= str_replace('##', "\n".$thisLabel.$thisNote.$thisField."\n", $fld_val['wrapper'])."\n";
-        } else {
-          $formInnerDOM .= $thisLabel.$thisNote.$thisField;
-        }
-
-        // Render Raw HTML
-        if(isset($fld_val['html'])){
-          $formInnerDOM .= $fld_val['html'];
-        }
-        if(isset($fld_val['raw_html'])){
-          $formInnerDOM .= $fld_val['raw_html'];
-        }
-
-        // Add an element After field
-        if(isset($fld_val['after'])){
-          $formInnerDOM .= $fld_val['after'];
-        }
-
-        // Global each element wrapper
-        if(isset($args['field_options'])){
-          if(isset($args['field_options']['wrapper'])){
-            if(isset($fld_val['wrapper'])){
-              if($fld_val['wrapper'] !== false){
-                $formInnerDOM = str_replace('##', "\n".$formInnerDOM."\n", $args['field_options']['wrapper'])."\n";
-              }
-            } else {
-              $formInnerDOM = str_replace('##', "\n".$formInnerDOM."\n", $args['field_options']['wrapper'])."\n";
-            }
-          }
-        }
-
-        $form .= $formInnerDOM;
-      }
+      $form .= self::generateFormFields($args, $values);
     }
 
     // Close form
@@ -245,6 +127,224 @@ class Form {
     return $form;
   }
 
+  /**
+   * Generate Form Fields
+   * @param array $fields
+   * @param array $values
+   */
+  private static function generateFormFields($base_fields, $values=[], $prefix='') {
+    $html = '';
+    $fields = isset($base_fields['fields']) ? $base_fields['fields'] : $base_fields;
+    $is_cms = env('app', 'ENABLE_CMS');
+
+    foreach ($fields as $field) {
+      $name = isset($field['name']) ? $field['name'] : '';
+      $type = isset($field['type']) ? $field['type'] : false;
+      $label = isset($field['label']) ? $field['label'] : '';
+
+      // Add the prefix for the current field
+      $f_name = $prefix . ($is_cms ? $name : str_replace('_', '-', $name));
+      $is_single_repeatable = isset($field['repeat']) && $field['repeat'] === true;
+
+      // Update name if single repeatable field
+      if($is_single_repeatable || (in_array($type, ['checkbox', 'radio']) && isset($field['options']))){
+        $f_name .= '[]';
+      }
+
+      $field['name'] = $f_name;
+
+      // Get the value for the current field
+      $f_value = (!empty($values) && isset($values[$name])) ? $values[$name] : '';
+
+      // Check and add field errors
+      $has_error = isset($field['name']) && has_error( rtrim($field['name'], '[]') );
+
+      // Add global options for fields
+      $global_options = isset(self::$initial_form['field_options']) ? self::$initial_form['field_options'] : false;
+      if($global_options){
+        // Global field classes
+        if(isset($global_options['class'])){
+          if(isset($field['class'])){
+            $field['class'] .= ' '.$global_options['class'];
+          } else {
+            $field['class'] = $global_options['class'];
+          }
+        }
+
+        // Global label classes
+        if(isset($global_options['label_class'])){
+          if(isset($field['label_class'])){
+            $field['label_class'] .= ' '.$global_options['label_class'];
+          } else {
+            $field['label_class'] = $global_options['label_class'];
+          }
+        }
+      }
+
+      // Add error class if has error
+      if($has_error){
+        $field['class'] = isset($field['class']) ? $field['class'].' error' : 'error';
+      }
+
+      // Assign Value to field
+      if($f_value !== ''){
+        if(in_array($type, ['radio', 'checkbox'])){
+          // Assign value for checkbox and radio (Single value)
+          if(isset($field['value']) && is_string($f_value)){
+            ($field['value'] == $f_value) ? $field['checked'] = 'checked' : false;
+          }
+
+          // Multiple selection
+          if(isset($field['options']) && is_array($field['options']) && is_array($f_value)){
+            $field['value'] = $f_value;
+          }
+
+        } elseif(in_array($type, ['select', 'datalist'])){
+          // Assign values to Selections
+          $field['selected'] = $values[$name];
+        } elseif(!isset($field['value'])){
+          // Assign values to other fields
+          $field['value'] = $values[$name];
+        }
+
+        // Show/Embed file after the field (Image, video, audio, doc, ect)
+        if(isset($field['view_file']) && $field['view_file'] === true){
+          $uploaded_file_DOM = embed_files_to_dom($values[$name]);
+
+          if(isset($field['after'])){
+            $field['after'] .= $uploaded_file_DOM;
+          } else {
+            $field['after'] = $uploaded_file_DOM;
+          }
+        }
+      }
+
+      if(in_array($type, ['repeat', 'repeater', 'repeatable'])){
+        $repeaterFields = $field['fields'];
+
+        $repeater_label = isset($field['repeat_label']) ? $field['repeat_label'] : '+ Add New';
+        $max_repeat = isset($field['max_repeat']) ? 'data-ozz-repeat-max="'.$field['max_repeat'].'"' : '';
+
+        $html .= '
+        <fieldset class="ozz-fm__repeat" data-ozz-repeat="true" '.$max_repeat.'>
+          <legend class="ozz-fm__repeat-label">'.(isset($field['label']) ? $field['label'] : 'Untitled').'</legend>
+          <div class="ozz-fm__repeat-wrapper">';
+
+        if (is_array($f_value)) {
+          foreach ($f_value as $i => $repeaterValue) {
+            $html .= '<div class="ozz-fm__repeat-fields">';
+            $html .= '<div class="ozz-fm__repeat-head"><span class="ozz-fm__repeat-remove button micro danger">Delete</span></div>';
+            $html .= self::generateFormFields($repeaterFields, $repeaterValue, $f_name . '_'.$i.'_');
+            $html .= '</div>';
+          }
+        } else {
+          $html .= '<div class="ozz-fm__repeat-fields">';
+          $html .= '<div class="ozz-fm__repeat-head"><span class="ozz-fm__repeat-remove button micro danger">Delete</span></div>';
+          $html .= self::generateFormFields($repeaterFields, $values, $f_name . '_0_');
+          $html .= '</div>';
+        }
+
+        $html .= '</div>
+          <span class="ozz-fm__repeat-add button mini">'.$repeater_label.'</span>
+        </fieldset>';
+
+      } else {
+        // Generate Field HTML output
+        $eachInputDOM = self::input($type, $field, true);
+        $thisField = $eachInputDOM['field'];
+        $thisLabel = $eachInputDOM['label'];
+        $thisNote = $eachInputDOM['note'];
+
+        // Wrap input only (Internal)
+        if(isset($field['input_wrapper'])){
+          $thisField = str_replace('##', "\n$thisField", $field['input_wrapper']);
+        }
+
+        // Set field error if available
+        if($has_error && is_string($f_name) && !empty($f_name)){
+          $error_str = error(rtrim($f_name, '[]'));
+          $error_msg = isset($field['field_error_wrapper']) 
+            ? str_replace('##', $error_str, $field['field_error_wrapper'])
+            : '<span class="field-error">'.$error_str.'</span>';
+          $thisField .= $error_msg;
+        }
+
+        if(isset($field['html'])){
+          $thisField .= $field['html'];
+        }
+
+        // Single repeatable field
+        if($is_single_repeatable){
+          $repeater_label = isset($field['repeat_label']) ? $field['repeat_label'] : '+ Add New';
+          $max_repeat = isset($field['max_repeat']) ? 'data-ozz-repeat-max="'.$field['max_repeat'].'"' : '';
+
+          // Update 'value' by 'selected' attribute
+          isset($field['selected']) ? $field['value'] = $field['selected'] : false;
+
+          if (isset($field['value']) && is_array($field['value'])) {
+            // Single repeater with values
+            $thisField = '
+            <div class="ozz-fm__repeat single" data-ozz-repeat="true" '.$max_repeat.'>
+            <div class="ozz-fm__repeat-wrapper">';
+
+            foreach ($field['value'] as $i => $r_value) {
+              $field['value'] = $r_value;
+              $input = self::input($field['type'], $field, true);
+              $thisField .= '
+              <div class="ozz-fm__repeat-fields">
+                <div class="ozz-fm__repeat-fields-field">'
+                .$input['field'].
+                '</div>
+                <span class="ozz-fm__repeat-remove button micro danger">Delete</span>
+              </div>';
+            }
+
+            $thisField .= '</div><span class="ozz-fm__repeat-add button mini">'.$repeater_label.'</span></div>';
+          } else {
+            // Single repeater without values
+            $thisField = '
+            <div class="ozz-fm__repeat single" data-ozz-repeat="true" '.$max_repeat.'>
+              <div class="ozz-fm__repeat-wrapper">
+                <div class="ozz-fm__repeat-fields">
+                  <div class="ozz-fm__repeat-fields-field">'.$thisField.'</div>
+                  <span class="ozz-fm__repeat-remove button micro danger">Delete</span>
+                </div>
+              </div>
+              <span class="ozz-fm__repeat-add button mini">'.$repeater_label.'</span>
+            </div>';
+          }
+        }
+
+        // Wrap input and label
+        $formInnerDOM = '';
+
+        // Add an element Before field
+        if(isset($field['before'])){
+          $formInnerDOM .= $field['before'];
+        }
+
+        if(isset($field['wrapper']) && $field['wrapper'] !== false){
+          $formInnerDOM .= str_replace('##', "\n".$thisLabel.$thisNote.$thisField."\n", $field['wrapper'])."\n";
+        } else {
+          $formInnerDOM .= $thisLabel.$thisNote.$thisField;
+        }
+
+        // Add an element After field
+        if(isset($field['after'])){
+          $formInnerDOM .= $field['after'];
+        }
+
+        // Global each element wrapper
+        if($global_options !== false && isset($global_options['wrapper'])){
+          $formInnerDOM = str_replace('##', "\n".$formInnerDOM."\n", $global_options['wrapper'])."\n";
+        }
+
+        $html .= $formInnerDOM;
+      }
+    }
+
+    return $html;
+  }
 
   /**
    * Default input field generator
@@ -253,6 +353,7 @@ class Form {
     // Set input field
     $thisField = '';
     $attrs_only = $args;
+    $is_single_repeatable = (isset($args['repeat']) && $args['repeat'] === true) ? true : false;
 
     // Validation Attrs
     if(isset($args['validate'])) {
@@ -278,6 +379,10 @@ class Form {
       $attrs_only['selected'],
       $attrs_only['field_error_wrapper'],
       $attrs_only['view_file'],
+      $attrs_only['html'],
+      $attrs_only['repeat_label'],
+      $attrs_only['max_repeat'],
+      $attrs_only['repeat'],
     );
 
     // Label
@@ -302,7 +407,7 @@ class Form {
     }
 
     // Set up field by input type
-    if(in_array($type, self::$inputTypes)){
+    if(in_array($type, self::$input_types)){
       // Input field
       $this_attrs = '';
       foreach ($attrs_only as $ky => $vl) {
@@ -311,9 +416,34 @@ class Form {
           $this_attrs .= " {$ky}=\"{$vl}\"";
         }
       }
-      $thisField = '<input type="'.$type.'"'.$this_attrs.'>'."\n";
-    } elseif(in_array($type, self::$tagTypes)){
+
+      if(in_array($type, ['radio', 'checkbox']) && isset($args['options']) && is_array($args['options'])){
+        $has_value = (isset($args['value']) && is_array($args['value'])) ? $args['value'] : false;
+        $thisField = '<div class="ozz-fm__'.$type.'-wrapper">';
+        $thisField .= '<input type="hidden" name="'.rtrim($args['name'], '[]').'" value="0">';
+        foreach ($args['options'] as $key => $val) {
+          $c_vl = is_string($key) ? $key : $val;
+          $id = rtrim($args['name'], '[]').'-id-'.$key;
+          $checked = '';
+
+          if($has_value){
+            foreach ($has_value as $vl) {
+              if($vl == $c_vl){
+                $checked = 'checked';
+                break;
+              }
+            }
+          }
+
+          $thisField .= "<div class=\"ozz-fm__$type\"><input type=\"$type\"$this_attrs id=\"$id\" $checked value=\"$c_vl\"><label for=\"$id\">$val</label></div>\n";
+        }
+        $thisField .= '</div>';
+      } else {
+        $thisField = "<input type=\"$type\"$this_attrs>\n";
+      }
+    } elseif(in_array($type, self::$tag_types)){
       // Tag input field
+      ($type === 'textarea' && !isset($attrs_only['rows'])) ? $attrs_only['rows'] = 5 : false;
       $this_attrs = '';
       foreach ($attrs_only as $ky => $vl) {
         if(!is_array($vl)){
@@ -323,23 +453,30 @@ class Form {
       }
 
       $thisField = '<'.$type.$this_attrs.'>';
-      $thisField .= $args['value'] ?? '';
+      $thisField .= (isset($args['value']) && is_string($args['value'])) ? $args['value'] : '';
       $thisField .= '</'.$type.'>';
-    } elseif(in_array($type, self::$tagOptionTypes)){
+    } elseif(in_array($type, self::$tag_option_types)){
       // Tag option fields
       $optionField = '';
       $this_attrs = '';
 
+      // Selected / Value item (if exist)
+      $selected_val = isset($args['selected']) ? $args['selected'] : '';
+      $this_value = isset($args['value']) ? $args['value'] : '';
+
       // Datalist
       if($type == 'datalist'){
+        $fld_id = isset($args['id']) ? $args['id'] : $args['name'];
+
         foreach ($attrs_only as $ky => $vl) {
           if(!is_array($vl)){
             $vl = is_bool($vl) ? ($vl ? 'true' : 'false') : $vl;
             $this_attrs .= ($ky !== 'id') ? " {$ky}=\"{$vl}\"" : '';
           }
         }
-        $optionField .= "<input list=\"{$args['id']}\"{$this_attrs}>";
-        $optionField .= '<'.$type.' id="'.$args['id'].'"'.$this_attrs.'>'."\n";
+
+        $optionField .= "<input list=\"{$fld_id}\"{$this_attrs} value=\"{$selected_val}\">";
+        $optionField .= '<'.$type.' id="'.$fld_id.'"'.$this_attrs.'>'."\n";
       } else {
         foreach ($attrs_only as $ky => $vl) {
           if(!is_array($vl)){
@@ -350,32 +487,31 @@ class Form {
         $optionField .= '<'.$type.$this_attrs.'>'."\n";
       }
 
-      if(isset($args['options'])){
+      // Default Options
+      if (isset($args['options'])) {
         foreach ($args['options'] as $k => $option) {
-          $selected = '';
-          if(isset($args['selected'])){
-            if($args['selected'] == $k || $args['selected'] == $option) {
-              $selected = 'selected';
-            }
-          }
+          $selected = (in_array($selected_val, [$k, $option]) || in_array($this_value, [$k, $option])) ? 'selected' : '';
 
-          if($type == 'datalist'){
-            $optionField .= '<option value="'.$option.'" '.$selected.'></option>'."\n";
+          if ($type == 'datalist') {
+            $optionField .= '<option value="'.$option.'">'.PHP_EOL;
           } else {
-            $optionField .= '<option value="'.$k.'" '.$selected.'>'.$option.'</option>'."\n";
+            $optionField .= '<option value="'.(is_string($k) ? $k : $option).'" '.$selected.'>'.$option.'</option>'. PHP_EOL;
           }
         }
       }
 
-      if(isset($args['optgroup'])){
+      // Option group
+      if (isset($args['optgroup'])) {
         foreach ($args['optgroup'] as $ky => $val) {
-          $optionField .= '<optgroup label="'.$val['label'].'">';
+          $optionField .= '<optgroup label="' . $val['label'] . '">' . PHP_EOL;
           foreach ($val['options'] as $k => $option) {
-            $optionField .= '<option value="'.$k.'">'.$option.'</option>'."\n";
+            $selected = (in_array($selected_val, [$k, $option]) || in_array($this_value, [$k, $option])) ? 'selected' : '';
+            $optionField .= '<option value="'.(is_string($k) ? $k : $option).'" '.$selected.'>'.$option.'</option>'.PHP_EOL;
           }
-          $optionField .= '</optgroup>';
+          $optionField .= '</optgroup>'.PHP_EOL;
         }
       }
+
       $optionField .= '</'.$type.'>'."\n";
       $thisField = $optionField;
     }

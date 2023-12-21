@@ -2,33 +2,33 @@
 /**
  * View Name: media
  * Path: view/admin/media
- * --
+ * 
  * @param array $data arguments passed from controller or route
  */
+
+$current_dir = '';
+
 ?>
 {{ title        = "Media" }}
 {{ body_class   = "view-media" }}
 
 {{ content }}
   <br>
-  <div class="common-alert-bar">
-    <?=show_errors()?>
-  </div>
-
   <div class="ozz-media-manager">
-    <div class="ozz-media-manager__breadcrumb">
-      <a href="/admin/media" class="ozz-media-manager__breadcrumb-home"><span></span></a>
-      <?php
-      $current_dir = '';
-      foreach ($media_directory_tree as $key => $dir) :
-        $separator = $key !== 0 && $key !== count($media_directory_tree) ? '/' : '';
-        $current_dir .= $separator.$dir;
-      ?>
-        <a href="/admin/media?dir=<?=urlencode($current_dir)?>" title="<?=$dir?>">
-          <?= char_limit($dir, 10, '..') ?>
-        </a> /
-      <?php endforeach; ?>
-    </div>
+    <?php if (!empty($media_directory_tree)) : ?>
+      <div class="ozz-media-manager__breadcrumb">
+        <a href="/admin/media" class="ozz-media-manager__breadcrumb-home"><span></span></a>
+        <?php
+        foreach ($media_directory_tree as $key => $dir) :
+          $separator = $key !== 0 && $key !== count($media_directory_tree) ? '/' : '';
+          $current_dir .= $separator.$dir;
+        ?>
+          <a href="/admin/media?dir=<?=urlencode($current_dir)?>" title="<?=$dir?>">
+            <?= char_limit($dir, 15, '..') ?>
+          </a> /
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
 
     <!-- Media Actions -->
     <div class="ozz-media-manager__actions">
@@ -39,7 +39,7 @@
           <?php _create_form([
           'method' => 'post',
           'action' => '/admin/media/action?q=create_folder',
-          'class' => 'ozz-form',
+          'class' => 'ozz-fm',
           'fields' => [
             [
               'name' => 'ozz_media_current_directory',
@@ -48,8 +48,9 @@
             ],[
               'name' => 'ozz_media_folder_name',
               'type' => 'text',
-              'label' => 'Folder Name',
-              'note' => $current_dir.'/'
+              'label' => 'Directory Name',
+              'note' => $current_dir.'/',
+              'data-ozz-validate' => 'test',
             ],[
               'name' => 'ozz_media_create_folder_submit',
               'type' => 'submit',
@@ -67,7 +68,7 @@
           <?php _create_form([
           'method' => 'post',
           'action' => '/admin/media/action?q=create_file',
-          'class' => 'ozz-form',
+          'class' => 'ozz-fm',
           'fields' => [
             [
               'name' => 'ozz_media_current_directory',
@@ -96,7 +97,7 @@
             'method' => 'post',
             'enctype' => 'multipart/form-data',
             'action' => '/admin/media/action?q=upload_file',
-            'class' => 'ozz-form',
+            'class' => 'ozz-fm',
             'fields' => [
               [
                 'name' => 'ozz_media_current_directory',
@@ -122,7 +123,7 @@
         <?php _create_form([
           'method' => 'post',
           'action' => '/admin/media/action?q=delete_dir',
-          'class' => 'ozz-form',
+          'class' => 'ozz-fm',
           'fields' => [
             [
               'name' => 'ozz_media_current_directory',
@@ -142,13 +143,12 @@
       <div class="ozz-media-manager__actions-action search">
         <?php _create_form([
           'method' => 'post',
-          'class' => 'ozz-form',
+          'class' => 'ozz-fm',
           'fields' => [
             [
-              'name' => 'ozz_media_upload_file',
+              'name' => 'ozz_media_search_keyword',
               'type' => 'search',
               'placeholder' => 'Search',
-              'class' => 'ozz-upload-button'
             ],[
               'name' => 'ozz_media_search',
               'value' => 'Search',
