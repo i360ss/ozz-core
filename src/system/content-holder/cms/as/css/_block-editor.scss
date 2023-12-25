@@ -2,6 +2,22 @@
   display: none;
 }
 .ozz-block-editor-wrapper {
+  &.lay1 {
+    .ozz-block-editor {
+      grid-template-columns: 150px 1fr;
+      &__block-picker-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+  &.lay2 {
+    .ozz-block-editor {
+      grid-template-columns: 280px 1fr;
+      &__block-picker-content {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  }
   .ozz-block-editor-head {
     display: grid;
     grid-template-columns: 1fr 30px;
@@ -23,14 +39,15 @@
     position: fixed;
     width: calc(100% - 200px);
     height: 100vh;
-    top: 60px;
+    top: 46px;
     left: 200px;
+    padding: 20px;
     background: color(light1);
     overflow-y: auto;
     z-index: 997;
     .ozz-block-editor-head {
       position: fixed;
-      top: 60px;
+      top: 50px;
       width: calc(100% - 240px);
       grid-template-columns: 1fr 40px;
       padding-top: 10px;
@@ -45,6 +62,12 @@
       width: calc(100% - 50px);
       &__block-picker {
         top: 30px;
+      }
+      &__block-picker-head {
+        top: 30px;
+      }
+      &__block-picker-content {
+        top: 78px;
       }
     }
     &.collapsed {
@@ -64,14 +87,39 @@
   padding: 14px;
   border-radius: $radius1;
   // Block stock
-  &__block-picker {
+  &__block-picker-head {
+    position: sticky;
+    top: 60px;
+    width: calc(100% - 14px);
+    margin-bottom: 14px;
+    border-radius: 5px;
+    color: color(dark1);
+    .lay {
+      @include icon-sprite;
+      display: inline-table;
+      width: 30px;
+      height: 30px;
+      margin: 0 !important;
+      font-size: 0;
+      &:hover {
+        border-color: color(primary);
+      }
+    }
+    .lay1 {
+      background-position: -153px -113px;
+    }
+    .lay2 {
+      background-position: -188px -113px;
+    }
+  }
+  &__block-picker-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 8px;
     padding: 0 12px 60px 0;
     margin-bottom: auto;
     position: sticky;
-    top: 74px;
+    top: 102px;
     max-height: 100vh;
     overflow-y: auto;
     li.pick-block {
@@ -84,6 +132,7 @@
       font-size: $font-small-2;
       position: relative;
       box-shadow: $shadow1;
+      word-wrap: anywhere;
       cursor: grab;
       &:before {
         @include icon-draggable();
@@ -104,11 +153,13 @@
       }
     }
   }
+  &.layout-2 {
+    grid-template-columns: 150px 1fr;
+    .ozz-block-editor__block-picker-content {
+      grid-template-columns: 1fr;
+    }
+  }
   &__form-loader {
-    padding: 14px;
-    border: 1px solid color(gray1);
-    border-style: dashed;
-    border-radius: $radius1;
     .missing-block {
       padding: 14px 24px;
       background: rgba(color(danger), 0.1);
@@ -202,6 +253,6 @@
 }
 .block-editor-field {
   &:not(:last-child) {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
 }

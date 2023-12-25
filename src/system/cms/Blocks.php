@@ -102,7 +102,13 @@ trait Blocks {
       <label>Block Editor</label>
       <span class="ozz-block-editor-expand-button" title="Expand Block Editor"></span></div>
       <div class="ozz-block-editor" data-blocks="'.htmlspecialchars(json_encode($this->cms_blocks), ENT_QUOTES, 'UTF-8').'">
-      <div class="ozz-block-editor__block-picker"></div>
+      <div class="ozz-block-editor__block-picker">
+        <div class="ozz-block-editor__block-picker-head">
+          <span title="Two Columns" class="button micro light lay lay2 active" data-lay="lay2">Two Columns</span>
+          <span title="One Column" class="button micro light lay lay1" data-lay="lay1">One Column</span>
+        </div>
+        <div class="ozz-block-editor__block-picker-content"></div>
+      </div>
       <div class="ozz-block-editor__form-loader">'.$block_dom.'</div>
       </div>'
     ];

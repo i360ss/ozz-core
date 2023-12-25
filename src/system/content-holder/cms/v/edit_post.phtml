@@ -46,7 +46,7 @@
 
           <p class="item"><strong>Language:</strong> <?=lang_name($form_data['lang'])?></p>
 
-          <p class="item available-translations separator"><strong>Available Translations:</strong> <br>
+          <p class="item available-translations"><strong>Available Translations:</strong> <br>
             <?php foreach ($form_data['translated_to'] as $code => $language) : ?>
               <a href="/lang/<?=$code?>" class="button mini light<?=$code == APP_LANG ? ' active' : '';?>">
                 <?=$language?>
@@ -55,7 +55,7 @@
           </p>
 
           <?php if (isset($form_data['id'])) :?>
-            <div class="item language-duplicator separator"><strong>Duplicate to:</strong> <br>
+            <div class="item language-duplicator"><strong>Duplicate to:</strong> <br>
               <form action="/admin/post/duplicate" method="post" class="ozz-fm">
                 <?=CSRF_FIELD?>
                 <input type="hidden" name="post_id" value="<?=$form_data['id']?>">

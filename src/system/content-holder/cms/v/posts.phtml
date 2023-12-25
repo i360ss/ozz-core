@@ -13,17 +13,28 @@
   <h1 class="heading">Post types</h1>
 
   <div class="listing-s1">
+    <div class="listing-s1__top-bar">
+      <div class="align-left">
+        <span>Post Types: <strong><?=count($post_data)?></strong></span> | 
+        <span>Total Posts: <strong><?=$total_posts?></strong></span>
+      </div>
+    </div>
+
     <div class="table">
       <?php foreach ($post_data as $type => $value) : ?>
         <div class="table__tr-wrapper">
           <a href="/admin/posts/<?=$type?>" class="table__row">
             <div class="table__cell">
               <span class="listing-s1__title">
-                <strong><?=$value['label']?></strong> <span class="slug"><?=$type?></span>
+                <strong><?=$value['label']?></strong>
               </span>
-              <?php if (isset($value['note'])) :?>
+              <?php if (isset($value['note']) && $value['note'] !== '') :?>
                 <span class="note light-text"><?=$value['note']?></span>
               <?php endif; ?>
+            </div>
+
+            <div class="table__cell">
+              <span class="slug"><?=$type?></span>
             </div>
 
             <div class="table__cell align-right f-14">
@@ -40,13 +51,6 @@
           </div>
         </div>
       <?php endforeach; ?>
-    </div>
-
-    <div class="listing-s1__bottom">
-      <div class="align-right">
-        <span>Post Types: <strong><?=count($post_data)?></strong></span> | 
-        <span>Total Posts: <strong><?=$total_posts?></strong></span>
-      </div>
     </div>
   </div>
 {{ content-end }}

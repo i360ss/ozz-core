@@ -233,15 +233,23 @@ class Form {
         if (is_array($f_value)) {
           foreach ($f_value as $i => $repeaterValue) {
             $html .= '<div class="ozz-fm__repeat-fields">';
-            $html .= '<div class="ozz-fm__repeat-head"><span class="ozz-fm__repeat-remove button micro danger">Delete</span></div>';
-            $html .= self::generateFormFields($repeaterFields, $repeaterValue, $f_name . '_'.$i.'_');
+            $html .= '<div class="ozz-fm__repeat-head">';
+            $html .= '<span class="ozz-fm__repeat-number">'.((int) $i + 1).'</span>';
+            $html .= '<span class="ozz-fm__repeat-remove button micro danger">Delete</span>';
             $html .= '</div>';
+            $html .= '<div class="ozz-fm__repeat-body">';
+            $html .= self::generateFormFields($repeaterFields, $repeaterValue, $f_name . '_'.$i.'_');
+            $html .= '</div></div>';
           }
         } else {
           $html .= '<div class="ozz-fm__repeat-fields">';
-          $html .= '<div class="ozz-fm__repeat-head"><span class="ozz-fm__repeat-remove button micro danger">Delete</span></div>';
-          $html .= self::generateFormFields($repeaterFields, $values, $f_name . '_0_');
+          $html .= '<div class="ozz-fm__repeat-head">';
+          $html .= '<span class="ozz-fm__repeat-number">1</span>';
+          $html .= '<span class="ozz-fm__repeat-remove button micro danger">Delete</span>';
           $html .= '</div>';
+          $html .= '<div class="ozz-fm__repeat-body">';
+          $html .= self::generateFormFields($repeaterFields, $values, $f_name . '_0_');
+          $html .= '</div></div>';
         }
 
         $html .= '</div>
@@ -292,6 +300,7 @@ class Form {
               $input = self::input($field['type'], $field, true);
               $thisField .= '
               <div class="ozz-fm__repeat-fields">
+                <span class="ozz-fm__repeat-number">'.((int) $i + 1).'</span>
                 <div class="ozz-fm__repeat-fields-field">'
                 .$input['field'].
                 '</div>
@@ -306,6 +315,7 @@ class Form {
             <div class="ozz-fm__repeat single" data-ozz-repeat="true" '.$max_repeat.'>
               <div class="ozz-fm__repeat-wrapper">
                 <div class="ozz-fm__repeat-fields">
+                  <span class="ozz-fm__repeat-number">1</span>
                   <div class="ozz-fm__repeat-fields-field">'.$thisField.'</div>
                   <span class="ozz-fm__repeat-remove button micro danger">Delete</span>
                 </div>

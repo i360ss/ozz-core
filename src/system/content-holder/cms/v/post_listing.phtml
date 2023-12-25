@@ -10,7 +10,7 @@
 {{ body_class   = "post post__listing" }}
 
 {{ content }}
-<h1>Post: <?=$post_type_label?></h1>
+<h1>Posts: <?=$post_type_label?></h1>
 <div class="listing-s2">
   <div class="listing-s2__header">
     <div class="listing-s2__filter" 
@@ -50,6 +50,7 @@
         <tr>
           <td>
             <span class="title"><?=$value['title']?></span>
+            <a href="/admin/posts/edit/<?=$value['post_type']?>/<?=$value['post_id']?>" class="anchor-wrapper"></a>
           </td>
           <td width="120px">
             <span class="label <?=$value['post_status']?>">

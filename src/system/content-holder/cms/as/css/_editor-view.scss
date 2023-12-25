@@ -24,6 +24,7 @@
       }
       &.language-duplicator {
         .ozz-fm {
+          padding: 0;
           box-shadow: none;
         }
         .inner {
@@ -66,6 +67,17 @@
         display: inline-block;
         font-size: $font-small-2;
         color: color(secondary);
+      }
+    }
+  }
+  .ozz-fm {
+    &.edit-fm,
+    &.create-fm {
+      .ozz-fm__field {
+        &:last-child {
+          padding: 0;
+          margin: 0;
+        }
       }
     }
   }

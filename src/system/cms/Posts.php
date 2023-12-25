@@ -288,6 +288,7 @@ trait Posts {
     // Add form class
     $form_class = 'ozz-fm';
     $form['class'] = isset($form['class']) ? $form['class'].' '.$form_class : $form_class;
+    $form['class'] .= ' '.$form_type.'-fm';
 
     // Add default fields
     $form['fields'] = array_merge($this->post_default_fields, $form['fields']);

@@ -1,13 +1,16 @@
 .cms-header {
   z-index: 998;
   padding: 0 42px;
+  &,
+  &__right-content,
+  &__language-switch {
+    height: 46px;
+  }
   &__container {
     display: grid;
     grid-template-columns: 1fr auto;
   }
   &__right-content {
-    max-height: 65px;
-    padding: 6px 0;
     display: grid;
     grid-template-columns: auto auto auto;
     align-items: center;
@@ -18,7 +21,9 @@
   }
   &__user-info {
     position: relative;
-    padding: 0 20px 11px 20px;
+    height: 46px;
+    margin-top: 6px;
+    padding: 0 10px;
     &:hover {
       .cms-header__info {
         display: block;
@@ -26,21 +31,22 @@
     }
   }
   &__avatar {
-    width: 47px;
-    height: 47px;
+    display: flex;
+    align-items: center;
     border-radius: 50%;
     overflow: hidden;
     cursor: pointer;
     img {
+      width: 35px;
+      height: 35px;
       object-fit: cover;
-      max-width: 100%;
     }
   }
   &__info {
     display: none;
     position: absolute;
     padding: 20px;
-    top: 56px;
+    top: 40px;
     right: 0;
     background: color(white);
     box-shadow: $shadow1;
@@ -55,7 +61,6 @@
     }
   }
   &__language-switch {
-    padding: 6px 0 14px 0;
     cursor: pointer;
     &:hover {
       .dropdown {
@@ -64,7 +69,9 @@
     }
     .current-lang {
       position: relative;
-      display: inline-block;
+      height: 38px;
+      display: flex;
+      align-items: center;
       font-weight: 500;
       padding: 6px 35px 6px 6px;
       &:after {
@@ -80,9 +87,9 @@
     .dropdown {
       display: none;
       position: absolute;
+      top: 30px;
       max-height: 80vh;
       overflow-y: auto;
-      margin: 14px 0 0;
       padding: 0;
       text-align: left;
       box-shadow: $shadow1;
@@ -103,6 +110,7 @@
     }
   }
 }
+// Main nav
 .cms-nav {
   position: sticky;
   position: -webkit-sticky;
@@ -110,7 +118,7 @@
   height: 100vh;
   width: 200px;
   padding-top: 100px;
-  background: color(dark1);
+  background: color(dark);
   z-index: 999;
   &__logo {
     position: absolute;
@@ -149,9 +157,8 @@
       &.active {
         > a {
           color: color(white);
-          background: color(primary-dark);
+          background: color(dark1);
           &:before {
-            background-color: color(primary-dark);
             background-position-y: -30px !important;
             opacity: 1;
           }
@@ -242,33 +249,47 @@
           }
         }
       }
+      // Sub Nav
       > ul {
         display: none;
         position: absolute;
-        width: 200px;
+        width: 250px;
         height: 100%;
         left: 100%;
         top: 0;
-        padding: 0;
-        background: color(primary);
+        padding: 0 0 40px;
+        background: color(dark1);
+        overflow-y: auto;
         label {
-          display: inline-block;
+          position: sticky;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          top: 0;
           width: 100%;
           padding: 24px 10px 24px 20px;
           font-weight: 600;
+          background: color(dark1);
           color: color(white);
         }
         > li {
           padding: 0;
           list-style: none;
+          &.active {
+            a {
+              background: color(dark2);
+            }
+          }
           a {
             color: color(white);
+            font-size: $font-small-3;
             font-weight: 400;
             padding: 10px 10px 10px 20px;
             display: inline-block;
             width: 100%;
             &:hover {
-              background: color(primary-dark);
+              background: color(primary);
               color: color(white);
             }
           }
@@ -307,12 +328,13 @@
     > ul {
       > li {
         > a {
+          display: block;
           color: transparent;
           font-size: 0;
-          height: 29px;
+          height: 45px;
           padding: 0;
           &:before {
-            top: -16px;
+            top: 0;
           }
         }
       }

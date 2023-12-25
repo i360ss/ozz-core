@@ -13,27 +13,31 @@
   <h1 class="heading">Blocks</h1>
 
   <div class="listing-s1">
+    <div class="listing-s1__top-bar">
+      <div class="align-left">
+        <span>Total Blocks: <strong><?=count($blocks)?></strong></span>
+      </div>
+    </div>
+
     <div class="table">
       <?php foreach ($blocks as $type => $block) : ?>
         <div class="table__tr-wrapper">
           <a href="/admin/blocks/<?=$type?>" class="table__row">
             <div class="table__cell">
               <span class="listing-s1__title">
-                <strong><?=$block['label']?></strong> <span class="slug"><?=$block['name']?></span>
+                <strong><?=$block['label']?></strong>
               </span>
-              <?php if (isset($value['note'])) :?>
+              <?php if (isset($value['note']) && $value['note'] !== '') :?>
                 <span class="note light-text"><?=$value['note']?></span>
               <?php endif; ?>
+            </div>
+
+            <div class="table__cell">
+              <span class="slug"><?=$block['name']?></span>
             </div>
           </a>
         </div>
       <?php endforeach; ?>
-    </div>
-
-    <div class="listing-s1__bottom">
-      <div class="align-right">
-        
-      </div>
     </div>
   </div>
 {{ content-end }}

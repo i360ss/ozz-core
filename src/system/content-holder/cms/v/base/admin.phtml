@@ -15,9 +15,9 @@ $user = (object) Auth::info();
   <title>{% title %}</title>
   <meta name="csrf-token" content="<?=CSRF_TOKEN?>">
   <link rel="icon" type="image/x-icon" href="<?=ASSETS?>icons/favicon.svg">
-  <link rel="stylesheet" href="<?=ASSETS?>admin/css/admin.css" nonce="<?=CSP_NONCE?>">
+  <link rel="stylesheet" href="<?=ASSETS?>admin/css/admin.min.css" nonce="<?=CSP_NONCE?>">
 </head>
-<body class="ozz-cms {% body_class %}">
+<body class="ozz-cms {% body_class %} dark-theme0">
   <div class="app-container">
 
     <!-- Main navigation -->
@@ -38,11 +38,11 @@ $user = (object) Auth::info();
             </label>
               <?php
                 foreach ($data['post_types'] as $key => $value) :
-                  $active_cls = (isset($context['url_parts'][3]) && $context['url_parts'][3] == $key) ? 'active' : '';
+                  $active_cls = (isset($context['url_parts'][3]) && $context['url_parts'][3] == $key)
+                    ?'class="active"'
+                    : '';
               ?>
-                <li class="<?=$active_cls?>">
-                  <a href="/admin/posts/<?=$key?>"><?=ucfirst($value['label'])?></a>
-                </li>
+                <li <?=$active_cls?>><a href="/admin/posts/<?=$key?>"><?=ucfirst($value['label'])?></a></li>
               <?php endforeach; ?>
           </ul>
         </li>

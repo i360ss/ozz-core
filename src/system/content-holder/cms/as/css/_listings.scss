@@ -2,8 +2,19 @@
 .listing-s1 {
   &__title {
     display: block;
-    margin: 0 0 6px;
-    font-size: $font-semi-normal;
+    font-size: $font-normal;
+  }
+  .note {
+    padding-top: 8px;
+    display: block;
+  }
+  .slug {
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: $font-small-2;
+    color: color(dark);
+    background: color(light2);
+    border: 1px solid color(silver);
   }
   .table {
     width: 100%;
@@ -11,12 +22,12 @@
       display: grid;
       grid-template-columns: 1fr auto;
       background: color(white);
-      margin-bottom: 10px;
-      border: 1px solid transparent;
-      border-left: 6px solid color(primary);
+      margin-bottom: 2px;
+      border-left: 2px solid color(primary);
+      border-radius: 3px;
       box-shadow: $shadow1;
       &:hover {
-        border-color: color(primary);
+        background: color(light2);
         .listing-s1__title {
           color: color(primary);
         }
@@ -32,7 +43,7 @@
       display: block;
       align-items: center;
       width: 100%;
-      padding: 14px;
+      padding: 10px 10px 10px 16px;
     }
     &__action {
       display: grid;
@@ -40,12 +51,21 @@
       align-items: center;
     }
   }
-  &__bottom {
+  &__top-bar {
     padding: 10px 14px;
-    background: color(primary);
-    color: color(white);
+    margin-bottom: 4px;
+    background: color(white);
+    color: color(dark);
+    box-shadow: $shadow1;
+    border-radius: 3px;
+    strong {
+      color: color(primary-dark);
+    }
     .align-right {
       text-align: right;
+    }
+    .align-left {
+      text-align: left;
     }
   }
 }
@@ -54,11 +74,10 @@
 .listing-s2 {
   &__header {
     background: color(white);
-    padding: 14px;
+    padding: 8px;
     display: grid;
     grid-template-columns: auto auto;
     align-items: center;
-    box-shadow: $shadow1;
   }
   &__filter {
     .tab-button {
@@ -71,21 +90,21 @@
     width: 100%;
     thead {
       position: sticky;
-      top: 60px;
+      top: 46px;
       tr {
-        background: color(primary);
+        background: color(light2);
         padding: 14px;
         th {
           text-align: left;
-          padding: 14px;
-          color: color(white);
+          padding: 5px 14px;
+          color: color(dark2);
         }
       }
     }
     tbody {
       tr {
+        position: relative;
         background: color(white);
-        box-shadow: $shadow1;
         cursor: pointer;
         .row-number {
           padding: 14px;
@@ -94,7 +113,7 @@
           color: color(gray1);
         }
         &:hover {
-          box-shadow: 0 0 0 2px color(primary) inset;
+          background: color(light2);
           .title {
             color: color(primary);
           }
@@ -104,20 +123,30 @@
             }
           }
         }
-        th,
         td {
-          padding: 14px;
+          padding: 10px 14px;
           border: none;
+          .title {
+            font-weight: 500;
+            color: color(dark);
+          }
+        }
+        .anchor-wrapper {
+          position: absolute;
+          display: inline-block;
+          left: 0;
+          top: 0;
+          width: calc(100% - 200px);
+          height: 100%;
         }
       }
       .tr-action {
         text-align: right;
+        padding: 6px 10px 0 0;
         .show-on-hover {
           display: none;
           justify-content: right;
-          gap: 6px;
-          height: 28px;
-          padding: 0;
+          gap: 0 6px;
         }
       }
     }

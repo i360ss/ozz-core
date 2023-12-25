@@ -89,12 +89,12 @@ function ozzCmsBlockEditor() {
     ozzBlockEditor.forEach(blockEditor => {
       // Add wrapper class
       const blockEditorWrapper = blockEditor.closest('.ozz-fm__field');
-      blockEditorWrapper.classList.add('ozz-block-editor-wrapper');
+      blockEditorWrapper.classList.add('ozz-block-editor-wrapper', 'lay2');
       addCommonEvents();
 
       const
         blocksArr = JSON.parse(blockEditor.getAttribute('data-blocks')),
-        blockPicker = blockEditor.querySelector('.ozz-block-editor__block-picker'),
+        blockPicker = blockEditor.querySelector('.ozz-block-editor__block-picker-content'),
         blockFormLoader = blockEditor.querySelector('.ozz-block-editor__form-loader');
 
       let blockListDOM = ``;
@@ -158,7 +158,7 @@ function ozzCmsBlockEditor() {
         usedBlocks.forEach((block, ind) => {
           const thisBlockFields = block.querySelectorAll('input, textarea, button, progress, meter, select, datalist');
           thisBlockFields.forEach((field) => {
-            const newName = `i-${ind}__${ field.name.replace(/^i-\d+__/, '') }`;
+            const newName = `i-${ind}_${ field.name.replace(/^i-\d+_/, '') }`;
             field.name = newName;
           });
         });
@@ -196,6 +196,18 @@ function ozzCmsBlockEditor() {
           blockEditorWrapper.querySelector('.ozz-block-editor-expand-button').addEventListener('click', () => {
             toggleBlockEditorCollapse(blockEditorWrapper);
             toggleBlockEditorExpand(blockEditorWrapper);
+          });
+
+          // Block stock layout
+          const layouts = blockEditorWrapper.querySelectorAll('.ozz-block-editor__block-picker-head .lay');
+          layouts.forEach(layout => {
+            layout.addEventListener('click', (el) => {
+              const layoutName = el.target.getAttribute('data-lay');
+              layouts.forEach(lay => { lay.classList.remove('active'); });
+              el.target.classList.add('active');
+              blockEditorWrapper.classList.remove('lay1', 'lay2');
+              blockEditorWrapper.classList.add(layoutName);
+            })
           });
         }
       }

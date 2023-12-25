@@ -27,10 +27,13 @@ a {
 }
 .light-text {
   color: color(gray1);
-  font-size: $font-normal;
+  font-size: $font-small-2;
 }
 .align-right {
   text-align: right;
+}
+.f-14 {
+  font-size: $font-small-2;
 }
 
 .icon-button {
@@ -98,6 +101,7 @@ a {
 // Forms
 .form,
 .ozz-fm {
+  padding: 18px;
   border-radius: $radius1;
   box-shadow: $shadow1;
   background: color(white);
@@ -106,7 +110,7 @@ a {
   }
   .ozz-default-save-button {
     position: fixed;
-    top: 9px;
+    top: 4px;
     right: 240px;
     z-index: 999;
     &.edit,
@@ -143,7 +147,7 @@ a {
     }
   }
   &__field {
-    padding: 18px 18px 0;
+    margin-bottom: 20px;
     label {
       display: inline-block;
       padding-bottom: 8px;
@@ -151,6 +155,7 @@ a {
     }
     .field_note {
       float: right;
+      padding-right: 5px;
       color: color(gray1);
       font-style: italic;
       font-size: $font-small-2;
@@ -168,54 +173,63 @@ a {
       transform: translateY(-5px);
     }
   }
-  input[type="checkbox"] {
-    cursor: pointer;
-    position: relative;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    background: color(light1);
-    border-radius: 3px;
-    border: 1px solid rgba(color(gray1), 0.7);
-    &:checked {
-      &:after {
-        content: '';
-        position: absolute;
-        width: 12px;
-        height: 12px;
-        background: color(primary);
-        left: 2px;
-        top: 2px;
-        border-radius: 2px;
-      }
-    }
-    &.switch {
-      width: 46px;
-      height: 28px;
-      transform: translate(6px, 10px);
-      border-radius: 20px;
-      background: color(light1);
-      &:after {
-        content: '';
-        position: absolute;
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        background: color(white);
-        left: 1px;
-        top: 1px;
-        transition: .2s ease-in-out;
-      }
-      &:checked {
-        background: color(primary);
-        &:after {
-          left: 19px;
-        }
-      }
-    }
-  }
   .field-error {
     font-size: $font-small;
     color: color(danger);
+  }
+}
+// Checkbox / Radio
+input[type="radio"],
+input[type="checkbox"] {
+  cursor: pointer;
+  position: relative;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: color(light1);
+  border-radius: 3px;
+  border: 1px solid rgba(color(gray1), 0.7);
+  transition: .3s ease-in-out;
+  &:checked {
+    &:after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: color(primary);
+      left: 2px;
+      top: 2px;
+      border-radius: 2px;
+    }
+  }
+  &.switch {
+    width: 50px;
+    height: 28px;
+    transform: translate(6px, 10px);
+    border-radius: 20px;
+    background: color(light1);
+    &:after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      background: color(white);
+      left: 1px;
+      top: 1px;
+      transition: .2s ease-in-out;
+    }
+    &:checked {
+      background: color(primary);
+      &:after {
+        left: 23px;
+      }
+    }
+  }
+}
+input[type="radio"] {
+  &,
+  &:checked::after {
+    border-radius: 50%;
   }
 }
