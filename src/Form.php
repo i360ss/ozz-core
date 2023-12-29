@@ -146,7 +146,7 @@ class Form {
       $f_name = $prefix . ($is_cms ? $name : str_replace('_', '-', $name));
       $is_single_repeatable = isset($field['repeat']) && $field['repeat'] === true;
 
-      // Update name if single repeatable field
+      // Update name if single repeatable field, radio or checkbox
       if($is_single_repeatable || (in_array($type, ['checkbox', 'radio']) && isset($field['options']))){
         $f_name .= '[]';
       }
@@ -224,15 +224,19 @@ class Form {
 
         $repeater_label = isset($field['repeat_label']) ? $field['repeat_label'] : '+ Add New';
         $max_repeat = isset($field['max_repeat']) ? 'data-ozz-repeat-max="'.$field['max_repeat'].'"' : '';
+        $repeaterID = random_str(12);
 
         $html .= '
-        <fieldset class="ozz-fm__repeat" data-ozz-repeat="true" '.$max_repeat.'>
-          <legend class="ozz-fm__repeat-label">'.(isset($field['label']) ? $field['label'] : 'Untitled').'</legend>
-          <div class="ozz-fm__repeat-wrapper">';
+        <fieldset id="rpt-'.$repeaterID.'" class="ozz-fm__repeat" data-ozz-repeat="true" '.$max_repeat.' data-rpt="'.$field['name'].'">
+          <div class="ozz-fm__repeat-top">
+            <legend class="ozz-fm__repeat-label">'.(isset($field['label']) ? $field['label'] : 'Untitled').'</legend>
+            <span class="field_note">'.(isset($field['note']) ? $field['note'] : '').'</span>
+          </div>
+          <div id="rptw-'.$repeaterID.'" class="ozz-fm__repeat-wrapper">';
 
         if (is_array($f_value)) {
           foreach ($f_value as $i => $repeaterValue) {
-            $html .= '<div class="ozz-fm__repeat-fields">';
+            $html .= '<div id="rptf-'.random_str(18).'" class="ozz-fm__repeat-fields">';
             $html .= '<div class="ozz-fm__repeat-head">';
             $html .= '<span class="ozz-fm__repeat-number">'.((int) $i + 1).'</span>';
             $html .= '<span class="ozz-fm__repeat-remove button micro danger">Delete</span>';
@@ -242,7 +246,7 @@ class Form {
             $html .= '</div></div>';
           }
         } else {
-          $html .= '<div class="ozz-fm__repeat-fields">';
+          $html .= '<div id="rptf-'.random_str(18).'" class="ozz-fm__repeat-fields">';
           $html .= '<div class="ozz-fm__repeat-head">';
           $html .= '<span class="ozz-fm__repeat-number">1</span>';
           $html .= '<span class="ozz-fm__repeat-remove button micro danger">Delete</span>';
@@ -285,6 +289,7 @@ class Form {
         if($is_single_repeatable){
           $repeater_label = isset($field['repeat_label']) ? $field['repeat_label'] : '+ Add New';
           $max_repeat = isset($field['max_repeat']) ? 'data-ozz-repeat-max="'.$field['max_repeat'].'"' : '';
+          $s_repeaterID = random_str(12);
 
           // Update 'value' by 'selected' attribute
           isset($field['selected']) ? $field['value'] = $field['selected'] : false;
@@ -292,14 +297,14 @@ class Form {
           if (isset($field['value']) && is_array($field['value'])) {
             // Single repeater with values
             $thisField = '
-            <div class="ozz-fm__repeat single" data-ozz-repeat="true" '.$max_repeat.'>
-            <div class="ozz-fm__repeat-wrapper">';
+            <div id="rpt-'.$s_repeaterID.'" class="ozz-fm__repeat single" data-ozz-repeat="true" '.$max_repeat.' data-rpt="'.$field['name'].'">
+            <div id="rptw-'.$s_repeaterID.'" class="ozz-fm__repeat-wrapper">';
 
             foreach ($field['value'] as $i => $r_value) {
               $field['value'] = $r_value;
               $input = self::input($field['type'], $field, true);
               $thisField .= '
-              <div class="ozz-fm__repeat-fields">
+              <div id="rptf-'.random_str(18).'" class="ozz-fm__repeat-fields">
                 <span class="ozz-fm__repeat-number">'.((int) $i + 1).'</span>
                 <div class="ozz-fm__repeat-fields-field">'
                 .$input['field'].
@@ -312,9 +317,9 @@ class Form {
           } else {
             // Single repeater without values
             $thisField = '
-            <div class="ozz-fm__repeat single" data-ozz-repeat="true" '.$max_repeat.'>
-              <div class="ozz-fm__repeat-wrapper">
-                <div class="ozz-fm__repeat-fields">
+            <div id="rpt-'.$s_repeaterID.'" class="ozz-fm__repeat single" data-ozz-repeat="true" '.$max_repeat.' data-rpt="'.$f_name.'">
+              <div id="rptw-'.$s_repeaterID.'" class="ozz-fm__repeat-wrapper">
+                <div id="rptf-'.random_str(18).'" class="ozz-fm__repeat-fields">
                   <span class="ozz-fm__repeat-number">1</span>
                   <div class="ozz-fm__repeat-fields-field">'.$thisField.'</div>
                   <span class="ozz-fm__repeat-remove button micro danger">Delete</span>

@@ -51,6 +51,12 @@ p {
     width: auto;
   }
 }
+.button[disabled=true],
+.ozz-fm input[disabled=true][type=submit],
+.form input[disabled=true][type=submit] {
+  opacity: 0.4;
+  filter: saturate(0);
+}
 .button.small,
 .ozz-fm input.small[type=submit],
 .form input.small[type=submit] {
@@ -361,12 +367,27 @@ body .left-align {
 .form__repeat {
   margin-bottom: 20px;
   padding: 4px 3px 4px 4px;
-  border: 1px solid #aeb6da;
+  border: 1px solid rgba(174, 182, 218, 0.5);
 }
 .ozz-fm__repeat, .ozz-fm__repeat-wrapper,
 .form__repeat,
 .form__repeat-wrapper {
   border-radius: 5px;
+}
+.ozz-fm__repeat-top,
+.form__repeat-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 4px;
+  margin: -4px 0 0 -4px;
+  width: calc(100% + 7px);
+  background-color: #eeeff8;
+  border-radius: 5px 5px 0 0;
+}
+.ozz-fm__repeat-top legend,
+.form__repeat-top legend {
+  min-width: 250px;
 }
 .ozz-fm__repeat-fields,
 .form__repeat-fields {
@@ -380,7 +401,7 @@ body .left-align {
   width: calc(100% + 17px);
   margin: 0 0 3px -14px;
   height: 34px;
-  background: #eeeff8;
+  background: #F7F9FA;
   cursor: move;
 }
 .ozz-fm__repeat-head:before, .ozz-fm__repeat-head:after,
@@ -403,10 +424,20 @@ body .left-align {
 .form__repeat-head:after {
   left: 40px;
   background-position: -118px -111px;
+  transform: rotate(180deg);
+  transform-origin: center;
+}
+.ozz-fm__repeat-head.close:after,
+.form__repeat-head.close:after {
+  transform: rotate(0deg);
 }
 .ozz-fm__repeat-body,
 .form__repeat-body {
   padding: 10px 0 20px;
+}
+.ozz-fm__repeat-body.close,
+.form__repeat-body.close {
+  display: none;
 }
 .ozz-fm__repeat-remove,
 .form__repeat-remove {
@@ -1497,7 +1528,7 @@ input[type=radio], input[type=radio]:checked::after {
   grid-gap: 24px;
 }
 .post-edit-view__info {
-  width: 300px;
+  width: 320px;
   padding: 24px;
   background: #ffffff;
   border-radius: 5px;
@@ -1691,7 +1722,7 @@ input[type=radio], input[type=radio]:checked::after {
   overflow-y: auto;
 }
 .ozz-block-editor__block-picker-content li.pick-block {
-  padding: 14px 14px 14px 26px;
+  padding: 14px 10px 14px 26px;
   background: #ffffff;
   list-style: none;
   border: 1px solid rgba(102, 110, 232, 0.5);

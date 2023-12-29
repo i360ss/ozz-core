@@ -1,3 +1,6 @@
+// Ozz JS
+const ozz = new Ozz();
+
 // ===============================================
 // State object
 // ===============================================
@@ -146,6 +149,7 @@ function ozzCmsBlockEditor() {
           draggedItem.innerHTML = `${initialDOM} <div class="ozz-accordion-body">${thisBlockFormDOM.innerHTML}</div>`;
 
           addCommonEvents(draggedItem);
+          ozz.initRepeater();
         }
       });
 
@@ -398,4 +402,6 @@ function ozzOpenPopup(popupDOM) {
   ozzCmsBlockEditor();
   ozzCmsSlugUpdate();
   ozzCmsMediaManager();
+
+  ozz.initRepeater();
 })();
