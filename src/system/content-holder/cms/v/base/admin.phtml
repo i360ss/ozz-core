@@ -3,9 +3,8 @@
  * Base layout for Ozz CMS admin
  */
 
-use Ozz\Core\Auth;
-$user = (object) Auth::info();
-
+$user = (object) auth_info();
+$has_alert = has_error('success') || has_error('error');
 ?>
 <!DOCTYPE html>
 <html lang="<?=APP_LANG?>">
@@ -17,7 +16,7 @@ $user = (object) Auth::info();
   <link rel="icon" type="image/x-icon" href="<?=ASSETS?>icons/favicon.svg">
   <link rel="stylesheet" href="<?=ASSETS?>admin/css/admin.min.css" nonce="<?=CSP_NONCE?>">
 </head>
-<body class="ozz-cms {% body_class %} dark-theme0">
+<body class="ozz-cms {% body_class %}">
   <div class="app-container">
 
     <!-- Main navigation -->
@@ -97,7 +96,7 @@ $user = (object) Auth::info();
                   <span class="light-text">@<?=$user->username?></span>
                 </p>
                 <p><?=$user->email?></p>
-                <p>Dark Mode <input type="checkbox" class="ozz-color-theme-switcher switch"></p>
+                <p>Dark Mode <input type="checkbox" class="switch" id="ozz-color-theme-switcher"></p>
                 <a href="<?=AUTH_PATHS['logout']?>" class="button small danger">Logout</a>
               </div>
             </div>
@@ -106,7 +105,7 @@ $user = (object) Auth::info();
       </header>
 
       <div class="common-alert-bar">
-        <?=has_error('success') || has_error('error') ? show_errors(null, false) : ''?>
+        <?=$has_alert ? show_errors(null, false) : ''?>
       </div>
 
     {% content %}

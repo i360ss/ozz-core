@@ -10,10 +10,13 @@
 {{ body_class   = "post post__listing" }}
 
 {{ content }}
-<h1>Posts: <?=$post_type_label?></h1>
+<div class="heading breadcrumb">
+  <span><a href="/admin/posts">Posts</a></span>
+</div>
+<h1><?=$post_type_label?></h1>
 <div class="listing-s2">
   <div class="listing-s2__header">
-    <div class="listing-s2__filter" 
+    <div class="listing-s2__filter"
       data-active-tab="<?=isset($context['query']['status']) ? $context['query']['status'] : '';?>">
       <a class="button mini light tab-button all" href="/admin/posts/<?=$post_type?>">
         <span>All <strong><?=$posts['count']['all']?></strong></span>

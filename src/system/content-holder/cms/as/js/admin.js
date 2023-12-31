@@ -2,14 +2,46 @@
 const ozz = new Ozz();
 
 // ===============================================
-// State object
+// App State object
 // ===============================================
 let ozz_app_state = {
   nav_collapsed: false,
   block_editor_expanded: false,
   block_editor_collapsed: false,
   popup_opened: false,
+  block_editor_stock_layout: 'lay2',
+  theme: 'light',
 };
+
+/**
+ * Get State (Session storage)
+ * @param {string} $key 
+ * @returns value
+ */
+function ozzGetState($key=false) {
+  const
+    hasItem = typeof sessionStorage !== 'undefined' && sessionStorage !== null && sessionStorage.getItem('ozz_app_state') !== null,
+    state = hasItem ? JSON.parse(sessionStorage.getItem('ozz_app_state')) : ozz_app_state;
+
+  return $key ? state[$key] : state;
+}
+
+/**
+ * Set State (Session storage)
+ * @param {string} $key
+ * @param {*} $value
+ */
+function ozzSetState($key, $value) {
+  const hasItem = typeof sessionStorage !== 'undefined' && sessionStorage !== null && sessionStorage.getItem('ozz_app_state') !== null;
+  const state = hasItem ? JSON.parse(sessionStorage.getItem('ozz_app_state')) : ozz_app_state;
+
+  state[$key] = $value;
+  ozz_app_state = state;
+
+  if (typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
+    sessionStorage.setItem('ozz_app_state', JSON.stringify(state));
+  }
+}
 
 
 // ===============================================
@@ -17,39 +49,39 @@ let ozz_app_state = {
 // ===============================================
 function collapseNav(navbar) {
   navbar.classList.add('collapsed');
-  sessionStorage.setItem('ozzCmsNavCollapsed', 'true');
-  ozz_app_state.nav_collapsed = true;
+  ozzSetState('nav_collapsed', true);
 }
 function revealNav(navbar) {
   navbar.classList.remove('collapsed');
-  sessionStorage.setItem('ozzCmsNavCollapsed', 'false');
-  ozz_app_state.nav_collapsed = false;
+  ozzSetState('nav_collapsed', false);
 }
+
+// CMS Navbar
 function ozzCmsNavBar() {
-  // CMS Navbar Collapse
   const
     navbar = document.querySelector('.cms-nav'),
     navbarTrigger = navbar.querySelector('.nav-collapse-trigger'),
     navFirstUl = navbar.querySelector('ul'),
     currentLink = navFirstUl.getAttribute('data-active-link');
 
-  if (sessionStorage.getItem('ozzCmsNavCollapsed') === 'true') {
+  if (ozzGetState('nav_collapsed')) {
     collapseNav(navbar);
   }
 
   navbarTrigger.addEventListener('click', function() {
-    if (navbar.classList.contains('collapsed')) {
-      revealNav(navbar);
-    } else {
-      collapseNav(navbar);
+    navbar.classList.contains('collapsed') ? revealNav(navbar) : collapseNav(navbar);
+
+    if (document.querySelector('.ozz-block-editor')) {
+      const ozzBlockEditorWrapper = document.querySelector('.ozz-block-editor').closest('.ozz-fm__field');
+      toggleBlockEditorCollapse(ozzBlockEditorWrapper);
     }
-    const ozzBlockEditorWrapper = document.querySelector('.ozz-block-editor').closest('.ozz-fm__field');
-    toggleBlockEditorCollapse(ozzBlockEditorWrapper);
   });
 
   // Activate Current nav item
   navFirstUl.querySelectorAll('li').forEach(li => {
-    li.classList.contains(currentLink) ? li.classList.add('active') : false;
+    if (li.classList.contains(currentLink)) {
+      li.classList.add('active');
+    }
   });
 
   // Activate Tab
@@ -69,29 +101,51 @@ function ozzCmsNavBar() {
 // Ozz Block editor
 // ===============================================
 function toggleBlockEditorCollapse(blockEditorWrapper) {
-  if ( ozz_app_state.nav_collapsed === true ) {
+  if ( ozzGetState('nav_collapsed') ) {
     blockEditorWrapper.classList.add('collapsed');
-    ozz_app_state.block_editor_collapsed = true;
+    ozzSetState('block_editor_collapsed', true);
   } else {
     blockEditorWrapper.classList.remove('collapsed');
-    ozz_app_state.block_editor_collapsed = false;
+    ozzSetState('block_editor_collapsed', false);
   }
 }
+
 function toggleBlockEditorExpand(blockEditorWrapper) {
   if (blockEditorWrapper.classList.contains('expanded')) {
     blockEditorWrapper.classList.remove('expanded');
-    ozz_app_state.block_editor_expanded = false;
+    ozzSetState('block_editor_expanded', false);
   } else {
     blockEditorWrapper.classList.add('expanded');
-    ozz_app_state.block_editor_expanded = true;
+    ozzSetState('block_editor_expanded', true);
   }
 }
+
+// Toggle Block Accordion
+function ozzToggleBlock(block, state=true) {
+  block.setAttribute('data-expand', state);
+  block.querySelector(':scope > .ozz-block-accordion-bar').classList.toggle('active', state);
+  block.querySelector(':scope > .ozz-accordion-body').classList.toggle('active', state);
+}
+
+// Expand block if error field inside
+function ozzExpandBlockIfError() {
+  const usedBlocks = document.querySelectorAll('.ozz-block-editor .ozz-used-block');
+  usedBlocks.forEach(block => {
+    const errors = block.querySelectorAll('.field-error', 'input.error', 'textarea.error', 'select.error');
+    if (errors.length > 0) {
+      ozzToggleBlock(block);
+    }
+  });
+}
+
+// Ozz Block Editor
 function ozzCmsBlockEditor() {
   if(document.querySelectorAll('.ozz-block-editor')){
     const ozzBlockEditor = document.querySelectorAll('.ozz-block-editor');
     ozzBlockEditor.forEach(blockEditor => {
       // Add wrapper class
       const blockEditorWrapper = blockEditor.closest('.ozz-fm__field');
+      const blockEditorStockHead = blockEditor.querySelector('.ozz-block-editor__block-picker-head');
       blockEditorWrapper.classList.add('ozz-block-editor-wrapper', 'lay2');
       addCommonEvents();
 
@@ -149,7 +203,7 @@ function ozzCmsBlockEditor() {
           draggedItem.innerHTML = `${initialDOM} <div class="ozz-accordion-body">${thisBlockFormDOM.innerHTML}</div>`;
 
           addCommonEvents(draggedItem);
-          ozz.initRepeater();
+          ozz.initRepeater(draggedItem);
         }
       });
 
@@ -168,9 +222,18 @@ function ozzCmsBlockEditor() {
         });
       }
 
+      // Block editor state
+      if (ozzGetState('block_editor_expanded')) {
+        blockEditorWrapper.classList.add('expanded');
+      }
+      if ( ozzGetState('nav_collapsed') ) {
+        blockEditorWrapper.classList.add('collapsed');
+      }
+
       // Add common events to each block
       function addCommonEvents(block=false) {
-        if(block){
+        function blockEvents(block) {
+          // Remove Block
           block.querySelector('.ozz-block-delete-trigger').addEventListener('click', () => {
             block.remove();
             indexFieldNames();
@@ -178,22 +241,19 @@ function ozzCmsBlockEditor() {
 
           // Block accordion event
           block.querySelector('.ozz-block-accordion-bar').addEventListener('click', () => {
-            block.querySelector('.ozz-accordion-body').classList.toggle('active');
-            block.querySelector('.ozz-block-accordion-bar').classList.toggle('active');
+            if (block.getAttribute('data-expand') == 'true') {
+              ozzToggleBlock(block, false);
+            } else {
+              ozzToggleBlock(block, true);
+            }
           });
+        }
+
+        if(block){
+          blockEvents(block);
         } else {
           blockEditor.querySelectorAll('li.pick-block').forEach(block => {
-            // Remove Block
-            block.querySelector('.ozz-block-delete-trigger').addEventListener('click', () => {
-              block.remove();
-              indexFieldNames();
-            })
-
-            // Block accordion event
-            block.querySelector('.ozz-block-accordion-bar').addEventListener('click', () => {
-              block.querySelector('.ozz-accordion-body').classList.toggle('active');
-              block.querySelector('.ozz-block-accordion-bar').classList.toggle('active');
-            });
+            blockEvents(block);
           });
 
           // Expand editor
@@ -202,20 +262,32 @@ function ozzCmsBlockEditor() {
             toggleBlockEditorExpand(blockEditorWrapper);
           });
 
-          // Block stock layout
-          const layouts = blockEditorWrapper.querySelectorAll('.ozz-block-editor__block-picker-head .lay');
-          layouts.forEach(layout => {
-            layout.addEventListener('click', (el) => {
-              const layoutName = el.target.getAttribute('data-lay');
-              layouts.forEach(lay => { lay.classList.remove('active'); });
-              el.target.classList.add('active');
-              blockEditorWrapper.classList.remove('lay1', 'lay2');
-              blockEditorWrapper.classList.add(layoutName);
-            })
-          });
+          // Set Block stock layout
+          const layouts = blockEditorStockHead.querySelectorAll('.lay');
+          function setStockLayout() {
+            const layout = ozzGetState('block_editor_stock_layout');
+            layouts.forEach((lay, i) => { 
+              lay.classList.remove('active');
+              blockEditorWrapper.classList.remove(`lay${i+1}`);
+            });
+            blockEditorStockHead.querySelector(`span.button.${layout}`).classList.add('active');
+            blockEditorWrapper.classList.add(layout);
+
+            layouts.forEach(layout => {
+              layout.addEventListener('click', (el) => {
+                const layoutName = el.target.getAttribute('data-lay');
+                ozzSetState('block_editor_stock_layout', layoutName);
+                setStockLayout();
+              })
+            });
+          }
+          setStockLayout();
         }
       }
     });
+
+    // Expand Block if there any field error inside the block
+    ozzExpandBlockIfError();
   }
 }
 
@@ -233,7 +305,6 @@ function ozzCmsFormHandler(e) {
 // Ozz Update slug on title change
 // ===============================================
 function ozzCmsSlugUpdate() {
-  // Update Slug in Title change
   const
     updateThis = document.querySelector('.j-title-onchange'),
     getFrom = document.querySelector('.ozz-fm .default-post-title');
@@ -242,7 +313,7 @@ function ozzCmsSlugUpdate() {
     getFrom.addEventListener('keyup', () => {
       const slug = getFrom.value.replace(/\s+/g, '-').toLowerCase().replace(/[^\w\-]+/g, '');
       document.querySelector('.ozz-fm .default-post-slug').value = slug;
-      if (getFrom && updateThis) {
+      if (updateThis) {
         updateThis.innerHTML = getFrom.value;
       }
     });
@@ -364,7 +435,7 @@ function ozzClosePopup() {
 
   popupContent.innerHTML = '';
   popup.classList.remove('active');
-  ozz_app_state.popup_opened = false;
+  ozzSetState('popup_opened', false);
 }
 
 
@@ -379,7 +450,7 @@ function ozzOpenPopup(popupDOM) {
 
   popupContent.innerHTML = popupDOM;
   popup.classList.add('active');
-  ozz_app_state.popup_opened = true;
+  ozzSetState('popup_opened', true);
 
   // Focus field
   const inputsOnPopup = popupContent.querySelectorAll('input[type="text"]');
@@ -397,11 +468,50 @@ function ozzOpenPopup(popupDOM) {
 }
 
 
+// ===============================================
+// Ozz Common Alert Bar
+// ===============================================
+function ozzAlertBar() {
+  const alertBar = document.querySelector('.common-alert-bar');
+  if (alertBar && alertBar.querySelectorAll('.message').length > 0) {
+    setTimeout(() => {
+      alertBar.classList.add('active');
+      setTimeout(() => {
+        alertBar.classList.remove('active');
+        setTimeout(() => { alertBar.innerHTML = ''; }, 300);
+      }, 6000);
+    }, 300);
+  }
+}
+
+
+// ===============================================
+// Ozz Change Theme
+// ===============================================
+function ozzChangeTheme() {
+  const
+    appBody = document.querySelector('body.ozz-cms'),
+    changeTrigger = document.getElementById('ozz-color-theme-switcher');
+
+  changeTrigger.addEventListener('change', (e) => {
+    ozzSetState('theme', e.target.checked ? 'dark' : 'light');
+    appBody.setAttribute('data-theme', ozzGetState('theme'));
+  });
+
+  appBody.setAttribute('data-theme', ozzGetState('theme'));
+  if (ozzGetState('theme') == 'dark') {
+    changeTrigger.checked = true;
+  }
+}
+
+
 (function() {
   ozzCmsNavBar();
   ozzCmsBlockEditor();
   ozzCmsSlugUpdate();
   ozzCmsMediaManager();
+  ozzAlertBar();
+  ozzChangeTheme();
 
   ozz.initRepeater();
 })();

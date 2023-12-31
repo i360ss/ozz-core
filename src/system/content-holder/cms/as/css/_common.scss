@@ -1,24 +1,28 @@
 .breadcrumb {
+  padding: 20px 0 10px;
   span {
-    &:not(:last-child) {
-      position: relative;
-      margin-right: 32px;
-      &:after {
-        @include icon-arrow1('primary');
-        position: absolute;
-        width: 15px;
-        height: 15px;
-        right: -27px;
-        top: 30%;
-        content: '';
-      }
+    position: relative;
+    margin-right: 16px;
+    padding-left: 16px;
+    &:before {
+      @include icon-arrow1(dark2);
+      position: absolute;
+      width: 8px;
+      height: 10px;
+      left: 0;
+      top: 30%;
+      transform: scale(0.8) rotate(180deg);
+      content: '';
     }
-    &:nth-last-child(1) {
-      &,
-      a {
-        color: color(primary);
-      }
+    a {
+      font-size: $font-small-2;
+      font-weight: 400;
+      color: color(dark1);
     }
+  }
+  + h1 {
+    margin-top: 0;
+    font-weight: 500;
   }
 }
 a {
@@ -96,12 +100,36 @@ a {
     color: color(blue);
     background-color: rgba(color(blue), .1);
   }
+  // Status Dot
+  &.dot {
+    display: inline-block;
+    padding: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    transform: translateY(-4px);
+    &.trash,
+    &.danger {
+      background: color(danger);
+    }
+    &.published,
+    &.success {
+      background-color: color(success);
+    }
+    &.draft,
+    &.warning {
+      background-color: color(warning);
+    }
+    &.info {
+      background-color: color(blue);
+    }
+  }
 }
 
 // Forms
 .form,
 .ozz-fm {
-  padding: 18px;
+  padding: 24px;
   border-radius: $radius1;
   box-shadow: $shadow1;
   background: color(white);
@@ -121,7 +149,7 @@ a {
         content: '';
         position: absolute;
         left: 13px;
-        top: 10px;
+        top: 8px;
         width: 20px;
         height: 20px;
       }
@@ -147,7 +175,7 @@ a {
     }
   }
   &__field {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     label {
       display: inline-block;
       padding-bottom: 8px;
@@ -170,7 +198,7 @@ a {
   }
   &__switch-checkbox {
     label {
-      transform: translateY(-5px);
+      transform: translateY(-3px);
     }
   }
   .field-error {
@@ -188,7 +216,7 @@ input[type="checkbox"] {
   height: 18px;
   background: color(light1);
   border-radius: 3px;
-  border: 1px solid rgba(color(gray1), 0.7);
+  border: 1px solid rgba(color(semi-blue), 0.7);
   transition: .3s ease-in-out;
   &:checked {
     &:after {
@@ -207,7 +235,7 @@ input[type="checkbox"] {
     height: 28px;
     transform: translate(6px, 10px);
     border-radius: 20px;
-    background: color(light1);
+    background: color(silver);
     &:after {
       content: '';
       position: absolute;
@@ -218,11 +246,13 @@ input[type="checkbox"] {
       left: 1px;
       top: 1px;
       transition: .2s ease-in-out;
+      box-shadow: 2px 0 3px rgba(0,0,0,0.2);
     }
     &:checked {
       background: color(primary);
       &:after {
         left: 23px;
+        box-shadow: -2px 0 3px rgba(0,0,0,0.2);
       }
     }
   }

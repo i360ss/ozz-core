@@ -12,11 +12,15 @@
 {{ content }}
   <section>
     <div class="container">
-      <h1 class="heading breadcrumb">
+      <div class="heading breadcrumb">
         <span><a href="/admin/posts">Post</a></span>
         <span><a href="/admin/posts/<?=$post_type?>"><?=$post_config['label']?></a></span>
-        <span>Create</span>
+      </div>
+
+      <h1 class="heading">
+        <span>Create New Post</span>
       </h1>
+
       <p class="light-text"><?=$post_config['note']?></p>
 
       <div class="post-edit-view">

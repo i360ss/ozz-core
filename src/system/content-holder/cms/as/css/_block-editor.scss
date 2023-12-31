@@ -44,14 +44,14 @@
     padding: 20px;
     background: color(light1);
     overflow-y: auto;
-    z-index: 997;
+    z-index: 900;
     .ozz-block-editor-head {
       position: fixed;
       top: 50px;
       width: calc(100% - 240px);
       grid-template-columns: 1fr 40px;
       padding-top: 10px;
-      z-index: 996;
+      z-index: 899;
       .ozz-block-editor-expand-button {
         background-position: -148px -79px;
       }
@@ -203,7 +203,7 @@
       }
       .ozz-block-accordion-bar {
         display: grid;
-        grid-template-columns: 42px 1fr 18px 24px;
+        grid-template-columns: 20px 1fr 18px 24px;
         grid-gap: 14px;
         padding: 14px;
         align-items: center;
@@ -219,7 +219,7 @@
         }
         .ozz-handle {
           @include icon-draggable();
-          width: 42px;
+          width: 22px;
           height: 42px;
         }
         .ozz-block-delete-trigger {
@@ -253,6 +253,6 @@
 }
 .block-editor-field {
   &:not(:last-child) {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
 }

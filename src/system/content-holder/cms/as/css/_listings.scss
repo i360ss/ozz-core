@@ -22,7 +22,7 @@
       display: grid;
       grid-template-columns: 1fr auto;
       background: color(white);
-      margin-bottom: 2px;
+      margin-bottom: 1px;
       border-left: 2px solid color(primary);
       border-radius: 3px;
       box-shadow: $shadow1;
@@ -86,15 +86,17 @@
   }
   table {
     border-collapse: separate;
-    border-spacing: 0 2px;
+    border-spacing: 0 1px;
     width: 100%;
     thead {
       position: sticky;
       top: 46px;
+      z-index: 100;
       tr {
         background: color(light2);
         padding: 14px;
         th {
+          font-size: $font-small-2;
           text-align: left;
           padding: 5px 14px;
           color: color(dark2);
@@ -105,6 +107,7 @@
       tr {
         position: relative;
         background: color(white);
+        box-shadow: 0 2px 2px rgba(0,0,0,0.1);
         cursor: pointer;
         .row-number {
           padding: 14px;
@@ -127,6 +130,7 @@
           padding: 10px 14px;
           border: none;
           .title {
+            font-size: $font-small-3;
             font-weight: 500;
             color: color(dark);
           }

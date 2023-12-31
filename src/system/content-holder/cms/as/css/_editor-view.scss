@@ -30,7 +30,7 @@
         .inner {
           display: grid;
           grid-template-columns: 1fr 50px;
-          grid-gap: 14px;
+          grid-gap: 0 5px;
           align-items: center;
           margin-top: 8px;
           .ozz-fm__field {
@@ -43,15 +43,21 @@
             margin: 0;
           }
           button {
-            padding: 3px;
-            border: none;
+            padding: 0;
+            height: 37px;
             border-radius: 5px;
             background: color(primary);
             cursor: pointer;
+            &:hover {
+              background-color: color(primary-dark);
+            }
             span {
               @include icon-duplicate(white);
-              margin-top: 2px;
+              margin-top: 4px;
               background-color: transparent;
+              &:hover {
+                filter: brightness(1);
+              }
             }
           }
         }

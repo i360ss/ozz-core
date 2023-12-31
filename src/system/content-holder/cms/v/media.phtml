@@ -34,7 +34,7 @@ $current_dir = '';
     <div class="ozz-media-manager__actions">
       <div class="ozz-media-manager__actions-action popup-trigger create-folder">
         <button class="button mini">+ New Folder</button>
-        <div class="hidden-action-form">
+        <div class="hidden-action-form" id="ozz-media-create-new-directory">
           <h2>Create New Directory</h2>
           <?php _create_form([
           'method' => 'post',
@@ -63,7 +63,7 @@ $current_dir = '';
       </div>
       <div class="ozz-media-manager__actions-action popup-trigger create-file">
         <button class="button mini">+ New File</button>
-        <div class="hidden-action-form">
+        <div class="hidden-action-form" id="ozz-media-create-new-file">
           <h2>Create New File</h2>
           <?php _create_form([
           'method' => 'post',
@@ -91,7 +91,7 @@ $current_dir = '';
       </div>
       <div class="ozz-media-manager__actions-action popup-trigger upload">
         <button class="button mini">Upload</button>
-        <div class="hidden-action-form">
+        <div class="hidden-action-form" id="ozz-media-upload-file">
           <h2>Upload File</h2>
           <?php _create_form([
             'method' => 'post',

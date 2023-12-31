@@ -11,8 +11,12 @@ function is_logged_in(){
   return Auth::isLoggedIn();
 }
 
-function auth_check(){
-  return Auth::isLoggedIn();
+/**
+ * Logged User info
+ * @param string $key
+ */
+function auth_info($key=false){
+  return Auth::info($key);
 }
 
 /**

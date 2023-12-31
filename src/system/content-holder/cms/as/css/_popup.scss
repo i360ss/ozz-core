@@ -1,71 +1,74 @@
 .ozz-cms-popup {
-    position: fixed;
-    display: none;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: calc(100vh + 10px);
-    background: rgba(color(secondary), 0.8);
-    z-index: 999;
-    &.active {
-        display: block;
-        animation: popup-anim .2s ease-in-out;
+  position: fixed;
+  display: none;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100vh + 10px);
+  background: rgba(color(secondary), 0.8);
+  z-index: 999;
+  &.active {
+    display: block;
+    animation: popup-anim .2s ease-in-out;
+  }
+  .container {
+    display: flex;
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+  &__box {
+    position: relative;
+    margin: 0 auto;
+    padding: 30px;
+    background: color(white);
+    border-radius: 5px;
+    @include screen(md) {
+      min-width: 500px;
     }
-    .container {
-        display: flex;
-        padding-top: 30px;
-        padding-bottom: 30px;
+    #cms-popup-close {
+      @include icon-sprite;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 30px;
+      height: 30px;
+      background-color: color(silver);
+      border-radius: 5px;
+      background-position: -34px -112px;
+      opacity: 0.5;
+      cursor: pointer;
+      &:hover {
+        opacity: 1;
+      }
     }
-    &__box {
-        position: relative;
-        margin: 0 auto;
-        padding: 30px;
-        background: color(white);
-        border-radius: 5px;
-        @include screen(md) {
-            min-width: 500px;
-        }
-        #cms-popup-close {
-            @include icon-sprite;
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 30px;
-            height: 30px;
-            background-color: color(silver);
-            border-radius: 5px;
-            background-position: -34px -112px;
-            opacity: 0.5;
-            cursor: pointer;
-            &:hover {
-                opacity: 1;
+    #cms-popup-content {
+      h2 {
+        margin-top: 0;
+      }
+      form,
+      .form {
+        padding: 0;
+        box-shadow: none;
+        input {
+          width: 100%;
+          &:not([type="submit"]) {
+            margin-bottom: 10px;
+          }
+          &[type="submit"] {
+            display: block;
+            margin-top: 10px;
+            @include screen(md) {
+              width: auto;
             }
+          }
         }
-        #cms-popup-content {
-            h2 {
-                margin-top: 0;
-            }
-            form,
-            .form {
-                box-shadow: none;
-                input {
-                    width: 100%;
-                    &:not([type="submit"]) {
-                        margin-bottom: 10px;
-                    }
-                    &[type="submit"] {
-                        @include screen(md) {
-                            width: auto;
-                        }
-                    }
-                }
-                .field_note {
-                    display: block;
-                    margin: 5px 0;
-                    font-size: $font-small-2;
-                    color: color(gray1);
-                }
-            }
+        .field_note {
+          display: block;
+          margin: 5px 0;
+          font-size: $font-small-2;
+          color: color(gray1);
         }
+      }
     }
+  }
 }

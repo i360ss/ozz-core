@@ -12,9 +12,13 @@
 {{ content }}
   <section>
     <div class="container">
-      <h1 class="heading breadcrumb">
+      <div class="heading breadcrumb">
         <span><a href="/admin/posts">Post</a></span>
         <span><a href="/admin/posts/<?=$post_type?>"><?=$post_config['label']?></a></span>
+      </div>
+
+      <h1>
+        <span class="label dot <?=$form_data['post_status']?>"></span>
         <span class="j-title-onchange"><?=$form_data['title']?></span>
       </h1>
 
@@ -70,7 +74,7 @@
                       <?php endforeach; ?>
                     </select>
                   </div>
-                  <button type="submit" title="Duplicate">
+                  <button type="submit" title="Duplicate" class="button">
                     <span class="icon-button duplicate"></span>
                   </button>
                 </div>

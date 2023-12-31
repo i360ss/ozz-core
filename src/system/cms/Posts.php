@@ -402,7 +402,7 @@ trait Posts {
         'post_type' => $post['post_type'],
         'post_id' => isset($post_lang_id) ? $post_lang_id : random_str(4, 0).time(),
         'author' => Auth::id(),
-        'title' => $post['title'].'-copy',
+        'title' => $post['title'].' (Copy)',
         'slug' => $post['slug'].'-copy',
         'tags' => $post['tags'],
         'post_status' => $post['post_status'],
