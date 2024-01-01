@@ -351,6 +351,15 @@ class Form {
 
         // Global each element wrapper
         if($global_options !== false && isset($global_options['wrapper'])){
+          // Wrapper Class
+          if(isset($field['wrapper_class'])){
+            if (strpos($global_options['wrapper'], 'class=') !== false) {
+              $global_options['wrapper'] = str_replace('class="', 'class="'.$field['wrapper_class'].' ', $global_options['wrapper']);
+            } else {
+              $global_options['wrapper'] = str_replace('<div', '<div class="'.$field['wrapper_class'].'"', $global_options['wrapper']);
+            }
+          }
+
           $formInnerDOM = str_replace('##', "\n".$formInnerDOM."\n", $global_options['wrapper'])."\n";
         }
 
@@ -383,6 +392,7 @@ class Form {
       $attrs_only['options'],
       $attrs_only['optgroup'],
       $attrs_only['wrapper'],
+      $attrs_only['wrapper_class'],
       $attrs_only['input_wrapper'],
       $attrs_only['note'],
       $attrs_only['note_class'],

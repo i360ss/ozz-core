@@ -20,6 +20,14 @@ function auth_info($key=false){
 }
 
 /**
+ * Check if Auth Created via ozz command
+ * @return boolean
+ */
+function is_auth_created() {
+  return Auth::isCreated();
+}
+
+/**
  * Get Gravatar image
  * @param string $email The email address
  * @param string $size Size in pixels, defaults to 80px [ 1 - 2048 ]

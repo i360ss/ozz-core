@@ -510,6 +510,16 @@ class Auth extends Model {
   }
 
   /**
+   * Get All users
+   * @param array fields to get
+   */
+  public static function allUsers($what='*') {
+    $user_data = self::$db->select(CONFIG['AUTH_USERS_TABLE'], $what);
+
+    return $user_data;
+  }
+
+  /**
    * If logged in from a new browser or Device/IP
    * @return array|boolean Changed items (ip, device, browser, os) / return (false) if not a new login
    */
@@ -1153,6 +1163,13 @@ class Auth extends Model {
     $deleted = self::$db->delete(CONFIG['AUTH_USERS_TABLE'], $where_args);
 
     return $deleted ? true : false;
+  }
+
+  /**
+   * Check if Auth created via ozz command
+   */
+  public static function isCreated() {
+    return file_exists(APP_DIR.'controller/'.CONFIG['AUTH_CONTROLLER'].'.php');
   }
 
 }

@@ -60,7 +60,7 @@ function revealNav(navbar) {
 function ozzCmsNavBar() {
   const
     navbar = document.querySelector('.cms-nav'),
-    navbarTrigger = navbar.querySelector('.nav-collapse-trigger'),
+    navbarTrigger = navbar.querySelector('.cms-nav__nav-collapse-trigger'),
     navFirstUl = navbar.querySelector('ul'),
     currentLink = navFirstUl.getAttribute('data-active-link');
 
@@ -479,7 +479,7 @@ function ozzAlertBar() {
       setTimeout(() => {
         alertBar.classList.remove('active');
         setTimeout(() => { alertBar.innerHTML = ''; }, 300);
-      }, 6000);
+      }, 8000);
     }, 300);
   }
 }

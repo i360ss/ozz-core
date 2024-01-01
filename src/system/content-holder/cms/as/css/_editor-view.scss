@@ -10,10 +10,18 @@
     margin-bottom: auto;
     box-shadow: $shadow1;
     h3 {
-      margin: 0 0 16px;
+      margin: 0 0 20px;
     }
     .item {
-      font-size: $font-normal;
+      font-size: $font-small-3;
+      color: color(dark2);
+      &:not(.available-translations, .language-duplicator, .delete-post) {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        border-bottom: 1px solid color(silver);
+        padding-bottom: 14px;
+      }
       &:last-child {
         padding-bottom: 0;
       }
@@ -71,7 +79,6 @@
       }
       strong {
         display: inline-block;
-        font-size: $font-small-2;
         color: color(secondary);
       }
     }

@@ -306,3 +306,17 @@ function get_file_type_to_upload($file) {
     return 'unknown';
   }
 }
+
+/**
+ * Ozz Format Date
+ * @param int $date Unix datetime
+ */
+function ozz_format_date($date, $format=1) {
+  if ($format == 1) {
+    return date('M d, Y | h:i a', (int) $date);
+  } elseif($format == 2) {
+    return date('Y-m-d\TH:i', (int) $date);
+  } else {
+    return date($format, (int) $date);
+  }
+}

@@ -84,6 +84,7 @@ trait Posts {
       'cms_posts.slug',
       'cms_posts.lang',
       'cms_posts.post_status',
+      'cms_posts.published_at',
       'cms_posts.created_at',
       'cms_posts.modified_at',
       'cms_posts.content',
@@ -122,6 +123,7 @@ trait Posts {
       'cms_posts.slug',
       'cms_posts.lang',
       'cms_posts.post_status',
+      'cms_posts.published_at',
       'cms_posts.created_at',
       'cms_posts.modified_at',
       'cms_posts.content',
@@ -148,6 +150,7 @@ trait Posts {
         'title' => '',
         'first_name' => false,
         'last_name' => false,
+        'published_at' => false,
         'created_at' => false,
         'modified_at' => false,
         'content' => [],
@@ -182,6 +185,7 @@ trait Posts {
       $slug = $form_data['slug'];
       $status = isset($form_data['post_status']) ? $form_data['post_status'] : 'draft';
       $post_id = $form_data['post_id'];
+      $published_at = strtotime($form_data['published_at']);
 
       // Prevent these fields from adding into content
       unset(
@@ -190,7 +194,8 @@ trait Posts {
         $form_data['title'],
         $form_data['slug'],
         $form_data['submit_post'],
-        $form_data['post_id']
+        $form_data['post_id'],
+        $form_data['published_at'],
       );
 
       // Filtered data (Block and Post content)
@@ -209,6 +214,7 @@ trait Posts {
         'post_status' => $status,
         'content' => $post_content,
         'blocks' => $block_data,
+        'published_at' => $published_at,
         'created_at' => time(),
         'modified_at' => time(),
       ]);
@@ -237,6 +243,7 @@ trait Posts {
       $title = $form_data['title'];
       $slug = $form_data['slug'];
       $status = isset($form_data['post_status']) ? $form_data['post_status'] : 'draft';
+      $published_at = strtotime($form_data['published_at']);
 
       // Prevent these fields from adding into content
       unset(
@@ -244,6 +251,7 @@ trait Posts {
         $form_data['post_status'],
         $form_data['title'],
         $form_data['slug'],
+        $form_data['published_at'],
         $form_data['submit_post']
       );
 
@@ -259,6 +267,7 @@ trait Posts {
         'post_status' => $status,
         'content' => $post_content,
         'blocks' => $block_data,
+        'published_at' => $published_at,
         'modified_at' => time(),
       ],[
         'id' => $post_id
@@ -332,6 +341,41 @@ trait Posts {
       $form['fields'][] = isset($values['blocks']) ? $this->cms_block_editor_field($values['blocks']) : $this->cms_block_editor_field();
     }
 
+    // Users
+    $users = Auth::allUsers(['user_id', 'first_name', 'last_name']);
+    $final_users = [];
+    foreach ($users as $user) {
+      $final_users[$user['user_id']] = $user['first_name'].' '.$user['last_name'];
+    }
+
+    // Authors
+    $author = [
+      'name' => 'author',
+      'type' => 'select',
+      'label' => 'Author',
+      'options' => $final_users,
+      'selected' => (isset($values['author']) ? $values['author'] : Auth::id()),
+      'id' => 'post-author',
+      'wrapper_class' => 'cl cl-4',
+    ];
+
+    // Created at
+    if(isset($values['published_at']) && $values['published_at'] !== ''){
+      $published_date = strpos($values['published_at'], '-') === false ? $values['published_at'] : strtotime($values['published_at']);
+      $published_date = ozz_format_date($published_date, 2);
+    } else {
+      $published_date = ozz_format_date(time(), 2);
+    }
+
+    $published_at = [
+      'name' => 'published_at',
+      'type' => 'datetime-local',
+      'label' => 'Published At',
+      'value' => $published_date,
+      'id' => 'post-created-at',
+      'wrapper_class' => 'cl cl-4',
+    ];
+
     // Add Post status checkbox
     $status_checkbox = [
       'name' => 'post_status',
@@ -341,14 +385,16 @@ trait Posts {
       'value' => 'published',
       'class' => 'switch',
       'wrapper' => '<div class="'.$form_class.'__switch-checkbox">##</div>',
-      'input_wrapper' => '<span class="'.$form_class.'__checkbox-wrapper">##</span>'
+      'input_wrapper' => '<span class="'.$form_class.'__checkbox-wrapper">##</span>',
+      'wrapper_class' => 'cl cl-4',
     ];
 
     if($form_type == 'create'){
       $status_checkbox = array_merge($status_checkbox, ['checked' => 'true']);
     }
 
-    $form['fields'][] = $status_checkbox;
+    // Add Additional CMS fields
+    $form['fields'] = array_merge($form['fields'], [ $author, $published_at, $status_checkbox ]);
 
     // Add Submit button
     $form['fields'][] = [
@@ -378,6 +424,7 @@ trait Posts {
       'blocks',
       'tags',
       'post_status',
+      'published_at'
     ], [
       'id' => $post_id
     ]);
@@ -408,6 +455,7 @@ trait Posts {
         'post_status' => $post['post_status'],
         'content' => $post['content'],
         'blocks' => $post['blocks'],
+        'published_at' => $post['published_at'],
         'created_at' => time(),
         'modified_at' => time(),
       ]);
@@ -466,6 +514,7 @@ trait Posts {
       'cms_posts.lang',
       'cms_posts.post_status',
       'cms_posts.created_at',
+      'cms_posts.published_at',
       'cms_posts.modified_at',
       'cms_posts.content',
       'cms_posts.blocks',

@@ -29,7 +29,7 @@
         <div class="post-edit-view__info">
           <h3>Post Info</h3>
           <?php if($form_data['first_name']) :?>
-            <p class="item"><strong>Status:</strong>&nbsp;
+            <p class="item status"><strong>Status:</strong>&nbsp;
               <span class="label <?=$form_data['post_status']?>">
                 <?=ucfirst($form_data['post_status'])?>
               </span>
@@ -37,15 +37,25 @@
           <?php endif; ?>
 
           <?php if($form_data['first_name']) :?>
-            <p class="item"><strong>Author:</strong> <?=$form_data['first_name'].' '.$form_data['last_name']?></p>
+            <p class="item">
+              <strong>Author:</strong> <?=$form_data['first_name'].' '.$form_data['last_name']?>
+            </p>
+          <?php endif; ?>
+
+          <?php if($form_data['published_at']) :?>
+            <p class="item">
+              <strong>Published:</strong> <?=ozz_format_date($form_data['published_at'])?>
+            </p>
           <?php endif; ?>
 
           <?php if($form_data['created_at']) :?>
-            <p class="item"><strong>Created:</strong> <?=date('M d, Y | h:i a', $form_data['created_at'])?></p>
+            <p class="item">
+              <strong>Created:</strong> <?=ozz_format_date($form_data['created_at'])?>
+            </p>
           <?php endif; ?>
 
           <?php if($form_data['modified_at']) :?>
-            <p class="item"><strong>Modified:</strong> <?=date('M d, Y | h:i a', $form_data['modified_at'])?></p>
+            <p class="item"><strong>Modified:</strong> <?=ozz_format_date($form_data['modified_at'])?></p>
           <?php endif; ?>
 
           <p class="item"><strong>Language:</strong> <?=lang_name($form_data['lang'])?></p>

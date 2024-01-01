@@ -51,8 +51,17 @@ body.ozz-cms[data-theme="dark"]{
     box-shadow: 0 0 3px 0 rgba(0,0,0,0.3);
     &__info {
       background-color: color(dark2);
+      .user-info {
+        .light-text {
+          color: rgba(color(silver), 0.7);
+        }
+      }
     }
     &__language-switch {
+      &:after {
+        background-color: color(dark1);
+        border-color: color(dark2);
+      }
       .dropdown {
         li {
           a {
@@ -76,6 +85,13 @@ body.ozz-cms[data-theme="dark"]{
   .cms-nav {
     background: color(dark);
     border-right: 1px solid color(dark1);
+    &__nav-collapse-trigger {
+      background-color: transparent;
+      filter: brightness(3);
+      &:hover {
+        filter: brightness(5);
+      }
+    }
     > ul {
       > li {
         &.active > a {
@@ -193,6 +209,10 @@ body.ozz-cms[data-theme="dark"]{
     &__info {
       @include dark-skin-1;
       .item {
+        color: color(light2);
+        &:not(.available-translations, .language-duplicator, .delete-post) {
+          border-bottom: 1px solid color(dark2);
+        }
         strong {
           color: color(semi-blue);
         }

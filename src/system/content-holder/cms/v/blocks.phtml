@@ -24,9 +24,7 @@
         <div class="table__tr-wrapper">
           <a href="/admin/blocks/<?=$type?>" class="table__row">
             <div class="table__cell">
-              <span class="listing-s1__title">
-                <strong><?=$block['label']?></strong>
-              </span>
+              <span class="listing-s1__title"><?=$block['label']?></span>
               <?php if (isset($value['note']) && $value['note'] !== '') :?>
                 <span class="note light-text"><?=$value['note']?></span>
               <?php endif; ?>

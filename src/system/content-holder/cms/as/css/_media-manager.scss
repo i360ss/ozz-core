@@ -11,8 +11,8 @@
     background: color(white);
     color: color(gray1);
     a {
+      font-size: $font-small-2;
       color: color(dark1);
-      font-weight: 500;
       &:hover {
         color: color(primary);
       }

@@ -10,19 +10,17 @@
       width: 8px;
       height: 10px;
       left: 0;
-      top: 30%;
+      top: 24%;
       transform: scale(0.8) rotate(180deg);
       content: '';
     }
     a {
       font-size: $font-small-2;
-      font-weight: 400;
       color: color(dark1);
     }
   }
   + h1 {
     margin-top: 0;
-    font-weight: 500;
   }
 }
 a {
@@ -77,9 +75,8 @@ a {
 // Info Labels (Danger, Warning, Success, Info)
 .label {
   padding: 3px 8px;
-  font-size: 14px;
+  font-size: $font-small-2;
   border-radius: 5px;
-  font-weight: 500;
   text-transform: capitalize;
   &.trash,
   &.danger {
@@ -126,7 +123,7 @@ a {
   }
 }
 
-// Forms
+// CMS Forms
 .form,
 .ozz-fm {
   padding: 24px;
@@ -139,7 +136,7 @@ a {
   .ozz-default-save-button {
     position: fixed;
     top: 4px;
-    right: 240px;
+    right: 200px;
     z-index: 999;
     &.edit,
     &.create {
@@ -149,9 +146,10 @@ a {
         content: '';
         position: absolute;
         left: 13px;
-        top: 8px;
+        top: 7px;
         width: 20px;
         height: 20px;
+        transform: scale(0.9);
       }
     }
     &.edit {
@@ -166,6 +164,9 @@ a {
     }
   }
   .ozz-fm__field {
+    &.cl {
+      padding-right: 24px;
+    }
     &:first-child {
       border-radius: 5px 5px 0 0;
     }
@@ -177,9 +178,9 @@ a {
   &__field {
     margin-bottom: 30px;
     label {
+      font-family: $rub-m;
       display: inline-block;
       padding-bottom: 8px;
-      font-weight: 500;
     }
     .field_note {
       float: right;
@@ -206,6 +207,7 @@ a {
     color: color(danger);
   }
 }
+
 // Checkbox / Radio
 input[type="radio"],
 input[type="checkbox"] {

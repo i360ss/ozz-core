@@ -183,9 +183,9 @@
       padding: 14px;
       border-radius: $radius1;
       margin-bottom: 14px;
-      font-size: 18px;
+      font-family: $rub-m;
+      font-size: $font-small-3;
       color: color(primary);
-      font-weight: 600;
     }
     .ozz-used-block {
       background: color(white);
@@ -214,6 +214,7 @@
             margin: 0;
           }
           h4 {
+            font-family: $rub-m;
             color: color(primary);
           }
         }

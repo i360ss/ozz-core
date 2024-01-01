@@ -2,7 +2,8 @@
 .listing-s1 {
   &__title {
     display: block;
-    font-size: $font-normal;
+    font-family: $rub-m;
+    font-size: $font-small-3;
   }
   .note {
     padding-top: 8px;
@@ -58,6 +59,7 @@
     color: color(dark);
     box-shadow: $shadow1;
     border-radius: 3px;
+    font-size: $font-small-3;
     strong {
       color: color(primary-dark);
     }
@@ -112,7 +114,6 @@
         .row-number {
           padding: 14px;
           margin-top: 2px;
-          font-weight: 500;
           color: color(gray1);
         }
         &:hover {
@@ -131,7 +132,7 @@
           border: none;
           .title {
             font-size: $font-small-3;
-            font-weight: 500;
+            font-weight: 600;
             color: color(dark);
           }
         }
@@ -146,7 +147,7 @@
       }
       .tr-action {
         text-align: right;
-        padding: 6px 10px 0 0;
+        padding: 3px 8px 0 0;
         .show-on-hover {
           display: none;
           justify-content: right;

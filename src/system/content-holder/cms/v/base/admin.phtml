@@ -21,6 +21,7 @@ $has_alert = has_error('success') || has_error('error');
 
     <!-- Main navigation -->
     <nav class="cms-nav">
+      <span class="cms-nav__nav-collapse-trigger"></span>
       <div class="cms-nav__logo">
         <img src="<?=ASSETS?>icons/favicon.svg" alt="Ozz CMS">
       </div>
@@ -35,13 +36,12 @@ $has_alert = has_error('success') || has_error('error');
               <span>Post types</span>
               <a href="/admin/posts"><span class="button mini">All</span></a>
             </label>
-              <?php
-                foreach ($data['post_types'] as $key => $value) :
-                  $active_cls = (isset($context['url_parts'][3]) && $context['url_parts'][3] == $key)
+              <?php foreach ($data['post_types'] as $key => $value) :
+                  $active_class = (isset($context['url_parts'][3]) && $context['url_parts'][3] == $key)
                     ?'class="active"'
                     : '';
               ?>
-                <li <?=$active_cls?>><a href="/admin/posts/<?=$key?>"><?=ucfirst($value['label'])?></a></li>
+                <li <?=$active_class?>><a href="/admin/posts/<?=$key?>"><?=ucfirst($value['label'])?></a></li>
               <?php endforeach; ?>
           </ul>
         </li>
@@ -58,9 +58,6 @@ $has_alert = has_error('success') || has_error('error');
           <a href="/admin/settings" class="settings">Settings</a>
         </li>
       </ul>
-      <div class="cms-nav__bottom">
-        <span class="nav-collapse-trigger"></span>
-      </div>
     </nav>
 
     <main>
@@ -91,11 +88,14 @@ $has_alert = has_error('success') || has_error('error');
                 <span class="cms-header__avatar-arrow"></span>
               </div>
               <div class="cms-header__info">
-                <p>
-                  <strong><?=$user->first_name.' '.$user->last_name?></strong><br>
-                  <span class="light-text">@<?=$user->username?></span>
-                </p>
-                <p><?=$user->email?></p>
+                <div class="user-info">
+                  <img src="<?=get_gravatar($user->email, 80);?>" alt="Avatar">
+                  <p>
+                    <strong><?=$user->first_name.' '.$user->last_name?></strong><br>
+                    <?=$user->email?><br>
+                    <span class="light-text">@<?=$user->username?></span>
+                  </p>
+                </div>
                 <p>Dark Mode <input type="checkbox" class="switch" id="ozz-color-theme-switcher"></p>
                 <a href="<?=AUTH_PATHS['logout']?>" class="button small danger">Logout</a>
               </div>
