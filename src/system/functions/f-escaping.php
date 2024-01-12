@@ -191,8 +191,8 @@ function _esc_url(string $url) {
  * 
  * @return string encoded HTML as string
  */
-function html_encode($str){
-  return Sanitize::htmlEncode($str);
+function html_encode($str, $flag=false){
+  return Sanitize::htmlEncode($str, $flag);
 }
 
 /**
@@ -201,6 +201,6 @@ function html_encode($str){
  * 
  * @return HTML
  */
-function html_decode($str){
-  return Sanitize::htmlDecode($str);
+function html_decode($str, $flag=false){
+  return Sanitize::htmlDecode($str, $flag);
 }

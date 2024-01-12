@@ -193,7 +193,10 @@ function ozzCmsBlockEditor() {
                 <h4>${blocksObj[blockName].label}</h4>
                 <p class="light-text">${blocksObj[blockName].note ? blocksObj[blockName].note : ''}</p>
               </div>
-              <div><span class="ozz-block-delete-trigger"></span></div>
+              <div class="ozz-block-actions">
+                <span class="ozz-block-duplicate-trigger"></span>
+                <span class="ozz-block-delete-trigger"></span>
+              </div>
               <span class="ozz-accordion-arrow"></span>
             </div>`;
 
@@ -204,6 +207,7 @@ function ozzCmsBlockEditor() {
 
           addCommonEvents(draggedItem);
           ozz.initRepeater(draggedItem);
+          initOzzWyg();
         }
       });
 
@@ -214,10 +218,15 @@ function ozzCmsBlockEditor() {
       function indexFieldNames() {
         const usedBlocks = blockFormLoader.querySelectorAll('.ozz-used-block');
         usedBlocks.forEach((block, ind) => {
-          const thisBlockFields = block.querySelectorAll('input, textarea, button, progress, meter, select, datalist');
+          const thisBlockFields = block.querySelectorAll('input, textarea, button, progress, meter, select, datalist, [data-ozz-wyg]');
           thisBlockFields.forEach((field) => {
-            const newName = `i-${ind}_${ field.name.replace(/^i-\d+_/, '') }`;
-            field.name = newName;
+            if(field.name){
+              const newName = `i-${ind}_${ field.name.replace(/^i-\d+_/, '') }`;
+              field.name = newName;
+            } else if (field.getAttribute('data-field-name')) {
+              const newName = `i-${ind}_${ field.getAttribute('data-field-name').replace(/^i-\d+_/, '') }`;
+              field.setAttribute('data-field-name', newName);
+            }
           });
         });
       }
@@ -237,10 +246,24 @@ function ozzCmsBlockEditor() {
           block.querySelector('.ozz-block-delete-trigger').addEventListener('click', () => {
             block.remove();
             indexFieldNames();
-          })
+          });
+
+          // Duplicate Block
+          block.querySelector('.ozz-block-duplicate-trigger').addEventListener('click', (e) => {
+            e.preventDefault();
+            const blockClone = block.cloneNode(true);
+            addCommonEvents(blockClone);
+            blockFormLoader.appendChild(blockClone);
+            indexFieldNames();
+            ozz.initRepeater(blockClone);
+          });
 
           // Block accordion event
-          block.querySelector('.ozz-block-accordion-bar').addEventListener('click', () => {
+          block.querySelector('.ozz-block-accordion-bar').addEventListener('click', (e) => {
+            if (e.target.closest('.ozz-block-actions')) {
+              return false;
+            }
+
             if (block.getAttribute('data-expand') == 'true') {
               ozzToggleBlock(block, false);
             } else {
@@ -297,7 +320,19 @@ function ozzCmsBlockEditor() {
 // ===============================================
 function ozzCmsFormHandler(e) {
   e.preventDefault();
-  e.target.submit();
+
+  const thisForm = e.target;
+  const ozzWygEditors = thisForm.querySelectorAll('[data-ozz-wyg]');
+  ozzWygEditors.forEach(wygEditor => {
+    const name = wygEditor.getAttribute('data-field-name');
+    const hdnField = document.createElement('input');
+    hdnField.type = 'hidden';
+    hdnField.name = name;
+    hdnField.value = wygEditor.querySelector('[data-editor-area]').innerHTML;
+    thisForm.appendChild(hdnField);
+  });
+
+  thisForm.submit();
 }
 
 
@@ -505,6 +540,16 @@ function ozzChangeTheme() {
 }
 
 
+// ===============================================
+// Ozz Init OzzWyg editor if exist
+// =============================================== 
+function initOzzWyg() {
+  if (typeof OzzWyg === 'function') {
+    new OzzWyg({ selector: '[data-ozz-wyg]' });
+  }
+}
+
+
 (function() {
   ozzCmsNavBar();
   ozzCmsBlockEditor();
@@ -514,4 +559,5 @@ function ozzChangeTheme() {
   ozzChangeTheme();
 
   ozz.initRepeater();
+  initOzzWyg();
 })();

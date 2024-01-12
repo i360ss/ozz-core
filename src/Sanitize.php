@@ -25,12 +25,12 @@ class Sanitize {
     return filter_var($i, FILTER_SANITIZE_NUMBER_FLOAT);
   }
 
-  public static function htmlEncode($i, $flag=null){
-    return htmlspecialchars($i, $flag);
+  public static function htmlEncode($i, $flag=false){
+    return $flag ? htmlspecialchars($i, $flag) : htmlspecialchars($i);
   }
 
-  public static function htmlDecode($i, $flag=null){
-    return htmlspecialchars_decode($i, $flag);
+  public static function htmlDecode($i, $flag=false){
+    return $flag ? htmlspecialchars_decode($i, $flag) : htmlspecialchars_decode($i);
   }
 
   public static function encoded($i){

@@ -86,7 +86,10 @@ trait Blocks {
             <div class="ozz-block-accordion-bar'.$expanded.'">
               <span class="ozz-handle"></span>
               <div><h4>'.$b['label'].'</h4>'.$note.'</div>
-              <div><span class="ozz-block-delete-trigger"></span></div>
+              <div class="ozz-block-actions">
+                <span class="ozz-block-duplicate-trigger"></span>
+                <span class="ozz-block-delete-trigger"></span>
+              </div>
               <span class="ozz-accordion-arrow"></span>
             </div>
             <div class="ozz-accordion-body'.$expanded.'">'.$form.'</div>

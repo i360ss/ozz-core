@@ -298,6 +298,15 @@ body.ozz-cms[data-theme="dark"]{
           .ozz-accordion-arrow {
             filter: brightness(5);
           }
+          .ozz-block-actions {
+            > span {
+              background-color: color(dark1);
+              border-color: color(dark2);
+              &:hover {
+                background-color: color(dark);
+              }
+            }
+          }
         }
       }
       .sortable-ghost {

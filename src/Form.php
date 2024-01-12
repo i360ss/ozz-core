@@ -48,6 +48,10 @@ class Form {
     "datalist",
   ];
 
+  public static $custom_field_types = [
+    "rich-text"
+  ];
+
   private static $initial_form;
 
   /**
@@ -372,6 +376,9 @@ class Form {
 
   /**
    * Default input field generator
+   * @param string $type
+   * @param array $args Field settings
+   * @param boolean $field_label_spr Separate field and label and return as array if true
    */
   public static function input($type, $args, $field_label_spr=false){
     // Set input field
@@ -539,6 +546,12 @@ class Form {
 
       $optionField .= '</'.$type.'>'."\n";
       $thisField = $optionField;
+    } elseif(in_array($type, self::$custom_field_types)){
+      // Custom Field Types
+      if ($type == 'rich-text') {
+        $rich_txt_val = isset($args['value']) ? '<div data-editor-area>'.html_decode($args['value']).'</div>' : ''; // Rich-text value
+        $thisField = '<div data-ozz-wyg data-field-name="'.$args['name'].'">'.$rich_txt_val.'</div>';
+      }
     }
 
     if($field_label_spr === true){

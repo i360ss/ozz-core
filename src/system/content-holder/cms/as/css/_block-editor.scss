@@ -160,6 +160,7 @@
     }
   }
   &__form-loader {
+    min-height: 450px;
     .missing-block {
       padding: 14px 24px;
       background: rgba(color(danger), 0.1);
@@ -196,14 +197,16 @@
       }
       &:hover {
         .ozz-block-accordion-bar {
-          .ozz-block-delete-trigger {
-            display: block;
+          .ozz-block-actions {
+            span {
+              display: block;
+            }
           }
         }
       }
       .ozz-block-accordion-bar {
         display: grid;
-        grid-template-columns: 20px 1fr 18px 24px;
+        grid-template-columns: 20px 1fr 65px 24px;
         grid-gap: 14px;
         padding: 14px;
         align-items: center;
@@ -223,15 +226,35 @@
           width: 22px;
           height: 42px;
         }
-        .ozz-block-delete-trigger {
-          @include icon-delete();
-          width: 18px;
-          height: 24px;
-          background-size: contain;
-          cursor: pointer;
+        .ozz-block-actions {
+          display: flex;
+          flex-direction: row;
+          gap: 6px;
+          > span {
+            display: none;
+            width: 18px;
+            height: 24px;
+            padding: 14px;
+            border-radius: 5px;
+            background-size: 18px 18px;
+            background-position: center;
+            background-color: color(light2);
+            border: 1px solid color(light1);
+            cursor: pointer;
+            &:hover {
+              background-color: color(light1);
+            }
+            &.ozz-block-duplicate-trigger {
+              @include icon-duplicate();
+            }
+            &.ozz-block-delete-trigger {
+              @include icon-delete();
+            }
+          }
         }
         .ozz-accordion-arrow {
           @include icon-arrow1();
+          transition: .2s ease-in-out;
           width: 24px;
           height: 24px;
           transform: rotate(90deg);
