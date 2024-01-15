@@ -132,17 +132,23 @@ class CliCreate {
   /**
    * Create Email Template
    */
-  private function createEmailTemplate($name){
-    if(!validate_file_name($name)){
+  private function createEmailTemplate($name) {
+    if (!validate_file_name($name)) {
       ozz_console_error("Invalid Email Template Name");
       return false;
     }
 
-    $fileName = $this->createTo.'mail/'.$name.'.phtml';
+    // Ensure the 'mail' directory exists
+    $mailDirectory = $this->createTo . 'mail/';
+    if (!is_dir($mailDirectory)) {
+      mkdir($mailDirectory, 0755, true);
+    }
+
+    $fileName = $mailDirectory . $name . '.phtml';
     $nameFinal = explode("/", $name);
     $file_data = [
       'name' => end($nameFinal),
-      'path' => 'mail/'.$name
+      'path' => 'mail/' . $name
     ];
 
     return $this->common_create('email_template', $fileName, $fileName, $name, $file_data);

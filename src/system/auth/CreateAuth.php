@@ -160,6 +160,10 @@ class CreateAuth {
   private function createAuthEmailTemplate($base_file, $name){
     global $utils;
 
+    if (!is_dir($this->email_template_dir)) {
+      mkdir($this->email_template_dir, 0755, true);
+    }
+
     $from = $this->auth_content_holder.'/mail-templates/'.$base_file.'.phtml';
     $to = $this->email_template_dir.$name;
 
