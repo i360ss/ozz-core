@@ -1,0 +1,279 @@
+/* ----------FORM ----------- */
+.ozz-fm,
+.form {
+  * {
+    font-family: $rub;
+    font-size: $font-normal;
+  }
+  .form-item {
+    margin: 0 0 24px;
+    &__link {
+      font-size: $font-normal;
+      color: color(primary);
+      &:hover {
+        color: color(primary-dark);
+      }
+    }
+  }
+  // OzzWyg Editor
+  .ozz-wyg {
+    &__toolbar {
+      top: 44px;
+    }
+    .ozz-wyg__editor-area {
+      * {
+        font-size: 15px;
+      }
+      h1,h2,h3,h4,h5,h6 {
+        font-family: $rub-m;
+        line-height: 1.7rem;
+        margin: 16px 0;
+        span {
+          font-size: unset;
+        }
+      }
+      h1 {
+        font-size: 32px;
+      }
+      h2 {
+        font-size: 28px;
+      }
+      h3 {
+        font-size: 24px;
+      }
+      h4 {
+        font-size: 22px;
+      }
+      h5 {
+        font-size: 20px;
+      }
+      h6 {
+        font-size: 18px;
+      }
+      a {
+        color: color(darkBlue);
+        text-decoration: underline;
+      }
+      strong,
+      b {
+        font-family: $rub-b;
+      }
+      u {
+        text-decoration: underline;
+      }
+      strike,
+      s {
+        text-decoration: line-through;
+      }
+      sup,
+      sub {
+        font-size: 12px;
+      }
+      li {
+        padding-left: 12px;
+        line-height: 1.6rem;
+      }
+      table {
+        th,
+        td {
+          font-size: 15px;
+        }
+        th {
+          font-family: $rub-m;
+        }
+      }
+    }
+    &.error {
+      .ozz-wyg__editor-area {
+        border-color: color(danger);
+        background-color: rgba(color(danger), 0.03);
+      }
+    }
+  }
+  select,
+  textarea,
+  input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid rgba(color(secondary),0.2);
+    border-radius: 5px;
+    &:not(input[type="submit"]) {
+      transition: .3s ease-in-out;
+      &:focus {
+        border-color: color(primary);
+        box-shadow: 0 0 0 4px rgba(color(primary), 0.2);
+      }
+    }
+    &.error {
+      border-color: color(danger);
+      background-color: rgba(color(danger), 0.03);
+    }
+  }
+  textarea {
+    line-height: 1.5rem;
+  }
+  .button,
+  input[type="submit"] {
+    @extend .button;
+  }
+  .message {
+    display: grid;
+    line-height: 1.3rem;
+    padding: 6px 10px;
+    border-radius: 5px;
+    text-align: center;
+    &.success {
+      color: color(success);
+      border: 1px solid rgba(color(success), 0.3);
+      background-color: rgba(color(success), 0.05);
+    }
+    &.warning {
+      color: color(warning);
+      border: 1px solid rgba(color(warning), 0.3);
+      background-color: rgba(color(warning), 0.05);
+    }
+    &.danger {
+      color: color(danger);
+      border: 1px solid rgba(color(danger), 0.3);
+      background-color: rgba(color(danger), 0.05);
+    }
+    a {
+      display: contents;
+    }
+  }
+  .error-label {
+    display: inline-block;
+    font-size: $font-small;
+    font-style: italic;
+    margin-top: 5px;
+    color: color(danger);
+  }
+  .form-error {
+    p {
+      margin-top: 0;
+    }
+  }
+  // Repeater field
+  &__repeat {
+    margin-bottom: 30px;
+    padding: 4px 3px 4px 4px;
+    border: 1px solid rgba(color(semi-blue), 0.5);
+    &,
+    &-wrapper {
+      border-radius: 5px;
+    }
+    &-top {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 4px;
+      margin: -4px 0 0 -4px;
+      width: calc(100% + 7px);
+      background-color: color(light1);
+      border-radius: 5px 5px 0 0;
+      legend {
+        min-width: 250px;
+      }
+    }
+    &-fields {
+      padding-left: 10px;
+      border-radius: 5px 0 0 0;
+      min-width: 250px;
+    }
+    &-head {
+      position: relative;
+      width: calc(100% + 17px);
+      margin: 0 0 5px -14px;
+      height: 34px;
+      background: color(light2);
+      cursor: move;
+      &:before,
+      &:after {
+        position: absolute;
+        content: '';
+        top: 3px;
+        width: 20px;
+        height: 29px;
+        @include icon-sprite;
+        transition: .2s ease-in-out;
+      }
+      &:before {
+        left: 6px;
+        background-position: -79px -113px;
+      }
+      &:after {
+        left: 40px;
+        background-position: -118px -111px;
+        transform: rotate(-180deg);
+        transform-origin: center;
+      }
+      &.close {
+        &:after {
+          transform: rotate(0deg);
+        }
+      }
+    }
+    &-body {
+      padding: 10px 5px 20px 0;
+      &.close {
+        display: none;
+      }
+    }
+    &-remove {
+      position: absolute;
+      right: 3px;
+      top: 3px;
+    }
+    &-label {
+      margin-bottom: 6px;
+      padding: 0 6px;
+      font-size: $font-small-3;
+      font-family: $rub-m;
+      color: color(primary);
+    }
+    &-number {
+      position: absolute;
+      right: 70px;
+      top: 0;
+      padding: 7px 4px;
+      height: 34px;
+      font-family: $rub;
+      color: color(dark1);
+      text-align: right;
+    }
+    &-add {
+      &.button {
+        margin-left: 2px;
+      }
+    }
+    // Single repeater
+    &.single {
+      width: calc(100% - 2px);
+      .ozz-fm__repeat {
+        &-fields {
+          position: relative;
+          padding: 0 0 10px;
+          margin-bottom: 10px;
+          &:not(:last-of-type) {
+            border-bottom: 1px solid rgba(color(gray2), 0.5);
+          }
+          &-field {
+            max-width: calc(100% - 130px);
+            margin-left: 60px;
+          }
+        }
+        &-number {
+          position: absolute;
+          left: 0;
+          right: auto;
+          padding: 10px;
+          width: 60px;
+          text-align: center;
+        }
+      }
+    }
+    .single {
+      padding: 10px 4px 4px;
+    }
+  }
+}

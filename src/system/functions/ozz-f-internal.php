@@ -2,24 +2,6 @@
 // Ozz Internal functions
 
 /**
-* Add Prefix to nested block fields
-* @param array $fields Nestable fields
-* @param string $prefix
-*/
-function ozz_i_add_block_naming_prefix(&$fields, $prefix, $with_name=false) {
-  foreach ($fields as &$item) {
-    if (isset($item['fields']) && is_array($item['fields'])) {
-      $with_name 
-        ? ozz_i_add_block_naming_prefix($item['fields'], $prefix.$item['name'].'__') 
-        : ozz_i_add_block_naming_prefix($item['fields'], $prefix);
-    }
-    isset($item['name']) ? $item['name'] = $prefix . $item['name'] : false;
-  }
-
-  return $fields;
-}
-
-/**
  * Convert Block input into structured array
  * @param array $arr
  */

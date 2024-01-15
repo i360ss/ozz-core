@@ -1,17 +1,21 @@
-// Admin Styles
-$font-path: "../../fonts/";
+// Ozz CMS Styles
 
-@import "vendor/OzzWyg";
-@import "../../css/init";
-@import "functions";
+// Vendor
+@import "vendor/ozz-wyg";
+
+// Ozz core SCSS
+@import "../../scss/core/core";
+
+// Ozz CMS styles
+@import "mixins";
 @import "base";
+@import "cms-form";
 @import "animations";
 @import "cms-common";
 @import "popup";
 @import "cms-header";
-@import "listings";
+@import "listing";
 @import "editor-view";
 @import "block-editor";
-@import "page";
 @import "media-manager";
 @import "dark-theme";

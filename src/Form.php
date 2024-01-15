@@ -238,26 +238,37 @@ class Form {
           </div>
           <div id="rptw-'.$repeaterID.'" class="ozz-fm__repeat-wrapper">';
 
-        if (is_array($f_value)) {
-          foreach ($f_value as $i => $repeaterValue) {
-            $html .= '<div id="rptf-'.random_str(18).'" class="ozz-fm__repeat-fields">';
-            $html .= '<div class="ozz-fm__repeat-head">';
-            $html .= '<span class="ozz-fm__repeat-number">'.((int) $i + 1).'</span>';
-            $html .= '<span class="ozz-fm__repeat-remove button micro danger">Delete</span>';
-            $html .= '</div>';
-            $html .= '<div class="ozz-fm__repeat-body">';
-            $html .= self::generateFormFields($repeaterFields, $repeaterValue, $f_name . '_'.$i.'_');
-            $html .= '</div></div>';
-          }
-        } else {
-          $html .= '<div id="rptf-'.random_str(18).'" class="ozz-fm__repeat-fields">';
+        // Get Parent/post level repeater fields
+        $ptn = array_flip(preg_grep('/^' . $name . '_\d+_/', array_keys($values)));
+        $parent_repeater = ozz_i_convert_str_to_array_1(array_intersect_key($values, $ptn));
+
+        // Common code for creating a repeated field block
+        $createRepeatedFieldBlock = function ($i, $repeaterValue, $prefix) use ($repeaterFields, &$html) {
+          $html .= '<div id="rptf-' . random_str(18) . '" class="ozz-fm__repeat-fields">';
           $html .= '<div class="ozz-fm__repeat-head">';
-          $html .= '<span class="ozz-fm__repeat-number">1</span>';
+          $html .= '<span class="ozz-fm__repeat-number">' . ((int)$i + 1) . '</span>';
           $html .= '<span class="ozz-fm__repeat-remove button micro danger">Delete</span>';
           $html .= '</div>';
           $html .= '<div class="ozz-fm__repeat-body">';
-          $html .= self::generateFormFields($repeaterFields, $values, $f_name . '_0_');
+          $html .= self::generateFormFields($repeaterFields, $repeaterValue, $prefix . $i . '_');
           $html .= '</div></div>';
+        };
+
+        // Parent/Post level repeater
+        if (!empty($parent_repeater[$name])) {
+          foreach ($parent_repeater[$name] as $i => $repeaterValue) {
+            $createRepeatedFieldBlock($i, $repeaterValue, $name . '_');
+          }
+        }
+        // Block repeaters
+        elseif (!empty($f_value)) {
+          foreach ($f_value as $i => $repeaterValue) {
+            $createRepeatedFieldBlock($i, $repeaterValue, $f_name . '_');
+          }
+        }
+        // Default
+        else {
+          $createRepeatedFieldBlock(0, $values, $f_name . '_');
         }
 
         $html .= '</div>
@@ -549,8 +560,9 @@ class Form {
     } elseif(in_array($type, self::$custom_field_types)){
       // Custom Field Types
       if ($type == 'rich-text') {
+        $classes = isset($args['class']) ? $args['class'] : '';
         $rich_txt_val = isset($args['value']) ? '<div data-editor-area>'.html_decode($args['value']).'</div>' : ''; // Rich-text value
-        $thisField = '<div data-ozz-wyg data-field-name="'.$args['name'].'">'.$rich_txt_val.'</div>';
+        $thisField = '<div data-ozz-wyg data-field-name="'.$args['name'].'" class="'.$classes.'">'.$rich_txt_val.'</div>';
       }
     }
 

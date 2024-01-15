@@ -9,10 +9,10 @@ $dark-3: #424247;
 
 $fs-1: 14px;
 
-$icon_dir: '../../icons/';
+$icon_dir: '../icons/';
 
 @mixin ozz-wyg-icon-btn {
-  font-size: 0;
+  font-size: 0 !important;
   line-height: 1.7rem;
   background-image: url('#{$icon_dir}/tools.svg');
   background-repeat: no-repeat;

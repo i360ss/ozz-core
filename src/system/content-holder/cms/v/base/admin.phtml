@@ -14,7 +14,7 @@ $has_alert = has_error('success') || has_error('error');
   <title>{% title %}</title>
   <meta name="csrf-token" content="<?=CSRF_TOKEN?>">
   <link rel="icon" type="image/x-icon" href="<?=ASSETS?>icons/favicon.svg">
-  <link rel="stylesheet" href="<?=ASSETS?>admin/css/admin.min.css" nonce="<?=CSP_NONCE?>">
+  <link rel="stylesheet" href="<?=ASSETS?>css/admin.min.css" nonce="<?=CSP_NONCE?>">
 </head>
 <body class="ozz-cms {% body_class %}">
   <div class="app-container">
@@ -123,8 +123,8 @@ $has_alert = has_error('success') || has_error('error');
     </main>
   </div>
 <script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/vendor/sortable.min.js"></script>
-<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/vendor/OzzWyg.js"></script>
-<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>js/ozz.js"></script>
+<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/vendor/ozz-wyg.js"></script>
+<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/ozz.js"></script>
 <script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/admin.js"></script>
 </body>
 </html>

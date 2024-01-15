@@ -27,7 +27,8 @@ trait Blocks {
 
 
   /**
-   * Block editor area to inject into Form
+   * Build block editor area (Using Block data stored in DB or Flash)
+   * @param array $block_data
    */
   protected function cms_block_editor_field($block_data=[]) {
     $blocks = !empty($block_data) ? json_decode($block_data, true) : [];
@@ -64,11 +65,6 @@ trait Blocks {
               (($new_form['fields'][$ky]['repeat'] ?? false) === true || in_array(($value['type'] ?? ''), $rps)) &&
               isset($new_form['fields'][$ky]['fields'])
             );
-
-            // Modify Repeatable fields names
-            if($is_repeatable){
-              $new_form['fields'][$ky]['fields'] = ozz_i_add_block_naming_prefix($new_form['fields'][$ky]['fields'], '');
-            }
           }
 
           // Generate block's form with values
