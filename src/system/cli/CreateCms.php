@@ -54,8 +54,8 @@ class CreateCms {
     }
 
     // CMS Config
-    if(!file_exists($app_dir.'cms-config.php')){
-      if(copy($cms_hold_dir.'cms-config.php', $app_dir.'cms-config.php')){
+    if(!file_exists($cms_dir.'cms-config.php')){
+      if(copy($cms_hold_dir.'cms-config.php', $cms_dir.'cms-config.php')){
         $utils->console_return("CMS Config file created [ app/cms-config.php ]", 'green');
       } else {
         $utils->console_return("Error on creating CMS Config file [ app/cms-config.php ]", 'red');

@@ -14,10 +14,10 @@ class CMSAdminController extends CMS {
    * --
    * # Properties
    * $this->data   ------------------- Data can be used inside the CMS view files
-   * $this->cms_config   ------------- Complete output of app/cms-config.php
-   * $this->cms_post_types  ---------- Defined post types in app/cms-config.php
-   * $this->cms_blocks  -------------- Defined blocks in app/cms-config.php
-   * $this->cms_media  --------------- Defined media settings in app/cms-config.php
+   * $this->cms_config   ------------- Complete output of cms/cms-config.php
+   * $this->cms_post_types  ---------- Defined post types in cms/cms-config.php
+   * $this->cms_blocks  -------------- Defined blocks in cms/cms-config.php
+   * $this->cms_media  --------------- Defined media settings in cms/cms-config.php
    * $this->post_type  --------------- Current post type
    * $this->post_config  ------------- Current post type's settings
    * $this->post_labels  ------------- Post labels

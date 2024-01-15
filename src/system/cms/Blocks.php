@@ -91,7 +91,7 @@ trait Blocks {
             <div class="ozz-accordion-body'.$expanded.'">'.$form.'</div>
           </li>';
         } else {
-          $block_dom .= '<div class="missing-block"><p><strong>Block not found!</strong> <br></p><span class="light-text">This block has removed or renamed from the cms-config.php</span></div>';
+          $block_dom .= '<div class="missing-block"><p><strong>Block not found!</strong> <br></p><span class="light-text">This block has removed or renamed on the cms-config.php</span></div>';
         }
       }
     }
