@@ -30,9 +30,9 @@
   @include icon-sprite;
   background-position: -180px 10px;
 }
-@mixin icon-terms {
+@mixin icon-taxonomy {
   @include icon-sprite;
-  background-position: -105px 8px;
+  background-position: -105px 10px;
 }
 @mixin icon-settings {
   @include icon-sprite;

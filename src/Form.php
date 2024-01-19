@@ -290,9 +290,19 @@ class Form {
         // Set field error if available
         if($has_error && is_string($f_name) && !empty($f_name)){
           $error_str = error(rtrim($f_name, '[]'));
-          $error_msg = isset($field['field_error_wrapper']) 
-            ? str_replace('##', $error_str, $field['field_error_wrapper'])
-            : '<span class="field-error">'.$error_str.'</span>';
+          if(is_array($error_str)){
+            $error_msg = '';
+            foreach ($error_str as $err) {
+              $error_msg .= isset($field['field_error_wrapper']) 
+                ? str_replace('##', $err, $field['field_error_wrapper'])
+                : '<span class="field-error">'.$err.'</span><br>';
+            }
+          } else {
+            $error_msg = isset($field['field_error_wrapper']) 
+              ? str_replace('##', $error_str, $field['field_error_wrapper'])
+              : '<span class="field-error">'.$error_str.'</span>';
+          }
+
           $thisField .= $error_msg;
         }
 

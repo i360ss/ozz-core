@@ -1,0 +1,101 @@
+<?php
+/**
+ * View Name: settings
+ * Path: view/settings
+ * 
+ * @param array $data arguments passed from controller or route
+ */
+
+$form_data = has_flash('form_data') ? get_flash('form_data') : [];
+?>
+{{ title        = "Settings" }}
+{{ body_class   = "settings" }}
+
+{{ content }}
+  <h1>Settings</h1>
+  <section>
+    <div class="cl cl-6">
+      <div class="ozz-widget">
+        <h4 class="ozz-widget__heading">User Info</h4>
+        <div class="profile-image">
+          <img src="<?=get_gravatar()?>" alt="<?=auth_info('name')?>">
+        </div><br>
+        <?php _create_form([
+          'action' => '/admin/settings/change-info',
+          'method' => 'post',
+          'class' => 'ozz-fm',
+          'field_options' => [
+            'wrapper' => '<div class="ozz-fm__field">##</div>'
+          ],
+          'fields' => [
+            [
+              'name' => 'first-name',
+              'type' => 'text',
+              'label' => 'First Name',
+              'value' => $form_data['first-name'] ?? auth_info('first_name'),
+              'wrapper_class' => 'cl cl-6'
+            ],
+            [
+              'name' => 'last-name',
+              'type' => 'text',
+              'label' => 'Last Name',
+              'value' => $form_data['last-name'] ?? auth_info('last_name'),
+              'wrapper_class' => 'cl cl-6'
+            ],
+            [
+              'name' => 'email',
+              'type' => 'text',
+              'label' => 'Email Address',
+              'value' => $form_data['email'] ?? auth_info('email')
+            ],
+            [
+              'name' => 'submit_name',
+              'type' => 'submit',
+              'value' => 'Save',
+              'class' => 'button small green'
+            ]
+          ]
+        ]);?>
+      </div><br>
+
+      <div class="ozz-widget">
+        <h4 class="ozz-widget__heading">Change Password</h4>
+        <?php _create_form([
+          'action' => '/admin/settings/change-pass',
+          'method' => 'post',
+          'class' => 'ozz-fm',
+          'field_options' => [
+            'wrapper' => '<div class="ozz-fm__field">##</div>'
+          ],
+          'fields' => [
+            [
+              'name' => 'current-pass',
+              'type' => 'password',
+              'label' => 'Current Password',
+              'autocomplete' => 'new-password',
+              'value' => isset($form_data['current-pass']) ? $form_data['current-pass'] : '',
+            ],
+            [
+              'name' => 'new-pass',
+              'type' => 'password',
+              'label' => 'New Password',
+              'value' => isset($form_data['new-pass']) ? $form_data['new-pass'] : '',
+            ],
+            [
+              'name' => 'confirm-pass',
+              'type' => 'password',
+              'label' => 'Confirm New Password',
+              'value' => isset($form_data['confirm-pass']) ? $form_data['confirm-pass'] : '',
+            ],
+            [
+              'name' => 'submit',
+              'type' => 'submit',
+              'value' => 'Change Password',
+              'class' => 'button small danger'
+            ]
+          ]
+        ]);?>
+      </div>
+    </div>
+  </section>
+{{ content-end }}

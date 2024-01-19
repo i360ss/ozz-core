@@ -2,8 +2,8 @@
 .listing-s1 {
   &__title {
     display: block;
-    font-family: $rub-m;
-    font-size: $font-small-3;
+    font-family: $rub;
+    font-size: $font-normal;
   }
   .note {
     padding-top: 8px;
@@ -132,7 +132,6 @@
           border: none;
           .title {
             font-size: $font-small-3;
-            font-weight: 600;
             color: color(dark);
           }
         }

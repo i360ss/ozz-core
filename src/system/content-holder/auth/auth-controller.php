@@ -48,7 +48,6 @@ class ".ucfirst($controllerName)." extends Controller {
   }
 
 
-
   /**
    * Verify user account
    */
@@ -57,7 +56,6 @@ class ".ucfirst($controllerName)." extends Controller {
 
     return view('auth/verify-account', \$data);
   }
-
 
 
   /**
@@ -80,7 +78,6 @@ class ".ucfirst($controllerName)." extends Controller {
   }
 
 
-
   /**
    * Password reset request
    */
@@ -99,7 +96,6 @@ class ".ucfirst($controllerName)." extends Controller {
   }
 
 
-
   /**
    * Reset password
    */
@@ -109,7 +105,6 @@ class ".ucfirst($controllerName)." extends Controller {
 
     return view('auth/reset-password', \$data);
   }
-
 
 
   /**
@@ -137,8 +132,6 @@ class ".ucfirst($controllerName)." extends Controller {
 
     return view('auth/reset-password', \$data);
   }
-
-
 
 }
 ";

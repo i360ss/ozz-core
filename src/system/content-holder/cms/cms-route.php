@@ -16,10 +16,12 @@ Router::getGroup(['auth'], 'admin', [
   '/admin/posts/create/{post_type}'           => [CMSAdminController::class, 'post_create_view'],
   '/admin/posts/edit/{post_type}/{post_id}'   => [CMSAdminController::class, 'post_edit_view'],
   '/admin/posts/{post_type}'                  => [CMSAdminController::class, 'post_listing'],
-
   '/admin/blocks'                             => [CMSAdminController::class, 'blocks_listing'],
-
+  '/admin/blocks/{id}'                        => [CMSAdminController::class, 'block'],
   '/admin/media'                              => [CMSAdminController::class, 'media_manager'],
+  '/admin/taxonomy'                           => [CMSAdminController::class, 'taxonomy_listing'],
+  '/admin/taxonomy/{name}'                    => [CMSAdminController::class, 'taxonomy'],
+  '/admin/settings'                           => [CMSAdminController::class, 'settings'],
 ]);
 
 Router::postGroup(['auth'], [
@@ -28,6 +30,7 @@ Router::postGroup(['auth'], [
   '/admin/posts/delete'                       => [CMSAdminController::class, 'post_delete'],
   '/admin/post/change-status'                 => [CMSAdminController::class, 'post_change_status'],
   '/admin/post/duplicate'                     => [CMSAdminController::class, 'post_duplicate'],
-
   '/admin/media/action'                       => [CMSAdminController::class, 'media_action'],
+  '/admin/settings/change-pass'               => [CMSAdminController::class, 'change_password'],
+  '/admin/settings/change-info'               => [CMSAdminController::class, 'change_info'],
 ]);

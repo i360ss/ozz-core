@@ -19,7 +19,9 @@ class CMS {
   public $cms_post_types;
   public $post_config=[];
   public $cms_blocks;
+  public $cms_taxonomies;
   public $cms_media;
+  public $cms_user_meta;
   public $post_type = null;
   public $post_validate = [];
   public static $instance;
@@ -59,10 +61,11 @@ class CMS {
     $request = Request::getInstance();
 
     // Initialize CMS Configurations
-    $this->cms_config = require __DIR__.SPC_BACK['core'].'app/cms-config.php';
+    $this->cms_config = require __DIR__.SPC_BACK['core'].'cms/cms-config.php';
     $this->cms_config['languages'] = array_merge(['en' => 'English'], isset($this->cms_config['languages']) ? $this->cms_config['languages'] : []);
     $this->cms_config['media'] = array_merge($this->media_default, isset($this->cms_config['media']) ? $this->cms_config['media'] : []);
     $this->cms_media = $this->cms_config['media'];
+    $this->cms_user_meta = $this->cms_config['user_meta'];
 
     // Modify post types
     $this->cms_post_types = $this->modify_cms_post_types($this->cms_config['post_types']);
@@ -72,6 +75,9 @@ class CMS {
 
     // Modify Block
     $this->cms_blocks = $this->modify_cms_blocks($this->cms_config['blocks']);
+
+    // Taxonomies
+    $this->cms_taxonomies = $this->cms_config['taxonomies'];
 
     // if post type available
     if(isset($request->urlParam()['post_type'])){
@@ -98,8 +104,10 @@ class CMS {
     $this->data = array_merge($this->data, [
       'languages' => $this->cms_config['languages'],
       'blocks' => $this->cms_blocks,
+      'taxonomies' => $this->cms_taxonomies,
       'post_types' => $this->cms_post_types,
       'media' => $this->cms_media,
+      'user_meta' => $this->cms_user_meta,
     ]);
   }
 

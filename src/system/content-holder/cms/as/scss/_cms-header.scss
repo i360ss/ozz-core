@@ -253,9 +253,9 @@
             }
           }
         }
-        &.terms {
+        &.taxonomy {
           &:before {
-            @include icon-terms;
+            @include icon-taxonomy;
           }
           &:hover {
             &:before {

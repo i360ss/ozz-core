@@ -21,6 +21,7 @@
   }
   + h1 {
     margin-top: 0;
+    margin-bottom: 18px;
   }
 }
 a {
@@ -165,7 +166,12 @@ a {
   }
   .ozz-fm__field {
     &.cl {
-      padding-right: 24px;
+      padding-right: 14px;
+      &.cl-6 {
+        & + .cl-6 {
+          padding-right: 0;
+        }
+      }
     }
     &:first-child {
       border-radius: 5px 5px 0 0;
@@ -263,5 +269,55 @@ input[type="radio"] {
   &,
   &:checked::after {
     border-radius: 50%;
+  }
+}
+
+// widget
+.ozz-widget {
+  padding: 24px;
+  background: color(white);
+  border-radius: $radius1;
+  margin-bottom: auto;
+  box-shadow: $shadow1;
+  &__heading {
+    position: relative;
+    font-size: $font-semi-normal;
+    margin: 0 0 24px;
+    &:before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: -24px;
+      width: 3px;
+      height: 30px;
+      background: color(primary);
+    }
+  }
+  &__item {
+    &-raw {
+      padding: 10px 0;
+      &:not(:last-child) {
+        border-bottom: 1px solid color(light1);
+      }
+      label {
+        margin-right: 12px;
+      }
+      label,
+      span {
+        font-size: $font-normal;
+      }
+    }
+  }
+  // Forms inside widget
+  .ozz-fm {
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
+    &__field {
+      &:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+    }
   }
 }

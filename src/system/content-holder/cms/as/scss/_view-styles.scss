@@ -1,0 +1,15 @@
+body.ozz-cms {
+  // Settings View
+  &.settings {
+    .profile-image {
+      img {
+        width: 85px;
+        height: 85px;
+        border: 5px solid color(light1);
+        border-radius: 50%;
+        object-fit: cover;
+        object-position: center;
+      }
+    }
+  }
+}

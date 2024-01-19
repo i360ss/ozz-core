@@ -5,6 +5,7 @@ use Ozz\Core\Request;
 use Ozz\Core\CMS;
 use Ozz\Core\File;
 use Ozz\Core\Validate;
+use Ozz\Core\Auth;
 
 class CMSAdminController extends CMS {
 
@@ -174,7 +175,106 @@ class CMSAdminController extends CMS {
   // Blocks
   // =============================================
   public function blocks_listing() {
-    return view('blocks', $this->data);
+    return view('block_listing', $this->data);
+  }
+
+
+  /**
+   * Single Block
+   */
+  public function block(Request $request) {
+    $block_id = $request->urlParam('id');
+    $this->data['block'] = $this->data['blocks'][$block_id];
+
+    return view('block', $this->data);
+  }
+
+
+  // =============================================
+  // Taxonomy
+  // =============================================
+  public function taxonomy_listing() {
+    return view('taxonomy_listing', $this->data);
+  }
+
+
+  /**
+   * Single Taxonomy
+   */
+  public function taxonomy(Request $request) {
+    $taxonomy = $request->urlParam('name');
+    $this->data['taxonomy'] = isset($this->data['taxonomies'][$taxonomy]) ? $this->data['taxonomies'][$taxonomy] : [];
+
+    if(!empty($this->data['taxonomy'])){
+      $this->data['taxonomy']['name'] = $taxonomy;
+    } else {
+      $this->data['taxonomy']['name'] = 'None';
+    }
+
+    return view('taxonomy', $this->data);
+  }
+
+
+  // =============================================
+  // Settings
+  // =============================================
+  public function settings() {
+    return view('settings', $this->data);
+  }
+
+
+  /**
+   * Change Password
+   */
+  public function change_password(Request $request) {
+    $form_data = $request->input();
+    set_flash('form_data', $form_data);
+
+    $validate = Validate::check($request->input(), [
+      'current-pass' => 'req',
+      'new-pass' => 'req | strong_password',
+      'confirm-pass' => 'req | match:{new-pass}',
+    ]);
+
+    if($validate->pass){
+      if(Auth::verifyPassword($request->input('current-pass'))) {
+        if(Auth::changePassword(auth_info('id'), $request->input('new-pass'))){
+          remove_flash('form_data');
+        }
+      } else {
+        set_error('current-pass', trans_e('match'));
+      }
+    }
+
+    return back();
+  }
+
+
+  /**
+   * Change User Information
+   */
+  public function change_info(Request $request) {
+    set_flash('form_data', $request->input());
+    $validate = Validate::check($request->input(), [
+      'first_name' => 'req',
+      'last-name' => 'req',
+      'email' => 'req | email',
+    ]);
+
+    if($validate->pass){
+      $update_user = Auth::update([
+        'first_name' => esx($request->input('first-name')),
+        'last_name' => esx($request->input('last-name')),
+        'email' => esx($request->input('email')),
+      ]);
+
+      if($update_user){
+        clear_flash('form_data');
+        set_error('success', trans('profile_update_success'));
+      }
+    }
+
+    return back();
   }
 
 

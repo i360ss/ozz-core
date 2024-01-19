@@ -1,0 +1,65 @@
+<?php
+/**
+ * View Name: taxonomy
+ * Path: view/admin/taxonomy
+ * 
+ * @param array $data arguments passed from controller or route
+ */
+?>
+{{ title        = "Taxonomy | <?=isset($taxonomy['name']) ? $taxonomy['name'] : 'Taxonomy not found'?>" }}
+{{ body_class   = "view-taxonomy" }}
+
+{{ content }}
+  <section>
+    <?php if (!empty($taxonomy)) : ?>
+      <div class="heading breadcrumb">
+        <span><a href="/admin/taxonomy">Taxonomy</a></span>
+        <span><a href=""><?=$taxonomy['label']?></a></span>
+      </div>
+
+      <h1 class="heading"><?=$taxonomy['label']?></h1>
+
+      <div class="cl cl-6">
+        <div class="ozz-widget">
+          <h4 class="ozz-widget__heading">Taxonomy Info</h4>
+          <div class="ozz-widget__item-raw">
+            <label>Name: </label><span><?=$taxonomy['name']?></span>
+          </div>
+          <div class="ozz-widget__item-raw">
+            <label>Label: </label><span><?=$taxonomy['label']?></span>
+          </div>
+          <div class="ozz-widget__item-raw">
+            <label>Singular Name: </label><span><?=$taxonomy['singular'] ?? ''?></span>
+          </div>
+          <div class="ozz-widget__item-raw">
+            <label>Parent: </label>
+              <span>
+                <?=isset($taxonomy['parent'])
+                  ? '<a href="/admin/taxonomy/'.$taxonomy['parent'].'" class="link">'.$taxonomy['parent'].'</a>'
+                  : 'N/A';
+                ?>
+              </span>
+          </div>
+          <div class="ozz-widget__item-raw">
+            <label>Note: </label><span><?=$taxonomy['note'] ?? ''?></span>
+          </div>
+
+          <?php if (isset($taxonomy['value'])) : ?>
+            <div class="ozz-widget__item-raw">
+              <label>Values: </label><br><br>
+              <?php foreach ($taxonomy['value'] as $value) : ?>
+                <span class="button mini light"><?=$value['label']?></span>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
+
+        </div>
+      </div>
+    <?php else : ?>
+      <h1 class="heading">Taxonomy</h1>
+      <div class="listing-s2__empty">
+        <p>Invalid taxonomy</p>
+      </div>
+    <?php endif; ?>
+  </section>
+{{ content-end }}

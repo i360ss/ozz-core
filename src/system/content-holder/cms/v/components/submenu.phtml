@@ -1,0 +1,24 @@
+<?php
+/**
+ * Component Name: submenu
+ * Path: view/components/submenu
+ * 
+ * @param array $args Given arguments on component call
+ */
+?>
+
+<ul>
+  <label>
+    <span><?=$title?></span>
+    <a href="/admin/<?=$slug?>">
+      <span class="button mini">All</span>
+    </a>
+  </label>
+  <?php foreach ($items as $key => $item) :
+    $url_3 = $url_parts[3] ?? false;
+  ?>
+    <li <?=(isset($url_3) && $url_3 == $key) ?'class="active"' : ''?>>
+      <a href="/admin/<?=$slug?>/<?=$key?>"><?=ucfirst($item['label'])?></a>
+    </li>
+  <?php endforeach; ?>
+</ul>

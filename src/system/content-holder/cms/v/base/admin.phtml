@@ -25,35 +25,46 @@ $has_alert = has_error('success') || has_error('error');
       <div class="cms-nav__logo">
         <img src="<?=ASSETS?>icons/favicon.svg" alt="Ozz CMS">
       </div>
+
       <ul data-active-link="<?= $context['url_parts'][2] ?? 'dashboard' ?>">
         <li class="dashboard">
           <a href="/admin" class="dashboard">Dashboard</a>
         </li>
+
         <li class="posts has-child">
           <a href="/admin/posts" class="posts">Posts</a>
-          <ul>
-            <label>
-              <span>Post types</span>
-              <a href="/admin/posts"><span class="button mini">All</span></a>
-            </label>
-              <?php foreach ($data['post_types'] as $key => $value) :
-                  $active_class = (isset($context['url_parts'][3]) && $context['url_parts'][3] == $key)
-                    ?'class="active"'
-                    : '';
-              ?>
-                <li <?=$active_class?>><a href="/admin/posts/<?=$key?>"><?=ucfirst($value['label'])?></a></li>
-              <?php endforeach; ?>
-          </ul>
+          <?= component('submenu', [
+            'title' => 'Posts types',
+            'slug' => 'posts',
+            'items' => $data['post_types'],
+            'url_parts' => $context['url_parts']
+          ], 'cms/'); ?>
         </li>
-        <li class="blocks">
+
+        <li class="blocks has-child">
           <a href="/admin/blocks" class="blocks">Blocks</a>
+          <?= component('submenu', [
+            'title' => 'Blocks',
+            'slug' => 'blocks',
+            'items' => $data['blocks'],
+            'url_parts' => $context['url_parts']
+          ], 'cms/'); ?>
         </li>
-        <li class="terms">
-          <a href="/admin/terms" class="terms">Terms</a>
+
+        <li class="taxonomy has-child">
+          <a href="/admin/taxonomy" class="taxonomy">Taxonomy</a>
+          <?= component('submenu', [
+            'title' => 'Taxonomy',
+            'slug' => 'taxonomy',
+            'items' => $data['taxonomies'],
+            'url_parts' => $context['url_parts']
+          ], 'cms/'); ?>
         </li>
+
         <li class="media">
           <a href="/admin/media" class="media">Media</a>
         </li>
+
         <li class="settings">
           <a href="/admin/settings" class="settings">Settings</a>
         </li>

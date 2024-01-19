@@ -422,6 +422,24 @@ class Auth extends Model {
   }
 
   /**
+   * Restore User info in session
+   * @return void
+   */
+  public static function restoreInfo() : void {
+    $user = self::$db->select(CONFIG['AUTH_USERS_TABLE'], CONFIG['AUTH_ALLOWED_FIELDS'], [self::$id_field => self::id()]);
+    if(count($user) == 1){
+      $user = $user[0];
+      $_SESSION['logged_user_id']         = $user[self::$id_field];
+      $_SESSION['logged_username']        = $user[self::$username_field];
+      $_SESSION['logged_user_email']      = $user[self::$email_field];
+      $_SESSION['logged_user_first_name'] = $user[self::$first_name_field];
+      $_SESSION['logged_user_last_name']  = $user[self::$last_name_field];
+      $_SESSION['logged_user_status']     = $user[self::$status_field];
+      $_SESSION['logged_user_role']       = $user[self::$role_field];
+    }
+  }
+
+  /**
    * Logged in user ID
    */
     public static function id(){
@@ -921,7 +939,7 @@ class Auth extends Model {
     }
 
     if($user_id && $new_email){
-      self::changeEmail($user_id, $new_email, false);
+      self::changeEmail($new_email, $user_id, [], false);
       self::deleteUserMeta(['user_id' => $user_id, 'meta_key' => 'email_change_verification']);
       if($notify){
         $mail_args = [
@@ -947,19 +965,10 @@ class Auth extends Model {
    * @param array $where Additional where arguments
    * @param boolean $notify Send email notification
    */
-  public static function changeEmail($user_id, $new_email, $authenticated_only=true, $where=[]){
+  public static function changeEmail($new_email, $user_id=null, $where=[], $authenticated_only=true,){
     self::init();
 
-    if($authenticated_only && !self::isLoggedIn()){
-      return render_error_page(401, 'Unauthorized');
-    }
-
-    $where_args = !empty($where)
-      ? array_merge([self::$id_field => $user_id ], $where) 
-      : [self::$id_field => $user_id ];
-
-    $changed = self::$db->update( CONFIG['AUTH_USERS_TABLE'], [ self::$email_field => $new_email ], $where_args );
-
+    $changed = self::update([ self::$email_field => $new_email ], $user_id, $where, $authenticated_only);
     if($changed){
       self::isLoggedIn() ? $_SESSION['logged_user_email'] = $new_email : false;
       return true;
@@ -970,38 +979,57 @@ class Auth extends Model {
 
   /**
    * Change Status
-   * @param string|int $user_id User ID to change the status
    * @param string $new_status new status
+   * @param int $user_id User ID to change the status
    * @param array $where Extra arguments
    */
-  public static function changeStatus($user_id, $new_status, $where=[]){
+  public static function changeStatus($new_status, $user_id=null, $where=[]){
     self::init();
 
-    $where_args = !empty($where)
-      ? array_merge([self::$id_field => $user_id ], $where) 
-      : [self::$id_field => $user_id ];
-
-    $changed = self::$db->update( CONFIG['AUTH_USERS_TABLE'], [ self::$status_field => $new_status ], $where_args );
-
-    return $changed ? true : false;
+    return self::update([ self::$status_field => $new_status ], $user_id, $where);
   }
 
   /**
    * Change Role
-   * @param string|int $user_id User ID to change the role
    * @param string $new_role new role
+   * @param int $user_id User ID to change the role
    * @param array $where Extra arguments
    */
-  public static function changeRole($user_id, $new_role, $where=[]){
+  public static function changeRole($new_role, $user_id=null, $where=[]){
     self::init();
+
+    return self::update([ self::$role_field => $new_role ], $user_id, $where);
+  }
+
+  /**
+   * Update any User info
+   * @param array $what The parameters to be updated
+   * @param integer $user_id User ID
+   * @param array $where Extra arguments
+   * @param bool $authenticated_only Allow only logged-in users to make these updates
+   */
+  public static function update($what, $user_id=null, $where=[], $authenticated_only=true) {
+    if($authenticated_only && !self::isLoggedIn()){
+      return render_error_page(401, 'Unauthorized');
+    }
+
+    if(is_null($user_id)){
+      $user_id = self::id();
+    }
 
     $where_args = !empty($where)
       ? array_merge([self::$id_field => $user_id ], $where) 
       : [self::$id_field => $user_id ];
 
-    $changed = self::$db->update(CONFIG['AUTH_USERS_TABLE'], [ self::$role_field => $new_role ], $where_args );
+    $changed = self::$db->update(CONFIG['AUTH_USERS_TABLE'], $what, $where_args );
 
-    return $changed ? true : false;
+    // Restore User Info
+    if($changed){
+      self::restoreInfo();
+      return true;
+    }
+
+    return false;
   }
 
   /**
@@ -1044,7 +1072,7 @@ class Auth extends Model {
 
     if(self::isLoggedIn() && $id_or_email === false){
       return $_SESSION['logged_user_role'];
-    } else {
+    } elseif($id_or_email !== false) {
       $role = self::$db->get(CONFIG['AUTH_USERS_TABLE'], self::$role_field, [
         'OR' => [
           self::$email_field => $id_or_email,
@@ -1053,6 +1081,8 @@ class Auth extends Model {
       ]);
 
       return !is_null($role) ? $role : false;
+    } else {
+      return false;
     }
   }
 

@@ -390,4 +390,17 @@ body.ozz-cms[data-theme="dark"]{
       }
     }
   }
+  // Widget
+  .ozz-widget {
+    @include dark-skin-1;
+    &__item {
+      &-raw {
+        border-color: color(dark2);
+      }
+    }
+    .form,
+    .ozz-fm {
+      border: none;
+    }
+  }
 }

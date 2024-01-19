@@ -1,0 +1,41 @@
+<?php
+/**
+ * View Name: taxonomies
+ * Path: view/admin/taxonomies
+ * 
+ * @param array $data arguments passed from controller or route
+ */
+?>
+{{ title        = "Taxonomies" }}
+{{ body_class   = "view-taxonomies" }}
+
+{{ content }}
+  <h1 class="heading">Taxonomies</h1>
+
+  <div class="listing-s1">
+    <div class="listing-s1__top-bar">
+      <div class="align-left">
+        <span>Total Taxonomies: <strong><?=count($taxonomies)?></strong></span>
+      </div>
+    </div>
+
+    <div class="table">
+      <?php foreach ($taxonomies as $name => $taxonomy) : ?>
+        <div class="table__tr-wrapper">
+          <a href="/admin/taxonomy/<?=$name?>" class="table__row">
+            <div class="table__cell">
+              <span class="listing-s1__title"><?=$taxonomy['label']?></span>
+              <?php if (isset($taxonomy['note']) && $taxonomy['note'] !== '') :?>
+                <span class="note light-text"><?=$taxonomy['note']?></span>
+              <?php endif; ?>
+            </div>
+
+            <div class="table__cell">
+              <span class="slug"><?=$name?></span>
+            </div>
+          </a>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+{{ content-end }}

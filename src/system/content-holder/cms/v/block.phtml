@@ -1,0 +1,56 @@
+<?php
+/**
+ * View Name: block
+ * Path: view/admin/block
+ * 
+ * @param array $data arguments passed from controller or route
+ */
+?>
+{{ title        = "Block | <?=isset($block['name']) ? $block['name'] : 'Block not found'?>" }}
+{{ body_class   = "view-block" }}
+
+{{ content }}
+  <section>
+    <?php if (!empty($block)) : ?>
+      <div class="heading breadcrumb">
+        <span><a href="/admin/blocks">Blocks</a></span>
+        <span><a href=""><?=$block['label']?></a></span>
+      </div>
+
+      <h1 class="heading"><?=$block['label']?></h1>
+
+      <div class="cl cl-6">
+        <div class="ozz-widget">
+          <h4 class="ozz-widget__heading">Block Info</h4>
+          <div class="ozz-widget__item-raw">
+            <label>Name: </label><span><?=$block['name']?></span>
+          </div>
+          <div class="ozz-widget__item-raw">
+            <label>Label: </label><span><?=$block['label']?></span>
+          </div>
+          <div class="ozz-widget__item-raw">
+            <label>Singular Name: </label><span><?=$block['singular'] ?? ''?></span>
+          </div>
+          <div class="ozz-widget__item-raw">
+            <label>Note: </label><span><?=$block['note'] ?? ''?></span>
+          </div>
+
+          <?php if (isset($block['fields'])) : ?>
+            <div class="ozz-widget__item-raw">
+              <label>Values: </label><br><br>
+              <?php foreach ($block['value'] as $value) : ?>
+                <span class="button mini light"><?=$value['label']?></span>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
+
+        </div>
+      </div>
+    <?php else : ?>
+      <h1 class="heading">block</h1>
+      <div class="listing-s2__empty">
+        <p>Invalid block</p>
+      </div>
+    <?php endif; ?>
+  </section>
+{{ content-end }}
