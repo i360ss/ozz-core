@@ -999,3 +999,5 @@ OzzWyg.defaults = {
     'codeView'
   ]
 };
+
+export default OzzWyg;

@@ -44,10 +44,10 @@
 }
 @mixin icon-folder {
   @include icon-sprite;
-  background-position: -84px -214px;
-  background-size: 580px;
+  background-position: -92px -242px;
+  background-size: 620px;
   @include screen(xl) {
-    background-position: -74px -204px;
+    background-position: -82px -209px;
   }
   @include screen(xxl) {
     background-position: -95px -244px;

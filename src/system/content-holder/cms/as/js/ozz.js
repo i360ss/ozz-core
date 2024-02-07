@@ -18,17 +18,18 @@ class Ozz {
    * Random string
    * @param int length
    */
-  randomString(length) {
+  randomString(length=5) {
     return Array.from({ length }, () => Math.random().toString(36)[2]).join('');
   }
 
   /**
   * Ozz Form Repeater initialization
   * @param DOM Used Block
+  * @param bindEvent Event for bind with newly added item
   */
-  initRepeater(DOM=false) {
+  initRepeater(DOM=false, bindEvent=false) {
     this.repeater__Accordion(DOM);
-    this.repeater__addItem(DOM);
+    this.repeater__addItem(DOM, bindEvent);
     this.repeater__deleteItem(DOM);
   }
 
@@ -58,7 +59,7 @@ class Ozz {
   /**
    * Add Repeater Item
    */
-  repeater__addItem(DOM) {
+  repeater__addItem(DOM, bindEvents=false) {
     const addItemTrigger = DOM ? DOM.querySelectorAll('.ozz-fm__repeat-add') : document.querySelectorAll('.ozz-fm__repeat-add');
     addItemTrigger.forEach(addTrigger => {
       addTrigger.addEventListener('click', (e) => {
@@ -100,7 +101,7 @@ class Ozz {
         newItem.querySelector('.ozz-fm__repeat-number').innerHTML = thisItemCount.length + 1;
 
         // Init for child repeaters of clone
-        this.repeater__addItem(newItem);
+        this.repeater__addItem(newItem, bindEvents);
         this.repeater__deleteItem(newItem);
 
         // Init accordion
@@ -111,6 +112,11 @@ class Ozz {
 
         // Update Names
         this.repeater__renameFields();
+
+        // bind events for new item
+        if (typeof bindEvents == 'function') {
+          bindEvents();
+        }
       });
     });
   }
@@ -200,8 +206,8 @@ class Ozz {
   */
   validate( field, rules ) {
     // Write Validation logics here
-    console.log(field);
-    console.log(rules);
+    // console.log(field);
+    // console.log(rules);
   }
 
   /**
@@ -217,3 +223,5 @@ class Ozz {
     });
   }
 }
+
+export default Ozz;

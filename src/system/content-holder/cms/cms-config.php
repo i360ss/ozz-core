@@ -401,5 +401,9 @@ return [
         'label' => 'Test Meta Field 2'
       ]
     ]
+  ],
+  'CONFIG' => [
+    'SANITIZE_SVG' => false,
+    'SANITIZE_SVG_ALLOWED_ELEMENTS' => []
   ]
 ];

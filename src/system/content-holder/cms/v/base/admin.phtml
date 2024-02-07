@@ -133,9 +133,14 @@ $has_alert = has_error('success') || has_error('error');
     </div>
     </main>
   </div>
-<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/vendor/sortable.min.js"></script>
-<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/vendor/ozz-wyg.js"></script>
-<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/ozz.js"></script>
-<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/js/admin.js"></script>
+<script>
+  const DATA = JSON.parse('<?=json_encode([
+    'HOST'     => $context['request']['host'],
+    'URL'      => $context['url'],
+    'SEGMENTS' => $context['url_parts'],
+    'CMS_URL'  => '/'.$context['url_parts'][1]
+  ])?>');
+</script>
+<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>js/admin.js"></script>
 </body>
 </html>

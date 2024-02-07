@@ -73,6 +73,9 @@ class Lang {
     if(isset($param)){
       if(is_array($param) && !empty($param)){
         foreach ($param as $k => $v) {
+          if(is_array($v)){
+            $v = implode(', ', $v);
+          }
           $res = str_replace(":$k", esc_x($v), $res);
         }
       } elseif(is_string($param)) {

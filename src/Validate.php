@@ -43,9 +43,9 @@ class Validate {
             foreach ($rules as $rule) {
               if(is_array($val)) {
                 foreach ($val as $vl) {
-                  $validity[] = self::checkRule($vl, $rule, $ky); // If multiple rules provided + Multiple values (Single repeater field)
-                  $validatedData[$ky] = $val;
+                  $validity[] = self::checkRule($vl, $rule, $ky); // If multiple rules provided + Multiple values (Single repeater or multi file upload)
                 }
+                $validatedData[$ky] = $val;
               } else {
                 $validity[] = self::checkRule($val, $rule, $ky); // If multiple rules provided
                 $validatedData[$ky] = $val;
@@ -262,13 +262,12 @@ class Validate {
   /**
    * Validation Methods
    */
-  public static function required($v, $key=''){
-    // If File
-    if(is_array($v) && isset($v['name'])){
-      $file_req = (is_string($v['name']) && $v['name'] !== '') || (is_array($v['name']) && count($v['name']) === 1 && $v['name'][0] !== '');
-      return self::response($file_req, $key, self::$lang->error('file_required', ['field' => $key, 'value' => 'file']));
-    }
-    return self::response(!empty($v), $key, self::$lang->error('required', ['field' => $key, 'value' => $v]));
+  public static function required($v, $key = ''){
+    $valueNotEmpty = (is_array($v) && isset($v['name']) && isset($v['tmp_name']))
+      ? (is_string($v['name']) && $v['name'] !== '') || (is_array($v['name']) && count($v['name']) > 0 && $v['name'][0] !== '')
+      : !empty($v);
+
+    return self::response($valueNotEmpty, $key, self::$lang->error('required', ['field' => $key, 'value' => $v]));
   }
 
   public static function boolean($v, $key=''){

@@ -43,6 +43,26 @@ trait FileSettings {
         $im = @imagecreatefromwebp($tmp);
         !$copies ? $image = @imagewebp($im, $dir, $qlt) : false;
         break;
+      case 'svg':
+        $svgContent = file_get_contents($tmp);
+
+        // SVG Sanitization - Set allowed element
+        $sanitizedSVG = false;
+        $conf = CMS_CONFIG ? CMS_CONFIG : CONFIG;
+        if($conf['SANITIZE_SVG'] === true) {
+          $wildcard = $conf['SANITIZE_SVG_ALLOWED_ELEMENTS'] ? $conf['SANITIZE_SVG_ALLOWED_ELEMENTS'] : [];
+          $sanitizedSVG = esx_svg($svgContent, $wildcard);
+        }
+
+        $dom = new \DOMDocument();
+        if($sanitizedSVG){
+          $dom->loadXML($sanitizedSVG);
+        } else {
+          $dom->loadXML($svgContent);
+        }
+        $im = file_put_contents($dir, $dom->saveXML()) !== false ? $img : false;
+        !$copies ? $image = $img : false;
+        break;
     }
 
     if (isset($copies) && $copies === true) {

@@ -153,6 +153,11 @@
       margin-top: 0;
     }
   }
+  &__checkbox {
+    label {
+      translate: 10px -7px;
+    }
+  }
   // Repeater field
   &__repeat {
     margin-bottom: 30px;
@@ -274,6 +279,38 @@
     }
     .single {
       padding: 10px 4px 4px;
+    }
+  }
+  // Media embed
+  &__media-selector {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-gap: 0 10px;
+    .button {
+      margin-bottom: auto;
+    }
+    .ozz-fm__media-embed-wrapper {
+      .embed-wrapper-item {
+        @extend .button;
+        display: grid;
+        grid-template-columns: 60px 1fr;
+        grid-gap: 20px;
+        align-items: center;
+        padding: 3px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        background-color: color(light2);
+        border: 1px solid rgba(color(gray1), 0.3);
+        color: color(secondary);
+        img {
+          max-width: 100%;
+          max-height: 60px;
+          border-radius: 3px;
+        }
+        .name {
+          font-size: $font-small-1;
+        }
+      }
     }
   }
 }

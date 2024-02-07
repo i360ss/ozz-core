@@ -20,7 +20,7 @@ class CreateCms {
     $app_dir = __DIR__.SPC_BACK['core_2'].'app/';
     $cms_dir = __DIR__.SPC_BACK['core_2'].'cms/';
     $mig_dir = __DIR__.SPC_BACK['core_2'].'database/migration/';
-    $assets_dir = __DIR__.SPC_BACK['core_2'].env('app', 'PUBLIC_DIR').'/assets/admin/';
+    $assets_dir = __DIR__.SPC_BACK['core_2'].env('app', 'PUBLIC_DIR').'/src/admin/';
     $cms_hold_dir = __DIR__.'/../content-holder/cms/';
 
     // Create CMS directory

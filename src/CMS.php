@@ -108,7 +108,11 @@ class CMS {
       'post_types' => $this->cms_post_types,
       'media' => $this->cms_media,
       'user_meta' => $this->cms_user_meta,
+      'js_data' => []
     ]);
+
+    // update Config with CMS config
+    defined('CMS_CONFIG') || define('CMS_CONFIG', array_merge(CONFIG, $this->cms_config['CONFIG'] ?? []));
   }
 
 
@@ -221,10 +225,28 @@ class CMS {
           $field_value = isset($form['fields'][$key]['value']) ? $form['fields'][$key]['value'] : '';
 
           $form['fields'][$key]['type'] = 'html';
+
+          // Select multiple items
+          $multiple = '';
+          if(isset($value['multiple']) && $value['multiple'] === true){
+            $multiple = 'data-multiple="true"';
+          }
+
+          // Embed Value DOM
+          $embedDOM = '<div class="ozz-fm__media-embed-wrapper">';
+          if(is_array($field_value)){
+            foreach ($field_value as $item) {
+              $embedDOM .= '<div class="embed-wrapper-item">
+              <img src="'.$item['url'].'" alt="'.$item['name'].'">
+              <span class="name">'.$item['name'].'</span>
+              </div>';
+            }
+          }
+          $embedDOM .= '</div>';
+
           $form['fields'][$key]['html'] = '<div class="ozz-fm__media-selector">
-          <span class="button mini" data-fieldName="'.$value['name'].'">'.$field_label.'</span>
-          <input type="hidden" name="'.$value['name'].'" id="'.$value['name'].'" value="'.$field_value.'" />
-          </div>';
+          <span class="button mini media-selector-trigger" id="trigger_'.random_str(5).'" data-fieldName="'.$value['name'].'" '.$multiple.'>'.$field_label.'</span>
+          <input type="hidden" name="'.$value['name'].'" id="'.$value['name'].'" value="'.$field_value.'" />'.$embedDOM.'</div>';
         }
       }
     }

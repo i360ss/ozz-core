@@ -224,7 +224,12 @@ class Form {
       }
 
       if(in_array($type, ['repeat', 'repeater', 'repeatable'])){
-        $repeaterFields = $field['fields'];
+        if(env('app', 'ENABLE_CMS')) {
+          $cms = CMS::getInstance();
+          $repeaterFields = $cms->cms_related_form_modifies($field);
+        } else {
+          $repeaterFields = $field['fields'];
+        }
 
         $repeater_label = isset($field['repeat_label']) ? $field['repeat_label'] : '+ Add New';
         $max_repeat = isset($field['max_repeat']) ? 'data-ozz-repeat-max="'.$field['max_repeat'].'"' : '';

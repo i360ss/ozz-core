@@ -12,7 +12,7 @@ return [
   'SESSION_HTTP_ONLY' => true,
   'SESSION_DOMAIN' => '',
   'SESSION_PATH' => '/',
-  'SESSION_SAME_SITE' => '',
+  'SESSION_SAME_SITE' => true,
   'CSRF_COOKIE_LIFETIME' => 1800,
   'PAGE_CACHE_LIFETIME' => false,
   'MINIFY_HTML' => false,
@@ -23,6 +23,8 @@ return [
   'DB_DEFAULT_COLLATION' => 'utf8mb4_unicode_520_ci',
   'DB_DEFAULT_CHARSET' => 'utf8mb4',
   'EMAIL_CHARSET' => 'utf-8',
+  'SANITIZE_SVG' => false,
+  'SANITIZE_SVG_ALLOWED_ELEMENTS' => [],
 
   // Auth
   'AUTH_CONTROLLER' => 'AuthController',

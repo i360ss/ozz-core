@@ -95,6 +95,30 @@ class Sanitize {
   }
 
   /**
+   * Sanitize SVG (Clean up all bad events and elements from SVG)
+   * @param string $svg
+   * @param array $allowed_elements
+   */
+  public static function svg($svg, $allowed_elements = []) {
+    // Default list of elements to remove
+    $defaultElementsToRemove = array(
+      'iframe', 'embed', 'object', 'applet', 'meta', 'link', 'style', 'form', 'input', 'select', 'textarea', 'button',
+      'script', 'noscript', 'template', 'frameset', 'frame', 'noframes', 'blink', 'marquee', 'base', 'head', 'html',
+      'body', 'frameset', 'frame', 'noframes', 'applet',
+    );
+
+    // Remove harmful elements
+    $elementsToRemove = array_diff($defaultElementsToRemove, $allowed_elements);
+    $pattern = '/<(' . implode('|', $elementsToRemove) . ')\b[^>]*>.*?(<\/\1>|\/>|$)/is';
+    $svg = preg_replace($pattern, '', $svg);
+
+    // Remove event attributes
+    $svg = preg_replace('/\s+on\w+="[^"]*"/i', '', $svg);
+
+    return $svg;
+  }
+
+  /**
    * @param array $arr The array to be sanitized
    * @param string $sanType Sanitization method for each array item
    */

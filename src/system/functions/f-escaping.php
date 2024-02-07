@@ -185,6 +185,15 @@ function _esc_url(string $url) {
   echo esc_url($url);
 }
 
+// Sanitize SVG
+function esx_svg($svg, $allowed_elms=[]) {
+  return Sanitize::svg($svg, $allowed_elms);
+}
+
+function _esx_svg($svg, $allowed_elms=[]) {
+  echo Sanitize::svg($svg, $allowed_elms);
+}
+
 /**
  * Encode HTML
  * @param string $str direct HTML

@@ -282,61 +282,87 @@ class CMSAdminController extends CMS {
   // Media
   // =============================================
   public function media_manager(Request $request) {
-    $all_items = get_directory_content(UPLOAD_TO);
-    $directory = $request->query('dir', '');
-
-    if(!is_dir(UPLOAD_TO.$directory)){
+    if(!is_dir(UPLOAD_TO.$request->query('dir', ''))){
       return redirect('/admin/media');
     }
 
-    if($directory !== ''){
-      $dir_order = explode('/', $directory);
-      $this->data['media_directory_tree'] = $dir_order;
-      $items = find_in_array_by_key_tree($dir_order, $all_items);
-    } else {
-      $this->data['media_directory_tree'] = [];
-      $items = $all_items;
-    }
+    $media_items = $this->media_get_items(
+      $request->query('dir', ''),
+      $request->query('p', 1)
+    );
+
+    $this->data['media_directory_tree'] = $media_items['tree'];
+    $this->data['media_items'] = $media_items['items'];
+
+    return view('media', $this->data);
+  }
+
+
+  /**
+   * Return media elements
+   * @param string $directory
+   * @param integer $page_number Pagination page number
+   */
+  public function media_get_items($directory, $page_number) {
+    $directory = esc_url($directory);
+    $items = get_directory_content(UPLOAD_TO.$directory);
+    $media_data['tree'] = $directory !== '' ? explode('/', $directory) : [];
 
     // Media items Pagination
-    $this->data['media_items'] = array_pagination(
+    $media_data['items'] = array_pagination(
       $items,
       $this->cms_media['pagination_items_per_page'],
-      $request->query('p', 1)
+      $page_number
     );
 
     // Include file info
     $modified = [];
-    foreach ($this->data['media_items']['data'] as $key => $item) {
-      if(!in_array($item, ['.gitkeep'])) {
-        if(!is_array($item)) {
-          $url = clear_multi_slashes(UPLOAD_DIR_PUBLIC.$directory.'/'.$item);
-          $modified[$key] = [
-            'name' => $item,
-            'dir' => $directory.'/',
-            'type' => 'file',
-            'size' => format_size_units(filesize($url)),
-            'format' => get_file_type_by_url($url),
-            'url' => $url,
-            'absolute_url' => BASE_URL.$url,
-            'created' => date('M d, Y | h:i a', filectime($url)),
-            'modified' => date('M d, Y | h:i a', filemtime($url)),
-            'access' => date('M d, Y | h:i a', fileatime($url)),
-          ];
-        } else {
-          $key = trim($key, '/');
-          $modified[$key] = [
-            'name' => $key,
-            'type' => 'folder',
-            'url' => $directory ? $directory.'/'.$key : $key,
-          ];
-        }
+    foreach ($media_data['items']['data'] as $key => $item) {
+      if(!is_array($item)) {
+        $url = clear_multi_slashes(UPLOAD_DIR_PUBLIC.$directory.'/'.$item);
+        $modified[$key] = [
+          'name' => esx($item),
+          'dir' => $directory.'/',
+          'type' => 'file',
+          'size' => format_size_units(filesize($url)),
+          'format' => get_file_type_by_url($url),
+          'url' => esc_url($url),
+          'absolute_url' => BASE_URL.$url,
+          'created' => date('M d, Y | h:i a', filectime($url)),
+          'modified' => date('M d, Y | h:i a', filemtime($url)),
+          'access' => date('M d, Y | h:i a', fileatime($url)),
+        ];
+      } else {
+        $key = trim($key, '/');
+        $modified[$key] = [
+          'name' => $key,
+          'type' => 'folder',
+          'url' => $directory ? $directory.'/'.$key : $key,
+        ];
       }
     }
-    $this->data['media_items']['data'] = $modified;
+    $media_data['items']['data'] = $modified;
 
-    return view('media', $this->data);
+    return $media_data;
   }
+
+
+  /**
+   * Get Media items as JSON
+   */
+  public function media_get_items_json(Request $request) {
+    if(!is_dir(UPLOAD_TO.$request->query('dir', ''))){
+      exit(404);
+    }
+
+    $media_items = $this->media_get_items(
+      $request->query('dir', ''),
+      $request->query('p', 1)
+    );
+
+    return json($media_items);
+  }
+
 
   /**
    * Media Manager Actions
@@ -348,7 +374,7 @@ class CMSAdminController extends CMS {
 
     $validation = Validate::check($request->input(), [
       'ozz_media_folder_name' => 'req|no-space|max:30',
-      'ozz_media_file_name' => 'req|no-space|max:30',
+      'ozz_media_file_name' => 'req|no-space|max:50',
       'ozz_media_upload_file' => 'req'
     ]);
 
@@ -356,7 +382,7 @@ class CMSAdminController extends CMS {
       match ($action) {
         'create_folder' => File::create_dir($base_dir, $request->input('ozz_media_folder_name')),
         'create_file' => File::create($base_dir, $request->input('ozz_media_file_name')),
-        'delete_file' => File::delete(clear_multi_slashes($base_dir.$request->input('ozz_media_file_name'))),
+        'delete_file' => File::delete(clear_multi_slashes($base_dir.$request->input('ozz_media_file_name_delete'))),
         'delete_dir' => File::delete($base_dir),
         'upload_file' => File::upload(
           $request->file('ozz_media_upload_file'),

@@ -180,17 +180,17 @@ $current_dir = '';
                       <?php else : ?>
                         <div class="icon <?=$item['format']?>">
                           <strong><?=$item['format']?></strong>
-                          <span class="name"><?=$item['name']?></span>
                         </div>
                       <?php endif; ?>
                     </div>
+                    <div class="name"><?= char_limit($item['name'], 15, '..') ?></div>
                   </div>
                 </div>
               <?php else: ?>
                 <div class="ozz-media-manager__item media-folder">
                   <a href="?dir=<?=urlencode($item['url'])?>"
                     class="ozz-media-manager__item-folder" title="<?=$item['name']?>">
-                    <span class="ozz-media-manager__item-name"><?= char_limit($item['name'], 15, '..') ?></span>
+                    <span class="name"><?= char_limit($item['name'], 15, '..') ?></span>
                   </a>
                 </div>
               <?php endif; ?>

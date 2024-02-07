@@ -348,7 +348,14 @@ body.ozz-cms[data-theme="dark"]{
       margin-left: 5px;
     }
     &__item {
-      background: color(dark);
+      &-folder,
+      &-file {
+        border-color: rgba(color(silver), 0.4);
+        .name {
+          border-top-color: rgba(color(silver), 0.4);
+          color: color(silver);
+        }
+      }
     }
     &__info-info {
       li {

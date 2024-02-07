@@ -19,6 +19,7 @@ Router::getGroup(['auth'], 'admin', [
   '/admin/blocks'                             => [CMSAdminController::class, 'blocks_listing'],
   '/admin/blocks/{id}'                        => [CMSAdminController::class, 'block'],
   '/admin/media'                              => [CMSAdminController::class, 'media_manager'],
+  '/admin/media/items'                        => [CMSAdminController::class, 'media_get_items_json'],
   '/admin/taxonomy'                           => [CMSAdminController::class, 'taxonomy_listing'],
   '/admin/taxonomy/{name}'                    => [CMSAdminController::class, 'taxonomy'],
   '/admin/settings'                           => [CMSAdminController::class, 'settings'],
