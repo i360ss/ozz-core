@@ -13,17 +13,19 @@ return [
           'name' => 'test_image',
           'type' => 'media',
           'label' => 'Primary Image',
+          'validate' => 'req',
         ],
         [
           'name' => 'post_information',
           'type' => 'text',
           'label' => 'Post Information',
           'validate' => 'req|max:20',
+          'note' => 'Test Note'
         ],
         [
           'name' => 'post-body',
           'type' => 'rich-text',
-          'label' => 'Post Body'
+          'label' => 'Post Body',
         ],
         [
           'name' => 'c-test',
@@ -60,6 +62,53 @@ return [
             't3' => 'Test Three'
           ]
         ]
+      ],
+      'tabs' => [
+        'seo' => [
+          'slug' => 'seo',
+          'label' => 'SEO',
+          'fields' => [
+            [
+              'name' => 'meta-title',
+              'type' => 'text',
+              'label' => 'Title',
+              'validate' => 'req|max:20',
+            ],
+            [
+              'name' => 'meta-description',
+              'type' => 'textarea',
+              'label' => 'Meta Description',
+            ],
+            [
+              'name' => 'meta-keywords',
+              'type' => 'text',
+              'label' => 'Meta Keywords',
+              'note' => 'Separate each keyword by commas (,)'
+            ]
+          ]
+        ],
+        'additional-settings' => [
+          'slug' => 'additional-settings',
+          'label' => 'Additional Settings',
+          'fields' => [
+            [
+              'name' => 'size',
+              'type' => 'text',
+              'label' => 'Size',
+            ],
+            [
+              'name' => 'color',
+              'type' => 'select',
+              'label' => 'Color',
+              'options' => [
+                'Green',
+                'Red',
+                'Black',
+                'White',
+              ]
+            ]
+          ]
+        ]
       ]
     ],
     'news' => [
@@ -94,7 +143,11 @@ return [
       ],
       'labels' => [
         'create_button' => 'Add News',
-      ]
+      ],
+      'taxonomies' => [
+        'type',
+        'country'
+      ],
     ],
     'resources' => [
       'label' => 'Resources',
@@ -113,44 +166,29 @@ return [
         'create_button' => 'Create blog post',
       ],
     ],
+    'products' => [
+      'label' => 'Products',
+      'singular_label' => 'Product',
+      'taxonomies' => [
+        'tags',
+        'sizes',
+        'colors'
+      ],
+      'fields' => [
+        [
+          'name' => 'image',
+          'type' => 'media',
+          'label' => 'Product Primary Image',
+          'validate' => 'req'
+        ]
+      ],
+      'labels' => [
+        'create_button' => 'Add Product',
+      ],
+    ],
     'articles' => [
       'label' => 'Global Settings',
       'singular_label' => 'Global setting',
-      'form' => [
-        'fields' => [
-          [
-            'name' => 'post_body',
-            'type' => 'textarea',
-            'label' => 'Post Body',
-            'validate' => 'req'
-          ]
-        ]
-      ],
-      'labels' => [
-        'create_button' => 'Create blog post',
-      ],
-    ],
-    'events' => [
-      'label' => 'Events',
-      'singular_label' => 'Event',
-      'note' => 'This is a default post type. You can overwrite or remove this.',
-      'form' => [
-        'fields' => [
-          [
-            'name' => 'post_body',
-            'type' => 'textarea',
-            'label' => 'Post Body',
-            'validate' => 'req'
-          ]
-        ]
-      ],
-      'labels' => [
-        'create_button' => 'Create blog post',
-      ],
-    ],
-    'additional-configurations' => [
-      'label' => 'Additional Configurations',
-      'singular_label' => 'Additional Configuration',
       'form' => [
         'fields' => [
           [
@@ -314,70 +352,6 @@ return [
         ]
       ]
     ]
-  ],
-  'taxonomies' => [
-    'category' => [
-      'label' => 'Categories',
-      'singular' => 'Category',
-      'note' => 'This is a default term',
-      'value' => [
-        [
-          'name' => 't-shirts',
-          'label' => 'T-shirts',
-        ],
-        [
-          'name' => 'jeans',
-          'label' => 'Jeans',
-        ],
-        [
-          'name' => 'shoes',
-          'label' => 'Shoes',
-        ],
-      ]
-    ],
-    'color' => [
-      'label' => 'Colors',
-      'singular' => 'Color',
-      'parent' => 'category',
-      'note' => 'This is a default term',
-      'value' => [
-        [
-          'name' => 'green',
-          'label' => 'Green',
-        ],
-        [
-          'name' => 'black',
-          'label' => 'Black',
-        ],
-        [
-          'name' => 'white',
-          'label' => 'White',
-        ]
-      ]
-    ],
-    'size' => [
-      'label' => 'Size',
-      'singular' => 'Size',
-      'parent' => 'category',
-      'value' => [
-        [
-          'name' => 'm',
-          'label' => 'Medium',
-        ],
-        [
-          'name' => 'l',
-          'label' => 'Large',
-        ],
-        [
-          'name' => 'xl',
-          'label' => 'Extra Large',
-        ],
-        [
-          'name' => 'xxl',
-          'label' => 'XXL',
-        ]
-      ]
-    ],
   ],
   'languages' => [
     'en' => 'English',

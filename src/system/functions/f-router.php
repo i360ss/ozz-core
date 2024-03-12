@@ -38,11 +38,11 @@ function redirect($to, $status=301) {
  * Render component with parameters
  * @param string $component Component name
  * @param array|string|object $args Parameters
- * @param string $instance Instance directory (eg: app/, cms/)
+ * @param string $instance Instance directory (eg: app, cms)
  */
-function component($component, $args = null, $instance = 'app/') {
+function component($component, $args = null, $instance = 'app') {
   $dom = '';
-  $dir = BASE_DIR . $instance . 'view/components/';
+  $dir = BASE_DIR . $instance . '/view/components/';
   $comp = $dir . $component;
   $component_info = has_flash('ozz_components') ? get_flash('ozz_components') : [];
   $comp_key = count($component_info);
@@ -79,7 +79,7 @@ function component($component, $args = null, $instance = 'app/') {
 }
 
 
-function _component($component, $args=null, $instance='app/') {
+function _component($component, $args=null, $instance='app') {
   echo component($component, $args, $instance);
 }
 

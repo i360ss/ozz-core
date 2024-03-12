@@ -12,7 +12,7 @@ return [
   'SESSION_HTTP_ONLY' => true,
   'SESSION_DOMAIN' => '',
   'SESSION_PATH' => '/',
-  'SESSION_SAME_SITE' => true,
+  'SESSION_SAME_SITE' => 'Strict', // Strict, Lax or None
   'CSRF_COOKIE_LIFETIME' => 1800,
   'PAGE_CACHE_LIFETIME' => false,
   'MINIFY_HTML' => false,

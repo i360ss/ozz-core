@@ -89,7 +89,6 @@ trait Posts {
       'cms_posts.modified_at',
       'cms_posts.content',
       'cms_posts.blocks',
-      'cms_posts.tags',
       'user.first_name',
       'user.last_name',
     ], $where);
@@ -128,7 +127,6 @@ trait Posts {
       'cms_posts.modified_at',
       'cms_posts.content',
       'cms_posts.blocks',
-      'cms_posts.tags',
       'user.first_name',
       'user.last_name',
     ], $where_1);
@@ -155,18 +153,22 @@ trait Posts {
         'modified_at' => false,
         'content' => [],
         'blocks' => [],
-        'tags' => '',
       ];
       $post = $empty_post;
     }
 
-    // Content in available following languages
+    // Content available in following languages
     $lang_availability = $this->DB()->select('cms_posts', ['lang'], ['post_id' => $post['post_id']]);
     $langs = [];
     foreach ($lang_availability as $key => $value) {
       $langs[$value['lang']] = lang_name($value['lang']);
     }
     $post['translated_to'] = $langs;
+
+    // Get and setup post taxonomies
+    if(isset($post['id'])){
+      $post = array_merge($post, $this->setup_taxonomy_field_values( $post['id'] ));
+    }
 
     return $post;
   }
@@ -177,8 +179,16 @@ trait Posts {
    * @param array $form_data Data to store
    */
   protected function cms_store_post($form_data) {
+    // set taxonomy fields flash data
+    if(isset($form_data['___taxonomy___']) && !empty($form_data['___taxonomy___'])){
+      foreach ($form_data['___taxonomy___'] as $key => $taxonomy) {
+        $form_data['___taxonomy___['.$key.']'] = json_decode( htmlspecialchars_decode($taxonomy), true );
+      }
+    }
+
+    // Store form flash data
     set_flash('form_data', $form_data);
-    set_error('error', 'Error on creating your post');
+    set_error('error', 'Error on updating your post');
 
     if(Validate::check($form_data, $this->post_validate)->pass){
       $title = $form_data['title'];
@@ -186,6 +196,7 @@ trait Posts {
       $status = isset($form_data['post_status']) ? $form_data['post_status'] : 'draft';
       $post_id = $form_data['post_id'];
       $published_at = strtotime($form_data['published_at']);
+      $taxonomies = $form_data['___taxonomy___'] ?? [];
 
       // Prevent these fields from adding into content
       unset(
@@ -196,6 +207,7 @@ trait Posts {
         $form_data['submit_post'],
         $form_data['post_id'],
         $form_data['published_at'],
+        $form_data['___taxonomy___'],
       );
 
       // Filtered data (Block and Post content)
@@ -219,6 +231,21 @@ trait Posts {
         'modified_at' => time(),
       ]);
 
+      $post_ai_id = $this->DB()->id();
+
+      // Get and store taxonomies
+      if (count($taxonomies) > 0) {
+        foreach ($taxonomies as $taxonomy) {
+          if ($taxonomy !== '') {
+            $data = json_decode( htmlspecialchars_decode($taxonomy), true );
+            if (!empty($data)) {
+              $data = !isset($data['taxonomy']) ? $data[0] : $data;
+              $this->link_post_term($post_ai_id, $data['taxonomy'], $data['terms']);
+            }
+          }
+        }
+      }
+
       if($post_created){
         remove_flash('form_data');
         remove_error('error');
@@ -236,6 +263,14 @@ trait Posts {
    * @param array $form_data Data to store
    */
   protected function cms_update_post($post_id, $form_data) {
+    // set taxonomy fields flash data
+    if(isset($form_data['___taxonomy___']) && !empty($form_data['___taxonomy___'])){
+      foreach ($form_data['___taxonomy___'] as $key => $taxonomy) {
+        $form_data['___taxonomy___['.$key.']'] = json_decode( htmlspecialchars_decode($taxonomy), true );
+      }
+    }
+
+    // Store form flash data
     set_flash('form_data', $form_data);
     set_error('error', 'Error on updating your post');
 
@@ -244,6 +279,23 @@ trait Posts {
       $slug = $form_data['slug'];
       $status = isset($form_data['post_status']) ? $form_data['post_status'] : 'draft';
       $published_at = strtotime($form_data['published_at']);
+      $taxonomies = $form_data['___taxonomy___'] ?? [];
+
+      // Clear post terms
+      $this->clear_post_terms($post_id);
+
+      // Get and store taxonomies
+      if (count($taxonomies) > 0) {
+        foreach ($taxonomies as $taxonomy) {
+          if ($taxonomy !== '') {
+            $data = json_decode( htmlspecialchars_decode($taxonomy), true );
+            if (!empty($data)) {
+              $data = !isset($data['taxonomy']) ? $data[0] : $data;
+              $this->link_post_term($post_id, $data['taxonomy'], $data['terms']);
+            }
+          }
+        }
+      }
 
       // Prevent these fields from adding into content
       unset(
@@ -252,7 +304,8 @@ trait Posts {
         $form_data['title'],
         $form_data['slug'],
         $form_data['published_at'],
-        $form_data['submit_post']
+        $form_data['submit_post'],
+        $form_data['___taxonomy___'],
       );
 
       // Filtered data (Block and Post content)
@@ -348,6 +401,65 @@ trait Posts {
       $final_users[$user['user_id']] = $user['first_name'].' '.$user['last_name'];
     }
 
+    // Wrap Post Core Fields and Tabs
+    $core_start = [
+      'html' => '<div class="post-edit-view__widget core">',
+      'wrapper' => false
+    ];
+    $core_end = [
+      'html' => '</div>',
+      'wrapper' => false
+    ];
+
+    // Setup Tabs and Tab Menu
+    if (isset($this->cms_post_types[$post_type]['tabs'])) {
+      $tab_menu = '<div class="post-edit-view__tab-menu"><a href="#default"><span class="button light mini default">Default</span></a>';
+      foreach ($this->cms_post_types[$post_type]['tabs'] as $key => $tab) {
+        $tab_menu .= '<a href="#'.$tab['slug'].'"><span class="button light mini '.$tab['slug'].'">'.$tab['label'].'</span></a>';
+      }
+      $tab_menu .= '</div>';
+
+      // Wrap Tab menu and Default tab
+      array_unshift($form['fields'], [
+        'html' => $tab_menu.'<div id="tab_id-default" class="post-edit-view__tab default" data-tab-name="default">
+          <div class="post-edit-view__tab-content">',
+        'wrapper' => false
+      ]);
+
+      array_push($form['fields'], [
+        'html' => '</div></div>',
+        'wrapper' => false
+      ]);
+
+      // Setup Tabs
+      foreach ($this->cms_post_types[$post_type]['tabs'] as $key => $tab) {
+        $tab['field_options'] = [
+          'wrapper' => '<div class="'.$form_class.'__field">##</div>'
+        ];
+
+        // Tab wrapper start
+        array_unshift($tab['fields'], [
+          'html' => '<div id="tab_id-'.$tab['slug'].'" class="post-edit-view__tab '.$key.'" data-tab-name="'.$key.'">
+            <div class="post-edit-view__tab-content">',
+          'wrapper' => false
+        ]);
+
+        // Tab wrapper end
+        array_push($tab['fields'], [
+          'html' => '</div></div>',
+          'wrapper' => false
+        ]);
+
+        // Add tabs to main form fields
+        $form['fields'] = array_merge($form['fields'], $tab['fields']);
+      }
+    }
+
+    // Wrap Core (All Tabs / Default fields)
+    array_unshift($form['fields'], $core_start);
+    array_push($form['fields'], $core_end);
+
+    // Set up sidebar
     // Authors
     $author = [
       'name' => 'author',
@@ -356,7 +468,6 @@ trait Posts {
       'options' => $final_users,
       'selected' => (isset($values['author']) ? $values['author'] : Auth::id()),
       'id' => 'post-author',
-      'wrapper_class' => 'cl cl-4',
     ];
 
     // Created at
@@ -367,13 +478,13 @@ trait Posts {
       $published_date = ozz_format_date(time(), 2);
     }
 
+    // Post Published at
     $published_at = [
       'name' => 'published_at',
       'type' => 'datetime-local',
       'label' => 'Published At',
       'value' => $published_date,
       'id' => 'post-created-at',
-      'wrapper_class' => 'cl cl-4',
     ];
 
     // Add Post status checkbox
@@ -386,15 +497,48 @@ trait Posts {
       'class' => 'switch',
       'wrapper' => '<div class="'.$form_class.'__switch-checkbox">##</div>',
       'input_wrapper' => '<span class="'.$form_class.'__checkbox-wrapper">##</span>',
-      'wrapper_class' => 'cl cl-4',
     ];
 
     if($form_type == 'create'){
       $status_checkbox = array_merge($status_checkbox, ['checked' => 'true']);
     }
 
-    // Add Additional CMS fields
-    $form['fields'] = array_merge($form['fields'], [ $author, $published_at, $status_checkbox ]);
+    // Sidebar wrapper
+    $sidebar_wrap_start = [ 'html' => '<div class="post-edit-view__sidebar">', 'wrapper' => false ];
+    $sidebar_wrap_end = [ 'html' => '</div>', 'wrapper' => false ];
+    $form['fields'][] = $sidebar_wrap_start; // sidebar wrap start
+
+    // Add Additional CMS fields (On Sidebar)
+    $sidebar_start = [ 'html' => '<div class="post-edit-view__widget">', 'wrapper' => false ];
+    $sidebar_end = [ 'html' => '</div>', 'wrapper' => false ];
+
+    $form['fields'] = array_merge($form['fields'], [ $sidebar_start, $status_checkbox, $published_at, $author, $sidebar_end ]);
+
+    // List down available taxonomy fields of curren post type
+    if (isset($this->post_config['taxonomies']) && is_array($this->post_config['taxonomies'])) {
+      $form['fields'][] = $sidebar_start;
+      $taxonomies = $this->cms_taxonomies;
+      $post_id = $values['id'] ?? false;
+
+      foreach ($this->post_config['taxonomies'] as $taxonomy) {
+        if(isset($taxonomies[$taxonomy]) && !empty($taxonomies[$taxonomy])) {
+          $tx = $taxonomies[$taxonomy];
+
+          // Build taxonomy field
+          $field_name = '___taxonomy___['.$taxonomy.']';
+          $form['fields'][] = [
+            'name' => $field_name,
+            'label' => $tx['name'] ?? $tx['slug'],
+            'type' => 'multiselect',
+            'value' => json_encode($values[$field_name] ?? []),
+            'data-taxonomy-id' => $tx['id'],
+            'options' => array_combine(array_column($tx['terms'], 'id'), array_column($tx['terms'], 'name'))
+          ];
+        }
+      }
+      $form['fields'][] = $sidebar_end;
+    }
+    $form['fields'][] = $sidebar_wrap_end; // sidebar wrap end
 
     // Add Submit button
     $form['fields'][] = [
@@ -404,7 +548,10 @@ trait Posts {
       'value' => $form_type == 'create' ? $this->post_labels['create_button'] : $this->post_labels['update_button']
     ];
 
-    return Form::create($form, $values);
+    return [
+      'data' => $form,
+      'values' => $values
+    ];
   }
 
 
@@ -422,7 +569,6 @@ trait Posts {
       'title',
       'content',
       'blocks',
-      'tags',
       'post_status',
       'published_at'
     ], [
@@ -451,7 +597,6 @@ trait Posts {
         'author' => Auth::id(),
         'title' => $post['title'].' (Copy)',
         'slug' => $post['slug'].'-copy',
-        'tags' => $post['tags'],
         'post_status' => $post['post_status'],
         'content' => $post['content'],
         'blocks' => $post['blocks'],
@@ -459,6 +604,22 @@ trait Posts {
         'created_at' => time(),
         'modified_at' => time(),
       ]);
+
+      $newPostID = $this->DB()->id();
+
+      // Get all post terms
+      $terms = [];
+      $post_terms = $this->DB()->select('cms_post_terms', '*', ['post_id' => $post_id]);
+      foreach ($post_terms as $k => $post_term) {
+        $terms[$k] = [
+          'post_id' => (int)$newPostID,
+          'taxonomy_id' => $post_term['taxonomy_id'],
+          'term_id' => $post_term['term_id']
+        ];
+      }
+
+      // Insert post taxonomy terms
+      $this->link_post_term($terms);
 
       if($post_created){
         remove_flash('form_data');
@@ -518,13 +679,13 @@ trait Posts {
       'cms_posts.modified_at',
       'cms_posts.content',
       'cms_posts.blocks',
-      'cms_posts.tags',
       'user.first_name',
       'user.last_name',
     ], $where);
 
     if(!is_null($post)){
       $post = array_merge($post, is_array(json_decode($post['content'], true)) ? json_decode($post['content'], true) : []);
+      $post['taxonomies'] = $this->get_post_terms($post['id']);
     }
 
     return $post;
@@ -562,6 +723,7 @@ trait Posts {
       }
     } else {
       if($this->DB()->delete('cms_posts', ['id' => $post_id])){
+        $this->clear_post_terms($post_id); // clear taxonomy terms
         set_error('success', 'Post deleted successfully!');
       } else {
         set_error('error', 'Error on deleting your post!');

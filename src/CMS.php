@@ -13,6 +13,7 @@ class CMS {
   use \Ozz\Core\system\cms\Posts;
   use \Ozz\Core\system\cms\Blocks;
   use \Ozz\Core\system\cms\Settings;
+  use \Ozz\Core\system\cms\Taxonomy;
 
   public $data=[];
   public $cms_config;
@@ -20,6 +21,7 @@ class CMS {
   public $post_config=[];
   public $cms_blocks;
   public $cms_taxonomies;
+  public $cms_tabs;
   public $cms_media;
   public $cms_user_meta;
   public $post_type = null;
@@ -77,15 +79,28 @@ class CMS {
     $this->cms_blocks = $this->modify_cms_blocks($this->cms_config['blocks']);
 
     // Taxonomies
-    $this->cms_taxonomies = $this->cms_config['taxonomies'];
+    $this->cms_taxonomies = $this->get_taxonomies();
+
+    // Post Tabs
+    $this->cms_tabs = isset($this->post_config['tabs']) ? $this->post_config['tabs'] : [];
 
     // if post type available
     if(isset($request->urlParam()['post_type'])){
       $this->post_type = $request->urlParam('post_type');
       $this->post_config = $this->cms_post_types[$this->post_type];
 
-      // set Post validation rules
-      $post_only_validation_fields = ozz_i_get_nested_validations(array_merge($this->post_default_fields, $this->post_config['form']['fields']));
+      // set Post validation rules (Including tab fields)
+      $tab_fields = [];
+      if (!empty($this->cms_tabs)) {
+        foreach ($this->cms_tabs as $key => $tab) {
+          foreach ($tab['fields'] as $field) {
+            $tab_fields[] = $field;
+          }
+        }
+      }
+
+      $all_fields = array_merge($this->post_config['form']['fields'], $tab_fields);
+      $post_only_validation_fields = ozz_i_get_nested_validations( array_merge($this->post_default_fields, $all_fields) );
       $this->post_validate = array_merge($this->post_validate, $post_only_validation_fields);
 
       // Merge labels
@@ -220,33 +235,40 @@ class CMS {
     if(isset($form['fields'])){
       // Change file fields into Media Manager opening trigger
       foreach ($form['fields'] as $key => $value) {
-        if(isset($value['type']) && in_array($value['type'], ['files', 'media'])){
-          $field_label = isset($form['fields'][$key]['button_label']) ? $form['fields'][$key]['button_label'] : 'Select File';
-          $field_value = isset($form['fields'][$key]['value']) ? $form['fields'][$key]['value'] : '';
+        if(isset($value['type'])) {
+          // Media element Field
+          if(in_array($value['type'], ['files', 'media'])){
+            $button_label = isset($form['fields'][$key]['button_label']) ? $form['fields'][$key]['button_label'] : 'Select File';
 
-          $form['fields'][$key]['type'] = 'html';
-
-          // Select multiple items
-          $multiple = '';
-          if(isset($value['multiple']) && $value['multiple'] === true){
-            $multiple = 'data-multiple="true"';
-          }
-
-          // Embed Value DOM
-          $embedDOM = '<div class="ozz-fm__media-embed-wrapper">';
-          if(is_array($field_value)){
-            foreach ($field_value as $item) {
-              $embedDOM .= '<div class="embed-wrapper-item">
-              <img src="'.$item['url'].'" alt="'.$item['name'].'">
-              <span class="name">'.$item['name'].'</span>
-              </div>';
+            // Select multiple items
+            $multiple = '';
+            if(isset($value['multiple']) && $value['multiple'] === true){
+              $multiple = 'data-multiple="true"';
             }
-          }
-          $embedDOM .= '</div>';
 
-          $form['fields'][$key]['html'] = '<div class="ozz-fm__media-selector">
-          <span class="button mini media-selector-trigger" id="trigger_'.random_str(5).'" data-fieldName="'.$value['name'].'" '.$multiple.'>'.$field_label.'</span>
-          <input type="hidden" name="'.$value['name'].'" id="'.$value['name'].'" value="'.$field_value.'" />'.$embedDOM.'</div>';
+            // Embed Value DOM
+            $form['fields'][$key] = array_merge($value, [
+              'type' => 'hidden',
+              'id' => $value['name'],
+            ]);
+
+            $form['fields'][$key]['wrapper'] = '<div class="ozz-fm__media-selector">##
+              <span class="button small media-selector-trigger" id="trigger_'.random_str(5).'"
+                data-fieldName="'.$value['name'].'" '.$multiple.'>'.$button_label.
+              '</span><div class="ozz-fm__media-embed-wrapper"></div></div>';
+          }
+
+          // Multi selection field
+          if(in_array($value['type'], ['multi-select', 'multiselect'])){
+            $valuesDOM = '';
+            foreach ($value['options'] as $ky => $option) {
+              $valuesDOM .= '<li data-value="'.$ky.'">'.$option.'</li>';
+            }
+
+            $form['fields'][$key]['wrapper'] = '<div class="ozz-fm__multiselect">##<ul>'.$valuesDOM.'</ul>
+            <div class="ozz-fm__multiselect--selected"></div></div>';
+            $form['fields'][$key]['type'] = 'hidden';
+          }
         }
       }
     }
@@ -256,7 +278,7 @@ class CMS {
 
 
   /**
-   * Filter Form data and organize as an array (Blog and Post content)
+   * Filter Form data and organize as an array (Block and Post content)
    * @param array $form_data
    */
   protected function cms_filter_form_data($form_data) {

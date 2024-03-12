@@ -2,6 +2,7 @@
 @mixin dark-skin-1 {
   background: color(dark1);
   border: 1px solid color(dark2);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 @mixin dark-skin-2 {
   background: color(dark2);
@@ -20,6 +21,11 @@ body.ozz-cms[data-theme="dark"]{
   }
   label {
     color: color(semi-blue);
+  }
+  // Checkbox / Radio
+  input[type="radio"],
+  input[type="checkbox"] {
+    background: color(dark);
   }
   // Buttons
   .button {
@@ -206,30 +212,31 @@ body.ozz-cms[data-theme="dark"]{
   }
   // Post view
   .post-edit-view {
-    &__info {
+    &__widget {
       @include dark-skin-1;
-      .item {
-        color: color(light2);
-        &:not(.available-translations, .language-duplicator, .delete-post) {
-          border-bottom: 1px solid color(dark2);
+      &.info {
+        .item {
+          color: color(light2);
+          &:not(.available-translations, .language-duplicator, .delete-post) {
+            border-bottom: 1px solid color(dark2);
+          }
+          strong {
+            color: color(semi-blue);
+          }
+          &.separator {
+            border-color: transparent;
+          }
         }
-        strong {
-          color: color(semi-blue);
+        .form,
+        .ozz-fm {
+          border: none;
         }
-        &.separator {
-          border-color: transparent;
-        }
-      }
-      .form,
-      .ozz-fm {
-        border: none;
       }
     }
   }
   // Forms
   .form,
   .ozz-fm {
-    @include dark-skin-1;
     select,
     textarea,
     input {
@@ -242,6 +249,9 @@ body.ozz-cms[data-theme="dark"]{
         &:focus {
           border-color: color(primary);
         }
+      }
+      &.error {
+        border-color: color(danger);
       }
     }
     input[type="checkbox"] {
@@ -350,9 +360,9 @@ body.ozz-cms[data-theme="dark"]{
     &__item {
       &-folder,
       &-file {
-        border-color: rgba(color(silver), 0.4);
+        border-color: color(dark2);
         .name {
-          border-top-color: rgba(color(silver), 0.4);
+          border-top-color: color(dark2);
           color: color(silver);
         }
       }
@@ -380,6 +390,15 @@ body.ozz-cms[data-theme="dark"]{
     .ozz-fm {
       border: none;
       background: transparent;
+    }
+  }
+  // Media Popup
+  .ozz-media-popup {
+    &__thumbnail {
+      border-color: color(dark2);
+    }
+    &__thumbnail-name {
+      border-top-color: color(dark2);
     }
   }
   // Popup

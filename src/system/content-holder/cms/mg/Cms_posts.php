@@ -15,7 +15,6 @@ class Cms_posts {
       'title'       => ['txt', 'nn'],
       'content'     => ['bigtxt', 'nn'],
       'blocks'      => ['bigtxt', 'nn'],
-      'tags'        => ['txt', 'nn'],
       'post_status' => ['str:20', 'nn'],
       'published_at'=> ['str:30', 'nn'],
       'created_at'  => ['str:30', 'nn'],

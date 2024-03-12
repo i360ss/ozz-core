@@ -2,19 +2,18 @@
 // Run: [ php ozz -h migration ] to more info
 use Ozz\Core\system\migration\Schema;
 
-class Cms_terms {
+class Cms_post_terms {
   
   public function up(){
-    Schema::createTable('cms_terms', [
+    Schema::createTable('cms_post_terms', [
       'id'          => ['bigint', 'ai', 'primary'],
-      'lang'        => ['str:20'],
+      'post_id'     => ['int'],
       'taxonomy_id' => ['int'],
-      'name'        => ['str', 'nn'],
-      'slug'        => ['str', 'nn'],
+      'term_id'     => ['int'],
     ]);
   }
   
   public function down(){
-    Schema::dropTable('cms_terms');
+    Schema::dropTable('cms_post_terms');
   }
 }

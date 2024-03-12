@@ -2,7 +2,6 @@
 /**
  * Component Name: submenu
  * Path: view/components/submenu
- * 
  * @param array $args Given arguments on component call
  */
 ?>
@@ -18,7 +17,7 @@
     $url_3 = $url_parts[3] ?? false;
   ?>
     <li <?=(isset($url_3) && $url_3 == $key) ?'class="active"' : ''?>>
-      <a href="/admin/<?=$slug?>/<?=$key?>"><?=ucfirst($item['label'])?></a>
+      <a href="/admin/<?=$slug?>/<?=$key?>"><?=ucfirst(($item['label'] ?? $item['name']))?></a>
     </li>
   <?php endforeach; ?>
 </ul>

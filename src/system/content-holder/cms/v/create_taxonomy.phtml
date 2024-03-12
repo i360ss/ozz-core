@@ -1,0 +1,59 @@
+<?php
+/**
+ * View Name: create_taxonomy
+ * Path: view/admin/create_taxonomy
+ * @param array $data arguments passed from controller or route
+ */
+
+$form_data = has_flash('form_data') ? get_flash('form_data') : [];
+
+?>
+{{ title        = "Create Taxonomy" }}
+{{ body_class   = "view-create_post" }}
+
+{{ content }}
+  <section>
+    <div class="container">
+      <div class="heading breadcrumb">
+        <span><a href="/admin/taxonomy">Taxonomies</a></span>
+      </div>
+
+      <h1 class="heading">
+        <span>Create Taxonomy</span>
+      </h1>
+
+      <div class="taxonomy-edit-view">
+        <div class="ozz-widget">
+            <?php _create_form([
+              'action' => '/admin/taxonomy/create',
+              'method' => 'post',
+              'class' => 'ozz-fm',
+              'field_options' => [
+                'wrapper' => '<div class="ozz-fm__field">##</div>'
+              ],
+              'fields' => [
+                [
+                  'name' => 'name',
+                  'type' => 'text',
+                  'label' => 'Name',
+                  'validate' => 'req'
+                ],
+                [
+                  'name' => 'slug',
+                  'type' => 'text',
+                  'label' => 'Slug',
+                  'validate' => 'req'
+                ],
+                [
+                  'name' => 'crete-btn',
+                  'type' => 'button',
+                  'value' => 'Create',
+                  'class' => 'button small ozz-default-save-button green create'
+                ]
+              ]
+            ], $form_data); ?>
+        </div>
+      </div>
+    </div>
+  </section>
+{{ content-end }}

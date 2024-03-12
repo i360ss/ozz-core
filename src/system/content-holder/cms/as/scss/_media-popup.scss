@@ -1,7 +1,4 @@
 .ozz-media-popup {
-  &__tree {
-    
-  }
   &__grid-wrap {
     height: 74vh;
     overflow-y: auto;
@@ -21,8 +18,10 @@
     grid-template-rows: 1fr 25px;
     border: 1px solid color(silver);
     border-radius: 5px;
+    opacity: 0.6;
     &:hover,
     &.active {
+      opacity: 1;
       input[type="checkbox"] {
         display: block;
       }
@@ -31,7 +30,7 @@
       box-shadow: 0 0 0 2px rgba(color(blue), 0.3);
     }
     &.active {
-      box-shadow: 0 0 0 2px color(primary);
+      box-shadow: 0 0 0 2px color(blue);
     }
     * {
       font-size: $font-small-1;
@@ -40,7 +39,7 @@
       position: absolute;
       display: none;
       row-gap: 5px;
-      right: 5px;
+      right: 0;
       &:checked {
         display: block;
       }

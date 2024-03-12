@@ -107,7 +107,10 @@ $has_alert = has_error('success') || has_error('error');
                     <span class="light-text">@<?=$user->username?></span>
                   </p>
                 </div>
-                <p>Dark Mode <input type="checkbox" class="switch" id="ozz-color-theme-switcher"></p>
+                <p class="mode-switcher">
+                  <label for="ozz-color-theme-switcher">Dark Mode</label>
+                  <input type="checkbox" class="switch" id="ozz-color-theme-switcher">
+                </p>
                 <a href="<?=AUTH_PATHS['logout']?>" class="button small danger">Logout</a>
               </div>
             </div>

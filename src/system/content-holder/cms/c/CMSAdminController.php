@@ -184,7 +184,7 @@ class CMSAdminController extends CMS {
    */
   public function block(Request $request) {
     $block_id = $request->urlParam('id');
-    $this->data['block'] = $this->data['blocks'][$block_id];
+    $this->data['block'] = isset($this->data['blocks'][$block_id]) ? $this->data['blocks'][$block_id] : [];
 
     return view('block', $this->data);
   }
@@ -202,16 +202,59 @@ class CMSAdminController extends CMS {
    * Single Taxonomy
    */
   public function taxonomy(Request $request) {
-    $taxonomy = $request->urlParam('name');
-    $this->data['taxonomy'] = isset($this->data['taxonomies'][$taxonomy]) ? $this->data['taxonomies'][$taxonomy] : [];
-
-    if(!empty($this->data['taxonomy'])){
-      $this->data['taxonomy']['name'] = $taxonomy;
-    } else {
-      $this->data['taxonomy']['name'] = 'None';
-    }
+    $taxonomy = $request->urlParam('slug');
+    $this->data['taxonomy'] = $this->get_taxonomy($taxonomy);
 
     return view('taxonomy', $this->data);
+  }
+
+
+  /**
+   * Taxonomy Create view
+   */
+  public function taxonomy_create_view() {
+    return view('create_taxonomy', $this->data);
+  }
+
+
+  /**
+   * Create New Taxonomy
+   */
+  public function taxonomy_create(Request $request) {
+    $validation = Validate::check($request->input(), [
+      'name' => 'req',
+      'slug' => 'req',
+    ]);
+
+    if ($validation->pass) {
+      $form_data = $request->input();
+      $this->create_taxonomy($form_data);
+    }
+
+    return back();
+  }
+
+
+  /**
+   * Create Taxonomy Term
+   */
+  public function taxonomy_create_term(Request $request) {
+    $validation = Validate::check($request->input(), [
+      'name' => 'req | text',
+      'slug' => 'req | text',
+      'taxonomy_id' => 'req | number',
+    ]);
+
+    if ($validation->pass) {
+      $form_data = [
+        'taxonomy_id' => $request->input('taxonomy_id'),
+        'name' => $request->input('name'),
+        'slug' => $request->input('slug'),
+      ];
+      $this->create_term($form_data);
+    }
+
+    return back();
   }
 
 

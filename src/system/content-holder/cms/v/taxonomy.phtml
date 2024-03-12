@@ -2,11 +2,12 @@
 /**
  * View Name: taxonomy
  * Path: view/admin/taxonomy
- * 
  * @param array $data arguments passed from controller or route
  */
+
+$page_title = 'Taxonomy | '.($taxonomy['name'] ?? 'Taxonomy not found');
 ?>
-{{ title        = "Taxonomy | <?=isset($taxonomy['name']) ? $taxonomy['name'] : 'Taxonomy not found'?>" }}
+{{ title        = page_title }}
 {{ body_class   = "view-taxonomy" }}
 
 {{ content }}
@@ -14,10 +15,10 @@
     <?php if (!empty($taxonomy)) : ?>
       <div class="heading breadcrumb">
         <span><a href="/admin/taxonomy">Taxonomy</a></span>
-        <span><a href=""><?=$taxonomy['label']?></a></span>
+        <span><a href=""><?=$taxonomy['name']?></a></span>
       </div>
 
-      <h1 class="heading"><?=$taxonomy['label']?></h1>
+      <h1 class="heading"><?=$taxonomy['name']?></h1>
 
       <div class="cl cl-6">
         <div class="ozz-widget">
@@ -26,32 +27,53 @@
             <label>Name: </label><span><?=$taxonomy['name']?></span>
           </div>
           <div class="ozz-widget__item-raw">
-            <label>Label: </label><span><?=$taxonomy['label']?></span>
-          </div>
-          <div class="ozz-widget__item-raw">
-            <label>Singular Name: </label><span><?=$taxonomy['singular'] ?? ''?></span>
-          </div>
-          <div class="ozz-widget__item-raw">
-            <label>Parent: </label>
-              <span>
-                <?=isset($taxonomy['parent'])
-                  ? '<a href="/admin/taxonomy/'.$taxonomy['parent'].'" class="link">'.$taxonomy['parent'].'</a>'
-                  : 'N/A';
-                ?>
-              </span>
-          </div>
-          <div class="ozz-widget__item-raw">
-            <label>Note: </label><span><?=$taxonomy['note'] ?? ''?></span>
+            <label>Slug: </label><span><?=$taxonomy['slug']?></span>
           </div>
 
-          <?php if (isset($taxonomy['value'])) : ?>
+          <?php if (isset($taxonomy['terms'])) : ?>
             <div class="ozz-widget__item-raw">
-              <label>Values: </label><br><br>
-              <?php foreach ($taxonomy['value'] as $value) : ?>
-                <span class="button mini light"><?=$value['label']?></span>
+              <label>Terms: </label><br><br>
+              <?php foreach ($taxonomy['terms'] as $term) : ?>
+                <span class="button mini light"><?=$term['name']?></span>
               <?php endforeach; ?>
             </div>
           <?php endif; ?>
+
+          <br>
+          <?php _create_form([
+            'action' => '/admin/taxonomy/create-term',
+            'method' => 'post',
+            'class' => 'ozz-fm',
+            'field_options' => [
+              'wrapper' => '<div class="ozz-fm__field">##</div>',
+            ],
+            'fields' => [
+              [
+                'name' => 'name',
+                'type' => 'text',
+                'label' => 'Term',
+                'wrapper_class' => 'cl cl-6',
+              ],
+              [
+                'name' => 'slug',
+                'type' => 'text',
+                'label' => 'Slug',
+                'wrapper_class' => 'cl cl-6',
+              ],
+              [
+                'name' => 'taxonomy_id',
+                'type' => 'hidden',
+                'value' => $taxonomy['id'],
+                'wrapper' => false,
+              ],
+              [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => '+ Add',
+                'class' => 'button mini green',
+              ]
+            ]
+          ])?>
 
         </div>
       </div>

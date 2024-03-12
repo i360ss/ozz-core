@@ -1,0 +1,87 @@
+<?php
+/**
+ * Component Name: post-info
+ * Path: view/components/post-info
+ * @param array $args Given arguments on component call
+ */
+
+?>
+<div class="post-edit-view__widget info" id="post-info-comp">
+  <h3>Post Info</h3>
+
+  <?php if($post_status) :?>
+    <p class="item status"><strong>Status:</strong>&nbsp;
+      <span class="label <?=$post_status?>">
+        <?=ucfirst($post_status)?>
+      </span>
+    </p>
+  <?php endif; ?>
+
+  <?php if($created_at) :?>
+    <p class="item">
+      <strong>Created:</strong> <?=ozz_format_date($created_at)?>
+    </p>
+  <?php endif; ?>
+
+  <?php if($modified_at) :?>
+    <p class="item"><strong>Modified:</strong> <?=ozz_format_date($modified_at)?></p>
+  <?php endif; ?>
+
+  <p class="item"><strong>Language:</strong> <?=lang_name($lang)?></p>
+
+  <p class="item available-translations"><strong>Available Translations:</strong> <br>
+    <?php foreach ($translated_to as $code => $language) : ?>
+      <a href="/lang/<?=$code?>" class="button mini light<?=$code == APP_LANG ? ' active' : '';?>">
+        <?=$language?>
+      </a>
+    <?php endforeach; ?>
+  </p>
+
+  <?php if (isset($id)) :?>
+    <div class="item language-duplicator"><strong>Duplicate to:</strong> <br>
+      <form action="/admin/post/duplicate" method="post" class="ozz-fm">
+        <?=CSRF_FIELD?>
+        <input type="hidden" name="post_id" value="<?=$id?>">
+        <input type="hidden" name="post_id_lang" value="<?=$post_id?>">
+        <div class="inner">
+          <div class="ozz-fm__field">
+            <select name="language">
+              <?php foreach ($languages as $code => $language) : ?>
+                <?php if($lang !== $code) : ?>
+                  <option value="<?=$code?>"><?=$language?></option>
+                <?php endif; ?>
+              <?php endforeach; ?>
+            </select>
+          </div>
+          <button type="submit" title="Duplicate" class="button">
+            <span class="icon-button duplicate"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="item delete-post separator">
+      <?php _create_form([
+        'action' => '/admin/posts/delete',
+        'method' => 'post',
+        'class' => 'action-form post-delete-form',
+        'fields' => [
+          [
+            'name' => 'post_id',
+            'type' => 'hidden',
+            'value' => $id
+          ],[
+            'name' => 'delete_type',
+            'type' => 'hidden',
+            'value' => $post_status == 'trash' ? 'delete' : 'trash'
+          ],[
+            'name' => 'delete_post',
+            'type' => 'submit',
+            'value' => $post_status == 'trash' ? 'Delete Post' : 'Move to Trash',
+            'class' => 'button small danger'
+          ]
+        ]
+      ]); ?>
+    </div>
+  <?php endif; ?>
+</div>

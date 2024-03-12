@@ -88,7 +88,6 @@ function ozz_content_ViewContent($data){
 /**
  * View Name: '.$name.'
  * Path: '.$path.'
- * 
  * @param array $data arguments passed from controller or route
  */
 ?>
@@ -134,7 +133,6 @@ function ozz_content_Component($data){
 /**
  * Component Name: '.$name.'
  * Path: '.$path.'
- * 
  * @param array $args Given arguments on component call
  */
 ?>
@@ -157,14 +155,13 @@ function ozz_content_Layout(){
   <meta name="robots" content="index, follow">
   <meta name="csrf-token" content="<?=CSRF_TOKEN?>">
   <meta name="url" content="<?=BASE_URL?>">
-  <link rel="icon" type="image/x-icon" href="<?=BASE_URL?>assets/icons/favicon.ico">
-  <link rel="stylesheet" href="<?=ASSETS?>css/styles.css" nonce="<?=CSP_NONCE?>">
+  <link rel="icon" type="image/x-icon" href="<?=ASSETS?>icons/favicon.ico">
+  <link nonce="<?=CSP_NONCE?>" rel="stylesheet" href="<?=ASSETS?>css/styles.css">
 </head>
 <body class="{% body_class %}">
 <main>
   {% content %}
 </main>
-<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>js/ozz.js"></script>
 <script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>js/app.js"></script>
 </body>
 </html>';

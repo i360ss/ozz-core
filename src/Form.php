@@ -115,14 +115,14 @@ class Form {
       $args = $cms->cms_related_form_modifies($args);
 
       // Add CMS Specific Input fields
-      array_push(self::$input_types, 'media');
+      (!in_array('media', self::$input_types)) ? array_push(self::$input_types, 'media') : false;
     }
 
     // Start form
     $form = self::start($args);
 
     if(isset($args['fields'])){
-      $form .= self::generateFormFields($args, $values);
+      $form .= self::generateFields($args, $values);
     }
 
     // Close form
@@ -136,7 +136,7 @@ class Form {
    * @param array $fields
    * @param array $values
    */
-  private static function generateFormFields($base_fields, $values=[], $prefix='') {
+  public static function generateFields($base_fields, $values=[], $prefix='') {
     $html = '';
     $fields = isset($base_fields['fields']) ? $base_fields['fields'] : $base_fields;
     $is_cms = env('app', 'ENABLE_CMS');
@@ -164,7 +164,10 @@ class Form {
       $has_error = isset($field['name']) && has_error( rtrim($field['name'], '[]') );
 
       // Add global options for fields
-      $global_options = isset(self::$initial_form['field_options']) ? self::$initial_form['field_options'] : false;
+      $global_options = isset($base_fields['field_options'])
+        ? $base_fields['field_options']
+        : (isset(self::$initial_form['field_options']) ? self::$initial_form['field_options'] : false);
+
       if($global_options){
         // Global field classes
         if(isset($global_options['class'])){
@@ -255,7 +258,7 @@ class Form {
           $html .= '<span class="ozz-fm__repeat-remove button micro danger">Delete</span>';
           $html .= '</div>';
           $html .= '<div class="ozz-fm__repeat-body">';
-          $html .= self::generateFormFields($repeaterFields, $repeaterValue, $prefix . $i . '_');
+          $html .= self::generateFields($repeaterFields, $repeaterValue, $prefix . $i . '_');
           $html .= '</div></div>';
         };
 
@@ -380,17 +383,19 @@ class Form {
         }
 
         // Global each element wrapper
-        if($global_options !== false && isset($global_options['wrapper'])){
+        if($global_options !== false){
           // Wrapper Class
-          if(isset($field['wrapper_class'])){
-            if (strpos($global_options['wrapper'], 'class=') !== false) {
-              $global_options['wrapper'] = str_replace('class="', 'class="'.$field['wrapper_class'].' ', $global_options['wrapper']);
-            } else {
-              $global_options['wrapper'] = str_replace('<div', '<div class="'.$field['wrapper_class'].'"', $global_options['wrapper']);
+          if (isset($global_options['wrapper']) && (!isset($field['wrapper']) || $field['wrapper'] !== false)) {
+            if(isset($field['wrapper_class'])){
+              if (strpos($global_options['wrapper'], 'class=') !== false) {
+                $global_options['wrapper'] = str_replace('class="', 'class="'.$field['wrapper_class'].' ', $global_options['wrapper']);
+              } else {
+                $global_options['wrapper'] = str_replace('<div', '<div class="'.$field['wrapper_class'].'"', $global_options['wrapper']);
+              }
             }
-          }
 
-          $formInnerDOM = str_replace('##', "\n".$formInnerDOM."\n", $global_options['wrapper'])."\n";
+            $formInnerDOM = str_replace('##', "\n".$formInnerDOM."\n", $global_options['wrapper'])."\n";
+          }
         }
 
         $html .= $formInnerDOM;
@@ -470,7 +475,7 @@ class Form {
       $this_attrs = '';
       foreach ($attrs_only as $ky => $vl) {
         if(!is_array($vl)){
-          $vl = is_bool($vl) ? ($vl ? 'true' : 'false') : $vl;
+          $vl = is_bool($vl) ? ($vl ? 'true' : 'false') : htmlspecialchars($vl);
           $this_attrs .= " {$ky}=\"{$vl}\"";
         }
       }

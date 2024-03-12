@@ -2,7 +2,6 @@
 /**
  * View Name: taxonomies
  * Path: view/admin/taxonomies
- * 
  * @param array $data arguments passed from controller or route
  */
 ?>
@@ -14,24 +13,23 @@
 
   <div class="listing-s1">
     <div class="listing-s1__top-bar">
-      <div class="align-left">
+      <div class="align-left cl cl-6">
         <span>Total Taxonomies: <strong><?=count($taxonomies)?></strong></span>
+      </div>
+      <div class="align-right cl cl-6">
+        <a href="/admin/taxonomy/create" class="button green small">Create Taxonomy</a>
       </div>
     </div>
 
     <div class="table">
-      <?php foreach ($taxonomies as $name => $taxonomy) : ?>
+      <?php foreach ($taxonomies as $taxonomy) : ?>
         <div class="table__tr-wrapper">
-          <a href="/admin/taxonomy/<?=$name?>" class="table__row">
+          <a href="/admin/taxonomy/<?=$taxonomy['slug']?>" class="table__row">
             <div class="table__cell">
-              <span class="listing-s1__title"><?=$taxonomy['label']?></span>
-              <?php if (isset($taxonomy['note']) && $taxonomy['note'] !== '') :?>
-                <span class="note light-text"><?=$taxonomy['note']?></span>
-              <?php endif; ?>
+              <span class="listing-s1__title"><?=$taxonomy['name']?></span>
             </div>
-
             <div class="table__cell">
-              <span class="slug"><?=$name?></span>
+              <span class="slug"><?=$taxonomy['slug']?></span>
             </div>
           </a>
         </div>

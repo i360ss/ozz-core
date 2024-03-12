@@ -2,11 +2,13 @@
 /**
  * View Name: block
  * Path: view/admin/block
- * 
  * @param array $data arguments passed from controller or route
  */
+
+$page_title = 'Block | '.($block['label'] ?? ($block['name'] ?? 'Block not found'));
+
 ?>
-{{ title        = "Block | <?=isset($block['name']) ? $block['name'] : 'Block not found'?>" }}
+{{ title        = page_title }}
 {{ body_class   = "view-block" }}
 
 {{ content }}
@@ -43,7 +45,11 @@
               <?php endforeach; ?>
             </div>
           <?php endif; ?>
+        </div><br>
 
+        <div class="ozz-widget">
+          <h4 class="ozz-widget__heading">Fields</h4>
+          <?= json_dump( json_encode($block['form']['fields']) ) ?>
         </div>
       </div>
     <?php else : ?>
