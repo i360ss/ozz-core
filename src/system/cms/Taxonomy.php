@@ -25,21 +25,74 @@ trait Taxonomy {
     $slug = $taxonomy['slug'];
     unset($taxonomy['name'], $taxonomy['slug']);
 
-    $taxonomy_created = $this->DB()->insert('cms_taxonomy', [
-      'lang' => $lang,
+    $check_if_exist = $this->DB()->get('cms_taxonomy', ['slug'], ['slug' => $slug]);
+    if(is_null($check_if_exist)){
+      $taxonomy_created = $this->DB()->insert('cms_taxonomy', [
+        'lang' => $lang,
+        'name' => $name,
+        'slug' => $slug,
+        'content' => json_encode($taxonomy)
+      ]);
+
+      if ($taxonomy_created) {
+        set_error('success', trans('created_success'));
+        remove_flash('form_data');
+      } else {
+        set_error('error', trans_e('error'));
+      }
+    } else {
+      set_error('error', trans_e('already_exist'));
+    }
+
+    return back();
+  }
+
+
+  /**
+   * Update Taxonomy
+   * @param array $data
+   * @param string|integer $id_or_slug
+   */
+  protected function update_taxonomy($taxonomy, $id_or_slug) {
+    unset($taxonomy['crete-btn'], $taxonomy['csrf_token']);
+    set_flash('form_data', $taxonomy);
+
+    $name = $taxonomy['name'];
+    $slug = $taxonomy['slug'];
+    unset($taxonomy['name'], $taxonomy['taxonomy_id'], $taxonomy['slug']);
+
+    $taxonomy_updated = $this->DB()->update('cms_taxonomy', [
       'name' => $name,
       'slug' => $slug,
       'content' => json_encode($taxonomy)
+    ], [ 
+      'OR' => [
+        'id' => $id_or_slug,
+        'slug' => $id_or_slug
+      ]
     ]);
 
-    if ($taxonomy_created) {
-      set_error('success', trans('created_success'));
+    if ($taxonomy_updated) {
+      set_error('success', trans('updated_success'));
       remove_flash('form_data');
     } else {
       set_error('error', trans_e('error'));
     }
 
     return back();
+  }
+
+
+  /**
+   * Delete Taxonomy
+   * @param integer $taxonomy_id
+   */
+  protected function delete_taxonomy($taxonomy_id) {
+    $delete = $this->DB()->delete('cms_taxonomy', [ 'id' => $taxonomy_id ]);
+    $deleteFromPosts = $this->DB()->delete('cms_post_terms', ['taxonomy_id' => $taxonomy_id]);
+    $deleteTerms = $this->DB()->delete('cms_terms', ['taxonomy_id' => $taxonomy_id]);
+
+    return ($delete && $deleteFromPosts) ? true : false;
   }
 
 
@@ -79,12 +132,23 @@ trait Taxonomy {
 
   /**
    * Gt single taxonomy
-   * @param integer $taxonomy_id
+   * @param integer|string $id_or_slug
    */
-  protected function get_taxonomy($taxonomy_slug) {
-    $taxonomy = $this->DB()->get('cms_taxonomy', '*', [ 'slug' => $taxonomy_slug ]);
+  protected function get_taxonomy($id_or_slug) {
+    $taxonomy = $this->DB()->get('cms_taxonomy', '*', [ 
+      'OR' => [
+        'slug' => $id_or_slug,
+        'id' => $id_or_slug
+      ]
+    ]);
     if(!is_null($taxonomy) && isset($taxonomy['id'])){
       $taxonomy['terms'] = $this->DB()->select('cms_terms', '*', [ 'taxonomy_id' => $taxonomy['id'] ]);
+
+      if(isset($taxonomy['content'])){
+        $content = json_decode($taxonomy['content'], true);
+        unset($content['terms'], $content['slug'], $content['name']);
+        $taxonomy = array_merge($taxonomy, $content);
+      }
     }
 
     return $taxonomy;
@@ -115,6 +179,30 @@ trait Taxonomy {
     } elseif($this->DB()->insert('cms_terms', $term)){
       set_error('success', trans('created_success'));
     }
+  }
+
+
+  /**
+   * Update Term
+   * @param integer $id Term ID
+   * @param array $data Fields and values to be updated
+   */
+  protected function update_term($id, $data) {
+    $update = $this->DB()->update('cms_terms', $data, ['id' => $id]);
+
+    return $update ? true : false;
+  }
+
+
+  /**
+   * Delete Term, and clear post links
+   * @param integer $termID Term ID
+   */
+  protected function delete_term($termID) {
+    $delete = $this->DB()->delete('cms_terms', ['id' => $termID]);
+    $deleteFromPosts = $this->DB()->delete('cms_post_terms', ['term_id' => $termID]);
+
+    return ($delete && $deleteFromPosts) ? true : false;
   }
 
 

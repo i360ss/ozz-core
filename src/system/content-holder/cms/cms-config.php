@@ -170,7 +170,7 @@ return [
       'label' => 'Products',
       'singular_label' => 'Product',
       'taxonomies' => [
-        'tags',
+        'gsm',
         'sizes',
         'colors'
       ],
@@ -184,23 +184,6 @@ return [
       ],
       'labels' => [
         'create_button' => 'Add Product',
-      ],
-    ],
-    'articles' => [
-      'label' => 'Global Settings',
-      'singular_label' => 'Global setting',
-      'form' => [
-        'fields' => [
-          [
-            'name' => 'post_body',
-            'type' => 'textarea',
-            'label' => 'Post Body',
-            'validate' => 'req'
-          ]
-        ]
-      ],
-      'labels' => [
-        'create_button' => 'Create blog post',
       ],
     ],
     'blog' => [

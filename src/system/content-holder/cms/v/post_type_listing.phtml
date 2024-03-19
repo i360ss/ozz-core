@@ -1,0 +1,56 @@
+<?php
+/**
+ * View Name: posts
+ * Path: view/admin/posts
+ * @param array $data arguments passed from controller or route
+ */
+?>
+{{ title        = "Post types" }}
+{{ body_class   = "post-types" }}
+
+{{ content }}
+<section>
+  <div class="container">
+    <h1 class="heading">Post types</h1>
+
+    <div class="listing-s1">
+      <div class="listing-s1__top-bar">
+        <div class="align-left">
+          <span>Post Types: <strong><?=count($post_data)?></strong></span> |
+          <span>Total Posts: <strong><?=$total_posts?></strong></span>
+        </div>
+      </div>
+
+      <table>
+        <tr>
+          <th>Title</th>
+          <th>Slug</th>
+          <th>Posts and Fields</th>
+          <th></th>
+        </tr>
+        <?php foreach ($post_data as $type => $value) : ?>
+          <tr>
+            <td class="link-wrap">
+              <a href="/admin/posts/<?=$type?>">
+                <span class="listing-s1__title"><?=$value['label']?></span>
+                <?php if (isset($value['note']) && $value['note'] !== '') :?>
+                  <span class="note light-text"><?=$value['note']?></span>
+                <?php endif; ?>
+              </a>
+            </td>
+            <td><span class="slug"><?=$type?></span></td>
+            <td class="f-14">
+              <strong><?=$value['post_count']?></strong> Posts
+              &nbsp; | &nbsp;
+              <strong><?=$value['fields']?></strong> Fields
+            </td>
+            <td class="actions align-right">
+              <a href="/admin/posts/create/<?=$type?>" class="button mini">Add New Post</a>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      </table>
+    </div>
+  </div>
+</section>
+{{ content-end }}

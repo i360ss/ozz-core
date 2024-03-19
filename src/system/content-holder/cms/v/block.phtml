@@ -13,15 +13,15 @@ $page_title = 'Block | '.($block['label'] ?? ($block['name'] ?? 'Block not found
 
 {{ content }}
   <section>
-    <?php if (!empty($block)) : ?>
-      <div class="heading breadcrumb">
-        <span><a href="/admin/blocks">Blocks</a></span>
-        <span><a href=""><?=$block['label']?></a></span>
-      </div>
+    <div class="container">
+      <?php if (!empty($block)) : ?>
+        <div class="heading breadcrumb">
+          <span><a href="/admin/blocks">Blocks</a></span>
+          <span><a href=""><?=$block['label']?></a></span>
+        </div>
 
-      <h1 class="heading"><?=$block['label']?></h1>
+        <h1 class="heading"><?=$block['label']?></h1>
 
-      <div class="cl cl-6">
         <div class="ozz-widget">
           <h4 class="ozz-widget__heading">Block Info</h4>
           <div class="ozz-widget__item-raw">
@@ -51,12 +51,12 @@ $page_title = 'Block | '.($block['label'] ?? ($block['name'] ?? 'Block not found
           <h4 class="ozz-widget__heading">Fields</h4>
           <?= json_dump( json_encode($block['form']['fields']) ) ?>
         </div>
-      </div>
-    <?php else : ?>
-      <h1 class="heading">block</h1>
-      <div class="listing-s2__empty">
-        <p>Invalid block</p>
-      </div>
-    <?php endif; ?>
+      <?php else : ?>
+        <h1 class="heading">block</h1>
+        <div class="listing-s2__empty">
+          <p>Invalid block</p>
+        </div>
+      <?php endif; ?>
+    </div>
   </section>
 {{ content-end }}

@@ -13,6 +13,7 @@
 @mixin icon-sprite {
   background-image: url('#{$icon-path}icons.svg');
   background-repeat: no-repeat;
+  background-size: inherit;
 }
 @mixin icon-dashboard {
   @include icon-sprite;
@@ -53,6 +54,10 @@
     background-position: -95px -244px;
     background-size: 730px;
   }
+}
+@mixin icon-save {
+  @include icon-sprite;
+  background-position: -75px -150px;
 }
 @mixin icon-delete($color: danger) {
   @include icon;

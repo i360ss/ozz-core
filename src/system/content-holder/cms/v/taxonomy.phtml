@@ -5,83 +5,88 @@
  * @param array $data arguments passed from controller or route
  */
 
-$page_title = 'Taxonomy | '.($taxonomy['name'] ?? 'Taxonomy not found');
+$page_title = 'Taxonomy | '.($taxonomy['name'] ?? 'Not found');
 ?>
 {{ title        = page_title }}
 {{ body_class   = "view-taxonomy" }}
 
 {{ content }}
   <section>
-    <?php if (!empty($taxonomy)) : ?>
-      <div class="heading breadcrumb">
-        <span><a href="/admin/taxonomy">Taxonomy</a></span>
-        <span><a href=""><?=$taxonomy['name']?></a></span>
-      </div>
-
-      <h1 class="heading"><?=$taxonomy['name']?></h1>
-
-      <div class="cl cl-6">
-        <div class="ozz-widget">
-          <h4 class="ozz-widget__heading">Taxonomy Info</h4>
-          <div class="ozz-widget__item-raw">
-            <label>Name: </label><span><?=$taxonomy['name']?></span>
-          </div>
-          <div class="ozz-widget__item-raw">
-            <label>Slug: </label><span><?=$taxonomy['slug']?></span>
-          </div>
-
-          <?php if (isset($taxonomy['terms'])) : ?>
-            <div class="ozz-widget__item-raw">
-              <label>Terms: </label><br><br>
-              <?php foreach ($taxonomy['terms'] as $term) : ?>
-                <span class="button mini light"><?=$term['name']?></span>
-              <?php endforeach; ?>
-            </div>
-          <?php endif; ?>
-
-          <br>
-          <?php _create_form([
-            'action' => '/admin/taxonomy/create-term',
-            'method' => 'post',
-            'class' => 'ozz-fm',
-            'field_options' => [
-              'wrapper' => '<div class="ozz-fm__field">##</div>',
-            ],
-            'fields' => [
-              [
-                'name' => 'name',
-                'type' => 'text',
-                'label' => 'Term',
-                'wrapper_class' => 'cl cl-6',
-              ],
-              [
-                'name' => 'slug',
-                'type' => 'text',
-                'label' => 'Slug',
-                'wrapper_class' => 'cl cl-6',
-              ],
-              [
-                'name' => 'taxonomy_id',
-                'type' => 'hidden',
-                'value' => $taxonomy['id'],
-                'wrapper' => false,
-              ],
-              [
-                'name' => 'submit',
-                'type' => 'submit',
-                'value' => '+ Add',
-                'class' => 'button mini green',
-              ]
-            ]
-          ])?>
-
+    <div class="container">
+      <?php if (!empty($taxonomy)) : ?>
+        <div class="heading breadcrumb">
+          <span><a href="/admin/taxonomy">Taxonomies</a></span>
+          <span><a href="#"><?=$taxonomy['name']?></a></span>
         </div>
-      </div>
-    <?php else : ?>
-      <h1 class="heading">Taxonomy</h1>
-      <div class="listing-s2__empty">
-        <p>Invalid taxonomy</p>
-      </div>
-    <?php endif; ?>
+
+        <h1 class="heading"><?=$taxonomy['name']?></h1>
+
+        <div class="ozz-widget">
+          <div class="ozz-widget__item-raw no-border">
+            <?php _create_form([
+              'action' => '/admin/taxonomy/create-term',
+              'method' => 'post',
+              'class' => 'ozz-fm',
+              'field_options' => [
+                'wrapper' => '<div class="ozz-fm__field">##</div>',
+              ],
+              'fields' => [
+                [
+                  'name' => 'name',
+                  'type' => 'text',
+                  'label' => 'Title',
+                  'wrapper_class' => 'cl cl-6',
+                ],
+                [
+                  'name' => 'slug',
+                  'type' => 'text',
+                  'label' => 'Slug',
+                  'wrapper_class' => 'cl cl-6',
+                ],
+                [
+                  'name' => 'taxonomy_id',
+                  'type' => 'hidden',
+                  'value' => $taxonomy['id'],
+                  'wrapper' => false,
+                ],
+                [
+                  'name' => 'submit',
+                  'type' => 'submit',
+                  'value' => '+ Add Term',
+                  'class' => 'button small green',
+                ]
+              ]
+            ])?>
+          </div>
+        </div><br>
+
+        <?php if (isset($taxonomy['terms'])) : ?>
+          <table class="ozz-table terms-table">
+            <tr>
+              <th>Title</th>
+              <th>Slug</th>
+              <th></th>
+            </tr>
+            <?php foreach ($taxonomy['terms'] as $term) : ?>
+            <tr>
+              <input type="hidden" value="<?=$term['id']?>" name="term-id">
+              <td><input type="text" name="term-name" value="<?=$term['name']?>"></td>
+              <td><input type="text" name="term-slug" value="<?=$term['slug']?>"></td>
+              <td class="terms-table__actions">
+                <span class="icon-button save terms-table__edit-term" title="Save"></span>
+                <span class="icon-button delete terms-table__delete-term" title="Delete"></span>
+              </td>
+            </tr>
+            <?php endforeach; ?>
+          </table>
+        <?php endif; ?>
+
+      <?php else : ?>
+        <h1 class="heading">Taxonomy</h1>
+        <div class="listing-s2__empty">
+          <p>Invalid taxonomy</p>
+        </div>
+      <?php endif; ?>
+    </div>
   </section>
 {{ content-end }}

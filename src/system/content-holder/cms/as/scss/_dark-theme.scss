@@ -2,7 +2,7 @@
 @mixin dark-skin-1 {
   background: color(dark1);
   border: 1px solid color(dark2);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: $dark-shadow1;
 }
 @mixin dark-skin-2 {
   background: color(dark2);
@@ -149,20 +149,26 @@ body.ozz-cms[data-theme="dark"]{
     &__title {
       color: color(silver);
     }
-    .table {
-      &__tr-wrapper {
+    table {
+      th,
+      td {
         @include dark-skin-1-no-border;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-        &:hover {
-          background: color(dark2);
-          border-left-color: color(primary);
-          .listing-s1__title {
-            color: color(white);
-          }
+        * {
+          color: color(light2);
         }
       }
-      &__cell {
-        color: color(light2);
+      th {
+        background: color(dark2);
+        color: rgba(color(light2), 0.5);
+      }
+      td {
+        &.link-wrap {
+          &:hover {
+            .listing-s1__title {
+              filter: brightness(1.5);
+            }
+          }
+        }
       }
       .slug {
         background: rgba(color(silver), 0.05);
@@ -171,7 +177,16 @@ body.ozz-cms[data-theme="dark"]{
         border-radius: 5px;
       }
       .note {
-        color: color(silver);
+        color: rgba(color(light2), 0.5);
+      }
+      tr {
+        box-shadow: $dark-shadow1;
+        &:hover {
+          td {
+            background: color(dark2);
+            border-left-color: color(primary);
+          }
+        }
       }
     }
   }
@@ -427,6 +442,28 @@ body.ozz-cms[data-theme="dark"]{
     .form,
     .ozz-fm {
       border: none;
+    }
+  }
+  // Ozz Table
+  .ozz-table {
+    tr {
+      @include dark-skin-1;
+      box-shadow: $dark-shadow1;
+      &:hover {
+        background: color(dark2);
+      }
+      th {
+        background: color(dark2);
+        border-color: color(dark2);
+        color: rgba(color(light2), 0.5);
+      }
+      td {
+        color: color(light2);
+      }
+      input {
+        background: color(dark1);
+        color: color(light2);
+      }
     }
   }
 }

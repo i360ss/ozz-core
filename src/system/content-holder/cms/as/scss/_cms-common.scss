@@ -71,6 +71,10 @@ a {
     @include icon-duplicate();
     background-color: rgba(color(blue), .2);
   }
+  &.save {
+    @include icon-save();
+    background-color: rgba(color(success), .2);
+  }
 }
 
 // Info Labels (Danger, Warning, Success, Info)
@@ -365,7 +369,7 @@ input[type="radio"] {
   &__item {
     &-raw {
       padding: 10px 0;
-      &:not(:last-child) {
+      &:not(:last-child, .no-border) {
         border-bottom: 1px solid color(light1);
       }
       label {
@@ -387,6 +391,44 @@ input[type="radio"] {
         margin-bottom: 0;
         padding-bottom: 0;
       }
+    }
+  }
+}
+
+// Ozz Table
+.ozz-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 1px;
+  tr {
+    box-shadow: $shadow1;
+    background: color(white);
+    &:hover {
+      background: color(light2);
+    }
+    th,
+    td {
+      margin: 0;
+      column-span: none;
+      text-align: left;
+    }
+    th {
+      padding: 5px 16px;
+      border-bottom: 1px solid color(light1);
+      border-top: 1px solid color(light1);
+      background: color(light2);
+      font-family: $rub-m;
+      font-size: $font-small-2;
+      font-weight: normal;
+      color: color(dark2);
+    }
+    td {
+      padding: 2px 16px;
+      font-size: $font-small-3;
+      color: color(dark1);
+    }
+    .icon-button {
+      margin-top: 3px;
     }
   }
 }

@@ -6,6 +6,20 @@
  */
 
 $form_data = has_flash('form_data') ? get_flash('form_data') : [];
+$taxonomy_values = isset($edit_data) ? $edit_data : [];
+$action = '/admin/taxonomy/create';
+$create_class = 'create';
+$button_label = 'Create';
+$title_label = 'Create';
+
+// Update taxonomy
+if (!empty($taxonomy_values)) {
+  $action = '/admin/taxonomy/update';
+  $form_data = empty($form_data) ? $taxonomy_values : $form_data;
+  $create_class = 'edit';
+  $button_label = 'Save';
+  $title_label = 'Edit';
+}
 
 ?>
 {{ title        = "Create Taxonomy" }}
@@ -19,13 +33,13 @@ $form_data = has_flash('form_data') ? get_flash('form_data') : [];
       </div>
 
       <h1 class="heading">
-        <span>Create Taxonomy</span>
+        <span><?=$title_label?> Taxonomy</span>
       </h1>
 
       <div class="taxonomy-edit-view">
         <div class="ozz-widget">
             <?php _create_form([
-              'action' => '/admin/taxonomy/create',
+              'action' => $action,
               'method' => 'post',
               'class' => 'ozz-fm',
               'field_options' => [
@@ -45,10 +59,21 @@ $form_data = has_flash('form_data') ? get_flash('form_data') : [];
                   'validate' => 'req'
                 ],
                 [
+                  'name' => 'test',
+                  'type' => 'textarea',
+                  'label' => 'Test',
+                  'validate' => 'req'
+                ],
+                [
+                  'name' => !empty($taxonomy_values) ? 'taxonomy_id' : '',
+                  'type' => 'hidden',
+                  'value' => $context['url_parts'][4] ?? ''
+                ],
+                [
                   'name' => 'crete-btn',
                   'type' => 'button',
-                  'value' => 'Create',
-                  'class' => 'button small ozz-default-save-button green create'
+                  'value' => $button_label,
+                  'class' => 'button small ozz-default-save-button green '.$create_class
                 ]
               ]
             ], $form_data); ?>

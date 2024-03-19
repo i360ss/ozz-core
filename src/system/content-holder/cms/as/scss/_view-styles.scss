@@ -17,4 +17,51 @@ body.ozz-cms {
       }
     }
   }
+  // Taxonomy
+  &.view-taxonomy {
+    .ozz-widget__item-raw {
+      padding: 0;
+    }
+    .terms-table {
+      input {
+        width: 100%;
+        padding: 5px;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        font-size: $font-small-3;
+        &:not(input[type="submit"]) {
+          &:focus {
+            border-color: color(primary);
+            box-shadow: 0 0 0 4px rgba(color(primary), 0.2);
+            transition: .3s ease-in-out;
+          }
+        }
+        &.error {
+          border-color: color(danger);
+          background-color: rgba(color(danger), 0.03);
+        }
+      }
+      tr {
+        &:hover {
+          input {
+            border-color: rgba(color(secondary),0.2);
+          }
+          .terms-table__actions {
+            opacity: 1;
+          }
+        }
+        td {
+          padding-left: 10px;
+        }
+      }
+      &__actions {
+        width: 90px;
+        padding-right: 0;
+        opacity: 0;
+        .icon-button {
+          cursor: pointer;
+        }
+      }
+    }
+  }
 }

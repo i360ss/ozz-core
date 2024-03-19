@@ -9,31 +9,48 @@
 {{ body_class   = "view-taxonomies" }}
 
 {{ content }}
-  <h1 class="heading">Taxonomies</h1>
+<section>
+  <div class="container">
+    <h1 class="heading">Taxonomies</h1>
 
-  <div class="listing-s1">
-    <div class="listing-s1__top-bar">
-      <div class="align-left cl cl-6">
-        <span>Total Taxonomies: <strong><?=count($taxonomies)?></strong></span>
-      </div>
-      <div class="align-right cl cl-6">
-        <a href="/admin/taxonomy/create" class="button green small">Create Taxonomy</a>
-      </div>
-    </div>
-
-    <div class="table">
-      <?php foreach ($taxonomies as $taxonomy) : ?>
-        <div class="table__tr-wrapper">
-          <a href="/admin/taxonomy/<?=$taxonomy['slug']?>" class="table__row">
-            <div class="table__cell">
-              <span class="listing-s1__title"><?=$taxonomy['name']?></span>
-            </div>
-            <div class="table__cell">
-              <span class="slug"><?=$taxonomy['slug']?></span>
-            </div>
-          </a>
+    <div class="listing-s1 taxonomy-listing">
+      <div class="listing-s1__top-bar">
+        <div class="align-left cl cl-6">
+          <span>Total Taxonomies: <strong><?=count($taxonomies)?></strong></span>
         </div>
-      <?php endforeach; ?>
+        <div class="align-right cl cl-6">
+          <a href="/admin/taxonomy/create" class="button green small">Create Taxonomy</a>
+        </div>
+      </div>
+
+      <table>
+        <tr>
+          <th>Title</th>
+          <th>Slug</th>
+          <th>Terms</th>
+          <th></th>
+        </tr>
+        <?php foreach ($taxonomies as $taxonomy) : ?>
+          <tr>
+            <td class="link-wrap">
+              <a href="/admin/taxonomy/<?=$taxonomy['slug']?>">
+                <span class="listing-s1__title"><?=$taxonomy['name']?></span>
+              </a>
+            </td>
+            <td><span class="slug"><?=$taxonomy['slug']?></span></td>
+            <td><?=count($taxonomy['terms'])?></td>
+            <td class="align-right actions">
+              <a href="/admin/taxonomy/edit/<?=$taxonomy['id']?>">
+                <span class="icon-button edit" title="Edit"></span>
+              </a>
+              <span class="icon-button delete delete taxonomy-listing__delete"
+                title="Delete"
+                data-taxonomy-id="<?=$taxonomy['id']?>"></span>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      </table>
     </div>
   </div>
+</section>
 {{ content-end }}

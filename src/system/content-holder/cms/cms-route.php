@@ -23,6 +23,7 @@ Router::getGroup(['auth'], 'admin', [
   '/admin/taxonomy'                           => [CMSAdminController::class, 'taxonomy_listing'],
   '/admin/taxonomy/{slug}'                    => [CMSAdminController::class, 'taxonomy'],
   '/admin/taxonomy/create'                    => [CMSAdminController::class, 'taxonomy_create_view'],
+  '/admin/taxonomy/edit/{id}'                 => [CMSAdminController::class, 'taxonomy_edit_view'],
   '/admin/settings'                           => [CMSAdminController::class, 'settings'],
 ]);
 
@@ -34,7 +35,11 @@ Router::postGroup(['auth'], [
   '/admin/post/duplicate'                     => [CMSAdminController::class, 'post_duplicate'],
   '/admin/media/action'                       => [CMSAdminController::class, 'media_action'],
   '/admin/taxonomy/create'                    => [CMSAdminController::class, 'taxonomy_create'],
+  '/admin/taxonomy/update'                    => [CMSAdminController::class, 'taxonomy_update'],
+  '/admin/taxonomy/delete'                    => [CMSAdminController::class, 'taxonomy_delete'],
   '/admin/taxonomy/create-term'               => [CMSAdminController::class, 'taxonomy_create_term'],
+  '/admin/taxonomy/update-term'               => [CMSAdminController::class, 'taxonomy_update_term'],
+  '/admin/taxonomy/delete-term'               => [CMSAdminController::class, 'taxonomy_delete_term'],
   '/admin/settings/change-pass'               => [CMSAdminController::class, 'change_password'],
   '/admin/settings/change-info'               => [CMSAdminController::class, 'change_info'],
 ]);

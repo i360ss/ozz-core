@@ -9,32 +9,37 @@
 {{ body_class   = "view-block_listing" }}
 
 {{ content }}
-  <h1 class="heading">Blocks</h1>
+<section>
+  <div class="container">
+    <h1 class="heading">Blocks</h1>
 
-  <div class="listing-s1">
-    <div class="listing-s1__top-bar">
-      <div class="align-left">
-        <span>Total Blocks: <strong><?=count($blocks)?></strong></span>
-      </div>
-    </div>
-
-    <div class="table">
-      <?php foreach ($blocks as $type => $block) : ?>
-        <div class="table__tr-wrapper">
-          <a href="/admin/blocks/<?=$type?>" class="table__row">
-            <div class="table__cell">
-              <span class="listing-s1__title"><?=$block['label']?></span>
-              <?php if (isset($block['note']) && $block['note'] !== '') :?>
-                <span class="note light-text"><?=$block['note']?></span>
-              <?php endif; ?>
-            </div>
-
-            <div class="table__cell">
-              <span class="slug"><?=$block['name']?></span>
-            </div>
-          </a>
+    <div class="listing-s1">
+      <div class="listing-s1__top-bar">
+        <div class="align-left">
+          <span>Total Blocks: <strong><?=count($blocks)?></strong></span>
         </div>
-      <?php endforeach; ?>
+      </div>
+
+      <table>
+        <tr>
+          <th>Title</th>
+          <th>Slug</th>
+        </tr>
+        <?php foreach ($blocks as $type => $block) : ?>
+          <tr>
+            <td class="link-wrap">
+              <a href="/admin/blocks/<?=$type?>">
+                <span class="listing-s1__title"><?=$block['label']?></span>
+                <?php if (isset($block['note']) && $block['note'] !== '') :?>
+                  <span class="note light-text"><?=$block['note']?></span>
+                <?php endif; ?>
+              </a>
+            </td>
+            <td><span class="slug"><?=$block['name']?></span></td>
+          </tr>
+        <?php endforeach; ?>
+      </table>
     </div>
   </div>
+</section>
 {{ content-end }}

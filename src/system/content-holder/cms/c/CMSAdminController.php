@@ -68,7 +68,7 @@ class CMSAdminController extends CMS {
     }
     $this->data['total_posts'] = $post_count['total_posts'];
 
-    return view('posts', $this->data);
+    return view('post_type_listing', $this->data);
   }
 
 
@@ -218,20 +218,61 @@ class CMSAdminController extends CMS {
 
 
   /**
+   * Taxonomy Edit view
+   */
+  public function taxonomy_edit_view(Request $request) {
+    $this->data['edit_data'] = $this->get_taxonomy($request->urlParam('id'));
+
+    return view('create_taxonomy', $this->data);
+  }
+
+
+  /**
    * Create New Taxonomy
    */
   public function taxonomy_create(Request $request) {
+    set_flash('form_data', $request->input());
     $validation = Validate::check($request->input(), [
       'name' => 'req',
       'slug' => 'req',
     ]);
 
     if ($validation->pass) {
-      $form_data = $request->input();
-      $this->create_taxonomy($form_data);
+      $this->create_taxonomy($request->input());
+      remove_flash('form_data');
     }
 
     return back();
+  }
+
+
+  /**
+   * Update Taxonomy
+   */
+  public function taxonomy_update(Request $request) {
+    set_flash('form_data', $request->input());
+    $validation = Validate::check($request->input(), [
+      'name' => 'req',
+      'slug' => 'req',
+    ]);
+
+    if ($validation->pass) {
+      $this->update_taxonomy($request->input(), $request->input('taxonomy_id'));
+      remove_flash('form_data');
+    }
+
+    return back();
+  }
+
+
+  /**
+   * Delete Taxonomy
+   */
+  public function taxonomy_delete(Request $request) {
+    if($this->delete_taxonomy($request->content('taxonomyID'))){
+      return json([ 'status' => 'success', 'message' => trans('deleted_success') ]);
+    }
+    return json([ 'status' => 'error', 'message' => trans_e('error') ]);
   }
 
 
@@ -255,6 +296,34 @@ class CMSAdminController extends CMS {
     }
 
     return back();
+  }
+
+
+  /**
+   * Update Term
+   */
+  public function taxonomy_update_term(Request $request) {
+    $data = [
+      'name' => $request->content('name'),
+      'slug' => $request->content('slug')
+    ];
+
+    if($this->update_term($request->content('termID'), $data)){
+      return json([ 'status' => 'success', 'message' => trans('updated_success') ]);
+    }
+
+    return json([ 'status' => 'error', 'message' => trans_e('error') ]);
+  }
+
+
+  /**
+   * Delete Term
+   */
+  public function taxonomy_delete_term(Request $request) {
+    if($this->delete_term($request->content('termID'))){
+      return json([ 'status' => 'success', 'message' => trans('deleted_success') ]);
+    }
+    return json([ 'status' => 'error', 'message' => trans_e('error') ]);
   }
 
 

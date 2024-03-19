@@ -11,6 +11,7 @@ import ChangeTheme from './modules/ChangeTheme';
 import SlugUpdate from './modules/SlugUpdate';
 import RelocatePostInfoComp from './modules/RelocatePostInfoComp';
 import InitOzzWyg from './modules/InitOzzWyg';
+import Taxonomy from './modules/Taxonomy';
 
 (() => {
   // Ozz CMS Modules
@@ -25,6 +26,7 @@ import InitOzzWyg from './modules/InitOzzWyg';
   SlugUpdate();
   RelocatePostInfoComp();
   InitOzzWyg();
+  Taxonomy();
 
   const repeaterField = new RepeaterField();
   repeaterField.initRepeater(false, MediaManagerPopup);
