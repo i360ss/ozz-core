@@ -1,0 +1,127 @@
+<?php
+/**
+ * View Name: form_entry
+ * Path: view/admin/form_entry
+ * @param array $data arguments passed from controller or route
+ */
+
+$agentInfo = json_decode($entry['user_agent'], true);
+$geoInfo = json_decode($entry['geo_info'], true);
+unset($agentInfo['all']);
+?>
+{{ title        = "Form entry" }}
+{{ body_class   = "view-form-entry" }}
+
+{{ content }}
+  <section>
+    <div class="container">
+      <div class="heading breadcrumb">
+        <span><a href="/admin/forms">Forms</a></span>
+        <span><a href="/admin/forms/<?=$form['name']?>"><?=$form['label']?></a></span>
+        <span><a href="/admin/forms/<?=$form['name']?>/entries">Entries</a></span>
+        <span>ID: <?=$entry['id']?></span>
+      </div>
+
+      <h1><?=$form['label']?></h1>
+
+      <div class="row">
+        <div class="col col-9">
+          <div class="ozz-widget entry-data">
+            <h2 class="ozz-widget__heading">Entry Data</h2>
+            <?php foreach ($entry['fields'] as $key => $field) : ?>
+              <div class="ozz-widget__item-raw">
+                <label><?=ucfirst($key)?></label>
+                <span class="value"><?=$field?></span>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+
+        <div class="col col-3">
+          <div class="post-edit-view__widget info">
+            <h2 class="ozz-widget__heading">Status</h2>
+            <?php _create_form([
+              'action' => '/admin/forms/update_entry_status',
+              'class' => 'ozz-fm update-status',
+              'method' => 'post',
+              'field_options' => [
+                'wrapper' => '<div class="ozz-fm__field">##</div>'
+              ],
+              'fields' => [
+                [
+                  'name' => 'status',
+                  'type' => 'select',
+                  'options' => $form['entry-status'],
+                  'selected' => $entry['status']
+                ],
+                [
+                  'name' => 'entry-id',
+                  'type' => 'hidden',
+                  'value' => $entry['id']
+                ],
+                [
+                  'name' => 'submit',
+                  'type' => 'submit',
+                  'value' => 'Update',
+                  'class' => 'button small green'
+                ]
+              ]
+            ]); ?>
+
+            <?php _create_form([
+              'action' => '/admin/forms/delete_entry',
+              'class' => 'ozz-fm delete-entry',
+              'method' => 'post',
+              'field_options' => [
+                'wrapper' => '<div class="ozz-fm__field">##</div>'
+              ],
+              'fields' => [
+                [
+                  'name' => 'entry-id',
+                  'type' => 'hidden',
+                  'value' => $entry['id']
+                ],
+                [
+                  'name' => 'form-name',
+                  'type' => 'hidden',
+                  'value' => $form['name']
+                ],
+                [
+                  'name' => 'submit',
+                  'type' => 'submit',
+                  'value' => 'Delete Entry',
+                  'class' => 'button mini danger'
+                ],
+              ]
+            ]); ?>
+          </div><br>
+
+          <div class="post-edit-view__widget info">
+            <h2 class="ozz-widget__heading">Agent Info</h2>
+            <div class="item">
+              <strong>IP </strong><?=$entry['ip']?>
+            </div>
+            <div class="item">
+              <strong>Created at </strong><?=ozz_format_date($entry['created'])?>
+            </div>
+            <?php foreach ($agentInfo as $key => $value) : ?>
+              <div class="item">
+                <strong><?=ucfirst($key)?> </strong>
+                <span><?=$value?></span>
+              </div>
+            <?php endforeach; ?>
+          </div><br>
+
+          <div class="post-edit-view__widget info">
+            <h2 class="ozz-widget__heading">Location Info</h2>
+            <?php foreach ($geoInfo as $key => $value) : ?>
+              <div class="item">
+                <strong><?=ucfirst($key)?></strong><?=$value?>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{{ content-end }}

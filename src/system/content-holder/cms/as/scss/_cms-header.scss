@@ -267,6 +267,16 @@
             }
           }
         }
+        &.forms {
+          &:before {
+            @include icon-forms;
+          }
+          &:hover {
+            &:before {
+              background-position: -218px -30px;
+            }
+          }
+        }
         &.media {
           &:before {
             @include icon-media;

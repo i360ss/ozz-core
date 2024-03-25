@@ -262,6 +262,53 @@ function _create_form($args, $values=[]) {
 }
 
 /**
+ * Get Form (CMS forms)
+ * @param string $form Form name
+ * @param array $values
+ */
+function get_form($form, $values=[]) {
+  $forms = require __DIR__.SPC_BACK['core_2'].'cms/cms-forms.php';
+  if(!isset($forms[$form]) || empty($forms[$form])) return;
+
+  // Check and set flash data
+  if(empty($values) && has_flash('form_data')) {
+    $values = get_flash('form_data');
+  }
+
+  $thisForm = $forms[$form];
+
+  // Default method (post)
+  $thisForm['method'] = isset($thisForm['method']) ? $thisForm['method'] : 'POST';
+
+  // Update tracking action
+  $thisForm['action'] = isset($thisForm['action']) ? $thisForm['action'] : '/form/track?f='.enc_base64($form);
+
+  // Add Submit button if not defined
+  if (!in_array('submit', array_column($thisForm['fields'], 'type'))) {
+    $thisForm['fields'] = array_merge($thisForm['fields'], [
+      [
+        'name' => 'submit',
+        'type' => 'submit',
+        'value' => 'Submit',
+        'class' => 'button submit'
+      ]
+    ]);
+  }
+
+  // Add default field wrapper
+  if(!isset($thisForm['field_options']['wrapper'])){
+    $thisForm['field_options']['wrapper'] = '<div class="form__field-wrapper">##</div>';
+  }
+
+  // Add default field class
+  if(!isset($thisForm['field_options']['class'])){
+    $thisForm['field_options']['class'] = 'form__field';
+  }
+
+  return create_form($thisForm, $values);
+}
+
+/**
  * Get File MIME type
  * @param array $file
  */

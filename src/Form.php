@@ -558,7 +558,7 @@ class Form {
           if ($type == 'datalist') {
             $optionField .= '<option value="'.$option.'">'.PHP_EOL;
           } else {
-            $optionField .= '<option value="'.(is_string($k) ? $k : $option).'" '.$selected.'>'.$option.'</option>'. PHP_EOL;
+            $optionField .= '<option value="'.$k.'" '.$selected.'>'.$option.'</option>'. PHP_EOL;
           }
         }
       }
@@ -569,7 +569,7 @@ class Form {
           $optionField .= '<optgroup label="' . $val['label'] . '">' . PHP_EOL;
           foreach ($val['options'] as $k => $option) {
             $selected = (in_array($selected_val, [$k, $option]) || in_array($this_value, [$k, $option])) ? 'selected' : '';
-            $optionField .= '<option value="'.(is_string($k) ? $k : $option).'" '.$selected.'>'.$option.'</option>'.PHP_EOL;
+            $optionField .= '<option value="'.$k.'" '.$selected.'>'.$option.'</option>'.PHP_EOL;
           }
           $optionField .= '</optgroup>'.PHP_EOL;
         }

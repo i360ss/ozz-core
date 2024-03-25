@@ -70,6 +70,15 @@ class CreateCms {
         $utils->console_return("Error on creating CMS Routes file [ cms/cms-route.php ]", 'red');
       }
     }
+
+    // CMS Forms (config)
+    if(!file_exists($cms_dir.'cms-forms.php')){
+      if(copy($cms_hold_dir.'cms-forms.php', $cms_dir.'cms-forms.php')){
+        $utils->console_return("CMS Forms file created [ cms/cms-forms.php ]", 'green');
+      } else {
+        $utils->console_return("Error on creating CMS Forms file [ cms/cms-forms.php ]", 'red');
+      }
+    }
   }
 
 

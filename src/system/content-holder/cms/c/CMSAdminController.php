@@ -328,6 +328,104 @@ class CMSAdminController extends CMS {
 
 
   // =============================================
+  // Forms
+  // =============================================
+  public function forms_listing() {
+    return view('forms_listing', $this->data);
+  }
+
+
+  /**
+   * Single Form
+   */
+  public function form(Request $request) {
+    $form = $request->urlParam('form');
+    $this->data['form'] = isset($this->data['forms'][$form]) ? $this->data['forms'][$form] : [];
+    $this->data['form']['name'] = $form;
+
+    return view('form', $this->data);
+  }
+
+
+  /**
+   * Form entries
+   */
+  public function form_entries(Request $request) {
+    $form = $request->urlParam('form');
+    if(!isset($this->data['forms'][$form])){
+      return render_error_page(404, 'Page Not Found');
+    }
+
+    $this->data['form'] = $this->data['forms'][$form];
+    $this->data['form']['name'] = $form;
+
+    // Set table display fields if not defined
+    if(!isset($this->data['form']['table-fields'])){
+      $this->data['form']['table-fields'] = array_slice(array_column($this->data['form']['fields'], 'name'), 0, 10);
+    }
+
+    $this->data['entries'] = $this->get_form_entries($form);
+
+    return view('form_entries', $this->data);
+  }
+
+
+  /**
+   * Single form entry
+   */
+  public function form_entry(Request $request) {
+    $form = $request->urlParam('form');
+    $id = $request->urlParam('id');
+    $this->data['entry'] = $this->get_form_entry($id);
+    $this->data['form'] = $this->data['forms'][$form];
+    $this->data['form']['name'] = $form;
+
+    // Entry status
+    if(!isset($this->data['form']['entry-status'])){
+      $this->data['form']['entry-status'] = [1 => 'Draft', 2 => 'Spam', 3 => 'Blacklist'];
+    }
+
+    return view('form_entry', $this->data);
+  }
+
+
+  /**
+   * Track forms (This is a outer function. Can be accessed without auth)
+   */
+  public function form_tracking(Request $request) {
+    $this->track_form($request);
+  }
+
+
+  /**
+   * Update form entry status
+   */
+  public function form_update_entry_status(Request $request) {
+    if($this->update_form_entry_status($request->input('entry-id'), $request->input('status'))){
+      set_error('success', trans('updated_success'));
+    } else {
+      set_error('error', trans_e('error'));
+    }
+
+    return back();
+  }
+
+
+  /**
+   * Delete Form entry
+   */
+  public function form_delete_entry(Request $request) {
+    if($this->delete_form_entry($request->input('entry-id'))){
+      set_error('success', trans('deleted_success'));
+    } else {
+      set_error('error', trans_e('error'));
+    }
+
+    return redirect('/admin/forms/'.$request->input('form-name').'/entries');
+  }
+
+
+  // =============================================
   // Settings
   // =============================================
   public function settings() {

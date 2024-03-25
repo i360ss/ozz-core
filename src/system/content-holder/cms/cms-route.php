@@ -24,9 +24,14 @@ Router::getGroup(['auth'], 'admin', [
   '/admin/taxonomy/{slug}'                    => [CMSAdminController::class, 'taxonomy'],
   '/admin/taxonomy/create'                    => [CMSAdminController::class, 'taxonomy_create_view'],
   '/admin/taxonomy/edit/{id}'                 => [CMSAdminController::class, 'taxonomy_edit_view'],
+  '/admin/forms'                              => [CMSAdminController::class, 'forms_listing'],
+  '/admin/forms/{form}'                       => [CMSAdminController::class, 'form'],
+  '/admin/forms/{form}/entries'               => [CMSAdminController::class, 'form_entries'],
+  '/admin/forms/{form}/entry/{id}'            => [CMSAdminController::class, 'form_entry'],
   '/admin/settings'                           => [CMSAdminController::class, 'settings'],
 ]);
 
+Router::post('/form/track', [CMSAdminController::class, 'form_tracking']);
 Router::postGroup(['auth'], [
   '/admin/posts/create/{post_type}'           => [CMSAdminController::class, 'post_create'],
   '/admin/posts/update/{post_type}/{post_id}' => [CMSAdminController::class, 'post_update'],
@@ -40,6 +45,8 @@ Router::postGroup(['auth'], [
   '/admin/taxonomy/create-term'               => [CMSAdminController::class, 'taxonomy_create_term'],
   '/admin/taxonomy/update-term'               => [CMSAdminController::class, 'taxonomy_update_term'],
   '/admin/taxonomy/delete-term'               => [CMSAdminController::class, 'taxonomy_delete_term'],
+  '/admin/forms/update_entry_status'          => [CMSAdminController::class, 'form_update_entry_status'],
+  '/admin/forms/delete_entry'                 => [CMSAdminController::class, 'form_delete_entry'],
   '/admin/settings/change-pass'               => [CMSAdminController::class, 'change_password'],
   '/admin/settings/change-info'               => [CMSAdminController::class, 'change_info'],
 ]);

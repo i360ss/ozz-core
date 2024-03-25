@@ -12,6 +12,7 @@ import SlugUpdate from './modules/SlugUpdate';
 import RelocatePostInfoComp from './modules/RelocatePostInfoComp';
 import InitOzzWyg from './modules/InitOzzWyg';
 import Taxonomy from './modules/Taxonomy';
+import Forms from './modules/Forms';
 
 (() => {
   // Ozz CMS Modules
@@ -27,6 +28,7 @@ import Taxonomy from './modules/Taxonomy';
   RelocatePostInfoComp();
   InitOzzWyg();
   Taxonomy();
+  Forms();
 
   const repeaterField = new RepeaterField();
   repeaterField.initRepeater(false, MediaManagerPopup);

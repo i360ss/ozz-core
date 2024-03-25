@@ -61,6 +61,16 @@ $has_alert = has_error('success') || has_error('error');
           ], 'cms/'); ?>
         </li>
 
+        <li class="forms has-child">
+          <a href="/admin/forms" class="forms">Forms & Entries</a>
+          <?= component('submenu', [
+            'title' => 'Forms & Entries',
+            'slug' => 'forms',
+            'items' => $data['forms'],
+            'url_parts' => $context['url_parts']
+          ], 'cms/'); ?>
+        </li>
+
         <li class="media">
           <a href="/admin/media" class="media">Media</a>
         </li>

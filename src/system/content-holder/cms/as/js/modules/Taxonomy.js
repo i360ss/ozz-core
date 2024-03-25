@@ -7,7 +7,7 @@ export default () => {
   const initTaxonomy = () => {
     // Delete Taxonomy
     const taxonomyDeleteTriggers = document.querySelectorAll('.taxonomy-listing__delete');
-    if (taxonomyDeleteTriggers.length === 0) return;
+    if (!taxonomyDeleteTriggers || taxonomyDeleteTriggers.length === 0) return;
 
     taxonomyDeleteTriggers.forEach(trigger => {
       trigger.addEventListener('click', (e) => {
@@ -26,7 +26,7 @@ export default () => {
   const initTerm = () => {
     // Edit terms
     const termEditTriggers = document.querySelectorAll('.terms-table__edit-term');
-    if (termEditTriggers.length === 0) return;
+    if (!termEditTriggers || termEditTriggers.length === 0) return;
 
     termEditTriggers.forEach(trigger => {
       trigger.addEventListener('click', (e) => {

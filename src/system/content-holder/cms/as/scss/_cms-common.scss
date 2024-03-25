@@ -14,9 +14,15 @@
       transform: scale(0.8) rotate(180deg);
       content: '';
     }
+    &,
     a {
       font-size: $font-small-2;
       color: color(dark1);
+    }
+    a {
+      &:hover {
+        color: color(primary);
+      }
     }
   }
   + h1 {
@@ -410,7 +416,9 @@ input[type="radio"] {
     td {
       margin: 0;
       column-span: none;
-      text-align: left;
+      &:not(.align-right, .align-center) {
+        text-align: left;
+      }
     }
     th {
       padding: 5px 16px;
@@ -423,7 +431,7 @@ input[type="radio"] {
       color: color(dark2);
     }
     td {
-      padding: 2px 16px;
+      padding: 3px 16px;
       font-size: $font-small-3;
       color: color(dark1);
     }

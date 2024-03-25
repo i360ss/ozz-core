@@ -14,6 +14,7 @@ class CMS {
   use \Ozz\Core\system\cms\Blocks;
   use \Ozz\Core\system\cms\Settings;
   use \Ozz\Core\system\cms\Taxonomy;
+  use \Ozz\Core\system\cms\Forms;
 
   public $data=[];
   public $cms_config;
@@ -22,6 +23,7 @@ class CMS {
   public $cms_blocks;
   public $cms_taxonomies;
   public $cms_tabs;
+  public $cms_forms;
   public $cms_media;
   public $cms_user_meta;
   public $post_type = null;
@@ -84,6 +86,9 @@ class CMS {
     // Post Tabs
     $this->cms_tabs = isset($this->post_config['tabs']) ? $this->post_config['tabs'] : [];
 
+    // Forms
+    $this->cms_forms = require __DIR__.SPC_BACK['core'].'cms/cms-forms.php';
+
     // if post type available
     if(isset($request->urlParam()['post_type'])){
       $this->post_type = $request->urlParam('post_type');
@@ -121,6 +126,7 @@ class CMS {
       'blocks' => $this->cms_blocks,
       'taxonomies' => $this->cms_taxonomies,
       'post_types' => $this->cms_post_types,
+      'forms' => $this->cms_forms,
       'media' => $this->cms_media,
       'user_meta' => $this->cms_user_meta,
       'js_data' => []

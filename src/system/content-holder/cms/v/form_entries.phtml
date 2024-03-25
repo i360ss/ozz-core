@@ -1,0 +1,46 @@
+<?php
+/**
+ * View Name: form_entries
+ * Path: view/admin/form_entries
+ * @param array $data arguments passed from controller or route
+ */
+
+$page_title = 'Form Entries | '.($form['label'] ?? ($form['name'] ?? 'Form not found'));
+?>
+{{ title        = page_title }}
+{{ body_class   = "view-form-entries" }}
+
+{{ content }}
+  <section>
+    <div class="heading breadcrumb">
+      <span><a href="/admin/forms">Forms</a></span>
+      <span><a href="/admin/forms/<?=$form['name']?>"><?=$form['label']?></a></span>
+      <span>Entries</span>
+    </div>
+
+    <h1 class="heading"><?=$form['label']?></h1>
+
+    <table class="ozz-table">
+      <tr>
+        <th>ID</th>
+        <?php foreach ($form['table-fields'] as $th) : ?>
+          <th><?=ucfirst($th)?></th>
+        <?php endforeach; ?>
+        <th></th>
+      </tr>
+      <?php foreach ($entries as $key => $value) : ?>
+        <tr>
+          <td><?=$value['id']?></td>
+          <?php foreach ($form['table-fields'] as $field) : ?>
+            <td><?=char_limit(esc($value['fields'][$field]), 110, '..')?></td>
+          <?php endforeach; ?>
+          <td class="align-right action">
+            <a href="/admin/forms/<?=$form['name']?>/entry/<?=$value['id']?>">
+              <span class="button mini">Open</span>
+            </a>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+    </table>
+  </section>
+{{ content-end }}

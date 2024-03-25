@@ -35,6 +35,10 @@
   @include icon-sprite;
   background-position: -105px 10px;
 }
+@mixin icon-forms {
+  @include icon-sprite;
+  background-position: -218px 10px;
+}
 @mixin icon-settings {
   @include icon-sprite;
   background-position: -142px 9px;

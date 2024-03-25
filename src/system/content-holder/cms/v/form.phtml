@@ -1,0 +1,56 @@
+<?php
+/**
+ * View Name: form
+ * Path: view/admin/form
+ * @param array $data arguments passed from controller or route
+ */
+
+$page_title = 'Form | '.($form['label'] ?? ($form['name'] ?? 'Form not found'));
+
+?>
+{{ title        = page_title }}
+{{ body_class   = "view-form" }}
+
+{{ content }}
+  <section>
+    <div class="container">
+      <?php if (!empty($form)) : ?>
+        <div class="heading breadcrumb">
+          <span><a href="/admin/forms">Forms</a></span>
+          <span><?=$form['label']?></span>
+        </div>
+
+        <h1 class="heading cl cl-6"><?=$form['label']?></h1>
+        <div class="cl cl-6 align-right">
+          <a href="/admin/forms/<?=$form['name']?>/entries" class="button small">Entries</a>
+        </div>
+
+        <div class="ozz-widget">
+          <h4 class="ozz-widget__heading">Form Info</h4>
+          <div class="ozz-widget__item-raw">
+            <label>Title: </label><span><?=$form['label']?></span>
+          </div>
+          <div class="ozz-widget__item-raw">
+            <label>Name: </label><span><?=$form['name']?></span>
+          </div>
+          <div class="ozz-widget__item-raw">
+            <label>Action: </label><span><?=$form['action'] ?? 'Tracking'?></span>
+          </div>
+          <div class="ozz-widget__item-raw">
+            <label>Note: </label><span><?=$form['note'] ?? ''?></span>
+          </div>
+        </div><br>
+
+        <div class="ozz-widget">
+          <h4 class="ozz-widget__heading">Fields</h4>
+          <?= json_dump( json_encode($form['fields']) ) ?>
+        </div>
+      <?php else : ?>
+        <h1 class="heading">form</h1>
+        <div class="listing-s2__empty">
+          <p>Invalid form</p>
+        </div>
+      <?php endif; ?>
+    </div>
+  </section>
+{{ content-end }}

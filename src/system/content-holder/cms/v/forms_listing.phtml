@@ -1,0 +1,50 @@
+<?php
+/**
+ * View Name: forms_listing
+ * Path: view/admin/forms_listing
+ * @param array $data arguments passed from controller or route
+ */
+
+?>
+{{ title        = "Forms & Entries" }}
+{{ body_class   = "view-forms-listing" }}
+
+{{ content }}
+  <section>
+    <div class="container">
+      <h1 class="heading">Forms & Entries</h1>
+
+      <div class="listing-s1">
+        <div class="listing-s1__top-bar">
+          <div class="align-left">
+            <span>Total Forms: <strong><?=count($forms)?></strong></span>
+          </div>
+        </div>
+
+        <table>
+          <tr>
+            <th>Title</th>
+            <th>Name</th>
+            <th></th>
+          </tr>
+          <?php foreach ($forms as $key => $form) : ?>
+            <tr>
+              <td class="link-wrap">
+                <a href="/admin/forms/<?=$key?>">
+                  <span class="listing-s1__title"><?=$form['label']?></span>
+                  <?php if (isset($form['note']) && $form['note'] !== '') :?>
+                    <span class="note light-text"><?=$form['note']?></span>
+                  <?php endif; ?>
+                </a>
+              </td>
+              <td><span class="slug"><?=$key?></span></td>
+              <td class="align-right">
+                <a href="/admin/forms/<?=$key?>/entries"><span class="button mini">Entries</span></a>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </table>
+      </div>
+    </div>
+  </section>
+{{ content-end }}
