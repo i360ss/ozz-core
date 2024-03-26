@@ -197,6 +197,7 @@ trait Posts {
       $post_id = $form_data['post_id'];
       $published_at = strtotime($form_data['published_at']);
       $taxonomies = $form_data['___taxonomy___'] ?? [];
+      $author = $form_data['author'];
 
       // Prevent these fields from adding into content
       unset(
@@ -207,8 +208,15 @@ trait Posts {
         $form_data['submit_post'],
         $form_data['post_id'],
         $form_data['published_at'],
-        $form_data['___taxonomy___'],
+        $form_data['author'],
       );
+
+      // Prevent Taxonomy fields from storing inside the content
+      foreach ($form_data as $key => $value) {
+        if (strpos($key, '___taxonomy___') === 0) {
+          unset($form_data[$key]);
+        }
+      }
 
       // Filtered data (Block and Post content)
       $filtered_data = $this->cms_filter_form_data($form_data);
@@ -220,7 +228,7 @@ trait Posts {
         'lang' => APP_LANG,
         'post_type' => $this->post_type,
         'post_id' => $post_id,
-        'author' => Auth::id(),
+        'author' => $author,
         'title' => $title,
         'slug' => $slug,
         'post_status' => $status,
@@ -280,6 +288,7 @@ trait Posts {
       $status = isset($form_data['post_status']) ? $form_data['post_status'] : 'draft';
       $published_at = strtotime($form_data['published_at']);
       $taxonomies = $form_data['___taxonomy___'] ?? [];
+      $author = $form_data['author'];
 
       // Clear post terms
       $this->clear_post_terms($post_id);
@@ -305,8 +314,15 @@ trait Posts {
         $form_data['slug'],
         $form_data['published_at'],
         $form_data['submit_post'],
-        $form_data['___taxonomy___'],
+        $form_data['author']
       );
+
+      // Prevent Taxonomy fields from storing inside the content
+      foreach ($form_data as $key => $value) {
+        if (strpos($key, '___taxonomy___') === 0) {
+          unset($form_data[$key]);
+        }
+      }
 
       // Filtered data (Block and Post content)
       $filtered_data = $this->cms_filter_form_data($form_data);
@@ -320,6 +336,7 @@ trait Posts {
         'post_status' => $status,
         'content' => $post_content,
         'blocks' => $block_data,
+        'author' => $author,
         'published_at' => $published_at,
         'modified_at' => time(),
       ],[
@@ -643,52 +660,6 @@ trait Posts {
    */
   public function cms_organize_post_content($data) {
     return ozz_i_convert_str_to_array_1($data);
-  }
-
-
-  // ========================================================= //
-  // Common usage methods
-  // ========================================================= //
-  /**
-   * Return single post
-   * @param int|string $post_id_slug Post ID (id) or slug
-   * @param array $where SQL where arguments
-   * @param string $lang Language code
-   */
-  protected function get_post($post_id_slug, $where=[], $lang=APP_LANG) {
-    $where = array_merge([
-      'OR' => [
-        'id' => $post_id_slug,
-        'slug' => $post_id_slug
-      ],
-      'lang' => $lang
-    ], $where);
-
-    $post = $this->DB()->get('cms_posts', [
-      '[>]user' => ['author' => 'user_id']
-    ], [
-      'cms_posts.id',
-      'cms_posts.post_id',
-      'cms_posts.title',
-      'cms_posts.post_type',
-      'cms_posts.slug',
-      'cms_posts.lang',
-      'cms_posts.post_status',
-      'cms_posts.created_at',
-      'cms_posts.published_at',
-      'cms_posts.modified_at',
-      'cms_posts.content',
-      'cms_posts.blocks',
-      'user.first_name',
-      'user.last_name',
-    ], $where);
-
-    if(!is_null($post)){
-      $post = array_merge($post, is_array(json_decode($post['content'], true)) ? json_decode($post['content'], true) : []);
-      $post['taxonomies'] = $this->get_post_terms($post['id']);
-    }
-
-    return $post;
   }
 
 

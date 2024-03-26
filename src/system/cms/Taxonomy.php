@@ -106,6 +106,7 @@ trait Taxonomy {
         t1.id AS id,
         t1.name AS name,
         t1.slug AS slug,
+        t1.content AS content,
           (
             SELECT JSON_ARRAYAGG( JSON_OBJECT( 
               'id', t2.id,
@@ -124,6 +125,7 @@ trait Taxonomy {
     foreach ($all_taxonomies as $key => $taxonomy) {
       $result[$taxonomy['slug']] = $taxonomy;
       $result[$taxonomy['slug']]['terms'] = !is_null($taxonomy['terms']) ? json_decode($taxonomy['terms'], true) : [];
+      $result[$taxonomy['slug']]['content'] = json_decode($taxonomy['content'], true);
     }
 
     return $result;
@@ -144,11 +146,14 @@ trait Taxonomy {
     if(!is_null($taxonomy) && isset($taxonomy['id'])){
       $taxonomy['terms'] = $this->DB()->select('cms_terms', '*', [ 'taxonomy_id' => $taxonomy['id'] ]);
 
-      if(isset($taxonomy['content'])){
-        $content = json_decode($taxonomy['content'], true);
-        unset($content['terms'], $content['slug'], $content['name']);
-        $taxonomy = array_merge($taxonomy, $content);
-      }
+      $taxonomy['content'] = json_decode($taxonomy['content'], true);
+      unset(
+        $taxonomy['content']['terms'],
+        $taxonomy['content']['slug'],
+        $taxonomy['content']['name'],
+        $taxonomy['content']['lang']
+      );
+      $taxonomy = array_merge($taxonomy, $taxonomy['content']);
     }
 
     return $taxonomy;

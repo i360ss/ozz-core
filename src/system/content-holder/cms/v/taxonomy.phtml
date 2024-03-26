@@ -19,7 +19,10 @@ $page_title = 'Taxonomy | '.($taxonomy['name'] ?? 'Not found');
           <span><a href="#"><?=$taxonomy['name']?></a></span>
         </div>
 
-        <h1 class="heading"><?=$taxonomy['name']?></h1>
+        <h1 class="heading cl cl-6"><?=$taxonomy['name']?></h1>
+        <div class="cl cl-6 align-right">
+          <a href="/admin/taxonomy/edit/<?=$taxonomy['id']?>" class="button small green">Edit Taxonomy</a>
+        </div>
 
         <div class="ozz-widget">
           <div class="ozz-widget__item-raw no-border">

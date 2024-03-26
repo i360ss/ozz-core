@@ -38,6 +38,7 @@ if(!function_exists('ozz_func_loaded')) {
   require __DIR__.'/functions/f-debug-bar.php'; // Debug bar
   require __DIR__.'/functions/f-dom-support.php'; // Dom support
 
+  require __DIR__.'/functions/f-cms-dev-funcs.php'; // CMS specific functions
 
   function ozz_func_loaded() {
     return true;
