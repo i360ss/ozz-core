@@ -46,6 +46,9 @@
     tr {
       border-left: 2px solid color(primary);
       box-shadow: $shadow1;
+      &.new-entry-label {
+        @include new-entry-label;
+      }
       &:hover {
         td {
           background: color(light2);

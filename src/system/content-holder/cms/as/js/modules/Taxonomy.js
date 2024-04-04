@@ -3,7 +3,7 @@ import { showAlert } from '../utils/Alert';
 import { CommonDelete } from '../utils/CommonDelete';
 
 export default () => {
-  const $base_url = '/admin/taxonomy/';
+  const $base_url = `${DATA.CMS_URL}taxonomy/`;
   const initTaxonomy = () => {
     // Delete Taxonomy
     const taxonomyDeleteTriggers = document.querySelectorAll('.taxonomy-listing__delete');

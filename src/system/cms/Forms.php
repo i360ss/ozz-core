@@ -78,7 +78,29 @@ trait Forms {
       'created' => time()
     ]);
 
+    // Log for notification
+    ozz_log_save('ozz_notification', [
+      'type' => 'form_entry',
+      'key' => $userInfo['name'],
+      'item_id' => $this->DB()->id()
+    ]);
+
     return $created ? true : false;
+  }
+
+
+  /**
+   * Count total form entries
+   * @param array $where Conditions
+   */
+  protected function count_form_entries($where=[]) {
+    if(!empty($where)){
+      $count = $this->DB()->count('cms_forms', $where);
+    } else {
+      $count = $this->DB()->count('cms_forms');
+    }
+
+    return $count;
   }
 
 
@@ -86,8 +108,12 @@ trait Forms {
    * Get form entries
    * @param string $form Form name
    */
-  protected function get_form_entries($form) {
-    $entries = $this->DB()->select('cms_forms', '*', ['name' => $form]);
+  protected function get_form_entries($form, $page=1, $per_page=10) {
+    $entries = $this->DB()->select('cms_forms', '*', [
+      'ORDER' => ['id' => 'DESC'],
+      'LIMIT' => [$page-1, $per_page],
+      'name' => $form
+    ]);
     foreach ($entries as $key => $entry) {
       $entries[$key]['fields'] = json_decode($entry['content'], true);
       $entries[$key]['fields']['created'] = ozz_format_date($entry['created']);

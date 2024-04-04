@@ -41,6 +41,9 @@ a {
 .align-right {
   text-align: right;
 }
+.float-right {
+  float: right;
+}
 .f-14 {
   font-size: $font-small-2;
 }
@@ -89,48 +92,49 @@ a {
   font-size: $font-small-2;
   border-radius: 5px;
   text-transform: capitalize;
+  background-color: rgba(color(silver), 0.3);
   &.trash,
-  &.danger {
+  &.overdue {
     color: color(danger);
     background-color: rgba(color(danger), .1);
   }
+  &.danger,
+  &.spam,
+  &.cancelled {
+    color: color(white);
+    background-color: rgba(color(danger), .7);
+  }
   &.published,
-  &.success {
+  &.success,
+  &.shipped,
+  &.delivered {
     color: color(success);
     background-color: rgba(color(success), .1);
   }
+  &.completed,
+  &.done {
+    color: color(white);
+    background-color: rgba(color(success), .7);
+  }
   &.draft,
-  &.warning {
+  &.warning,
+  &.pending,
+  &.hold {
     color: color(warning);
     background-color: rgba(color(warning), .1);
   }
-  &.info {
+  &.processing,
+  &.info,
+  &.returned {
     color: color(blue);
     background-color: rgba(color(blue), .1);
   }
   // Status Dot
   &.dot {
+    @include notify-dot();
     display: inline-block;
     padding: 0;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    transform: translateY(-4px);
-    &.trash,
-    &.danger {
-      background: color(danger);
-    }
-    &.published,
-    &.success {
-      background-color: color(success);
-    }
-    &.draft,
-    &.warning {
-      background-color: color(warning);
-    }
-    &.info {
-      background-color: color(blue);
-    }
+    transform: translateY(-5px);
   }
 }
 
@@ -400,6 +404,47 @@ input[type="radio"] {
     }
   }
 }
+// Widget Box
+.widget-box-wrapper {
+  display: flex;
+  gap: 20px;
+}
+.widget-box {
+  min-width: 160px;
+  padding: 16px;
+  border-radius: 5px;
+  background: color(white);
+  box-shadow: $dark-shadow1;
+  > div {
+    position: relative;
+    padding-left: 20px;
+    &:before {
+      position: absolute;
+      left: 5px;
+      top: 0;
+      width: 3px;
+      height: 20px;
+      background: color(success);
+      content: '';
+    }
+  }
+  span.light-text {
+    font-weight: 400;
+  }
+  h3 {
+    margin: 10px 0;
+    font-size: $font-medium;
+  }
+  p {
+    font-size: $font-small-2;
+  }
+  &.blue {
+    background: linear-gradient(-90deg, color(primary), color(primary-dark));
+    * {
+      color: color(white);
+    }
+  }
+}
 
 // Ozz Table
 .ozz-table {
@@ -411,6 +456,9 @@ input[type="radio"] {
     background: color(white);
     &:hover {
       background: color(light2);
+    }
+    &.new-entry-label {
+      @include new-entry-label;
     }
     th,
     td {

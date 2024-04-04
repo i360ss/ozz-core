@@ -10,6 +10,7 @@ namespace Ozz\Core;
 class CMS {
 
   use \Ozz\Core\DB;
+  use \Ozz\Core\system\cms\Utilities;
   use \Ozz\Core\system\cms\Posts;
   use \Ozz\Core\system\cms\Blocks;
   use \Ozz\Core\system\cms\Settings;
@@ -88,6 +89,14 @@ class CMS {
 
     // Forms
     $this->cms_forms = require __DIR__.SPC_BACK['core'].'cms/cms-forms.php';
+    // Modify forms
+    foreach ($this->cms_forms as $k => $fm) {
+      !isset($fm['entry-status']) ? $this->cms_forms[$k]['entry-status'] = [
+        1 => 'None',
+        2 => 'Draft',
+        3 => 'Spam',
+      ] : false;
+    }
 
     // if post type available
     if(isset($request->urlParam()['post_type'])){
@@ -129,7 +138,8 @@ class CMS {
       'forms' => $this->cms_forms,
       'media' => $this->cms_media,
       'user_meta' => $this->cms_user_meta,
-      'js_data' => []
+      'js_data' => [],
+      'notify' => $this->get_new_items_notification()
     ]);
 
     // update Config with CMS config

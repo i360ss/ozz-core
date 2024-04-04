@@ -8,6 +8,15 @@
 $agentInfo = json_decode($entry['user_agent'], true);
 $geoInfo = json_decode($entry['geo_info'], true);
 unset($agentInfo['all']);
+
+// Get field label by name
+$GLOBALS['fields'] = $data['form']['fields'];
+function getFieldLabelByName($name) {
+  global $fields;
+  $i = array_search($name, array_column($fields, 'name'));
+  return ($i !== false && isset($fields[$i]['label'])) ? $fields[$i]['label'] : ucfirst(str_replace('-', ' ', $name));
+}
+
 ?>
 {{ title        = "Form entry" }}
 {{ body_class   = "view-form-entry" }}
@@ -30,7 +39,7 @@ unset($agentInfo['all']);
             <h2 class="ozz-widget__heading">Entry Data</h2>
             <?php foreach ($entry['fields'] as $key => $field) : ?>
               <div class="ozz-widget__item-raw">
-                <label><?=ucfirst($key)?></label>
+                <label><?=getFieldLabelByName($key)?></label>
                 <span class="value"><?=$field?></span>
               </div>
             <?php endforeach; ?>

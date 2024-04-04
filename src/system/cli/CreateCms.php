@@ -42,6 +42,9 @@ class CreateCms {
     // Assets files
     $this->copy_directory($cms_hold_dir.'as/', $assets_dir);
 
+    // Middleware files
+    $this->copy_directory($cms_hold_dir.'md/', $app_dir.'middleware/');
+
     // Migrations
     $mig_from = $cms_hold_dir.'mg/';
     $mig_files = array_filter(glob("$mig_from*"), "is_file");

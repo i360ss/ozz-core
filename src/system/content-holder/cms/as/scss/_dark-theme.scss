@@ -459,11 +459,36 @@ body.ozz-cms[data-theme="dark"]{
         color: rgba(color(light2), 0.5);
       }
       td {
-        color: color(light2);
+        color: color(silver);
       }
       input {
         background: color(dark1);
         color: color(light2);
+      }
+    }
+  }
+  // Global Search
+  .cms-global-search {
+    .search-wrapper {
+      input {
+        border-color: rgba(color(semi-blue), 0.3);
+        color: color(light2);
+      }
+    }
+    &__result-wrapper {
+      background: rgba(color(dark), 0.7);
+    }
+    &__result {
+      background: color(dark1);
+      border-color: color(dark2);
+      li {
+        border-color: color(dark2);
+        a {
+          color: color(light2);
+          &:hover {
+            background: color(dark2);
+          }
+        }
       }
     }
   }

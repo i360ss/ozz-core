@@ -141,7 +141,7 @@ class SubHelp {
    */
   public static function jsonDumper($id, $jsonString, $bg_padd=true) {
     include 'core_vendor/pretty-json/pretty-json.php';
-    $styl = $bg_padd ? 'style="background: #fff;padding: 20px;"' : '';
+    $styl = $bg_padd ? 'style="padding: 20px;"' : '';
 
     return '<style nonce="'.CSP_NONCE.'">'.$pretty_json_style.'</style><script type="text/javascript" nonce="'.CSP_NONCE.'">'.$pretty_json_script.'</script><div '.$styl.'>
       <button id="ozz_debugbar__collapseBtn_'.$id.'" class="ozz_debugbar__collapse_btn active">Collapse</button>

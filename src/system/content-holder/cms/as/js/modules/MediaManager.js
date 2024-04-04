@@ -30,7 +30,7 @@ export default () => {
           <li><strong>Modified:</strong> ${fileInfo.modified}</li>
           <li><strong>Access:</strong> ${fileInfo.access}</li>
           <li>
-            <form action="/admin/media/action?q=delete_file" method="post">
+            <form action="${DATA.CMS_URL}media/action?q=delete_file" method="post" class="media-delete-form">
               <input type="hidden" value="${fileInfo.dir + fileInfo.name}" name="ozz_media_file_name_delete">
               <input type="submit" value="Delete File" class="button mini danger">
             </form>
@@ -40,6 +40,11 @@ export default () => {
       mediaViewer.innerHTML = fileInfoDOM;
       MediaManager.classList.add('viewer-active');
       mediaViewer.classList.add('active');
+      mediaViewer.querySelector( 'form.media-delete-form').addEventListener('submit', ( e ) => {
+        if (!confirm('The File will be deleted permanently. Are you sure?')) {
+          e.preventDefault();
+        }
+      });
     });
   });
   // Media Actions

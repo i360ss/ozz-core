@@ -46,7 +46,42 @@ class CMSAdminController extends CMS {
    * Admin dashboard
    */
   public function dashboard() {
+    // Total posts count
+    $this->data['post_count'] = $this->cms_post_count()['total_posts'];
+
+    // Entries count
+    $this->data['entries_count'] = $this->count_form_entries();
+
+    // Terms Count
+    $this->data['terms_count'] = 0;
+    foreach ($this->data['taxonomies'] as $value) {
+      $this->data['terms_count'] += count($value['terms']);
+    }
+
+    // Recent entries (last 10)
+    $this->data['recent_entries'] = $this->DB()->select('cms_forms', '*', [
+      'ORDER' => ['id' => 'DESC'],
+      'LIMIT' => 10
+    ]);
+
+    // New entries (only IDs)
+    $new_ids = [];
+    if(isset($this->data['notify']['form_entries'])){
+      foreach ($this->data['notify']['form_entries'] as $value) {
+        $new_ids = array_merge($new_ids, $value['ids']);
+      }
+    }
+    $this->data['new_entries_ids'] = $new_ids;
+
     return view('dashboard', $this->data);
+  }
+
+
+  // =============================================
+  // Global Search
+  // =============================================
+  public function global_search(Request $request) {
+    return json( $this->cms_global_search( $request->content('keyword') ) );
   }
 
 
@@ -352,6 +387,7 @@ class CMSAdminController extends CMS {
    */
   public function form_entries(Request $request) {
     $form = $request->urlParam('form');
+    $query = $request->query();
     if(!isset($this->data['forms'][$form])){
       return render_error_page(404, 'Page Not Found');
     }
@@ -364,7 +400,18 @@ class CMSAdminController extends CMS {
       $this->data['form']['table-fields'] = array_slice(array_column($this->data['form']['fields'], 'name'), 0, 10);
     }
 
-    $this->data['entries'] = $this->get_form_entries($form);
+    // Get entries with pagination
+    $page = isset($query['p']) ? $query['p'] : 1;
+    $per_page = isset($query['per_page']) ? $query['per_page'] : 50;
+    $this->data['entries'] = $this->get_form_entries($form, $page, $per_page);
+
+    // Pagination count
+    $entry_count = $this->count_form_entries(['name' => $form]);
+    $this->data['pagination'] = [
+      'total_entries' => $entry_count,
+      'current_page' => $page,
+      'pages' => ceil($entry_count / $per_page)
+    ];
 
     return view('form_entries', $this->data);
   }
@@ -384,6 +431,9 @@ class CMSAdminController extends CMS {
     if(!isset($this->data['form']['entry-status'])){
       $this->data['form']['entry-status'] = [1 => 'Draft', 2 => 'Spam', 3 => 'Blacklist'];
     }
+
+    // Delete notification log
+    ozz_log_delete('ozz_notification', ['type' => 'form_entry', 'item_id' => $id]);
 
     return view('form_entry', $this->data);
   }

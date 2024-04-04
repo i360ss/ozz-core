@@ -1,5 +1,6 @@
 // Modules
 import NavBar from './modules/NavBar';
+import GlobalSearch from './modules/GlobalSearch';
 import AlertBar from './modules/AlertBar';
 import RepeaterField from './modules/RepeaterField';
 import PostTabs from './modules/PostTabs';
@@ -17,6 +18,7 @@ import Forms from './modules/Forms';
 (() => {
   // Ozz CMS Modules
   NavBar();
+  GlobalSearch();
   AlertBar();
   PostTabs();
   BlockEditor();

@@ -81,3 +81,43 @@ function ozz_i_modify_field_names(&$fields) {
 
   return $fields;
 }
+
+/**
+ * Access Sqlite Log DB
+ * @param array $table
+ * @param array $data
+ */
+class ozz_i_log_class {
+  use \Ozz\Core\system\log\Ozz_log_data;
+
+  public function store($table, $data) {
+    return $this->log_store($table, $data);
+  }
+
+  public function get($table, $what, $where, $count) {
+    return $this->log_get($table, $what, $where, $count);
+  }
+
+  public function delete($table, $where) {
+    return $this->log_delete($table, $where);
+  }
+}
+
+// Store in log DB
+function ozz_log_save($table, $data) {
+  $log = new ozz_i_log_class();
+  return $log->store($table, $data);
+}
+
+// Get from log DB
+function ozz_log_get($table, $what, $where=[], $count=false) {
+  $log = new ozz_i_log_class();
+  return $log->get($table, $what, $where, $count);
+}
+
+// Delete from log DB
+function ozz_log_delete($table, $where=[]) {
+  $log = new ozz_i_log_class();
+  return $log->delete($table, $where);
+}
+

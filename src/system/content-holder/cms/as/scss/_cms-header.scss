@@ -1,3 +1,10 @@
+body {
+  &.nav-collapsed {
+    .cms-header__left-content {
+      margin-left: 50px;
+    }
+  }
+}
 .cms-header {
   z-index: 998;
   padding: 0 42px;
@@ -5,6 +12,9 @@
   &__right-content,
   &__language-switch {
     height: 46px;
+  }
+  &__left-content {
+    margin-left: 202px;
   }
   &__container {
     display: grid;
@@ -305,6 +315,13 @@
             opacity: 1;
           }
         }
+        // Has new item notification
+        .has-new-notify {
+          @include notify-dot;
+          position: absolute;
+          top: 19px;
+          left: 42px;
+        }
       }
       // Sub Nav
       > ul {
@@ -348,6 +365,17 @@
               background: color(primary);
               color: color(white);
             }
+            .new-count {
+              float: right;
+              display: inline-block;
+              padding: 3px 6px;
+              text-align: center;
+              border-radius: 10px;
+              background: color(success);
+              color: color(white);
+              font-size: $font-small;
+              font-weight: 600;
+            }
           }
         }
       }
@@ -372,6 +400,10 @@
           padding: 0;
           &:before {
             top: 0;
+          }
+          .has-new-notify {
+            top: 5px;
+            left: 34px;
           }
         }
       }

@@ -1,13 +1,17 @@
 import { SetState, GetState } from '../utils/State';
 
 export default () => {
+  const body = document.querySelector( 'body' );
+
   const collapseNav = (navbar) => {
     navbar.classList.add('collapsed');
+    body.classList.add('nav-collapsed');
     SetState('nav_collapsed', true);
   }
 
   const revealNav = (navbar) => {
     navbar.classList.remove('collapsed');
+    body.classList.remove('nav-collapsed');
     SetState('nav_collapsed', false);
   }
 

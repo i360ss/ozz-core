@@ -5,6 +5,9 @@
 
 $user = (object) auth_info();
 $has_alert = has_error('success') || has_error('error');
+$new_entries = $data['notify']['form_entries'];
+$new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entries"></span>' : '';
+
 ?>
 <!DOCTYPE html>
 <html lang="<?=APP_LANG?>">
@@ -62,11 +65,12 @@ $has_alert = has_error('success') || has_error('error');
         </li>
 
         <li class="forms has-child">
-          <a href="/admin/forms" class="forms">Forms & Entries</a>
+          <a href="/admin/forms" class="forms">Forms & Entries <?=$new_entries_flag?></a>
           <?= component('submenu', [
             'title' => 'Forms & Entries',
             'slug' => 'forms',
             'items' => $data['forms'],
+            'new_items' => $new_entries,
             'url_parts' => $context['url_parts']
           ], 'cms/'); ?>
         </li>
@@ -85,7 +89,14 @@ $has_alert = has_error('success') || has_error('error');
       <header class="cms-header">
         <div class="cms-header__container">
           <div class="cms-header__left-content">
-            <!-- empty -->
+            <div class="cms-global-search">
+              <div class="ozz-fm__field search-wrapper">
+                <input type="search" name="cms-global-search-field" placeholder="Search...">
+              </div>
+              <div class="cms-global-search__result-wrapper">
+                <div class="cms-global-search__result"></div>
+              </div>
+            </div>
           </div>
 
           <div class="cms-header__right-content">
@@ -151,8 +162,9 @@ $has_alert = has_error('success') || has_error('error');
     'HOST'     => $context['request']['host'],
     'URL'      => $context['url'],
     'SEGMENTS' => $context['url_parts'],
-    'CMS_URL'  => '/'.$context['url_parts'][1]
-  ])?>');
+    'CMS_URL'  => '/'.$context['url_parts'][1].'/'
+  ]);
+  ?>');
 </script>
 <script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>js/admin.js"></script>
 </body>

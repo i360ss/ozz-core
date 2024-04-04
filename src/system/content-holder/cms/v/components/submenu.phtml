@@ -15,9 +15,16 @@
   </label>
   <?php foreach ($items as $key => $item) :
     $url_3 = $url_parts[3] ?? false;
+    $new_count = (isset($new_items[$key]) && $new_items[$key] !== false)
+      ? '<span class="new-count" title="'.$new_items[$key]['count'].' New entries">'.$new_items[$key]['count'].'</span>'
+      : '';
+    $entries = ($slug == 'forms') ? '/entries' : '';
   ?>
     <li <?=(isset($url_3) && $url_3 == $key) ?'class="active"' : ''?>>
-      <a href="/admin/<?=$slug?>/<?=$key?>"><?=ucfirst(($item['label'] ?? $item['name']))?></a>
+      <a href="/admin/<?=$slug?>/<?=$key.$entries?>">
+        <?=ucfirst(($item['label'] ?? $item['name']))?>
+        <?=$new_count?>
+      </a>
     </li>
   <?php endforeach; ?>
 </ul>

@@ -5,7 +5,17 @@
  * @param array $data arguments passed from controller or route
  */
 
-$page_title = 'Form Entries | '.($form['label'] ?? ($form['name'] ?? 'Form not found'));
+$page_title = 'Form Entries | '.($form['label'] ?? ($this_form ?? 'Form not found'));
+$this_form = $form['name'];
+$new_entries = isset($notify['form_entries'][$this_form]) ? $notify['form_entries'][$this_form]['ids'] : [];
+
+// Get field label by name
+$GLOBALS['fields'] = $data['form']['fields'];
+function getFieldLabelByName($name) {
+  global $fields;
+  $i = array_search($name, array_column($fields, 'name'));
+  return ($i !== false && isset($fields[$i]['label'])) ? $fields[$i]['label'] : ucfirst(str_replace('-', ' ', $name));
+}
 ?>
 {{ title        = page_title }}
 {{ body_class   = "view-form-entries" }}
@@ -14,33 +24,58 @@ $page_title = 'Form Entries | '.($form['label'] ?? ($form['name'] ?? 'Form not f
   <section>
     <div class="heading breadcrumb">
       <span><a href="/admin/forms">Forms</a></span>
-      <span><a href="/admin/forms/<?=$form['name']?>"><?=$form['label']?></a></span>
+      <span><a href="/admin/forms/<?=$this_form?>"><?=$form['label']?></a></span>
       <span>Entries</span>
     </div>
 
-    <h1 class="heading"><?=$form['label']?></h1>
+    <h1 class="heading cl cl-6"><?=$form['label']?></h1>
+    <div class="cl cl-6 align-right">
+      <a href="/admin/forms/<?=$this_form?>" class="button small">Open Form</a>
+    </div>
 
     <table class="ozz-table">
       <tr>
         <th>ID</th>
         <?php foreach ($form['table-fields'] as $th) : ?>
-          <th><?=ucfirst($th)?></th>
+          <th><?=getFieldLabelByName($th)?></th>
         <?php endforeach; ?>
+        <th>Status</th>
         <th></th>
       </tr>
       <?php foreach ($entries as $key => $value) : ?>
-        <tr>
-          <td><?=$value['id']?></td>
+        <tr class="<?= in_array($value['id'], $new_entries) ? 'new-entry-label' : '' ?>">
+          <td><?=$key+1?></td>
           <?php foreach ($form['table-fields'] as $field) : ?>
             <td><?=char_limit(esc($value['fields'][$field]), 110, '..')?></td>
           <?php endforeach; ?>
+          <?php
+            $entry_status = $form['entry-status'][$value['status']]
+          ?>
+          <td>
+            <span class="label <?=strtolower($entry_status)?>"><?=$entry_status?></span>
+          </td>
           <td class="align-right action">
-            <a href="/admin/forms/<?=$form['name']?>/entry/<?=$value['id']?>">
+            <a href="/admin/forms/<?=$this_form?>/entry/<?=$value['id']?>">
               <span class="button mini">Open</span>
             </a>
           </td>
         </tr>
       <?php endforeach; ?>
     </table>
+    <br>
+    <div class="cl cl-10">
+      <div class="pagination">
+        <?php for ($i=0; $i < $pagination['pages']; $i++) :
+          $class = ($pagination['current_page'] == $i+1) ? 'active' : '';
+        ?>
+          <a href="/admin/forms/<?=$this_form?>/entries?per_page=50&p=<?=$i+1?>" class="button light mini <?=$class?>">
+            <?=$i+1?>
+          </a>
+        <?php endfor; ?>
+      </div>
+    </div>
+    <div class="cl cl-2 align-right">
+      <span class="light-text f-14"><?=count($entries)?> of <?=$pagination['total_entries']?></span>
+    </div>
   </section>
 {{ content-end }}

@@ -1,13 +1,9 @@
 <?php
 namespace Ozz\Core\system;
 
-if(APP_ENV !== 'local'){
-  exit('Unauthorized');
-}
-
 trait Ozz_CLI_Connection {
 
-  private $ozz_log_conn;
+  private $ozz_log_DB;
   private $ozz_cli_DB_Conn;
   private $config;
 
@@ -33,12 +29,12 @@ trait Ozz_CLI_Connection {
 
   /**
    * Framework Log Sqlite Connection to CLI usage (internal)
-   * @return ozz_log_conn Log sqlite connection
+   * @return ozz_log_DB Log sqlite connection
    */
-  private function log_conn() {
+  private function log_DB() {
     $this->init();
-    $this->ozz_log_conn = new \PDO("sqlite:" . $this->config['app_log']['DB_NAME']);
-    $this->ozz_log_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-    return $this->ozz_log_conn;
+    $this->ozz_log_DB = new \PDO("sqlite:" . __DIR__.'/../../../../../'.$this->config['app_log']['DB_NAME']);
+    $this->ozz_log_DB->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    return $this->ozz_log_DB;
   }
 }
