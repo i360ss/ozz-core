@@ -26,13 +26,11 @@ class Middleware {
           $callBackMv[1] = 'handle';
           call_user_func_array($callBackMv, [$request, $response]);
         } else {
-          return DEBUG 
-          ? Err::custom([
+          return Err::custom([
             'msg' => "Middleware Class [$v] Not found",
             'info' => 'You have to create the middleware before calling it',
             'note' => "Run [ php ozz c:middleware $v]",
-          ])
-          : false;
+          ]);
         }
       }
     } else {
@@ -41,7 +39,7 @@ class Middleware {
         $callBackMv[1] = 'handle';
         return call_user_func_array($callBackMv, [$request, $response]);
       } else {
-        Err::invalidMiddleware($middleware);
+        return Err::invalidMiddleware($middleware);
       }
     }
   }

@@ -78,13 +78,13 @@ class Err {
 
       self::$exception_doms[] = $this_dom;
     } else {
-      return false;
+      exit('Error: Something went wrong');
     }
   }
 
   // Custom Exception
   public static function custom($i) {
-    return DEBUG ? self::renderErr($i) : false;
+    return DEBUG ? self::renderErr($i) : exit('Error: Something went wrong');
   }
 
   // Base template file Not Found Error

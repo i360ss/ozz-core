@@ -3,7 +3,8 @@
  * Auth initial route content
  */
 $content = "
-// Auth Routes
+
+// Default auth routes
 use App\controller\\".CONFIG['AUTH_CONTROLLER'].";
 
 Router::get(AUTH_PATHS['verify_account'].'/{token}', [".CONFIG['AUTH_CONTROLLER']."::class, 'verifyUserAccount']);

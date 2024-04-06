@@ -82,8 +82,7 @@ return [
   ],
   'AUTH_USER_ROLES' => [
     'admin' => [
-      'landing_page' => '/admin',
-      'permissions' => []
+      'landing_page' => '/admin'
     ]
   ],
   'AUTH_VIEWS' => [

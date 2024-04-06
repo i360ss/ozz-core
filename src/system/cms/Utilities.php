@@ -94,23 +94,24 @@ trait Utilities {
     // Form Entries
     $entries = ozz_log_get('ozz_notification', 'key, item_id', []);
     $entries_count = [];
-    foreach ($entries as $entry) {
-      $key = $entry['key'];
-      if (isset($entries_count[$key])) {
-        $entries_count[$key]['count']++;
-      } else {
-        $entries_count[$key]['count'] = 1;
+
+    if($entries && !empty($entries)){
+      foreach ($entries as $entry) {
+        $key = $entry['key'];
+        if (isset($entries_count[$key])) {
+          $entries_count[$key]['count']++;
+        } else {
+          $entries_count[$key]['count'] = 1;
+        }
+        $entries_count[$key]['ids'][] = $entry['item_id'];
       }
-      $entries_count[$key]['ids'][] = $entry['item_id'];
     }
 
     // All notifications
-    $notifications = [
+    return [
       'form_entries' => $entries_count,
       // implement any other notifications here if required
     ];
-
-    return $notifications;
   }
 
 }
