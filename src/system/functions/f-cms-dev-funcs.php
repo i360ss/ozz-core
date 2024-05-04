@@ -124,6 +124,84 @@ class CMSFuncs {
 
 
   /**
+   * Get Filtered posts
+   * @param string $post_type
+   * @param array $filters
+   * @param string $lang
+   * @return array Posts anf filtered by Facets
+   */
+  public function filter_posts($post_type, $filters=[], $lang=APP_LANG) {
+    function build_where($post_type, $filters, $lang) {
+      $where_conditions = [];
+      $params = [];
+
+      // Taxonomy conditions
+      if (isset($filters['taxonomy'])) {
+        foreach ($filters['taxonomy'] as $slug => $terms) {
+          $placeholders = implode(",", array_fill(0, count($terms), "?"));
+          $txf = is_numeric($slug) ? 't.id' : 't.slug';
+          $ttf = is_numeric($terms[0]) ? 'tt.id' : 'tt.slug';
+          $where_conditions[] = "($txf = ? AND $ttf IN ($placeholders))";
+          $params[] = is_numeric($slug) ? $slug : str_replace('[]', '', $slug);
+          $params = array_merge($params, $terms);
+        }
+      }
+
+      // Search condition
+      if (isset($filters['search'])) {
+        $search_query = $filters['search']['query'] ?? '';
+        $search_fields = $filters['search']['fields'] ?? [];
+        if (!empty($search_query)) {
+          $search_conditions = [];
+          if (!empty($search_fields)) {
+            foreach ($search_fields as $field) {
+              $search_conditions[] = "p.$field LIKE ?";
+              $params[] = "%$search_query%";
+            }
+          } else {
+            $search_conditions[] = "p.title LIKE ?";
+            $params[] = "%$search_query%";
+          }
+          $where_conditions[] = '(' . implode(" OR ", $search_conditions) . ')';
+        }
+      }
+
+      // Additional conditions
+      $where = array_merge([
+        'post_type' => $post_type,
+        'post_status' => 'published',
+        'lang' => $lang,
+      ], $filters['where'] ?? []);
+
+      foreach ($where as $key => $value) {
+        $where_conditions[] = "p.$key = ?";
+        $params[] = $value;
+      }
+
+      return [$where_conditions, $params];
+    }
+
+    list($where_conditions, $params) = build_where($post_type, $filters, $lang);
+    $query = "SELECT DISTINCT p.*
+      FROM cms_posts p
+      INNER JOIN cms_post_terms pt ON p.id = pt.post_id
+      INNER JOIN cms_taxonomy t ON pt.taxonomy_id = t.id
+      INNER JOIN cms_terms tt ON pt.term_id = tt.id
+      WHERE " . implode(" AND ", $where_conditions);
+
+    $stmt = $this->DB()->pdo->prepare($query);
+    $stmt->execute($params);
+    $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    foreach ($data as $k => $v) {
+      $data[$k]['content'] = json_decode($v['content'], true);
+      $data[$k]['blocks'] = json_decode($v['blocks'], true);
+    }
+
+    return ['facets' => $filters, 'posts' => $data];
+  }
+
+
+  /**
    * Get post terms
    * @param integer $post_id
    */
@@ -194,4 +272,14 @@ function get_taxonomies() {
 function get_taxonomy($id_or_slug) {
   $cms = new CMSFuncs;
   return $cms->public_get_taxonomy($id_or_slug);
+}
+
+/**
+ * Filter posts
+ * @param string $post_type
+ * @param array $filters (taxonomy:array(key->term), search:array(query, fields), where:array)
+ */
+function filter_posts($post_type, $filters) {
+  $cms = new CMSFuncs;
+  return $cms->filter_posts($post_type, $filters);
 }
