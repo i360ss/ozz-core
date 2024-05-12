@@ -35,20 +35,20 @@ trait Blocks {
     $block_dom = '';
     if(!empty($blocks)){
       // Build block forms and assign values
-      foreach ($blocks as $key => $block) {
+      foreach ($blocks as $block) {
         // Get the correct block type
         $b = [];
-        foreach ($this->cms_blocks as $key => $blk) {
+        foreach ($this->cms_blocks as $blk) {
           $blk['name'] == $block['b'] ? $b = $blk : false;
         }
 
         if(!empty($b)) {
           // Modify value keys
           $values = [];
-          $bk = 'i-'.$block['i'].'_block_'.$block['b'].'_';
+          $bk = 'i-'.$block['i'].'__block__'.$block['b'].'__';
           foreach ($block['f'] as $ky => $value) {
             if(is_array($value) && is_string(key($value))){
-              $values[$bk.$ky.'_'.key($value)] = $value[key($value)];
+              $values[$bk.$ky.'__'.key($value)] = $value[key($value)];
             } else {
               $values[$bk.$ky] = $value;
             }
@@ -56,15 +56,10 @@ trait Blocks {
 
           // Modify block field names
           $new_form = $b['form'];
-          $b_name = 'i-'.$block['i'].'_';
+          $b_name = 'i-'.$block['i'].'__';
           $rps = ['repeat', 'repeater', 'repeatable'];
           foreach ($new_form['fields'] as $ky => $value) {
             $new_form['fields'][$ky]['name'] = $b_name.$value['name'];
-
-            $is_repeatable = (
-              (($new_form['fields'][$ky]['repeat'] ?? false) === true || in_array(($value['type'] ?? ''), $rps)) &&
-              isset($new_form['fields'][$ky]['fields'])
-            );
           }
 
           // Generate block's form with values
