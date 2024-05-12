@@ -31,8 +31,8 @@ class Validate {
     if(is_array($input) && is_array($checkup)){
       // if both array
       foreach ($input as $ky => $val) {
-        $n_key = preg_replace('/_\d+_/', '_', $ky);
-        $n_key = preg_replace('/^i-\d+_/', '', $n_key);
+        $n_key = preg_replace('/__\d+__/', '__', $ky);
+        $n_key = preg_replace('/^i-\d+__/', '', $n_key);
 
         // Get Rule
         $this_rule = isset($checkup[$n_key]) ? $checkup[$n_key] : (isset($checkup[$ky]) ? $checkup[$ky] : false);

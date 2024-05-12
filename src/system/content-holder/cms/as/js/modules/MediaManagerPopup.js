@@ -3,7 +3,7 @@ import { openPopup, closePopup } from "../utils/Popup";
 export default (DOM=false) => {
   if (document.querySelectorAll('.ozz-fm__media-selector').length == 0) { return; }
 
-  /**
+/**
  * Build Media manager and popup
  * @param {object} media Media elements
  * @param {object} trigger Selector Trigger clicked event
@@ -15,7 +15,7 @@ export default (DOM=false) => {
 
     if (trigger) {
       const
-        fieldName = trigger.target.getAttribute('data-fieldname'),
+        fieldName = trigger.target.getAttribute('data-field-name'),
         actualField = document.getElementById(fieldName),
         value = actualField.value;
       currentValues = value !== '' ? JSON.parse(value) : '';
@@ -89,7 +89,7 @@ export default (DOM=false) => {
         });
 
         const finalValue = JSON.stringify(values),
-          fieldName = trigger.target.getAttribute('data-fieldname'),
+          fieldName = trigger.target.getAttribute('data-field-name'),
           actualField = document.getElementById(fieldName);
         actualField.value = finalValue;
         closePopup();
@@ -122,7 +122,7 @@ export default (DOM=false) => {
     thisWrapper.innerHTML = listingDOM;
   }
 
-  // Initiate an trigger
+  // Initiate a trigger
   DOM = (DOM !== false) ? DOM : document;
   const selectors = DOM.querySelectorAll('.ozz-fm__media-selector .media-selector-trigger');
 
@@ -136,7 +136,7 @@ export default (DOM=false) => {
     mediaSelector.addEventListener('click', loadMedia);
 
     // List down selected media items
-    const fieldName = mediaSelector.getAttribute('data-fieldname');
+    const fieldName = mediaSelector.getAttribute('data-field-name');
     const actualField = document.getElementById(fieldName);
     listSelectedMedia(actualField);
   });

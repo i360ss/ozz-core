@@ -79,7 +79,7 @@ class RepeaterField {
 
           if (thisRepeater.classList.contains('single') === false) {
             itemFields.forEach(elm => {
-              const newName = elm.name.replace(/_\d+_(?=[^_]*$)/, `_${thisItemCount.length}_`);
+              const newName = elm.name.replace(/__\d+__(?=[^__]*$)/, `__${thisItemCount.length}__`);
               elm.name = newName;
             });
           }
@@ -153,7 +153,7 @@ class RepeaterField {
         thisFieldSet = wrapper.querySelectorAll(':scope > .ozz-fm__repeat-fields'),
         isSingle = thisRepeater.classList.contains('single'),
         rptName = thisRepeater.getAttribute('data-rpt'),
-        rptNameParts = rptName.split('_'),
+        rptNameParts = rptName.split('__'),
         rptNameOnly = rptNameParts[rptNameParts.length - 1];
 
       thisFieldSet.forEach((fieldSet, i) => {
@@ -170,7 +170,7 @@ class RepeaterField {
             // Rename field names
             const itemFields = fieldSet.querySelectorAll('input, textarea, button, progress, meter, select, datalist');
             itemFields.forEach(elm => {
-              const newName = elm.name.replace(new RegExp(`${rptNameOnly}_\\d+_`), `${rptNameOnly}_${i}_`);
+              const newName = elm.name.replace(new RegExp(`${rptNameOnly}__\\d+__`), `${rptNameOnly}__${i}__`);
               elm.name = newName;
             });
           }

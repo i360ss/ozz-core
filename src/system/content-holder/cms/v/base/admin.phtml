@@ -26,7 +26,9 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
     <nav class="cms-nav">
       <span class="cms-nav__nav-collapse-trigger"></span>
       <div class="cms-nav__logo">
-        <img src="<?=ASSETS?>icons/favicon.svg" alt="Ozz CMS">
+        <a href="<?=BASE_URL?>" target="_blank">
+          <img src="<?=ASSETS?>icons/favicon.svg" alt="Ozz CMS">
+        </a>
       </div>
 
       <ul data-active-link="<?= $context['url_parts'][2] ?? 'dashboard' ?>">

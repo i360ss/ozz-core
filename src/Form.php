@@ -140,6 +140,7 @@ class Form {
     $html = '';
     $fields = isset($base_fields['fields']) ? $base_fields['fields'] : $base_fields;
     $is_cms = env('app', 'ENABLE_CMS');
+    // c_log($values);
 
     foreach ($fields as $field) {
       $name = isset($field['name']) ? $field['name'] : '';
@@ -147,7 +148,7 @@ class Form {
       $label = isset($field['label']) ? $field['label'] : '';
 
       // Add the prefix for the current field
-      $f_name = $prefix . ($is_cms ? $name : str_replace('_', '-', $name));
+      $f_name = $prefix . ($is_cms ? $name : preg_replace('/_+/', '_', $name));
       $is_single_repeatable = isset($field['repeat']) && $field['repeat'] === true;
 
       // Update name if single repeatable field, radio or checkbox
@@ -247,7 +248,7 @@ class Form {
           <div id="rptw-'.$repeaterID.'" class="ozz-fm__repeat-wrapper">';
 
         // Get Parent/post level repeater fields
-        $ptn = array_flip(preg_grep('/^' . $name . '_\d+_/', array_keys($values)));
+        $ptn = array_flip(preg_grep('/^' . $name . '__\d+__/', array_keys($values)));
         $parent_repeater = ozz_i_convert_str_to_array_1(array_intersect_key($values, $ptn));
 
         // Common code for creating a repeated field block
@@ -258,25 +259,25 @@ class Form {
           $html .= '<span class="ozz-fm__repeat-remove button micro danger">Delete</span>';
           $html .= '</div>';
           $html .= '<div class="ozz-fm__repeat-body">';
-          $html .= self::generateFields($repeaterFields, $repeaterValue, $prefix . $i . '_');
+          $html .= self::generateFields($repeaterFields, $repeaterValue, $prefix . $i . '__');
           $html .= '</div></div>';
         };
 
         // Parent/Post level repeater
         if (!empty($parent_repeater[$name])) {
           foreach ($parent_repeater[$name] as $i => $repeaterValue) {
-            $createRepeatedFieldBlock($i, $repeaterValue, $name . '_');
+            $createRepeatedFieldBlock($i, $repeaterValue, $name . '__');
           }
         }
         // Block repeaters
         elseif (!empty($f_value)) {
           foreach ($f_value as $i => $repeaterValue) {
-            $createRepeatedFieldBlock($i, $repeaterValue, $f_name . '_');
+            $createRepeatedFieldBlock($i, $repeaterValue, $f_name . '__');
           }
         }
         // Default
         else {
-          $createRepeatedFieldBlock(0, $values, $f_name . '_');
+          $createRepeatedFieldBlock(0, $values, $f_name . '__');
         }
 
         $html .= '</div>

@@ -8,7 +8,7 @@
 function ozz_i_convert_str_to_array_1($arr) {
   $output = [];
   foreach ($arr as $key => $values) {
-    $keys = explode('_', $key);
+    $keys = explode('__', $key);
     $c = &$output;
     foreach ($keys as $nk) {
       (!isset($c[$nk])) ? $c[$nk] = [] : false;
@@ -28,7 +28,7 @@ function ozz_i_convert_str_to_array_1($arr) {
 function ozz_i_extract_nested_names($arr, $parent_name = '') {
   $lastItems = [];
   foreach ($arr as $item) {
-    $itemName = $parent_name . ($parent_name ? '_' : '') . $item['name'];
+    $itemName = $parent_name . ($parent_name ? '__' : '') . $item['name'];
     if (isset($item['fields']) && is_array($item['fields'])) {
       $nestedLastItems = ozz_i_extract_nested_names($item['fields']);
       if (!empty($nestedLastItems)) {
@@ -47,16 +47,16 @@ function ozz_i_extract_nested_names($arr, $parent_name = '') {
  * @param array $arr
  * @param string $prefix
  */
-function ozz_i_get_nested_validations($arr, $prefix='_') {
+function ozz_i_get_nested_validations($arr, $prefix='__') {
   $res = [];
   foreach ($arr as $item) {
     $fieldName = $item['name'];
     if (isset($item['fields']) && is_array($item['fields'])) {
-      $nestedPrefix = $prefix . $fieldName . '_';
+      $nestedPrefix = $prefix . $fieldName . '__';
       $nestedValidations = ozz_i_get_nested_validations($item['fields'], $nestedPrefix);
       $res = array_merge($res, $nestedValidations);
     } else {
-      $fullFieldName = ltrim($prefix . $fieldName, '_');
+      $fullFieldName = ltrim($prefix . $fieldName, '__');
       isset($item['validate']) ? $res[$fullFieldName] = $item['validate'] : false;
     }
   }
@@ -71,7 +71,7 @@ function ozz_i_get_nested_validations($arr, $prefix='_') {
 function ozz_i_modify_field_names(&$fields) {
   foreach ($fields as &$item) {
     if(isset($item['name'])){
-      $item['name'] = str_replace('_', '-', $item['name']);
+      $item['name'] = preg_replace('/_+/', '_', $item['name']);
     }
 
     if(isset($item['fields']) && is_array($item['fields'])){

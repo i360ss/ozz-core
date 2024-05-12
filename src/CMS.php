@@ -184,9 +184,9 @@ class CMS {
       $post_types[$key]['form']['fields'] = ozz_i_modify_field_names($post_types[$key]['form']['fields']);
 
       // Post name validation
-      if(strpos($key, '_') !== false){
+      if(strpos($key, '__') !== false){
         Err::custom([
-          'msg' => 'Post names should not contain underscores ( _ )',
+          'msg' => 'Post names should not contain multiple underscores one after another ( __ )',
           'info' => 'Post type ( '.$key.' ) has underscore/s',
           'note' => 'Please replace it with a hyphen or text'
         ]);
@@ -203,19 +203,12 @@ class CMS {
    */
   private function modify_cms_blocks($blocks) {
     foreach ($blocks as $key => $block) {
-      if(strpos($block['name'], '_') !== false){
-        Err::custom([
-          'msg' => 'Block names should not contain underscores ( _ )',
-          'info' => 'Block ( '.$block['name'].' ) has underscore/s',
-          'note' => 'Please replace it with a hyphen or text'
-        ]);
-      }
-
+      $block['name'] = preg_replace('/_+/', '_', $block['name']);
       $block['form']['csrf'] = false;
       $block['form']['id'] = $block['name'];
       $block['form']['field_options']['wrapper'] = '<div class="block-editor-field">##</div>';
 
-      $block_prefix = 'block_'.$block['name'].'_';
+      $block_prefix = 'block__'.$block['name'].'__';
 
       // Update field names
       $block['form']['fields'] = ozz_i_modify_field_names($block['form']['fields']); 
@@ -270,7 +263,7 @@ class CMS {
 
             $form['fields'][$key]['wrapper'] = '<div class="ozz-fm__media-selector">##
               <span class="button small media-selector-trigger" id="trigger_'.random_str(5).'"
-                data-fieldName="'.$value['name'].'" '.$multiple.'>'.$button_label.
+                data-field-name="'.$value['name'].'" '.$multiple.'>'.$button_label.
               '</span><div class="ozz-fm__media-embed-wrapper"></div></div>';
           }
 
@@ -300,7 +293,7 @@ class CMS {
   protected function cms_filter_form_data($form_data) {
     // Block Data
     $block_data = array_filter($form_data, function($key) {
-      return preg_match('/^'.preg_quote('i-').'\d+_block_/', $key);
+      return preg_match('/^'.preg_quote('i-').'\d+__block__/', $key);
     }, ARRAY_FILTER_USE_KEY);
 
     // Post Content Data

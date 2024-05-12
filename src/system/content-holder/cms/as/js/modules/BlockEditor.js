@@ -130,12 +130,28 @@ export default () => {
       usedBlocks.forEach((block, ind) => {
         const thisBlockFields = block.querySelectorAll('input, textarea, button, progress, meter, select, datalist, [data-ozz-wyg]');
         thisBlockFields.forEach((field) => {
+          let newName;
           if(field.name){
-            const newName = `i-${ind}_${ field.name.replace(/^i-\d+_/, '') }`;
+            newName = `i-${ind}__${ field.name.replace(/^i-\d+__/, '') }`;
             field.name = newName;
           } else if (field.getAttribute('data-field-name')) {
-            const newName = `i-${ind}_${ field.getAttribute('data-field-name').replace(/^i-\d+_/, '') }`;
+            newName = `i-${ind}__${ field.getAttribute('data-field-name').replace(/^i-\d+__/, '') }`;
             field.setAttribute('data-field-name', newName);
+          }
+
+          // Update Field ID
+          field.id = newName;
+
+          // Update Label for
+          if (field.closest('.block-editor-field').querySelector('label')) {
+            field.closest('.block-editor-field').querySelector('label').setAttribute('for', newName);
+          }
+
+          // Update media selector field ID and data attr
+          const mediaSelector = field.closest('.ozz-fm__media-selector');
+          if (mediaSelector) {
+            const trigger = mediaSelector.querySelector('[data-field-name]');
+            trigger.setAttribute('data-field-name', newName);
           }
         });
       });
