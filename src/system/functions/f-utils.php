@@ -169,14 +169,13 @@ function array_pagination($data, $items_per_page, $current_index) {
   $start_index = ($current_index - 1) * $items_per_page;
   $paginated_data = array_slice($data, $start_index, $items_per_page);
 
-  $result = [
+  return [
     'data' => $paginated_data,
+    'items_per_page' => $items_per_page,
     'number_of_pages' => $total_pages,
     'current_page' => $current_index,
     'total_items' => $total_items,
   ];
-
-  return $result;
 }
 
 /**
