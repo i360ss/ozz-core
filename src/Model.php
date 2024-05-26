@@ -11,37 +11,32 @@ class Model {
 
   use DB;
 
-  private $table;
-
-  function __construct() {
-    $this->table = $this->getTable();
-  }
-
-  /**
-   * Set table name
-   * Use defined name from called model if defined
-   * or use the called model name as the table name
-   */
-  public function getTable() {
-    $this_model = get_sub_classes(Model::class);
-    $table_from_class = explode('\\', end($this_model));
-    return isset($this->table) ? $this->table : to_snakecase(end($table_from_class));
-  }
-
-  /**
-   * A simple method for select from current table
-   * @param array|string $what Items to be selected eg: '*' | 'address' | ['email', 'name'] ect.
-   * @param array|string $where and all the other parameters of Medoo query
-   */
-  protected function get($what, $where) {
-    return $this->DB()->select($this->table, $what, $where);
-  }
-
-  /**
-   * A simple method for select all from current table
-   */
-  protected function all() {
+  public function all() {
     return $this->DB()->select($this->table, '*');
+  }
+
+  public function find($id) {
+    return $this->DB()->get($this->table, '*', ['id' => $id]);
+  }
+
+  public function create($data) {
+    return $this->DB()->insert($this->table, $data);
+  }
+
+  public function edit($id, $data) {
+    return $this->DB()->update($this->table, $data, ['id' => $id]);
+  }
+
+  public function remove($id) {
+    return $this->DB()->delete($this->table, ['id' => $id]);
+  }
+
+  public function where($column, $value) {
+    return $this->DB()->select($this->table, '*', [$column => $value]);
+  }
+
+  public function raw_query($sql) {
+    return $this->DB()->query($sql)->fetchAll();
   }
 
 }

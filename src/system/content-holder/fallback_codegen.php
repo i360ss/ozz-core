@@ -44,9 +44,9 @@ function ozz_content_Middleware($data){
   return "<?php\nnamespace $namespace;
 \nuse Ozz\Core\Request;
 \nclass ".ucwords($class)." {\n
-  public function handle(){\n    \n    
-  }
-}";
+  public function handle(){\n    
+  }\n
+}\n";
 }
 
 /**
@@ -60,7 +60,7 @@ function ozz_content_Model($data){
 \nuse Ozz\Core\Model;
 \nclass ".ucwords($class)." extends Model {
   protected $table = '".strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $class))."';
-}";
+}\n";
 }
 
 /**
@@ -73,9 +73,9 @@ function ozz_content_Controller($data){
 \nuse Ozz\Core\Controller;
 use Ozz\Core\Request;
 \nclass ".ucwords($class)." extends Controller {\n
-  public function index(){\n    \n    
+  public function index(){\n    
   }\n
-}";
+}\n";
 }
 
 /**
@@ -98,7 +98,8 @@ function ozz_content_ViewContent($data){
 
 {{ content }}
   <!-- Page Content should be here -->
-{{ content-end }}';
+{{ content-end }}
+';
 }
 
 /**

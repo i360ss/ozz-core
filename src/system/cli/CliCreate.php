@@ -56,6 +56,10 @@ class CliCreate {
       return false;
     }
 
+    if (!str_contains($name, 'Controller')) {
+      $name = $name.'Controller';
+    }
+
     $fileName = $this->createTo.'controller/' .$name.'.php';
     $fileName_check = $this->createTo.'controller/' .ucfirst($name).'.php';
     $namespace = self::SetNamespace('App\controller\\'.$name);
