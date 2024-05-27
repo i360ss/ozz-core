@@ -450,7 +450,7 @@ class SubHelp {
         <button class="ozz-fw-debug-bar__nav item" data-item="controller">Controller</button>
         <button class="ozz-fw-debug-bar__nav item" data-item="session">Session <span class="count"></span></button>
 
-        <div class="ozz-fw-debug-bar__nav bar-items"></div>
+        <button class="ozz-fw-debug-bar__nav item expand-button"></button>
       </div>
 
       <div class="ozz-fw-debug-bar__body">
@@ -462,18 +462,18 @@ class SubHelp {
               <?php $class = isset($value['args'][1]) ? $value['args'][1] : ''; ?>
               <?php 
               if (is_array($value['args'][0]) || is_object($value['args'][0])) { ?>
-                <pre class="ozz-fw-debug-bar-tab__message <?=$class?>">
+                <pre class="ozz-fw-debug-bar-tab__message console-msg <?=$class?>">
                   <span class="ozz-fw-debug-bar-array"><?php self::varDump($value['args'][0], '', false, true); ?></span>
                   <span style="color: var(--ozz-dark2)"><?=$value['file'].' | ln: '.$value['line']?></span>
                 </pre>
               <?php } elseif (is_json($value['args'][0])) { ?>
-                <pre class="ozz-fw-debug-bar-tab__message <?=$class?>">
+                <pre class="ozz-fw-debug-bar-tab__message console-msg <?=$class?>">
                   <div><?= self::jsonDumper($key, $value['args'][0], false)?></div>
                   <span style="color: var(--ozz-dark2)"><?=$value['file'].' | ln: '.$value['line']?></span>
                 </pre>
               <?php
               } else { ?>
-                <pre class="ozz-fw-debug-bar-tab__message <?=$class?>">
+                <pre class="ozz-fw-debug-bar-tab__message console-msg <?=$class?>">
                   <span><?=$value['args'][0]?></span>
                   <span style="color: var(--ozz-dark2)"><?=$value['file'].' | ln: '.$value['line']?></span>
                 </pre>
@@ -530,10 +530,13 @@ class SubHelp {
             <?php $view = $data['ozz_view']; ?>
 
             <div class="ozz__dbg_view-comp-wrapper">
+              <div class="ozz__dbg_view-head">
+                <span><strong>View File:</strong><br> <?=isset($view['view_file']) ? $view['view_file'] : '<em style="color: #a00">Not Found</em>'; ?></span><br><br>
+                <span><strong>Base Layout:</strong><br> <?=isset($view['base_file']) ? $view['base_file'] : '<em style="color: #a00">Not Found</em>';?></span><br><br>
+              </div>
+
               <div class="ozz__dbg_view-info">
                 <div class="ozz-fw-debug-bar-tab__message-view">
-                  <span><strong>View File:</strong> <?=isset($view['view_file']) ? $view['view_file'] : '<em style="color: #a00">Not Found</em>'; ?></span><br><br>
-                  <span><strong>Base Layout:</strong> <?=isset($view['base_file']) ? $view['base_file'] : '<em style="color: #a00">Not Found</em>';?></span><br><br>
                   <span class="label">View Data: </span><br>
                   <?php if (is_array($view['view_data']) || is_object($view['view_data'])) {?>
                     <span class="ozz-fw-debug-bar-array"><?php self::varDump($view['view_data'], '', false, true)?></span>
@@ -607,7 +610,7 @@ class SubHelp {
         <div class="ozz-fw-debug-bar__body tab-body session">
           <?php if (isset($_SESSION) && !empty($_SESSION)) { ?>
             <?php foreach ($_SESSION as $key => $value) { ?>
-              <div class="ozz-fw-debug-bar-tab__message-view">
+              <div class="ozz-fw-debug-bar-tab__message-session">
               <span class="label"><?=$key?></span>
               <?php if (is_array($value) || is_object($value)) { ?>
                 <span class="ozz-fw-debug-bar-array"><?=self::varDump($value, '', false, true)?></span>
@@ -631,31 +634,57 @@ class SubHelp {
       var ozzDebugBar__nav_item = document.querySelectorAll('.ozz-fw-debug-bar__nav.item');
       var ozzDebugBar__tab_bodies = document.querySelectorAll('.ozz-fw-debug-bar__body.tab-body');
       var ozzDebugBar__tempTabName = '';
+      var ozzDebugBar__expandBtn = document.querySelector('.ozz-fw-debug-bar__nav.item.expand-button');
+
+      // Expand to full screen
+      ozzDebugBar__expandBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        var hasActive = false;
+        ozzDebugBar__container.classList.toggle('expanded');
+        ozzDebugBar__expandBtn.classList.toggle('expanded');
+        ozzDebugBar__nav_item.forEach(tabItem => {
+          if (tabItem.classList.contains('active')) {
+            hasActive = true;
+          }
+        });
+        if (!hasActive) {
+          ozzDebugBar__nav_item[0].classList.add('active');
+          ozzDebugBar__tab_bodies[0].classList.add('active');
+        }
+
+        if (ozzDebugBar__container.classList.contains('expanded')) {
+          document.body.style.overflow = 'hidden';
+        } else {
+          document.body.style.overflow = 'unset';
+        }
+      });
 
       ozzDebugBar__nav_item.forEach(el => {
-        el.addEventListener('click', function() {
-          var tabName = this.getAttribute('data-item');
-          ozzDebugBar__container.classList.toggle('open');
+        if (!el.classList.contains('expand-button')) {
+          el.addEventListener('click', function() {
+            var tabName = this.getAttribute('data-item');
+            ozzDebugBar__container.classList.toggle('open');
 
-          // Active current menu item
-          ozzDebugBar__nav_item.forEach(item => {
-            item.classList.remove('active');
+            // Active current menu item
+            ozzDebugBar__nav_item.forEach(item => {
+              item.classList.remove('active');
+            });
+            this.classList.add('active');
+
+            ozzDebugBar__tab_bodies.forEach(tab => {
+              tab.classList.remove('active');
+            });
+
+            // Activate current tab
+            document.querySelector('.ozz-fw-debug-bar__body.tab-body.'+tabName).classList.add('active');
+
+            if (tabName !== ozzDebugBar__tempTabName) {
+              ozzDebugBar__container.classList.add('open');
+            }
+
+            ozzDebugBar__tempTabName = tabName;
           });
-          this.classList.add('active');
-
-          ozzDebugBar__tab_bodies.forEach(tab => {
-            tab.classList.remove('active');
-          });
-
-          // Activate current tab
-          document.querySelector('.ozz-fw-debug-bar__body.tab-body.'+tabName).classList.add('active');
-
-          if (tabName !== ozzDebugBar__tempTabName) {
-            ozzDebugBar__container.classList.add('open');
-          }
-
-          ozzDebugBar__tempTabName = tabName;
-        });
+        }
       });
     })()
     </script>

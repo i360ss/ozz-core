@@ -19,155 +19,157 @@
 
 .ozz-fw-debug-bar {
   all: unset;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 35px;
   background: var(--ozz-white);
   border-top: 2px solid var(--ozz-blue);
-  bottom: 12px !important;
-  box-sizing: border-box;
-  height: 25px;
-  left: 0;
-  margin: 0;
-  padding: 0;
-  position: fixed !important;
-  right: 0;
-  width: 100% !important;
-  text-align: left;
-  z-index: 99999 !important;
+  z-index: 99999;
+  /* Pretty JSON */
+}
+.ozz-fw-debug-bar.open {
+  height: 380px;
+}
+.ozz-fw-debug-bar.open .tab-body {
+  height: 345px;
+}
+.ozz-fw-debug-bar.expanded {
+  height: 100vh;
+}
+.ozz-fw-debug-bar.expanded .tab-body {
+  height: calc(100vh - 35px);
+}
+.ozz-fw-debug-bar.expanded .ozz__dbg_view-comp-wrapper > div {
+  height: calc(100vh - 35px);
 }
 .ozz-fw-debug-bar * {
   text-align: left;
   font-family: "ui-sans-serif", system-ui, "-apple-system", "Segoe UI", "Roboto", "Ubuntu", "Cantarell", "Noto Sans", sans-serif, "BlinkMacSystemFont", Helvetica;
+  font-weight: 400;
+  font-size: 15px;
 }
-.ozz-fw-debug-bar.open {
-  height: 350px;
-  bottom: 0 !important;
+.ozz-fw-debug-bar span {
+  color: var(--ozz-dark1);
 }
-.ozz-fw-debug-bar span.label {
+.ozz-fw-debug-bar span b,
+.ozz-fw-debug-bar span strong, .ozz-fw-debug-bar span.label {
   all: unset;
   font-weight: 600;
-  color: var(--dark1);
 }
 .ozz-fw-debug-bar__nav {
-  all: unset;
-  height: 35px;
+  height: 36px;
   background: var(--ozz-white);
-  padding: 0;
-  text-align: left;
-  display: inline-block;
-  color: var(--dark1);
+  border-bottom: 1px solid var(--ozz-light2);
 }
 .ozz-fw-debug-bar__nav.wrapper {
-  all: unset;
-  display: inline-flex;
-  width: 100%;
-  border-bottom: 1px solid var(--ozz-light1);
-  background: var(--ozz-white);
+  display: flex;
+  gap: 0;
 }
-.ozz-fw-debug-bar__nav.item {
+.ozz-fw-debug-bar__nav .item {
+  height: 35px;
+  padding: 0 10px 2px;
   background: var(--ozz-white);
-  border-radius: 0 !important;
-  border: none;
   color: var(--ozz-dark1);
-  cursor: pointer;
-  font-family: sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  margin: 0;
-  padding: 0 10px;
+  border: none;
   outline: none;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
 }
-.ozz-fw-debug-bar__nav.item:hover {
+.ozz-fw-debug-bar__nav .item .count {
+  font-weight: 600;
+  color: var(--ozz-blue);
+}
+.ozz-fw-debug-bar__nav .item:hover {
   background: var(--ozz-light1);
 }
-.ozz-fw-debug-bar__nav.item.active {
-  color: var(--ozz-light1);
+.ozz-fw-debug-bar__nav .item.active {
   background: var(--ozz-blue);
-}
-.ozz-fw-debug-bar__nav.item.active .count {
   color: var(--ozz-white);
 }
-.ozz-fw-debug-bar__nav.item.bar-items {
-  float: right;
+.ozz-fw-debug-bar__nav .item.active .count {
+  color: var(--ozz-white);
 }
-.ozz-fw-debug-bar__nav.item .count {
-  all: unset;
-  color: var(--ozz-blue);
-  font-weight: 600;
+.ozz-fw-debug-bar__nav .item.expand-button {
+  width: 35px;
+  background: url("data:image/svg+xml,%3Csvg width='14' height='9' viewBox='0 0 14 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7.20934 5.71941L12.1593 0.769409L13.5733 2.18341L7.20934 8.54741L0.845337 2.18341L2.25934 0.769409L7.20934 5.71941Z' fill='%232B2E3F'/%3E%3C/svg%3E%0A") center center no-repeat;
+  position: absolute;
+  right: 0;
+  top: 0;
+  rotate: 180deg;
 }
-.ozz-fw-debug-bar__body {
-  overflow-x: auto;
-  max-height: 320px;
+.ozz-fw-debug-bar__nav .item.expand-button:hover {
+  background-color: var(--ozz-light1);
+}
+.ozz-fw-debug-bar__nav .item.expand-button.expanded {
+  rotate: 0deg;
+}
+.ozz-fw-debug-bar .tab-body {
+  overflow-y: auto;
+}
+.ozz-fw-debug-bar .tab-body:not(.view) {
   padding-bottom: 30px;
 }
-.ozz-fw-debug-bar__body.tab-body {
-  all: unset;
-  display: none;
-  margin: 0;
+.ozz-fw-debug-bar__body {
   padding: 0;
 }
-.ozz-fw-debug-bar__body.tab-body.active {
+.ozz-fw-debug-bar__body .tab-body {
+  display: none;
+}
+.ozz-fw-debug-bar__body .tab-body.active {
   display: block;
 }
-
-.ozz-fw-debug-bar__body.view .ozz-fw-debug-bar-tab__message-view {
-  border-bottom: none;
-}
-
 .ozz-fw-debug-bar__empty {
-  padding: 10px 5px 10px 20px;
+  padding: 5px 10px;
   font-size: 14px;
 }
-
-.ozz-fw-debug-bar-tab__empty {
-  color: var(--ozz-light4);
-  padding: 0 10px;
+.ozz-fw-debug-bar-tab__message.w {
+  color: var(--ozz-warn);
+  background: var(--ozz-warn);
 }
-
-.ozz-fw-debug-bar-tab__message {
+.ozz-fw-debug-bar-tab__message.e {
+  color: var(--ozz-error);
+  background: var(--ozz-error);
+}
+.ozz-fw-debug-bar-tab__message.i {
+  color: var(--ozz-info);
+  background: var(--ozz-info);
+}
+.ozz-fw-debug-bar-tab__message.w::before, .ozz-fw-debug-bar-tab__message.e::before, .ozz-fw-debug-bar-tab__message.i::before {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 6px;
+  top: 12px;
+  left: 12px;
+}
+.ozz-fw-debug-bar-tab__message:not(.console-msg):hover, .ozz-fw-debug-bar-tab__message-controller:not(.console-msg):hover, .ozz-fw-debug-bar-tab__message-queries:not(.console-msg):hover, .ozz-fw-debug-bar-tab__message-request:not(.console-msg):hover {
+  background: var(--ozz-light1);
+}
+.ozz-fw-debug-bar-tab__message-request, .ozz-fw-debug-bar-tab__message-session, .ozz-fw-debug-bar-tab__message-controller {
   border-bottom: 1px solid var(--ozz-light2);
+  padding: 7px 5px 7px 20px;
   display: grid;
-  font-size: 14px;
-  grid-template-columns: 1fr auto;
-  margin: 0;
-  padding: 5px 5px 5px 20px;
-  position: relative;
+  grid-template-columns: 2fr 10fr;
+  color: var(--ozz-dark1);
 }
-
-.ozz-fw-debug-bar-tab__message span {
-  all: unset;
-  margin: 0;
-  padding: 0;
+.ozz-fw-debug-bar-tab__message-request .label, .ozz-fw-debug-bar-tab__message-session .label, .ozz-fw-debug-bar-tab__message-controller .label {
+  padding-right: 30px;
+  background: transparent;
 }
-
-/* Inner arrays dumper */
-.ozz-fw-debug-bar-array {
-  padding-left: 0;
-  line-height: 0;
+.ozz-fw-debug-bar-tab__message-request:hover, .ozz-fw-debug-bar-tab__message-session:hover, .ozz-fw-debug-bar-tab__message-controller:hover {
+  background: var(--ozz-light1);
 }
-
-.ozz-fw-debug-bar-array:nth-child(2) {
-  line-height: 13px;
+.ozz-fw-debug-bar-tab__message-request *, .ozz-fw-debug-bar-tab__message-session * {
+  line-height: 1.5;
 }
-
-.ozz-fw-debug-bar-array .dumpr {
-  background: transparent !important;
+.ozz-fw-debug-bar-tab__message.console-msg {
+  padding-left: 30px;
+  margin-top: 0;
 }
-
-.ozz-fw-debug-bar-array .xdebug-var-dump {
-  margin-top: -15px;
-}
-
-.ozz-fw-debug-bar-array .xdebug-var-dump small {
-  display: none;
-}
-
-.ozz-fw-debug-bar-array .dumpr div,
-.ozz-fw-debug-bar-array .dumpr div pre {
-  padding: 0 !important;
-  border: none !important;
-  background: transparent !important;
-}
-
-/** Used on Queries tab */
 .ozz-fw-debug-bar-tab__message-queries {
   all: unset;
   border-bottom: 1px solid var(--ozz-light2);
@@ -179,69 +181,9 @@
   display: grid;
   grid-template-columns: 1fr 100px;
 }
-
 .ozz-fw-debug-bar-tab__message-queries span.high-txt {
   color: var(--ozz-info);
 }
-
-/* Used on View Tab */
-.ozz__dbg_view-comp-wrapper {
-  all: unset;
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  grid-gap: 30px;
-}
-
-.ozz__dbg_view-comp-wrapper .ozz__dbg_view-info {
-  all: unset;
-  border-right: 1px solid var(--ozz-light1);
-  height: 100%;
-  min-height: 280px;
-}
-
-.ozz-fw-debug-bar-tab__message-view-head {
-  all: unset;
-  padding: 10px 20px;
-  background: var(--ozz-light1);
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  grid-gap: 30px;
-  font-size: 14px;
-  color: var(--dark1);
-}
-
-.ozz-fw-debug-bar-tab__message-view-component {
-  border-bottom: 1px solid var(--ozz-light1);
-  padding: 8px 0;
-  cursor: pointer;
-}
-
-.ozz-fw-debug-bar-tab__message-view-component .dumpr {
-  margin-left: 12px;
-}
-
-.ozz-fw-debug-bar-tab__message-view-component span.green {
-  color: var(--ozz-dark1);
-  font-size: 14px;
-  padding: 3px 5px;
-  border-radius: 3px;
-  display: inline-block;
-  background: var(--ozz-light1);
-  border: 1px solid var(--ozz-light3);
-}
-
-.ozz__dbg_component-info .dumpr small {
-  display: none;
-}
-
-.ozz__dbg_component-info .dumpr,
-.ozz__dbg_component-info .dumpr pre,
-.ozz__dbg_component-info .dumpr div {
-  border: none;
-  padding: 0;
-  background: transparent;
-}
-
 .ozz-fw-debug-bar-tab__message-view pre {
   all: unset;
   white-space: pre-wrap;
@@ -250,114 +192,82 @@
   white-space: -o-pre-wrap;
   word-wrap: break-word;
 }
-
-.ozz-fw-debug-bar-tab__message-view {
-  all: unset;
-  display: block;
+.ozz-fw-debug-bar-tab__message-view-component {
   border-bottom: 1px solid var(--ozz-light2);
-  font-size: 14px;
-  margin: 0;
-  padding: 10px 5px 10px 20px;
+  padding: 8px 0;
+}
+.ozz-fw-debug-bar-tab__message-view-component .dumpr {
+  margin-left: 12px;
+}
+.ozz-fw-debug-bar-tab__message-view-component span.green {
   color: var(--ozz-dark1);
-}
-
-.ozz-fw-debug-bar-tab__message-controller,
-.ozz-fw-debug-bar-tab__message-request {
-  all: unset;
-  border-bottom: 1px solid var(--ozz-light2);
   font-size: 14px;
-  margin: 0;
-  padding: 10px 5px 10px 20px;
-  position: relative;
-  display: grid;
-  grid-template-columns: 160px 1fr;
-  color: var(--ozz-dark1);
-}
-
-.ozz-fw-debug-bar-tab__message-controller span,
-.ozz-fw-debug-bar-tab__message-request span {
-  all: unset;
-  text-align: left !important;
-  float: left !important;
-  color: var(--ozz-dark);
-  font-size: 14px;
-}
-
-.ozz-fw-debug-bar-tab__message-view span {
-  all: unset;
-  color: var(--ozz-dark);
-  font-size: 14px;
-}
-
-.ozz-fw-debug-bar-tab__message-view span :nth-child(1) {
-  margin-right: 10px;
-}
-
-.ozz-fw-debug-bar-tab__message:hover,
-.ozz-fw-debug-bar-tab__message-controller:hover,
-.ozz-fw-debug-bar-tab__message-queries:hover,
-.ozz-fw-debug-bar-tab__message-request:hover {
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 3px;
+  display: inline-block;
   background: var(--ozz-light1);
+  border: 1px solid var(--ozz-light3);
+  cursor: pointer;
 }
-
-.ozz-fw-debug-bar-tab__message .dumpr {
+.ozz-fw-debug-bar .ozz__dbg_view-comp-wrapper {
+  all: unset;
+  display: grid;
+  grid-template-columns: 0.8fr 2fr 1.5fr;
+  grid-gap: 0;
+}
+.ozz-fw-debug-bar .ozz__dbg_view-comp-wrapper > div {
+  height: 345px;
+  overflow-y: auto;
+  padding: 0;
+}
+.ozz-fw-debug-bar .ozz__dbg_view-comp-wrapper > div > div {
+  padding: 10px 10px 30px;
+}
+.ozz-fw-debug-bar .ozz__dbg_view-comp-wrapper .ozz__dbg_view-head {
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 1px solid var(--ozz-light2);
+}
+.ozz-fw-debug-bar .ozz__dbg_view-comp-wrapper .ozz__dbg_view-head strong {
+  font-weight: 600;
+}
+.ozz-fw-debug-bar .ozz__dbg_view-comp-wrapper .ozz__dbg_view-info {
+  border-left: 1px solid var(--ozz-light2);
+}
+.ozz-fw-debug-bar .ozz__dbg_view-comp-wrapper .ozz__dbg_view-info .dumpr {
+  padding-left: 30px !important;
+}
+.ozz-fw-debug-bar .ozz__dbg_view-comp-wrapper .ozz__dbg_component-info {
+  border-left: 1px solid var(--ozz-light2);
+}
+.ozz-fw-debug-bar .dumpr {
   margin: 0 !important;
   padding: 0 !important;
   line-height: 0 !important;
-}
-
-.ozz-fw-debug-bar-tab__message .dumpr,
-.ozz-fw-debug-bar-tab__message .dumpr * {
   background: transparent !important;
 }
-
-.ozz-fw-debug-bar-tab__message .dumpr > div {
+.ozz-fw-debug-bar .dumpr div,
+.ozz-fw-debug-bar .dumpr pre {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+.ozz-fw-debug-bar .dumpr > div {
   margin: 3px 0 0 !important;
   border: none !important;
 }
-
-.ozz-fw-debug-bar-tab__message.w {
-  color: var(--ozz-warn);
+.ozz-fw-debug-bar .dumpr * {
+  background: transparent !important;
 }
-
-.ozz-fw-debug-bar-tab__message.e {
-  color: var(--ozz-error);
+.ozz-fw-debug-bar .dumpr .xdebug-var-dump > small {
+  display: none;
 }
-
-.ozz-fw-debug-bar-tab__message.i {
-  color: var(--ozz-info);
-}
-
-.ozz-fw-debug-bar-tab__message.w::before,
-.ozz-fw-debug-bar-tab__message.e::before,
-.ozz-fw-debug-bar-tab__message.i::before {
-  content: "";
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 6px;
-  top: 12px;
-  left: 12px;
-}
-
-.ozz-fw-debug-bar-tab__message.w::before {
-  background: var(--ozz-warn);
-}
-
-.ozz-fw-debug-bar-tab__message.e::before {
-  background: var(--ozz-error);
-}
-
-.ozz-fw-debug-bar-tab__message.i::before {
-  background: var(--ozz-info);
-}
-
-/* Pretty JSON */
 .ozz-fw-debug-bar .json-viewer {
   margin: 5px 0 0;
 }
-
-.ozz_debugbar__collapse_btn {
+.ozz-fw-debug-bar .ozz_debugbar__collapse_btn {
   all: unset;
   padding: 5px;
   font-size: 14px;
