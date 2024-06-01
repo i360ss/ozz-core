@@ -1,5 +1,7 @@
 <?php
 use Ozz\Core\CMS;
+use Ozz\Core\Request;
+
 # ----------------------------------------------------
 // CMS Specific functions (Common usage)
 # ----------------------------------------------------
@@ -354,4 +356,15 @@ function get_taxonomies() {
 function get_taxonomy($id_or_slug) {
   $cms = new CMSFuncs;
   return $cms->public_get_taxonomy($id_or_slug);
+}
+
+/**
+ * Get CMS Page (render CMS page dynamically)
+ * @param string $post Post slug or ID
+ * @param string $view view file default: cms-page
+ */
+function get_cms_page($post, $view='cms-page') {
+  $data['page'] = get_post($post);
+
+  return view($view, $data);
 }

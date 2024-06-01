@@ -40,7 +40,7 @@ function redirect($to, $status=301) {
  * @param array|string|object $args Parameters
  * @param string $instance Instance directory (eg: app, cms)
  */
-function component($component, $args = null, $instance = 'app') {
+function component($component, $args = null, $instance = 'app/') {
   $dom = '';
   $dir = BASE_DIR . $instance . '/view/components/';
   $comp = $dir . $component;

@@ -82,6 +82,16 @@ class CreateCms {
         $utils->console_return("Error on creating CMS Forms file [ cms/cms-forms.php ]", 'red');
       }
     }
+
+    // CMS related files that should be inside the app directory
+    // Dynamic CMS page rendering View file
+    if(!file_exists($app_dir.'view/cms-page.phtml')){
+      if(copy($cms_hold_dir.'copy-to-app-dir/v/cms-page.phtml', $app_dir.'view/cms-page.phtml')){
+        $utils->console_return("CMS Dynamic page view file created [ app/view/cms-page.phtml ]", 'green');
+      } else {
+        $utils->console_return("Error on creating CMS Dynamic page view file [ app/view/cms-page.phtml ]", 'red');
+      }
+    }
   }
 
 
