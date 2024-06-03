@@ -140,7 +140,6 @@ class Form {
     $html = '';
     $fields = isset($base_fields['fields']) ? $base_fields['fields'] : $base_fields;
     $is_cms = env('app', 'ENABLE_CMS');
-    // c_log($values);
 
     foreach ($fields as $field) {
       $name = isset($field['name']) ? $field['name'] : '';
@@ -420,7 +419,7 @@ class Form {
 
     // Validation Attrs
     if(isset($args['validate'])) {
-      if(str_contains($args['validate'], 'req') || str_contains($args['validate'], 'required')) {
+      if(isset($args['label']) && (str_contains($args['validate'], 'req') || str_contains($args['validate'], 'required'))) {
         $args['label'] .= '<span class="required-star">*</span>';
       }
     }

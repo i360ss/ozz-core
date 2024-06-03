@@ -159,7 +159,7 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
     </div>
     </main>
   </div>
-<script>
+<script nonce="<?=CSP_NONCE?>">
   const DATA = JSON.parse('<?=json_encode([
     'HOST'     => $context['request']['host'],
     'URL'      => $context['url'],

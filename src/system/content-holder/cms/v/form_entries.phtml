@@ -46,7 +46,7 @@ function getFieldLabelByName($name) {
         <tr class="<?= in_array($value['id'], $new_entries) ? 'new-entry-label' : '' ?>">
           <td><?=$key+1?></td>
           <?php foreach ($form['table-fields'] as $field) : ?>
-            <td><?=char_limit(esc($value['fields'][$field]), 110, '..')?></td>
+            <td><?=isset($value['fields'][$field]) ? char_limit(esc($value['fields'][$field]), 110, '..') : ''?></td>
           <?php endforeach; ?>
           <?php
             $entry_status = $form['entry-status'][$value['status']]

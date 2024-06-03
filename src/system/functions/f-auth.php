@@ -20,6 +20,35 @@ function auth_info($key=false){
 }
 
 /**
+ * Get logged user's ID
+ */
+function auth_id() {
+  return Auth::info('id');
+}
+
+/**
+ * Get logged user's Name
+ */
+function auth_name() {
+  return Auth::info('name');
+}
+
+/**
+ * Get logged user's Email address
+ */
+function auth_email() {
+  return Auth::info('email');
+}
+
+/**
+ * Check logged in user's role
+ * @param string $key Role
+ */
+function is_role($key) {
+  return Auth::isLoggedIn() && Auth::info('role') == $key;
+}
+
+/**
  * Check if Auth Created via ozz command
  * @return boolean
  */

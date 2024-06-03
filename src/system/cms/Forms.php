@@ -47,8 +47,19 @@ trait Forms {
     ];
 
     // Store entry
-    $this->save_form_entry($entry);
-    remove_flash('form_data');
+    $saved = $this->save_form_entry($entry);
+
+    if ($saved === true) {
+      remove_flash('form_data');
+      if (isset($this->cms_forms[$form]['success_message'])) {
+        set_error('success', $this->cms_forms[$form]['success_message']);
+      }
+    } else {
+      if (isset($this->cms_forms[$form]['error_message'])) {
+        set_error('error', $this->cms_forms[$form]['error_message']);
+      }
+      return back();
+    }
 
     // Return callback
     if(isset($this->cms_forms[$form]['callback'])){
