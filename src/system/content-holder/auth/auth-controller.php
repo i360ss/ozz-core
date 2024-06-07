@@ -44,7 +44,7 @@ class ".ucfirst($controllerName)." extends Controller {
       Auth::register(\$user_data, false);
     }
 
-    return view('auth/sign-up');
+    return redirect('".AUTH_PATHS['signup']."');
   }
 
 
@@ -74,7 +74,7 @@ class ".ucfirst($controllerName)." extends Controller {
 
     \$validation->pass ? Auth::login(\$email, \$password) : false;
 
-    return Router::redirect('".AUTH_PATHS['login']."');
+    return redirect('".AUTH_PATHS['login']."');
   }
 
 
@@ -92,7 +92,7 @@ class ".ucfirst($controllerName)." extends Controller {
 
     \$validation->pass ? Auth::passwordResetAttempt(\$form_data['email']) : false;
 
-    return Router::redirect('".AUTH_PATHS['forgot_password']."');
+    return redirect('".AUTH_PATHS['forgot_password']."');
   }
 
 

@@ -6,7 +6,7 @@ use Ozz\Core\Auth;
 class AdminAccessMiddleware {
 
   public function handle(){
-    if (Auth::info('role') !== 'admin') {
+    if (!is_role('admin')) {
       return redirect('/404');
     }
   }

@@ -207,130 +207,29 @@ return [
   ],
   'blocks' => [
     [
-      'name' => 'home-hero',
-      'label' => 'Home Hero',
-      'note' => 'Home page hero section block',
-      'template' => 'view/blocks/home-hero',
+      'name' => 'rich-text',
+      'label' => 'Rich Text',
       'form' => [
         'fields' => [
           [
-            'name' => 'hero__image',
-            'type' => 'media',
-            'label' => 'Hero Image'
-          ],
-          [
-            'name' => 'title',
-            'type' => 'text',
-            'label' => 'Hero Title',
-            'validate' => 'req'
-          ],
-          [
-            'name' => 'description',
-            'type' => 'textarea',
-            'label' => 'Hero banner description',
-            'validate' => 'req'
-          ],
-          [
-            'name' => 'rp1',
-            'label' => 'Repeater Test',
-            'type' => 'repeater',
-            'fields' => [
-              [
-                'name' => 'card-title',
-                'type' => 'text',
-                'label' => 'Card Title',
-                'validate' => 'req'
-              ], [
-                'name' => 'card_tags',
-                'type' => 'repeater',
-                'label' => 'Card Tags',
-                'fields' => [
-                  [
-                    'name' => 'tag_name',
-                    'type' => 'text',
-                    'label' => 'Tag name',
-                    'note' => 'Sample tag name test repeater field',
-                    'validate' => 'req|max:25'
-                  ],
-                  [
-                    'name' => 'tag_url',
-                    'type' => 'text',
-                    'label' => 'Tag URL',
-                    'note' => 'Sample tag name',
-                    'validate' => 'req|min:15'
-                  ]
-                ]
-              ]
-            ]
+            'name' => 'rich_text',
+            'type' => 'rich-text',
+            'label' => 'Rich Text Content',
+            'rows' => '10'
           ]
         ]
       ]
     ],
     [
-      'name' => 'cta-section',
-      'label' => 'CTA Section',
-      // 'note' => 'Call to action component',
-      'template' => 'view/blocks/cta',
-      'expand' => true,
+      'name' => 'call-component',
+      'label' => 'Call Component',
       'form' => [
         'fields' => [
           [
-            'name' => 'title',
+            'name' => 'component_name',
             'type' => 'text',
-            'label' => 'CTA Title',
-            'validate' => 'req'
-          ],
-          [
-            'name' => 'description',
-            'type' => 'textarea',
-            'label' => 'CTA description'
-          ],
-          [
-            'name' => 'gender',
-            'type' => 'checkbox',
-            'label' => 'Gender',
-            'validate' => 'req',
-            // 'repeat' => true,
-            'options' => [
-              'Male',
-              'Female'
-            ]
-          ],
-          [
-            'name' => 'test_image2',
-            'type' => 'media',
-            'label' => 'Primary Image'
-          ],
-          [
-            'name' => 'cta_link_url',
-            'type' => 'text',
-            'label' => 'CTA Link (URL)'
-          ],
-          [
-            'name' => 'cta_link_label',
-            'type' => 'text',
-            'label' => 'CTA Link (Label)'
-          ]
-        ]
-      ]
-    ],
-    [
-      'name' => 'vision',
-      'label' => 'Our vision',
-      'note' => 'Our vision component',
-      'template' => 'view/blocks/vision',
-      'form' => [
-        'fields' => [
-          [
-            'name' => 'title',
-            'type' => 'text',
-            'label' => 'Title',
-            'note' => 'Vision title text here'
-          ],
-          [
-            'name' => 'description',
-            'type' => 'textarea',
-            'label' => 'description'
+            'label' => 'Component Name',
+            'validate' => 'required'
           ]
         ]
       ]

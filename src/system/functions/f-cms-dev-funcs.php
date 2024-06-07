@@ -168,8 +168,8 @@ class CMSFuncs {
     }
 
     // Handle pagination
-    $items_per_page = $params['pagination']['items_per_page'] ?? 10;
-    $page_number = $params['pagination']['page_number'] ?? 1;
+    $items_per_page = $params['pagination']['items_per_page'] ?? $params['pagination']['posts_per_page'] ?? 10;
+    $page_number = $params['pagination']['page_number'] ?? $params['pagination']['page'] ?? 1;
     $offset = ($page_number - 1) * $items_per_page;
 
     // Build the final query
@@ -211,6 +211,11 @@ class CMSFuncs {
       $data[$k]['content'] = json_decode($v['content'], true);
       $data[$k]['blocks'] = json_decode($v['blocks'], true);
     }
+
+    // Reorder blocks by correct index
+    usort($data[$k]['blocks'], function ($a, $b) {
+      return $a['i'] <=> $b['i'];
+    });
 
     $pagination = [
       'total_posts' => $total_posts,
@@ -279,6 +284,11 @@ class CMSFuncs {
       $post['content'] = json_decode($post['content'], true);
       $post['blocks'] = json_decode($post['blocks'], true);
       $post['terms'] = $this->get_post_terms($post['id']);
+
+      // Reorder blocks by correct index
+      usort($post['blocks'], function ($a, $b) {
+        return $a['i'] <=> $b['i'];
+      });
     }
 
     return $post;
@@ -297,8 +307,8 @@ class CMSFuncs {
   /**
    * Get All taxonomies
    */
-  public function public_get_taxonomies() {
-    return $this->get_taxonomies();
+  public function public_get_taxonomies($slugs_or_ids) {
+    return $this->get_taxonomies($slugs_or_ids);
   }
 
 
@@ -343,10 +353,11 @@ function get_post_terms($post_id) {
 
 /**
  * Return all available taxonomies
+ * @param array $slugs_or_ids Taxonomy IDs or Slugs to fetch
  */
-function get_taxonomies() {
+function get_taxonomies($slugs_or_ids=[]) {
   $cms = new CMSFuncs;
-  return $cms->public_get_taxonomies();
+  return $cms->public_get_taxonomies($slugs_or_ids);
 }
 
 /**
@@ -361,10 +372,43 @@ function get_taxonomy($id_or_slug) {
 /**
  * Get CMS Page (render CMS page dynamically)
  * @param string $post Post slug or ID
+ * @param array $data
  * @param string $view view file default: cms-page
  */
-function get_cms_page($post, $view='cms-page') {
+function get_cms_page($post, $data=[], $view='cms-page') {
   $data['page'] = get_post($post);
 
   return view($view, $data);
+}
+
+/**
+ * Render Blocks
+ * @param array $blocks
+ * @param array $data
+ */
+function render_blocks($blocks, $data=[]) {
+  if (!empty($blocks)) {
+    foreach ($blocks as $block) {
+      if ($block['b'] == 'call-component') {
+        echo component($block['f']['component_name'], $data);
+      } else {
+        echo component($block['b'], $block['f']);
+      }
+    }
+  }
+}
+
+/**
+ * Get all available components
+ */
+function get_all_components() {
+  $comps = get_directory_content(VIEW.'components/');
+  $return = [];
+  foreach ($comps as $key => $comp) {
+    $nm = str_replace('.phtml', '', $comp);
+    $fnm = str_replace('-', ' ', $nm);
+    $return[$nm] = ucwords($fnm);
+  }
+
+  return $return;
 }

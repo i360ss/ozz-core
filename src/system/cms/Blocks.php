@@ -34,6 +34,11 @@ trait Blocks {
     $blocks = !empty($block_data) ? json_decode($block_data, true) : [];
     $block_dom = '';
     if(!empty($blocks)){
+      // Reorder blocks by correct index
+      usort($blocks, function ($a, $b) {
+        return $a['i'] <=> $b['i'];
+      });
+
       // Build block forms and assign values
       foreach ($blocks as $block) {
         // Get the correct block type

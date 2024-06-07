@@ -215,10 +215,13 @@ body.ozz-cms[data-theme="dark"]{
             }
           }
           &:hover {
-            background: color(dark);
+            background: color(dark2);
             td {
               .title {
                 color: color(white);
+              }
+              .icon-button {
+                filter: brightness(1.4);
               }
             }
           }

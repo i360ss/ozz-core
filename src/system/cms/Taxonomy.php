@@ -98,29 +98,40 @@ trait Taxonomy {
 
   /**
    * Get all taxonomies
+   * @param array $slugs_or_ids Get only these taxonomies
    */
-  protected function get_taxonomies() {
+  protected function get_taxonomies($slugs_or_ids=[]) {
     $result = [];
-    $all_taxonomies = $this->DB()->query(
-      "SELECT
-        t1.id AS id,
-        t1.name AS name,
-        t1.slug AS slug,
-        t1.content AS content,
-          (
-            SELECT JSON_ARRAYAGG( JSON_OBJECT( 
-              'id', t2.id,
-              'taxonomy', t2.taxonomy_id,
-              'name', t2.name,
-              'slug', t2.slug,
-              'lang', t2.lang
-              ) )
-            FROM cms_terms t2
-            WHERE t2.taxonomy_id = t1.id
-          )
-        AS terms
-      FROM cms_taxonomy AS t1"
-    )->fetchAll(\PDO::FETCH_ASSOC);
+    $params = [];
+
+    $sql = "SELECT
+      t1.id AS id,
+      t1.name AS name,
+      t1.slug AS slug,
+      t1.content AS content,
+        (
+          SELECT JSON_ARRAYAGG( JSON_OBJECT( 
+            'id', t2.id,
+            'taxonomy', t2.taxonomy_id,
+            'name', t2.name,
+            'slug', t2.slug,
+            'lang', t2.lang
+            ) )
+          FROM cms_terms t2
+          WHERE t2.taxonomy_id = t1.id
+        )
+      AS terms
+    FROM cms_taxonomy AS t1";
+
+    if (!empty($slugs_or_ids)) {
+        $placeholders = implode(', ', array_fill(0, count($slugs_or_ids), '?'));
+        $sql .= " WHERE t1.slug IN ($placeholders) OR t1.id IN ($placeholders)";
+        $params = array_merge($slugs_or_ids, $slugs_or_ids);
+    }
+
+    $stmt = $this->DB()->pdo->prepare($sql);
+    $stmt->execute($params);
+    $all_taxonomies = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     foreach ($all_taxonomies as $key => $taxonomy) {
       $result[$taxonomy['slug']] = $taxonomy;

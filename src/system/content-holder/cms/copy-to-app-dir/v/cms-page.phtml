@@ -1,0 +1,15 @@
+<?php
+/**
+ * View Name: cms-page
+ * Path: view/cms-page
+ * @param array $data arguments passed from controller or route
+ */
+?>
+{{ title        = page.title }}
+{{ keywords     = "meta_keywords_here" }}
+{{ description  = "meta_description_here" }}
+{{ body_class   = "view-cms-page" }}
+
+{{ content }}
+  <?php render_blocks($page['blocks'], $data); ?>
+{{ content-end }}

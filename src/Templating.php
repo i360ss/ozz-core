@@ -60,7 +60,10 @@ class Templating extends AppInit {
       ? $base_template
       : ($base_template_from_router ? $base_template_from_router : 'layout');
 
-    require APP_DIR."/functions.php";
+    if ($context['instance'] !== 'cms/') {
+      require APP_DIR."/functions.php";
+    }
+
     DEBUG ? self::$debug_view['view_data'] = $data : false; // Log to debug bar
     self::$cdt = [$context, $data];
 
