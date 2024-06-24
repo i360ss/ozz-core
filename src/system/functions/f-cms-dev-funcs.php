@@ -377,6 +377,9 @@ function get_taxonomy($id_or_slug) {
  */
 function get_cms_page($post, $data=[], $view='cms-page') {
   $data['page'] = get_post($post);
+  if (!$data['page']) {
+    return render_error_page();
+  }
 
   return view($view, $data);
 }
