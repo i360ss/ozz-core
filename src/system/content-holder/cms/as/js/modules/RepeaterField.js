@@ -90,6 +90,11 @@ class RepeaterField {
           });
         });
 
+        // Clear selected media files
+        newItem.querySelectorAll('.ozz-fm__media-embed-wrapper').forEach(mediaWrapper => {
+          mediaWrapper.innerHTML = '';
+        });
+
         // Clear and re-init Wysiwyg editors
         this.repeater__clearAndInitOzzWyg(newItem);
 

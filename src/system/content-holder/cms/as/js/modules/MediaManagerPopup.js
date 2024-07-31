@@ -3,20 +3,18 @@ import { openPopup, closePopup } from "../utils/Popup";
 export default (DOM=false) => {
   if (document.querySelectorAll('.ozz-fm__media-selector').length == 0) { return; }
 
-/**
- * Build Media manager and popup
- * @param {object} media Media elements
- * @param {object} trigger Selector Trigger clicked event
- */
+  /**
+   * Build Media manager and popup
+   * @param {object} media Media elements
+   * @param {object} trigger Selector Trigger clicked event
+   */
   const BuildMediaManager = (media, trigger=false) => {
     let treeDOM = media.tree.join(' / '),
       itemsDOM = '',
       currentValues = false;
 
     if (trigger) {
-      const
-        fieldName = trigger.target.getAttribute('data-field-name'),
-        actualField = document.getElementById(fieldName),
+      const actualField = trigger.target.closest( '.ozz-fm__media-selector' ).querySelector( 'input[type=hidden]' ),
         value = actualField.value;
       currentValues = value !== '' ? JSON.parse(value) : '';
     }
@@ -89,9 +87,8 @@ export default (DOM=false) => {
         });
 
         const finalValue = JSON.stringify(values),
-          fieldName = trigger.target.getAttribute('data-field-name'),
-          actualField = document.getElementById(fieldName);
-        actualField.value = finalValue;
+          actualField = trigger.target.closest( '.ozz-fm__media-selector' ).querySelector( 'input[type=hidden]' );
+          actualField.value = finalValue;
         closePopup();
 
         // Update selected media
@@ -136,8 +133,7 @@ export default (DOM=false) => {
     mediaSelector.addEventListener('click', loadMedia);
 
     // List down selected media items
-    const fieldName = mediaSelector.getAttribute('data-field-name');
-    const actualField = document.getElementById(fieldName);
+    const actualField = mediaSelector.closest( '.ozz-fm__media-selector' ).querySelector( 'input[type=hidden]' );;
     listSelectedMedia(actualField);
   });
 }
