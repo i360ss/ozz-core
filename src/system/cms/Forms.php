@@ -143,6 +143,16 @@ trait Forms {
   protected function get_form_entry($id) {
     $entry = $this->DB()->get('cms_forms', '*', ['id' => $id]);
     $entry['fields'] = json_decode($entry['content'], true);
+
+    // Get set user if available
+    if ( isset($entry['user_id']) && !empty($entry['user_id']) ) {
+      $entry['user'] = Auth::getUser( $entry['user_id'] );
+      unset($entry['user']['password']);
+      unset($entry['user']['activation_key']);
+    } else {
+      $entry['user'] = false;
+    }
+
     unset($entry['content']);
 
     return $entry;

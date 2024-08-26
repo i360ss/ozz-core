@@ -115,8 +115,36 @@ function getFieldLabelByName($name) {
             ]); ?>
           </div><br>
 
+          <?php if ($entry['user']) : ?>
           <div class="post-edit-view__widget info">
-            <h2 class="ozz-widget__heading">Agent Info</h2>
+            <h2 class="ozz-widget__heading">User Info</h2>
+            <div class="item user-thumbnail">
+              <?php if (!empty($entry['user']['avatar'])) : ?>
+                <img src="/<?=$entry['user']['avatar']?>" alt="Avatar">
+              <?php else: ?>
+                <img src="<?=get_gravatar($entry['user']['email'], 80);?>" alt="Avatar">
+              <?php endif; ?>
+            </div>
+            <div class="item">
+              <strong>Username:</strong> <?=$entry['user']['username']?>
+            </div>
+            <div class="item">
+              <strong>Name:</strong> <?=$entry['user']['first_name'].' '.$entry['user']['last_name']?>
+            </div>
+            <div class="item">
+              <strong>Email:</strong> <?=$entry['user']['email']?>
+            </div>
+            <div class="item">
+              <strong>User Role:</strong> <?=$entry['user']['role']?>
+            </div>
+            <div class="item">
+              <strong>Account Status:</strong> <?=$entry['user']['status']?>
+            </div>
+          </div><br>
+          <?php endif; ?>
+
+          <div class="post-edit-view__widget info">
+            <h2 class="ozz-widget__heading">User Agent Info</h2>
             <div class="item">
               <strong>IP </strong><?=$entry['ip']?>
             </div>
