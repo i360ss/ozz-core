@@ -40,7 +40,17 @@ function getFieldLabelByName($name) {
             <?php foreach ($entry['fields'] as $key => $field) : ?>
               <div class="ozz-widget__item-raw">
                 <label><?=getFieldLabelByName($key)?></label>
-                <span class="value"><?=$field?></span>
+                <span class="value">
+                  <?php
+                    if(is_string($field)) {
+                      echo $field;
+                    } elseif(is_array($field)) {
+                      echo json_dump(json_encode($field), false);
+                    } else {
+                      echo strval($field);
+                    }
+                  ?>
+                </span>
               </div>
             <?php endforeach; ?>
           </div>

@@ -27,7 +27,7 @@ function sql_dumper($str) {
  * @param string The json string to dump
  * @return html dumped DOM
  */
-function json_dump($str) {
-  $id = 'jd_'.rand(0, 10);
-  return SubHelp::jsonDumper($id, $str);
+function json_dump($str, $bg_padd=true) {
+  $id = 'jd_'.random_str();
+  return SubHelp::jsonDumper($id, $str, $bg_padd);
 }

@@ -261,6 +261,29 @@ function _create_form($args, $values=[]) {
 }
 
 /**
+ * Start Form
+ * @param array $args
+ */
+function start_form($args) {
+  return Form::start($args);
+}
+
+/**
+ * End Form
+ */
+function end_form() {
+  return Form::end();
+}
+
+/**
+ * Generate form fields
+ * @param array $args
+ */
+function form_create_fields($args) {
+  return Form::generateFields($args);
+}
+
+/**
  * Get Form (CMS forms)
  * @param string $form Form name
  * @param array $values

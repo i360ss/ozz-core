@@ -206,16 +206,18 @@ class CMSFuncs {
     $stmt->execute($query_params);
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Decode JSON fields
-    foreach ($data as $k => $v) {
-      $data[$k]['content'] = json_decode($v['content'], true);
-      $data[$k]['blocks'] = json_decode($v['blocks'], true);
-    }
+    if (!empty($data)) {
+      // Decode JSON fields
+      foreach ($data as $k => $v) {
+        $data[$k]['content'] = json_decode($v['content'], true);
+        $data[$k]['blocks'] = json_decode($v['blocks'], true);
 
-    // Reorder blocks by correct index
-    usort($data[$k]['blocks'], function ($a, $b) {
-      return $a['i'] <=> $b['i'];
-    });
+        // Reorder blocks by correct index
+        usort($data[$k]['blocks'], function ($a, $b) {
+          return $a['i'] <=> $b['i'];
+        });
+      }
+    }
 
     $pagination = [
       'total_posts' => $total_posts,
