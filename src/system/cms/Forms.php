@@ -83,6 +83,7 @@ trait Forms {
       'name' => $userInfo['name'], // Form name
       'content' => json_encode($entry),
       'ip' => $userInfo['ip'],
+      'user_id' => auth_id() ?? null,
       'user_agent' => $userInfo['agent'],
       'geo_info' => $userInfo['geo'],
       'status' => 1,

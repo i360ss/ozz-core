@@ -9,6 +9,7 @@ class Cms_forms {
       'id'          => ['int', 'ai', 'primary'],
       'name'        => ['str:255'],
       'content'     => ['bigtxt', 'nn'],
+      'user_id'     => ['int'],
       'ip'          => ['str:100', 'nn'],
       'user_agent'  => ['txt'],
       'geo_info'    => ['txt'],
