@@ -170,6 +170,7 @@ class CMSFuncs {
     // Handle pagination
     $items_per_page = $params['pagination']['items_per_page'] ?? $params['pagination']['posts_per_page'] ?? 10;
     $page_number = $params['pagination']['page_number'] ?? $params['pagination']['page'] ?? 1;
+    $page_number = filter_var($page_number, FILTER_VALIDATE_INT) !== false ? (int) $page_number : 1;
     $offset = ($page_number - 1) * $items_per_page;
 
     // Build the final query
