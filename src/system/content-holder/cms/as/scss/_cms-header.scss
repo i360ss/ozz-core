@@ -317,10 +317,10 @@ body {
         }
         // Has new item notification
         .has-new-notify {
-          @include notify-dot;
           position: absolute;
           top: 19px;
           left: 42px;
+          @include notify-dot;
         }
       }
       // Sub Nav

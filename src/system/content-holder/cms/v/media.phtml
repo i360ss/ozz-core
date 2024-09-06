@@ -182,14 +182,14 @@ $current_dir = '';
                         </div>
                       <?php endif; ?>
                     </div>
-                    <div class="name"><?= char_limit($item['name'], 15, '..') ?></div>
+                    <div class="name"><p><?= $item['name'] ?></p></div>
                   </div>
                 </div>
               <?php else: ?>
                 <div class="ozz-media-manager__item media-folder">
                   <a href="?dir=<?=urlencode($item['url'])?>"
                     class="ozz-media-manager__item-folder" title="<?=$item['name']?>">
-                    <span class="name"><?= char_limit($item['name'], 15, '..') ?></span>
+                    <span class="name"><p><?= $item['name'] ?></p></span>
                   </a>
                 </div>
               <?php endif; ?>
