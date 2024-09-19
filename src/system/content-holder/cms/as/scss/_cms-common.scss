@@ -211,6 +211,9 @@ a {
       width: 100%;
       padding: 8px;
       background-color: rgba(color(primary), 0.03);
+      &[type=color] {
+        padding: 3px;
+      }
     }
   }
   &__switch-checkbox {

@@ -322,6 +322,24 @@ class CMSFuncs {
   public function public_get_taxonomy($id_or_slug) {
     return $this->get_taxonomy($id_or_slug);
   }
+
+
+  /**
+   * Get Form entries
+   * @param int $id Entry ID
+   */
+  public function public_get_form_entries($form, $where=[], $page=1, $per_page=10) {
+    return $this->get_form_entries($form, $where, $page, $per_page);
+  }
+
+
+  /**
+   * Get Form entry
+   * @param int $id Entry ID
+   */
+  public function public_get_form_entry($id) {
+    return $this->get_form_entry($id);
+  }
 }
 
 /**
@@ -370,6 +388,27 @@ function get_taxonomies($slugs_or_ids=[]) {
 function get_taxonomy($id_or_slug) {
   $cms = new CMSFuncs;
   return $cms->public_get_taxonomy($id_or_slug);
+}
+
+/**
+ * Get form entry
+ * @param int $id Entry ID
+ */
+function get_entry($id) {
+  $cms = new CMSFuncs;
+  return $cms->public_get_form_entry($id);
+}
+
+/**
+ * Get form entries
+ * @param string $form Form name
+ * @param array $where
+ * @param int $page Page number
+ * @param int $per_page Items per page
+ */
+function get_entries($form, $where=[], $page=1, $per_page=10) {
+  $cms = new CMSFuncs;
+  return $cms->public_get_form_entries($form, $where, $page, $per_page);
 }
 
 /**

@@ -403,7 +403,7 @@ class CMSAdminController extends CMS {
     // Get entries with pagination
     $page = isset($query['p']) ? $query['p'] : 1;
     $per_page = isset($query['per_page']) ? $query['per_page'] : 50;
-    $this->data['entries'] = $this->get_form_entries($form, $page, $per_page);
+    $this->data['entries'] = $this->get_form_entries($form, [], $page, $per_page);
 
     // Pagination count
     $entry_count = $this->count_form_entries(['name' => $form]);

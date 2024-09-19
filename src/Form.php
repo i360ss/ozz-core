@@ -238,8 +238,9 @@ class Form {
         $max_repeat = isset($field['max_repeat']) ? 'data-ozz-repeat-max="'.$field['max_repeat'].'"' : '';
         $repeaterID = random_str(12);
 
+        $wrapper_class = isset($field['wrapper_class']) ? ' '.$field['wrapper_class'] : ''; // Repeater wrapper class
         $html .= '
-        <fieldset id="rpt-'.$repeaterID.'" class="ozz-fm__repeat" data-ozz-repeat="true" '.$max_repeat.' data-rpt="'.$field['name'].'">
+        <fieldset id="rpt-'.$repeaterID.'" class="ozz-fm__repeat'.$wrapper_class.'" data-ozz-repeat="true" '.$max_repeat.' data-rpt="'.$field['name'].'">
           <div class="ozz-fm__repeat-top">
             <legend class="ozz-fm__repeat-label">'.(isset($field['label']) ? $field['label'] : 'Untitled').'</legend>
             <span class="field_note">'.(isset($field['note']) ? $field['note'] : '').'</span>
@@ -388,10 +389,15 @@ class Form {
           if (isset($global_options['wrapper']) && (!isset($field['wrapper']) || $field['wrapper'] !== false)) {
             if(isset($field['wrapper_class'])){
               if (strpos($global_options['wrapper'], 'class=') !== false) {
-                $global_options['wrapper'] = str_replace('class="', 'class="'.$field['wrapper_class'].' ', $global_options['wrapper']);
+                $global_options['wrapper'] = preg_replace('/class="/', 'class="' . $field['wrapper_class'] . ' ', $global_options['wrapper'], 1);
               } else {
-                $global_options['wrapper'] = str_replace('<div', '<div class="'.$field['wrapper_class'].'"', $global_options['wrapper']);
+                $global_options['wrapper'] = preg_replace('/<div/', '<div class="'.$field['wrapper_class'].'"', $global_options['wrapper'], 1);
               }
+            }
+
+            // Add field type to wrapper class
+            if ($type) {
+              $global_options['wrapper'] = preg_replace('/class="/', 'class="ozz-fm__'.$type.'-wrap ', $global_options['wrapper'], 1);
             }
 
             $formInnerDOM = str_replace('##', "\n".$formInnerDOM."\n", $global_options['wrapper'])."\n";

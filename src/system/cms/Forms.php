@@ -119,13 +119,18 @@ trait Forms {
   /**
    * Get form entries
    * @param string $form Form name
+   * @param array $where
+   * @param int $page Page number
+   * @param int $per_page Items per page
    */
-  protected function get_form_entries($form, $page=1, $per_page=10) {
-    $entries = $this->DB()->select('cms_forms', '*', [
+  protected function get_form_entries($form, $where=[], $page=1, $per_page=10) {
+    $whr = array_merge([
       'ORDER' => ['id' => 'DESC'],
       'LIMIT' => [$page-1, $per_page],
       'name' => $form
-    ]);
+    ], $where);
+
+    $entries = $this->DB()->select('cms_forms', '*', $whr);
     foreach ($entries as $key => $entry) {
       $entries[$key]['fields'] = json_decode($entry['content'], true);
       $entries[$key]['fields']['created'] = ozz_format_date($entry['created']);

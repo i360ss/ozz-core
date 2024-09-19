@@ -67,12 +67,55 @@ class ExceptionHandler {
 
     // Exception Heading
     if(method_exists($exception, 'getSeverity')){
-      if($exception->getSeverity() == E_WARNING){
-        $severity = 'Warning';
-      } elseif($exception->getSeverity() == E_NOTICE){
-        $severity = 'Notice';
-      } elseif($exception->getSeverity() == E_DEPRECATED){
-        $severity = 'Deprecated';
+      $errType = $exception->getSeverity();
+      switch ($errType) {
+        case E_ERROR:
+          $severity = 'Fatal Error';
+          break;
+        case E_WARNING:
+          $severity = 'Warning';
+          break;
+        case E_PARSE:
+          $severity = 'Parse Error';
+          break;
+        case E_NOTICE:
+          $severity = 'Notice';
+          break;
+        case E_CORE_ERROR:
+          $severity = 'Core Error';
+          break;
+        case E_CORE_WARNING:
+          $severity = 'Core Warning';
+          break;
+        case E_COMPILE_ERROR:
+          $severity = 'Compile Error';
+          break;
+        case E_COMPILE_WARNING:
+          $severity = 'Compile Warning';
+          break;
+        case E_USER_ERROR:
+          $severity = 'User Error';
+          break;
+        case E_USER_WARNING:
+          $severity = 'User Warning';
+          break;
+        case E_USER_NOTICE:
+          $severity = 'User Notice';
+          break;
+        case E_STRICT:
+          $severity = 'Strict Standards';
+          break;
+        case E_RECOVERABLE_ERROR:
+          $severity = 'Recoverable Fatal Error';
+          break;
+        case E_DEPRECATED:
+          $severity = 'Deprecated';
+          break;
+        case E_USER_DEPRECATED:
+          $severity = 'User Deprecated';
+          break;
+        default:
+          $severity = 'Unknown Error Type';
       }
     } else {
       $severity = 'Exception';
