@@ -86,16 +86,20 @@ trait Forms {
     foreach ($entry as $key => $value) {
       foreach ($org_form['fields'] as $field) {
         if ($field['name'] == $key && $field['type'] == 'file') {
-          $file_settings = isset($field['settings']) ? $field['settings'] : []; // Upload file settings
-          $uploads = File::upload($value, $file_settings);
-          foreach ($uploads as $upload) {
-            if ($upload['error']) {
-              set_error('error', $upload['message']);
-              set_error($key, $upload['message']);
-              return back();
+          if ($value['tmp_name'] !== '') {
+            $file_settings = isset($field['settings']) ? $field['settings'] : []; // Upload file settings
+            $uploads = File::upload($value, $file_settings);
+            foreach ($uploads as $upload) {
+              if ($upload['error']) {
+                set_error('error', $upload['message']);
+                set_error($key, $upload['message']);
+                return back();
+              }
+              unset($upload['error'], $upload['message']);
+              $entry[$key] = $upload;
             }
-            unset($upload['error'], $upload['message']);
-            $entry[$key] = $upload;
+          } else {
+            $entry[$key] = '';
           }
         }
       }
