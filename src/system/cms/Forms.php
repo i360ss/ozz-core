@@ -10,6 +10,7 @@ namespace Ozz\Core\system\cms;
 use Ozz\Core\Form;
 use Ozz\Core\Validate;
 use Ozz\Core\Auth;
+use Ozz\Core\File;
 
 trait Forms {
 
@@ -49,7 +50,7 @@ trait Forms {
     // Store entry
     $saved = $this->save_form_entry($entry);
 
-    if ($saved === true) {
+    if ($saved) {
       remove_flash('form_data');
       if (isset($this->cms_forms[$form]['success_message'])) {
         set_error('success', $this->cms_forms[$form]['success_message']);
@@ -63,7 +64,8 @@ trait Forms {
 
     // Return callback
     if(isset($this->cms_forms[$form]['callback'])){
-      return call_user_func_array($this->cms_forms[$form]['callback'], [$request]);
+      $this_entry = get_entry($saved);
+      return call_user_func_array($this->cms_forms[$form]['callback'], [$this_entry, $request]);
     } else {
       return back();
     }
@@ -78,6 +80,26 @@ trait Forms {
     $userInfo = $entry['__user_info'];
     $name = $entry['f'];
     unset($entry['__user_info'], $entry['f'], $entry['csrf_token'], $entry['submit']);
+
+    // Handle files
+    $org_form = $this->cms_forms[$userInfo['name']];
+    foreach ($entry as $key => $value) {
+      foreach ($org_form['fields'] as $field) {
+        if ($field['name'] == $key && $field['type'] == 'file') {
+          $file_settings = isset($field['settings']) ? $field['settings'] : []; // Upload file settings
+          $uploads = File::upload($value, $file_settings);
+          foreach ($uploads as $upload) {
+            if ($upload['error']) {
+              set_error('error', $upload['message']);
+              set_error($key, $upload['message']);
+              return back();
+            }
+            unset($upload['error'], $upload['message']);
+            $entry[$key] = $upload;
+          }
+        }
+      }
+    }
 
     $created = $this->DB()->insert('cms_forms', [
       'name' => $userInfo['name'], // Form name
@@ -97,7 +119,7 @@ trait Forms {
       'item_id' => $this->DB()->id()
     ]);
 
-    return $created ? true : false;
+    return $created ? $this->DB()->id() : false;
   }
 
 

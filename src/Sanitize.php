@@ -149,7 +149,7 @@ class Sanitize {
    * Clear template to prevent template injection
    */
   public static function regExps($v){
-    if(is_callable($v, true)){
+    if(is_callable($v, true) || is_object($v)){
       return $v;
     }
 
