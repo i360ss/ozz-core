@@ -50,6 +50,8 @@ class Templating extends AppInit {
       self::$view_file = $base_app_viv;
       self::$view_outer_use = 'app/view/';
       $context['instance'] = 'app/';
+    } else {
+      $context['instance'] = 'app/';
     }
 
     $regComps = [];

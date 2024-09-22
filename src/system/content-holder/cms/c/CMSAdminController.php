@@ -443,7 +443,8 @@ class CMSAdminController extends CMS {
    * Track forms (This is a outer function. Can be accessed without auth)
    */
   public function form_tracking(Request $request) {
-    $this->track_form($request);
+    $form = dec_base64($request->query('f'));
+    $this->create_form_entry($form, $request);
   }
 
 

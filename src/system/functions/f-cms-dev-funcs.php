@@ -14,6 +14,12 @@ class CMSFuncs {
   use \Ozz\Core\system\cms\Taxonomy;
   use \Ozz\Core\system\cms\Forms;
 
+  protected $cms_forms;
+
+  public function __construct() {
+    $this->cms_forms = require __DIR__.SPC_BACK['core_2'].'cms/cms-forms.php';
+  }
+
   /**
    * Get posts by filtering
    * @param string $post_type Post type to be loaded
@@ -234,7 +240,6 @@ class CMSFuncs {
     ];
   }
 
-
     /**
    * Return single post
    * @param int|string $post_id_slug Post ID (id) or slug
@@ -297,48 +302,32 @@ class CMSFuncs {
     return $post;
   }
 
-
-  /**
-   * Get post terms
-   * @param integer $post_id
-   */
   public function public_get_post_terms($post_id) {
     return $this->get_post_terms($post_id);
   }
 
-
-  /**
-   * Get All taxonomies
-   */
   public function public_get_taxonomies($slugs_or_ids) {
     return $this->get_taxonomies($slugs_or_ids);
   }
 
-
-  /**
-   * Get Single taxonomies
-   * @param integer|string $id_or_slug
-   */
   public function public_get_taxonomy($id_or_slug) {
     return $this->get_taxonomy($id_or_slug);
   }
 
-
-  /**
-   * Get Form entries
-   * @param int $id Entry ID
-   */
   public function public_get_form_entries($form, $where=[], $page=1, $per_page=10) {
     return $this->get_form_entries($form, $where, $page, $per_page);
   }
 
-
-  /**
-   * Get Form entry
-   * @param int $id Entry ID
-   */
   public function public_get_form_entry($id) {
     return $this->get_form_entry($id);
+  }
+
+  public function public_create_form_entry($form, $request) {
+    return $this->create_form_entry($form, $request);
+  }
+
+  public function public_update_form_entry($form, $id, $request, $check_user) {
+    return $this->update_form_entry($form, $id, $request, $check_user);
   }
 }
 
@@ -388,6 +377,28 @@ function get_taxonomies($slugs_or_ids=[]) {
 function get_taxonomy($id_or_slug) {
   $cms = new CMSFuncs;
   return $cms->public_get_taxonomy($id_or_slug);
+}
+
+/**
+ * Create form entry
+ * @param string $form Form name
+ * @param object $request
+ */
+function create_entry($form, $request) {
+  $cms = new CMSFuncs;
+  return $cms->public_create_form_entry($form, $request);
+}
+
+/**
+ * Update form entry
+ * @param string $form Form name
+ * @param int $id Entry ID
+ * @param array $request Request object
+ * @param boolean $check_user Check entry ownership with current logged user ID
+ */
+function update_entry($form, $id, $request, $check_user=true) {
+  $cms = new CMSFuncs;
+  return $cms->public_update_form_entry($form, $id, $request, $check_user);
 }
 
 /**

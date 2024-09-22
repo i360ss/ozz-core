@@ -15,28 +15,12 @@ use Ozz\Core\File;
 trait Forms {
 
   /**
-   * Form tracking
-   * @param object $request
+   * Form tracking - Create new entry
+   * @param string $form Form name
+   * @param object $request Request object
    */
-  protected function track_form($request) {
-    $form = dec_base64($request->query('f'));
-    if(!isset($this->cms_forms[$form])) {
-      return render_error_page(404, 'Page Not Found');
-    }
-
-    set_flash('form_data', $request->input());
-
-    // Form validation
-    $validationRules = [];
-    foreach ($this->cms_forms[$form]['fields'] as $field) {
-      if (isset($field['validate'])) {
-        $validationRules[$field['name']] = $field['validate'];
-      }
-    }
-    $validation = Validate::check($request->input(), $validationRules);
-    if(!$validation->pass){
-      return back();
-    }
+  protected function create_form_entry($form, $request) {
+    $this->tracking_validation($form, $request->input()); // Validate form
 
     // Get form and client info
     $entry = $request->input();
@@ -48,7 +32,7 @@ trait Forms {
     ];
 
     // Store entry
-    $saved = $this->save_form_entry($entry);
+    $saved = $this->create_form_entry_in_action($entry);
 
     if ($saved) {
       remove_flash('form_data');
@@ -63,7 +47,7 @@ trait Forms {
     }
 
     // Return callback
-    if(isset($this->cms_forms[$form]['callback'])){
+    if(isset($this->cms_forms[$form]['callback']) && $this->cms_forms[$form]['callback'] !== false){
       $this_entry = get_entry($saved);
       return call_user_func_array($this->cms_forms[$form]['callback'], [$this_entry, $request]);
     } else {
@@ -76,7 +60,7 @@ trait Forms {
    * Save form data
    * @param array $entry Tracked form entry
    */
-  protected function save_form_entry($entry) {
+  protected function create_form_entry_in_action($entry) {
     $userInfo = $entry['__user_info'];
     $name = $entry['f'];
     unset($entry['__user_info'], $entry['f'], $entry['csrf_token'], $entry['submit']);
@@ -124,6 +108,82 @@ trait Forms {
     ]);
 
     return $created ? $this->DB()->id() : false;
+  }
+
+
+  /**
+   * Update Form entry
+   * @param string $form Form name
+   * @param int $id Entry ID
+   * @param array $request Request object
+   * @param boolean $check_user Check entry owner and current user ID
+   */
+  protected function update_form_entry($form, $id, $request, $check_user=true) {
+    $this->tracking_validation($form, $request->input()); // Validate form
+
+    $entry = $request->input();
+    $entry['id'] = !is_numeric($entry['id']) ? dec_base64($entry['id']) : $entry['id'];
+    unset($entry['f'], $entry['csrf_token'], $entry['submit']);
+
+    $where = ['id' => $id];
+    if ($check_user) {
+      if (!is_logged_in()) {
+        return false;
+      }
+      $where = array_merge($where, ['user_id' => auth_id()]);
+    }
+
+    $fields = [
+      'content' => json_encode($entry),
+      // Add last_updated_at, last_updated_info fields ================
+    ];
+    $updated = $this->DB()->update('cms_forms', $fields, $where);
+
+    if ($updated) {
+      remove_flash('form_data');
+      if (isset($this->cms_forms[$form]['success_message'])) {
+        set_error('success', $this->cms_forms[$form]['success_message']);
+      }
+    } else {
+      if (isset($this->cms_forms[$form]['error_message'])) {
+        set_error('error', $this->cms_forms[$form]['error_message']);
+      }
+      return back();
+    }
+
+    // Return callback
+    if(isset($this->cms_forms[$form]['callback']) && $this->cms_forms[$form]['callback'] !== false){
+      $this_entry = get_entry($id);
+      return call_user_func_array($this->cms_forms[$form]['callback'], [$this_entry, $request]);
+    } else {
+      return back();
+    }
+  }
+
+
+  /**
+   * Common tracking form validation
+   * @param string $form Decoded form name
+   * @param object $form_data
+   */
+  private function tracking_validation($form, $form_data) {
+    if(!isset($this->cms_forms[$form])) {
+      return render_error_page(404);
+    }
+
+    set_flash('form_data', $form_data);
+
+    // Form validation
+    $validationRules = [];
+    foreach ($this->cms_forms[$form]['fields'] as $field) {
+      if (isset($field['validate'])) {
+        $validationRules[$field['name']] = $field['validate'];
+      }
+    }
+    $validation = Validate::check($form_data, $validationRules);
+    if(!$validation->pass){
+      return back();
+    }
   }
 
 
@@ -192,8 +252,8 @@ trait Forms {
 
   /**
    * Update Form entry status
-   * @param $id Entry ID
-   * @param $new_status
+   * @param int $id Entry ID
+   * @param string $new_status
    */
   protected function update_form_entry_status($id, $new_status) {
     $update = $this->DB()->update('cms_forms', ['status' => $new_status], ['id' => $id]);
