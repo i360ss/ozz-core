@@ -15,6 +15,8 @@ class Cms_forms {
       'geo_info'    => ['txt'],
       'status'      => ['int'],
       'created'     => ['int'],
+      'updated'     => ['int'],
+      'update_info' => ['txt'],
     ]);
   }
   

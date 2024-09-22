@@ -121,9 +121,34 @@ trait Forms {
   protected function update_form_entry($form, $id, $request, $check_user=true) {
     $this->tracking_validation($form, $request->input()); // Validate form
 
+    $current_entry = get_entry($id);
     $entry = $request->input();
     $entry['id'] = !is_numeric($entry['id']) ? dec_base64($entry['id']) : $entry['id'];
     unset($entry['f'], $entry['csrf_token'], $entry['submit']);
+
+    // Handle files
+    $org_form = $this->cms_forms[$form];
+    foreach ($entry as $key => $value) {
+      foreach ($org_form['fields'] as $field) {
+        if ($field['name'] == $key && $field['type'] == 'file') {
+          if ($value['tmp_name'] !== '') {
+            $file_settings = isset($field['settings']) ? $field['settings'] : []; // Upload file settings
+            $uploads = File::upload($value, $file_settings);
+            foreach ($uploads as $upload) {
+              if ($upload['error']) {
+                set_error('error', $upload['message']);
+                set_error($key, $upload['message']);
+                return back();
+              }
+              unset($upload['error'], $upload['message']);
+              $entry[$key] = $upload;
+            }
+          } else {
+            $entry[$key] = $current_entry['fields'][$key];
+          }
+        }
+      }
+    }
 
     $where = ['id' => $id];
     if ($check_user) {
@@ -133,9 +158,16 @@ trait Forms {
       $where = array_merge($where, ['user_id' => auth_id()]);
     }
 
+    // Updated from (IP, user agent and Geo information)
+    $update_info = [
+      'ip' => $request->ip(),
+      'agent' => json_encode($request->userAgent()),
+      'geo' => json_encode($request->clientInfo()),
+    ];
     $fields = [
       'content' => json_encode($entry),
-      // Add last_updated_at, last_updated_info fields ================
+      'updated' => time(),
+      'update_info' => json_encode($update_info)
     ];
     $updated = $this->DB()->update('cms_forms', $fields, $where);
 
