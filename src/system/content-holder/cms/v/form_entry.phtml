@@ -143,8 +143,29 @@ function getFieldLabelByName($name) {
           </div><br>
           <?php endif; ?>
 
+          <?php if (!is_null($entry['update_info']) && $entry['update_info'] !== '') : ?>
           <div class="post-edit-view__widget info">
-            <h2 class="ozz-widget__heading">User Agent Info</h2>
+            <h2 class="ozz-widget__heading">Last Update Info</h2>
+            <?php $last_update_info = json_decode($entry['update_info'], true); ?>
+            <div class="item">
+              <strong>IP </strong><?=$last_update_info['ip']?>
+            </div>
+            <div class="item">
+              <strong>Updated at </strong><?=ozz_format_date($entry['updated'])?>
+            </div>
+            <?php foreach (json_decode($last_update_info['agent']) as $key => $value) : ?>
+              <?php if ($key !== 'all') : ?>
+                <div class="item">
+                  <strong><?=ucfirst(str_replace('_', ' ', $key))?> </strong>
+                  <span><?=$value?></span>
+                </div>
+              <?php endif;?>
+            <?php endforeach; ?>
+          </div><br>
+          <?php endif; ?>
+
+          <div class="post-edit-view__widget info">
+            <h2 class="ozz-widget__heading">Submitted User Agent Info</h2>
             <div class="item">
               <strong>IP </strong><?=$entry['ip']?>
             </div>
@@ -153,7 +174,7 @@ function getFieldLabelByName($name) {
             </div>
             <?php foreach ($agentInfo as $key => $value) : ?>
               <div class="item">
-                <strong><?=ucfirst($key)?> </strong>
+                <strong><?=ucfirst(str_replace('_', ' ', $key))?> </strong>
                 <span><?=$value?></span>
               </div>
             <?php endforeach; ?>
