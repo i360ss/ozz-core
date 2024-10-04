@@ -28,6 +28,7 @@ class Auth extends Model {
   private static $email_field;
   private static $status_field;
   private static $role_field;
+  private static $avatar_field;
   private static $active_key_field;
   private static $auth_errors = [
     'success'                 => 'success',
@@ -63,6 +64,7 @@ class Auth extends Model {
     self::$password_field   = CONFIG['AUTH_CORE_FIELDS']['PASSWORD_FIELD'];
     self::$status_field     = CONFIG['AUTH_CORE_FIELDS']['STATUS_FIELD'];
     self::$role_field       = CONFIG['AUTH_CORE_FIELDS']['ROLE_FIELD'];
+    self::$avatar_field     = CONFIG['AUTH_CORE_FIELDS']['AVATAR_FIELD'];
     self::$active_key_field = CONFIG['AUTH_CORE_FIELDS']['ACTIVATION_KEY_FIELD'];
 
     defined('AUTH_PASSWORD_RESET_THROTTLE') || define('AUTH_PASSWORD_RESET_THROTTLE', CONFIG['AUTH_PASSWORD_RESET_THROTTLE']);
@@ -258,6 +260,7 @@ class Auth extends Model {
           $_SESSION['logged_user_last_name']  = $user[self::$last_name_field];
           $_SESSION['logged_user_status']     = $user[self::$status_field];
           $_SESSION['logged_user_role']       = $user[self::$role_field];
+          $_SESSION['logged_user_avatar']     = $user[self::$avatar_field];
 
           set_error('success', trans('login_success'));
 
@@ -409,6 +412,7 @@ class Auth extends Model {
         'last_name'  => $_SESSION['logged_user_last_name'],
         'status'     => $_SESSION['logged_user_status'],
         'role'       => $_SESSION['logged_user_role'],
+        'avatar'     => $_SESSION['logged_user_avatar'],
       ];
 
       if($user['name'] == ' '){
@@ -436,6 +440,7 @@ class Auth extends Model {
       $_SESSION['logged_user_last_name']  = $user[self::$last_name_field];
       $_SESSION['logged_user_status']     = $user[self::$status_field];
       $_SESSION['logged_user_role']       = $user[self::$role_field];
+      $_SESSION['logged_user_avatar']     = $user[self::$avatar_field];
     }
   }
 
@@ -458,6 +463,7 @@ class Auth extends Model {
     unset($_SESSION['logged_user_email']);
     unset($_SESSION['logged_user_status']);
     unset($_SESSION['logged_user_role']);
+    unset($_SESSION['logged_user_avatar']);
     unset($_SESSION['logged_user_first_name']);
     unset($_SESSION['logged_user_last_name']);
 

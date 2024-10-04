@@ -386,3 +386,30 @@ function ozz_format_date($date, $format=1) {
     return date($format, (int) $date);
   }
 }
+
+/**
+ * Convert PHP size to bytes
+ */
+function convert_php_size_to_bytes($sSize) {
+  if (is_numeric($sSize)) {
+    return $sSize;
+  }
+  $sSuffix = strtoupper(substr($sSize, -1));
+  $iValue = (int) substr($sSize, 0, -1);
+
+  switch ($sSuffix) {
+    case 'P': $iValue *= 1024 * 1024 * 1024 * 1024 * 1024;
+      break;
+    case 'T': $iValue *= 1024 * 1024 * 1024 * 1024;
+      break;
+    case 'G': $iValue *= 1024 * 1024 * 1024;
+      break;
+    case 'M': $iValue *= 1024 * 1024;
+      break;
+    case 'K': $iValue *= 1024;
+      break;
+    default: $iValue;
+  }
+
+  return $iValue;
+}

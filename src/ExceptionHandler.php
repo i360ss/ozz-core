@@ -217,4 +217,20 @@ class ExceptionHandler {
     echo $style.$modified_exception.$script;
   }
 
+  /**
+   * Check common exceptions on load
+   */
+  public function checkForCommonExceptions() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $postMaxSize = convert_php_size_to_bytes(ini_get('post_max_size'));
+
+      // Check if Content-Length is set and if it exceeds post_max_size
+      if (isset($_SERVER['CONTENT_LENGTH']) && $_SERVER['CONTENT_LENGTH'] > $postMaxSize) {
+        if(!$this->config['app']['DEBUG']){
+          return render_error_page(413, 'Payload too large error');
+        }
+        throw new \Exception('The POST data exceeds the maximum size allowed by the server.');
+      }
+    }
+  }
 }

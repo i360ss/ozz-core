@@ -66,6 +66,7 @@ return [
     'LAST_NAME_FIELD' => 'last_name',
     'STATUS_FIELD' => 'status',
     'ROLE_FIELD' => 'role',
+    'AVATAR_FIELD' => 'avatar',
     'ACTIVATION_KEY_FIELD' => 'activation_key'
   ],
   'AUTH_ALLOWED_FIELDS' => [
