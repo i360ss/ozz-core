@@ -51,8 +51,11 @@ trait Utilities {
     ]);
 
     foreach ($forms as $k => $entry) {
-      $content = implode(', ', array_values(json_decode($entry['content'], true)));
-      $forms[$k]['title'] = char_limit($content , 40, '...');
+      $stringValues = array_filter( array_values(json_decode($entry['content'], true)), function($item) {
+        return is_string($item);
+      });
+      $content = implode(', ', $stringValues);
+      $forms[$k]['title'] = char_limit($content, 40, '...');
       $forms[$k]['type'] = 'Entry: '.$entry['name'];
       $forms[$k]['url'] = '/admin/forms/'.$entry['name'].'/entry/'.$entry['id'];
     }

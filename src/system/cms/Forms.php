@@ -72,10 +72,10 @@ trait Forms {
         if ($field['name'] == $key && $field['type'] == 'file') {
           if ($value['tmp_name'] !== '') {
             $file_settings = isset($field['settings']) ? $field['settings'] : []; // Upload file settings
-            $uploads = File::upload($value, $file_settings);
+            $validation = $file_settings['validation'] ?? $file_settings['validate'] ?? null; // max size and allowed formats
+            $uploads = File::upload($value, $file_settings, $validation);
             foreach ($uploads as $upload) {
               if ($upload['error']) {
-                set_error('error', $upload['message']);
                 set_error($key, $upload['message']);
                 return back();
               }
@@ -133,10 +133,10 @@ trait Forms {
         if ($field['name'] == $key && $field['type'] == 'file') {
           if ($value['tmp_name'] !== '') {
             $file_settings = isset($field['settings']) ? $field['settings'] : []; // Upload file settings
-            $uploads = File::upload($value, $file_settings);
+            $validation = $file_settings['validation'] ?? $file_settings['validate'] ?? null; // max size and allowed formats
+            $uploads = File::upload($value, $file_settings, $validation);
             foreach ($uploads as $upload) {
               if ($upload['error']) {
-                set_error('error', $upload['message']);
                 set_error($key, $upload['message']);
                 return back();
               }
