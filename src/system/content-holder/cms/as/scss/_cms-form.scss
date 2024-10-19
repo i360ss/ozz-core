@@ -311,20 +311,48 @@
       flex-direction: row;
       gap: 10px;
       .embed-wrapper-item {
+        position: relative;
         width: 100px;
         height: 100px;
         border: 2px solid rgba(color(light1), 0.2);
         border-radius: 5px;
         background-color: rgba(color(light1), 0.2);
-        overflow: hidden;
-        &:hover {
-          border-color: color(primary);
-        }
         img {
           width: 96px;
           height: 96px;
+          border-radius: 5px;
           object-fit: cover;
           font-size: 0;
+        }
+        &__remove-btn {
+          position: absolute;
+          z-index: 1;
+          top: 50%;
+          left: 50%;
+          width: 30px;
+          height: 30px;
+          border-radius: 5px;
+          translate: -50% -50%;
+          opacity: 0;
+          cursor: pointer;
+          background-color: rgba(color(white), 0.8);
+          &::before {
+            @include icon-delete;
+            @include before-after;
+            top: 5px;
+            left: 5px;
+            width: 20px;
+            height: 20px;
+          }
+        }
+        &:hover {
+          border-color: color(primary);
+          img {
+            opacity: 0.5;
+          }
+          .embed-wrapper-item__remove-btn {
+            opacity: 1;
+          }
         }
       }
     }

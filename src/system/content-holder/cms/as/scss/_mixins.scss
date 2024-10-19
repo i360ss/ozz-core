@@ -5,6 +5,12 @@
   }
 }
 
+@mixin before-after {
+  position: absolute;
+  display: block;
+  content: '';
+}
+
 // Icons
 @mixin icon {
   background-repeat: no-repeat;

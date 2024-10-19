@@ -131,8 +131,8 @@ export default (DOM=false) => {
           values.push(val);
         });
 
-        const actualField = initialTrigger.target.closest( '.ozz-fm__media-selector' ).querySelector( 'input[type=hidden]' );
-        const finalVals = [...JSON.parse(actualField.value), ...values].filter(
+        const currentValues = actualField.value == '' ? [] : JSON.parse(actualField.value);
+        const finalVals = [ ...currentValues, ...values ].filter(
           (obj, index, self) => index === self.findIndex((o) => o.url === obj.url)
         );
         const finalValues = JSON.stringify( finalVals );
@@ -167,11 +167,22 @@ export default (DOM=false) => {
     let listingDOM = '';
     selectedItems.forEach(item => {
       listingDOM += `<div class="embed-wrapper-item">
+        <span class="embed-wrapper-item__remove-btn" data-imgurl="${item.url}"></span>
         <img src="/${item.url}" alt="${item.name}" title="${item.name}">
       </div>`;
     });
 
     thisWrapper.innerHTML = listingDOM;
+
+    // Bind remove trigger
+    thisWrapper.addEventListener( 'click', (e) => {
+      if (e.target.classList.contains('embed-wrapper-item__remove-btn')) {
+        const url = e.target.getAttribute( 'data-imgurl' );
+        const updatedValues = JSON.parse(actualField.value).filter(item => item.url !== url);
+        actualField.value = JSON.stringify( updatedValues );
+        e.target.closest('.embed-wrapper-item').remove();
+      }
+    } );
   }
 
   // Initiate a trigger
