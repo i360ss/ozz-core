@@ -12,16 +12,41 @@
   &__submit {
     text-align: right;
   }
+  &__breadcrumb {
+    margin-bottom: 10px;
+    color: color(gray2);
+    font-size: 14px;
+    span {
+      font-size: 14px;
+      color: color(dark);
+      cursor: pointer;
+      text-transform: capitalize;
+      &:hover {
+        color: color(primary);
+      }
+      &.home {
+        @include icon-home;
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        margin-right: 5px;
+        margin-bottom: -5px;
+        opacity: 0.5;
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
   &__thumbnail {
     position: relative;
     display: grid;
     grid-template-rows: 1fr 25px;
     border: 1px solid color(silver);
     border-radius: 5px;
-    opacity: 0.6;
+    cursor: pointer;
     &:hover,
     &.active {
-      opacity: 1;
       input[type="checkbox"] {
         display: block;
       }

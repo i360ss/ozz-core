@@ -3,20 +3,50 @@ import { openPopup, closePopup } from "../utils/Popup";
 export default (DOM=false) => {
   if (document.querySelectorAll('.ozz-fm__media-selector').length == 0) { return; }
 
+  let initialTrigger = false; // Popup opened by this
+
   /**
    * Build Media manager and popup
    * @param {object} media Media elements
    * @param {object} trigger Selector Trigger clicked event
+   * @param {string} breadCrumb Directory URL
    */
-  const BuildMediaManager = (media, trigger=false) => {
-    let treeDOM = media.tree.join(' / '),
-      itemsDOM = '',
+  const BuildMediaManager = (media, trigger=false, breadCrumb=false) => {
+    let itemsDOM = '',
       currentValues = false;
 
     if (trigger) {
-      const actualField = trigger.target.closest( '.ozz-fm__media-selector' ).querySelector( 'input[type=hidden]' ),
-        value = actualField.value;
-      currentValues = value !== '' ? JSON.parse(value) : '';
+      initialTrigger = trigger;
+    }
+
+    const actualField = initialTrigger.target.closest( '.ozz-fm__media-selector' )?.querySelector( 'input[type=hidden]' );
+    const actualFieldValue = actualField?.value;
+    currentValues = actualFieldValue !== '' ? JSON.parse(actualFieldValue) : '';
+
+    // Setup breadcrumb
+    const breadCrumbDOM = document.createElement( 'div' );
+    breadCrumbDOM.classList.add('ozz-media-popup__breadcrumb');
+    breadCrumbDOM.innerHTML = `<span class="ozz-media-popup__breadcrumb-item home" data-dir="/"></span>`;
+
+    const buildBreadcrumb = (url) => {
+      const parts = url.split('/');
+      let breadcrumb = '';
+      let cumulativePath = '';
+
+      parts.forEach((part, index) => {
+        cumulativePath += part + '/';
+        if (index === parts.length - 1) {
+          breadcrumb += `<span class="ozz-media-popup__breadcrumb-current">${part}</span>`;
+        } else {
+          breadcrumb += `<span class="ozz-media-popup__breadcrumb-item" data-dir="${part}">${part}</span> / `;
+        }
+      });
+
+      return `<span class="ozz-media-popup__breadcrumb-item home" data-dir="/"></span> ${breadcrumb}`;
+    };
+
+    if (breadCrumb) {
+      breadCrumbDOM.innerHTML = buildBreadcrumb(breadCrumb);
     }
 
     for (const key in media.items.data) {
@@ -29,7 +59,7 @@ export default (DOM=false) => {
         } else if (val.format == 'svg') {
           mediaElement = `<object data="${val.absolute_url}"></object>`;
         } else {
-          mediaElement = `<span title="${val.name}" class="icon ${val.format}"></span>`;
+          mediaElement = `<span title="${val.name}" class="icon ${val.format ?? val.type}"></span>`;
         }
 
         // Set item value
@@ -48,9 +78,11 @@ export default (DOM=false) => {
           });
         }
 
+        const showCheckbox = `<input type="checkbox" ${checked ?? ''} name="ozz-fm-media-selected-item[]" value="${value}" />${ mediaElement }`;
+        const folderURL = val.type == 'folder' ? `data-dir=${val.url}` : '';
         itemsDOM += `
-        <div class="ozz-media-popup__thumbnail ${val.type} ${active}" ${toolTip}>
-          <input type="checkbox" ${checked} name="ozz-fm-media-selected-item[]" value="${value}" />${ mediaElement }
+        <div class="ozz-media-popup__thumbnail ${val.type} ${active ?? ''}" ${toolTip} ${folderURL}>
+          ${val.type !== 'folder' ? showCheckbox : mediaElement}
           <div class="ozz-media-popup__thumbnail-name">${val.name}</div>
         </div>`;
       }
@@ -58,7 +90,7 @@ export default (DOM=false) => {
 
     const wrapperDOM = `
     <div class="ozz-media-popup">
-      <div class="ozz-media-popup__tree">${treeDOM}</div>
+      ${breadCrumbDOM.outerHTML}
       <div class="ozz-media-popup__grid-wrap"><div class="ozz-media-popup__grid">${itemsDOM}</div></div>
       <div class="ozz-media-popup__submit"><span class="button small">Select</span></div>
     </div>`;
@@ -67,13 +99,26 @@ export default (DOM=false) => {
     openPopup(wrapperDOM, (DOM) => {
       const thumbs = DOM.querySelectorAll('.ozz-media-popup__thumbnail');
       const submitBtn = DOM.querySelector('.ozz-media-popup__submit');
+      const links= DOM.querySelectorAll('.ozz-media-popup__breadcrumb-item');
 
       // Select Items
       thumbs.forEach( tmb => {
         tmb.addEventListener('click', (e) => {
-          tmb.classList.toggle('active');
-          const selected = tmb.querySelector('input[name="ozz-fm-media-selected-item[]"]');
-          selected.checked = !selected.checked;
+          if (tmb.classList.contains( 'folder' )) {
+            // open sub folder
+            loadMedia(e, tmb.getAttribute('data-dir') ?? false);
+          } else {
+            tmb.classList.toggle('active');
+            const selected = tmb.querySelector('input[name="ozz-fm-media-selected-item[]"]');
+            selected.checked = !selected.checked;
+
+            // Remove un selected item
+            if (!selected.checked) {
+              const urlToRemove = JSON.parse(decodeURIComponent(selected.value)).url;
+              const updatedValues = currentValues.filter(item => item.url !== urlToRemove);
+              actualField.value = JSON.stringify(updatedValues);
+            }
+          }
         });
       });
 
@@ -86,14 +131,24 @@ export default (DOM=false) => {
           values.push(val);
         });
 
-        const finalValue = JSON.stringify(values),
-          actualField = trigger.target.closest( '.ozz-fm__media-selector' ).querySelector( 'input[type=hidden]' );
-          actualField.value = finalValue;
+        const actualField = initialTrigger.target.closest( '.ozz-fm__media-selector' ).querySelector( 'input[type=hidden]' );
+        const finalVals = [...JSON.parse(actualField.value), ...values].filter(
+          (obj, index, self) => index === self.findIndex((o) => o.url === obj.url)
+        );
+        const finalValues = JSON.stringify( finalVals );
+        actualField.value = finalValues;
         closePopup();
 
         // Update selected media
         listSelectedMedia(actualField);
       }, {once: true});
+
+      // Breadcrumb trigger
+      links.forEach( link => {
+        link.addEventListener( 'click', (e) => {
+          return loadMedia(e, e.target.getAttribute( 'data-dir' ));
+        } );
+      });
     });
   }
 
@@ -123,10 +178,16 @@ export default (DOM=false) => {
   DOM = (DOM !== false) ? DOM : document;
   const selectors = DOM.querySelectorAll('.ozz-fm__media-selector .media-selector-trigger');
 
-  const loadMedia = async (e) => {
-    const response = await fetch(DATA.CMS_URL + "/media/items");
-    const media = await response.json();
-    BuildMediaManager(media, e);
+  const loadMedia = async (e, dir=false) => {
+    if (dir) {
+      const response = await fetch(`${DATA.CMS_URL}media/items?dir=${dir}`);
+      const media = await response.json();
+      BuildMediaManager(media, false, dir);
+    } else {
+      const response = await fetch(`${DATA.CMS_URL}media/items`);
+      const media = await response.json();
+      BuildMediaManager(media, e);
+    }
   };
 
   selectors.forEach((mediaSelector) => {

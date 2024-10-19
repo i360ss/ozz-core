@@ -612,12 +612,13 @@ class CMSAdminController extends CMS {
    * Get Media items as JSON
    */
   public function media_get_items_json(Request $request) {
-    if(!is_dir(UPLOAD_TO.$request->query('dir', ''))){
+    $url = esc_url($request->query('dir', ''));
+    if(!is_dir(UPLOAD_TO.$url)){
       exit(404);
     }
 
     $media_items = $this->media_get_items(
-      $request->query('dir', ''),
+      $url,
       $request->query('p', 1)
     );
 

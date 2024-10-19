@@ -7,7 +7,7 @@ class AdminAccessMiddleware {
 
   public function handle(){
     if (!is_role('admin')) {
-      return redirect('/404');
+      return render_error_page(404);
     }
   }
 }
