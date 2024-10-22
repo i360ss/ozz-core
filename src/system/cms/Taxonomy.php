@@ -172,6 +172,23 @@ trait Taxonomy {
 
 
   /**
+   * Get Term
+   * @param string $slug_id_name Slug, ID or Name
+   */
+  protected function get_term($slug_id_name) {
+    $term = $this->DB()->get('cms_terms', '*', [
+      'OR' => [
+        'id' => $slug_id_name,
+        'slug' => $slug_id_name,
+        'name' => $slug_id_name
+      ]
+    ]);
+
+    return $term;
+  }
+
+
+  /**
    * Create new taxonomy term
    * @param array $term Taxonomy ID, Term name, and slug as array
    * @param string $lang Language code (default: current language)

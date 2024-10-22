@@ -329,6 +329,10 @@ class CMSFuncs {
   public function public_update_form_entry($form, $id, $request, $check_user) {
     return $this->update_form_entry($form, $id, $request, $check_user);
   }
+
+  public function public_get_term($param) {
+    return $this->get_term($param);
+  }
 }
 
 /**
@@ -377,6 +381,15 @@ function get_taxonomies($slugs_or_ids=[]) {
 function get_taxonomy($id_or_slug) {
   $cms = new CMSFuncs;
   return $cms->public_get_taxonomy($id_or_slug);
+}
+
+/**
+ * Return single term
+ * @param string $slug_id_name Slug, ID or Name
+ */
+function get_term($slug_id_name) {
+  $cms = new CMSFuncs;
+  return $cms->public_get_term($slug_id_name);
 }
 
 /**

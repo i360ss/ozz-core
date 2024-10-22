@@ -59,10 +59,19 @@ if (!empty($taxonomy_values)) {
                   'validate' => 'req'
                 ],
                 [
-                  'name' => 'test',
+                  'name' => 'singular_name',
+                  'type' => 'text',
+                  'label' => 'Singular Name',
+                ],
+                [
+                  'name' => 'meta_keywords',
+                  'type' => 'text',
+                  'label' => 'Meta Keywords',
+                ],
+                [
+                  'name' => 'meta_description',
                   'type' => 'textarea',
-                  'label' => 'Test',
-                  'validate' => 'req'
+                  'label' => 'Meta Description',
                 ],
                 [
                   'name' => !empty($taxonomy_values) ? 'taxonomy_id' : '',
