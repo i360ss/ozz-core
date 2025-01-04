@@ -17,7 +17,7 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
   <title>{% title %}</title>
   <meta name="csrf-token" content="<?=CSRF_TOKEN?>">
   <link rel="icon" type="image/x-icon" href="<?=ASSETS?>icons/favicon.svg">
-  <link rel="stylesheet" href="<?=ASSETS?>css/admin.min.css" nonce="<?=CSP_NONCE?>">
+  <link rel="stylesheet" href="<?=ASSETS?>admin/admin.min.css" nonce="<?=CSP_NONCE?>">
 </head>
 <body class="ozz-cms {% body_class %}">
   <div class="app-container">
@@ -168,6 +168,6 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
   ]);
   ?>');
 </script>
-<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>js/admin.min.js"></script>
+<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/admin.min.js"></script>
 </body>
 </html>
