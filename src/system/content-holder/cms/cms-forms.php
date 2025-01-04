@@ -105,8 +105,8 @@ return [
         'type' => 'select',
         'label' => 'Country',
         'options' => [
-          'lk' => 'Sri Lanka',
           'us' => 'USA',
+          'ru' => 'Russia',
           'uk' => 'United Kingdom',
         ]
       ],

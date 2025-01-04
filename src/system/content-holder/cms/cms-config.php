@@ -6,190 +6,37 @@
 return [
   'post_types' => [
     'pages' => [
-      'label' => 'Leadership team',
+      'label' => 'Pages',
       'note' => 'This post type can be used to create pages',
-      'fields' => [
-        [
-          'name' => 'test_image',
-          'type' => 'media',
-          'label' => 'Primary Image',
-          'validate' => 'req',
-        ],
-        [
-          'name' => 'post_information',
-          'type' => 'text',
-          'label' => 'Post Information',
-          'validate' => 'req|max:20',
-          'note' => 'Test Note'
-        ],
-        [
-          'name' => 'post-body',
-          'type' => 'rich-text',
-          'label' => 'Post Body',
-        ],
-        [
-          'name' => 'c-test',
-          'type' => 'repeater',
-          'label' => 'Country',
-          'fields' => [
-            [
-              'name' => 'country',
-              'type' => 'select',
-              'label' => 'Country',
-              'validate' => 'req',
-              'id' => 'country',
-              'options' => [
-                'Sri Lanka',
-                'Afganistan',
-                'United Kingdom',
-                'Russia',
-                'Saudi Arabia',
-              ]
-            ]
-          ]
-        ],
-        [
-          'name' => 'another-rp-field2',
-          'type' => 'select',
-          'label' => 'Another Repeater Field',
-          'repeat_label' => 'Add Item',
-          'validate' => 'req',
-          // 'repeat' => true,
-          'options' => [
-            '' => '-- Select a value --',
-            't1' => 'Test One',
-            't2' => 'Test Two',
-            't3' => 'Test Three'
-          ]
-        ]
-      ],
       'tabs' => [
         'seo' => [
           'slug' => 'seo',
           'label' => 'SEO',
           'fields' => [
             [
-              'name' => 'meta-title',
+              'name' => 'meta_title',
               'type' => 'text',
               'label' => 'Title',
-              'validate' => 'req|max:20',
             ],
             [
-              'name' => 'meta-description',
+              'name' => 'meta_description',
               'type' => 'textarea',
               'label' => 'Meta Description',
             ],
             [
-              'name' => 'meta-keywords',
+              'name' => 'meta_keywords',
               'type' => 'text',
               'label' => 'Meta Keywords',
               'note' => 'Separate each keyword by commas (,)'
             ]
           ]
-        ],
-        'additional-settings' => [
-          'slug' => 'additional-settings',
-          'label' => 'Additional Settings',
-          'fields' => [
-            [
-              'name' => 'size',
-              'type' => 'text',
-              'label' => 'Size',
-            ],
-            [
-              'name' => 'color',
-              'type' => 'select',
-              'label' => 'Color',
-              'options' => [
-                'Green',
-                'Red',
-                'Black',
-                'White',
-              ]
-            ]
-          ]
         ]
       ]
-    ],
-    'news' => [
-      'label' => 'News',
-      'singular_label' => 'News',
-      'fields' => [
-        [
-          'name' => 'description',
-          'type' => 'textarea',
-          'label' => 'News Body',
-          'validate' => 'req',
-          'placeholder' => 'Write something here',
-        ],
-        [
-          'name' => 'reporter_name',
-          'type' => 'text',
-          'label' => 'Reporter name',
-          'validate' => 'req',
-          'placeholder' => 'John Doe',
-          'note' => 'Name of the reporter',
-          'wrapper_class' => 'cl cl-6'
-        ],
-        [
-          'name' => 'reporter_email',
-          'type' => 'email',
-          'label' => 'Reporter email address',
-          'validate' => 'req | email',
-          'placeholder' => 'john@example.com',
-          'note' => 'Email address of the reporter',
-          'wrapper_class' => 'cl cl-6'
-        ]
-      ],
-      'labels' => [
-        'create_button' => 'Add News',
-      ],
-      'taxonomies' => [
-        'type',
-        'country'
-      ],
-    ],
-    'resources' => [
-      'label' => 'Resources',
-      'singular_label' => 'Resource',
-      'form' => [
-        'fields' => [
-          [
-            'name' => 'post_body',
-            'type' => 'textarea',
-            'label' => 'Post Body',
-            'validate' => 'req'
-          ]
-        ]
-      ],
-      'labels' => [
-        'create_button' => 'Create blog post',
-      ],
-    ],
-    'products' => [
-      'label' => 'Products',
-      'singular_label' => 'Product',
-      'taxonomies' => [
-        'gsm',
-        'sizes',
-        'colors'
-      ],
-      'fields' => [
-        [
-          'name' => 'image',
-          'type' => 'media',
-          'label' => 'Product Primary Image',
-          'validate' => 'req'
-        ]
-      ],
-      'labels' => [
-        'create_button' => 'Add Product',
-      ],
     ],
     'blog' => [
       'label' => 'Blogs',
       'singular_label' => 'Blog',
-      'note' => 'This is a default post type. You can overwrite or remove this.',
+      'note' => 'This post type can be used to create blog posts',
       'form' => [
         'fields' => [
           [
@@ -203,12 +50,121 @@ return [
       'labels' => [
         'create_button' => 'Create event',
       ],
+    ],
+    'testimonials' => [
+      'label' => 'Testimonials',
+      'singular_label' => 'Testimonial',
+      'note' => 'Customer testimonial posts',
+      'fields' => [
+        [
+          'name' => 'customer_name',
+          'type' => 'text',
+          'label' => 'Customer Name',
+          'validate' => 'req'
+        ],
+        [
+          'name' => 'customer_company',
+          'type' => 'text',
+          'label' => 'Customer Company',
+          'wrapper_class' => 'cl cl-6'
+        ],
+        [
+          'name' => 'customer_designation',
+          'type' => 'text',
+          'label' => 'Customer Designation',
+          'wrapper_class' => 'cl cl-6'
+        ],
+        [
+          'name' => 'customer_photo',
+          'type' => 'media',
+          'label' => 'Customer Photo',
+        ],
+        [
+          'name' => 'review',
+          'type' => 'textarea',
+          'label' => 'Review',
+          'validate' => 'req'
+        ],
+      ]
+    ],
+    'team_members' => [
+      'label' => 'Team Members',
+      'singular_label' => 'Member',
+      'note' => 'This post type can be used to create team members',
+      'fields' => [
+        [
+          'name' => 'name',
+          'type' => 'text',
+          'label' => 'Name'
+        ],
+        [
+          'name' => 'designation',
+          'type' => 'text',
+          'label' => 'Designation'
+        ],
+        [
+          'name' => 'bio',
+          'type' => 'textarea',
+          'label' => 'Bio'
+        ],
+        [
+          'name' => 'photo',
+          'type' => 'media',
+          'label' => 'Photo'
+        ],
+        [
+          'name' => 'social_links',
+          'type' => 'repeater',
+          'label' => 'Social Media Links',
+          'fields' => [
+            [
+              'name' => 'platform',
+              'type' => 'text',
+              'label' => 'Social media platform',
+              'wrapper_class' => 'cl cl-5'
+            ],
+            [
+              'name' => 'link',
+              'type' => 'text',
+              'label' => 'Link (URL)',
+              'wrapper_class' => 'cl cl-6'
+            ]
+          ]
+        ]
+      ]
+    ],
+    'faq' => [
+      'label' => 'FAQs',
+      'singular_label' => 'FAQ',
+      'note' => 'Frequently asked questions',
+      'fields' => [
+        [
+          'name' => 'question',
+          'type' => 'text',
+          'label' => 'Question'
+        ],
+        [
+          'name' => 'answer',
+          'type' => 'textarea',
+          'label' => 'Answer'
+        ],
+        [
+          'name' => 'category',
+          'type' => 'select',
+          'label' => 'Category',
+          'options' => [
+            'General',
+            'Billing',
+          ]
+        ]
+      ]
     ]
   ],
   'blocks' => [
     [
       'name' => 'rich-text',
       'label' => 'Rich Text',
+      'note' => 'Default rich-text block',
       'form' => [
         'fields' => [
           [
@@ -221,8 +177,130 @@ return [
       ]
     ],
     [
+      'name' => 'hero-banner',
+      'label' => 'Hero Banner',
+      'note' => 'Simple banner section',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'image',
+            'type' => 'media',
+            'label' => 'Banner Image'
+          ],
+          [
+            'name' => 'title',
+            'type' => 'text',
+            'label' => 'Main Title',
+            'wrapper_class' => 'cl cl-8',
+            'validate' => 'req'
+          ],
+          [
+            'name' => 'highlight_text',
+            'type' => 'text',
+            'label' => 'Highlight Text',
+            'wrapper_class' => 'cl cl-4'
+          ],
+          [
+            'name' => 'sub_title',
+            'type' => 'text',
+            'label' => 'Sub Title',
+          ],
+          [
+            'name' => 'eyebrow_text',
+            'type' => 'text',
+            'label' => 'Eyebrow Text',
+          ],
+          [
+            'name' => 'description',
+            'type' => 'textarea',
+            'label' => 'Description',
+          ],
+          [
+            'name' => 'cta_label',
+            'type' => 'text',
+            'label' => 'CTA Label',
+            'wrapper_class' => 'cl cl-6'
+          ],
+          [
+            'name' => 'cta_link',
+            'type' => 'text',
+            'label' => 'CTA Link (URL)',
+            'wrapper_class' => 'cl cl-6'
+          ],
+        ]
+      ]
+    ],
+    [
+      'name' => 'cta',
+      'label' => 'CTA',
+      'note' => 'Simple call to action section',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'image',
+            'type' => 'media',
+            'label' => 'CTA Image'
+          ],
+          [
+            'name' => 'title',
+            'type' => 'text',
+            'label' => 'Main Title',
+          ],
+          [
+            'name' => 'sub_title',
+            'type' => 'text',
+            'label' => 'Sub Title',
+          ],
+          [
+            'name' => 'description',
+            'type' => 'textarea',
+            'label' => 'Description',
+          ],
+          [
+            'name' => 'cta_label',
+            'type' => 'text',
+            'label' => 'CTA Label',
+            'wrapper_class' => 'cl cl-6'
+          ],
+          [
+            'name' => 'cta_link',
+            'type' => 'text',
+            'label' => 'CTA Link (URL)',
+            'wrapper_class' => 'cl cl-6'
+          ],
+        ]
+      ]
+    ],
+    [
+      'name' => 'accordion',
+      'label' => 'Accordion',
+      'note' => 'Default accordion block',
+      'form' => [
+        'fields' => [
+          [
+            'name' => 'items',
+            'label' => 'Accordion Items',
+            'type' => 'repeater',
+            'fields' => [
+              [
+                'name' => 'title',
+                'type' => 'text',
+                'label' => 'Item Title',
+              ],
+              [
+                'name' => 'body',
+                'type' => 'textarea',
+                'label' => 'Item Body Content',
+              ]
+            ]
+          ]
+        ]
+      ]
+    ],
+    [
       'name' => 'call-component',
-      'label' => 'Call Component',
+      'label' => 'Call Comp',
+      'note' => 'Render a code based component',
       'form' => [
         'fields' => [
           [

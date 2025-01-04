@@ -213,3 +213,11 @@ function html_encode($str, $flag=false){
 function html_decode($str, $flag=false){
   return Sanitize::htmlDecode($str, $flag);
 }
+
+/**
+ * Remove all inline CSS (style attributes)
+ * @param string $html
+ */
+function esc_inline_css($html) {
+  return preg_replace('/\s*style=("|\')[^"\']*("|\')/i', '', $html);
+}
