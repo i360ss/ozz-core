@@ -1,0 +1,21 @@
+<?php
+/**
+ * Component Name: hero-banner
+ * Path: view/components/hero-banner
+ * @param array $args Given arguments on component call
+ */
+
+$image = json_decode($image, true) ? json_decode($image, true)[0]['url'] : '';
+?>
+
+<section class="hero is-medium is-bold" style="background: url(<?=$image?>) center center no-repeat; background-size: cover;">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <span class="tag is-medium"><?=$eyebrow_text?></span>
+      <h1 class="title is-1"><?=$title?></h1>
+      <h2 class="subtitle is-3"><?=$sub_title?></h2>
+      <p class="content is-medium"><?=$description?></p>
+      <a href="<?=$cta_link?>" class="button is-primary is-medium"><?=$cta_label?></a>
+    </div>
+  </div>
+</section>

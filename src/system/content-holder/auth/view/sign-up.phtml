@@ -2,13 +2,10 @@
 /**
  * View Name: sign-up
  * Path: view/sign-up
- * 
  * @param array $data arguments passed from controller
- * 
  */
 
 $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
-
 ?>
 
 {{ title        = "Sign up | <?=APP_NAME?>" }}
@@ -17,52 +14,100 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
 {{ body_class   = "auth" }}
 
 {{ content }}
-  <section class="component auth-comp sign-up center">
-    <div class="container">
-      <h1 class="component__heading-1">Sign Up</h1>
-      <form action="<?=AUTH_PATHS['signup']?>" method="post" class="form">
+<section class="section auth-comp">
+  <div class="container">
+    <h1 class="title has-text-centered">Sign Up</h1>
+    <form action="<?=AUTH_PATHS['signup']?>" method="post">
 
-        <?=CSRF_FIELD?>
+      <?=CSRF_FIELD?>
 
-        <div class="col2">
-          <div class="form-item">
-            <input type="text" name="first_name" placeholder="First Name" value="<?=$value->first_name ?? '' ?>" class="<?=has_error('first_name') ? 'error' : false ?>">
-            <?=show_error('first_name', '<span class="error-label">##</span>')?>
+      <div class="columns">
+        <div class="column">
+          <div class="field">
+            <div class="control">
+              <input
+                type="text"
+                name="first_name"
+                class="input <?=has_error('first_name') ? 'is-danger' : '' ?>"
+                placeholder="First Name"
+                value="<?=$value->first_name ?? '' ?>"
+              >
+            </div>
+            <?=show_error('first_name', '<p class="help is-danger">##</p>')?>
           </div>
+        </div>
 
-          <div class="form-item">
-            <input type="text" name="last_name" placeholder="Last Name" value="<?=$value->last_name ?? '' ?>" class="<?=has_error('last_name') ? 'error' : false ?>">
-            <?=show_error('last_name', '<span class="error-label">##</span>')?>
+        <div class="column">
+          <div class="field">
+            <div class="control">
+              <input
+                type="text"
+                name="last_name"
+                class="input <?=has_error('last_name') ? 'is-danger' : '' ?>"
+                placeholder="Last Name"
+                value="<?=$value->last_name ?? '' ?>"
+              >
+            </div>
+            <?=show_error('last_name', '<p class="help is-danger">##</p>')?>
           </div>
         </div>
+      </div>
 
-        <div class="form-item">
-          <input type="email" name="email" placeholder="Email Address" value="<?=$value->email ?? '' ?>" class="<?=has_error('email') ? 'error' : false ?>">
-          <?=show_error('email', '<span class="error-label">##</span>')?>
-          <?=show_error('username', '<span class="error-label">##</span>')?>
+      <div class="field mb-5">
+        <div class="control">
+          <input
+            type="email"
+            name="email"
+            class="input <?=has_error('email') ? 'is-danger' : '' ?>"
+            placeholder="Email Address"
+            value="<?=$value->email ?? '' ?>"
+          >
         </div>
+        <?=show_error('email', '<p class="help is-danger">##</p>')?>
+        <?=show_error('username', '<p class="help is-danger">##</p>')?>
+      </div>
 
-        <div class="form-item">
-          <input type="password" name="password" placeholder="Password" autocomplete="new-password" class="<?=has_error('password') ? 'error' : false ?>">
-          <?=show_error('password', '<span class="error-label">##</span>')?>
+      <div class="field my-5">
+        <div class="control">
+          <input
+            type="password"
+            name="password"
+            class="input <?=has_error('password') ? 'is-danger' : '' ?>"
+            placeholder="Password"
+            autocomplete="new-password"
+          >
         </div>
+        <?=show_error('password', '<p class="help is-danger">##</p>')?>
+      </div>
 
-        <div class="form-item">
-          <input type="password" name="password_confirmation" placeholder="Confirm Password" autocomplete="new-password" class="<?=has_error('password_confirmation') ? 'error' : false ?>">
-          <?=show_error('password_confirmation', '<span class="error-label">##</span>')?>
+      <div class="field my-5">
+        <div class="control">
+          <input
+            type="password"
+            name="password_confirmation"
+            class="input <?=has_error('password_confirmation') ? 'is-danger' : '' ?>"
+            placeholder="Confirm Password"
+            autocomplete="new-password"
+          >
         </div>
+        <?=show_error('password_confirmation', '<p class="help is-danger">##</p>')?>
+      </div>
 
-        <div class="form-error">
-          <?=show_error('success', '<p class="message success">##</p>'); ?>
-          <?=show_error('error', '<p class="message danger">##</p>'); ?>
+      <div class="field">
+        <?=show_error('success', '<p class="message is-success">##</p>')?>
+        <?=show_error('error', '<p class="message is-danger">##</p>')?>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <input type="submit" class="button is-primary is-fullwidth" value="Sign Up">
         </div>
-
-        <input type="submit" value="Sign Up">
-      </form>
-    </div>
-  </section>
-
-  <div class="off-bottom-link">
-    <p>Already have an account? <a href="<?=AUTH_PATHS['login']?>" class="link">Login</a></p>
+      </div>
+    </form>
   </div>
+</section>
+
+<div class="has-text-centered mt-5">
+  <p>Already have an account? <a href="<?=AUTH_PATHS['login']?>" class="has-text-link">Login</a></p>
+</div>
 {{ content-end }}

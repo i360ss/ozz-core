@@ -1,0 +1,23 @@
+<?php
+/**
+ * Component Name: accordion
+ * Path: view/components/accordion
+ * @param array $args Given arguments on component call
+ */
+?>
+<section class="component accordion p-6">
+  <div class="hero-body">
+    <div class="container py-6">
+      <?php foreach ($items as $item) : ?>
+        <details class="accordion__item p-2" style="cursor: pointer;">
+          <summary class="is-size-4 has-text-weight-bold">
+            <?=$item['title']?>
+          </summary>
+          <div class="accordion__content p-4">
+            <p class="is-size-6"><?=$item['body']?></p>
+          </div>
+        </details>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>

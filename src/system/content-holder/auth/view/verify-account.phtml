@@ -2,9 +2,7 @@
 /**
  * View Name: verify-account
  * Path: view/auth/verify-account
- * 
  * @param array $data arguments passed from controller
- * 
  */
 ?>
 
@@ -12,34 +10,29 @@
 {{ body_class   = "auth" }}
 
 {{ content }}
-  <section class="component auth-comp verify-account center">
-    <div class="container">
+<section class="section auth-comp has-text-centered">
+  <div class="container">
 
-      <?php if($status == 'success') : ?>
+    <?php if ($status == 'success') : ?>
+      <h1 class="title has-text-success">Congratulations!</h1>
+      <p class="subtitle">Your account has been verified successfully.</p>
+      <a href="<?=BASE_URL?>login" class="button is-primary">Login to your account</a>
 
-        <h1 class="c-green">Congratulations!</h1>
-        <p>Your account verified successfully</p>
-        <a href="<?=BASE_URL?>login" class="button">Login to your account</a>
+    <?php elseif ($status == 'suspended') : ?>
+      <h1 class="title has-text-warning">Account is Disabled</h1>
+      <p class="subtitle">Your account is disabled. Please contact the support team for more information.</p>
 
-      <?php elseif($status == 'suspended') : ?>
+    <?php elseif ($status == 'invalid_token') : ?>
+      <h1 class="title has-text-danger">Invalid Link</h1>
+      <p class="subtitle">The verification link is invalid.</p>
+      <a href="<?=BASE_URL?>login" class="button is-primary">Go to Login Page</a>
 
-        <h1 class="c-orange">Account is Disabled</h1>
-        <p>Your account is disabled. Please contact support team for more information.</p>
+    <?php else : ?>
+      <h1 class="title has-text-danger">Error</h1>
+      <p class="subtitle">Something went wrong. There was an error verifying your account!</p>
+      <a href="<?=BASE_URL?>login" class="button is-primary">Go to Login Page</a>
+    <?php endif; ?>
 
-      <?php elseif($status == 'invalid_token') : ?>
-
-        <h1 CLASS="c-red">Invalid Link</h1>
-        <p>The verification link is invalid</p>
-        <a href="<?=BASE_URL?>login" class="button">Go to Login page</a>
-
-      <?php else : ?>
-
-        <h1 CLASS="c-red">Error</h1>
-        <p>Something went wrong. There is an error on verifying your account!</p>
-        <a href="<?=BASE_URL?>login" class="button">Go to Login page</a>
-
-      <?php endif; ?>
-
-    </div>
-  </section>
+  </div>
+</section>
 {{ content-end }}

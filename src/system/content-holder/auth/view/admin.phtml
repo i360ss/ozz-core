@@ -2,9 +2,7 @@
 /**
  * View Name: admin
  * Path: view/auth/admin
- * 
  * @param array $data arguments passed from controller
- * 
  */
 ?>
 
@@ -12,15 +10,15 @@
 {{ body_class = "dashboard light-bg" }}
 
 {{ content }}
-  <section class="component auth-comp center user-card">
-    <div class="container">
-      <div class="profile-pic">
-        <img src="<?=get_gravatar($email, 80);?>" alt="Avatar">
-      </div>
-      <div class="content">
-        <h1><?=$first_name.' '.$last_name?></h1>
-        <p>@<?=$username?></p>
-        <p><?=$email?></p>
+  <section class="section py-6 mt-6">
+    <div class="container has-text-centered">
+      <figure class="image is-128x128 is-inline-block">
+        <img class="is-rounded" src="<?=get_gravatar($email, 128);?>" alt="Avatar">
+      </figure>
+      <div class="content mt-4">
+        <h1 class="title is-4"><?=$first_name.' '.$last_name?></h1>
+        <p class="subtitle is-6">@<?=$username?></p>
+        <p class="is-size-6 has-text-grey"><?=$email?></p>
       </div>
     </div>
   </section>

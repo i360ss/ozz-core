@@ -2,13 +2,10 @@
 /**
  * View Name: login
  * Path: view/login
- * 
  * @param array $data arguments passed from controller
- * 
  */
 
 $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
-
 ?>
 
 {{ title        = "Login | <?=APP_NAME?>" }}
@@ -17,36 +14,44 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
 {{ body_class   = "auth" }}
 
 {{ content }}
-  <section class="component auth-comp log-in center">
+  <section class="section auth-comp">
     <div class="container">
-      <h1 class="component__heading-1">Login</h1>
-      <form action="<?=AUTH_PATHS['login']?>" method="post" class="form">
+      <h1 class="title has-text-centered">Login</h1>
+      <form action="<?=AUTH_PATHS['login']?>" method="post">
 
         <?=CSRF_FIELD?>
 
-        <div class="form-item">
-          <input type="email" name="email" placeholder="Email" value="<?=$value->email ?? '' ?>" class="<?=has_error('email') ? 'error' : false ?>">
-          <?=show_error('email', '<span class="error-label">##</span>')?>
+        <div class="field my-5">
+          <div class="control">
+            <input type="email" name="email" placeholder="Email" value="<?=$value->email ?? '' ?>" class="input <?=has_error('email') ? 'is-danger' : ''?>">
+          </div>
+          <?=show_error('email', '<span class="help is-danger">##</span>')?>
         </div>
 
-        <div class="form-item">
-          <input type="password" name="password" placeholder="Password" autocomplete="new-password" value="<?=$value->password ?? '' ?>" class="<?=has_error('password') ? 'error' : false ?>">
-          <?=show_error('password', '<span class="error-label">##</span>')?>
+        <div class="field my-5">
+          <div class="control">
+            <input type="password" name="password" placeholder="Password" autocomplete="new-password" value="<?=$value->password ?? '' ?>" class="input <?=has_error('password') ? 'is-danger' : ''?>">
+          </div>
+          <?=show_error('password', '<span class="help is-danger">##</span>')?>
         </div>
 
-        <div class="form-error">
-          <?=show_error('success', '<p class="message success">##</p>'); ?>
-          <?=show_error('error', '<p class="message danger">##</p>'); ?>
+        <div class="field">
+          <?=show_error('success', '<p class="message is-success">##</p>'); ?>
+          <?=show_error('error', '<p class="message is-danger">##</p>'); ?>
         </div>
 
-        <input type="submit" value="Login">
+        <div class="field">
+          <div class="control">
+            <input type="submit" value="Login" class="button is-primary is-fullwidth">
+          </div>
+        </div>
       </form>
     </div>
   </section>
 
-  <div class="off-bottom-link">
-    <a href="<?=AUTH_PATHS['signup']?>" class="link">Create an account</a> 
-    &nbsp;| &nbsp;
-    <a href="<?=AUTH_PATHS['forgot_password']?>" class="link">Forgot Password?</a>
+  <div class="has-text-centered">
+    <a href="<?=AUTH_PATHS['signup']?>" class="is-text">Create an account</a>
+    &nbsp;|&nbsp;
+    <a href="<?=AUTH_PATHS['forgot_password']?>" class="is-text">Forgot Password?</a>
   </div>
 {{ content-end }}
