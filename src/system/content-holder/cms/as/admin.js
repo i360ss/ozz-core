@@ -1,23 +1,23 @@
 "use strict";
 
-function _toConsumableArray2(arr) { return _arrayWithoutHoles2(arr) || _iterableToArray2(arr) || _unsupportedIterableToArray2(arr) || _nonIterableSpread2(); }
-function _nonIterableSpread2() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray2(o, minLen); }
-function _iterableToArray2(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
-function _arrayWithoutHoles2(arr) { if (Array.isArray(arr)) return _arrayLikeToArray2(arr); }
-function _arrayLikeToArray2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty2(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty2(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _defineProperty2(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof2(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof2(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof2(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof2(o) { "@babel/helpers - typeof"; return _typeof2 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof2(o); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof2(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof2(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+function _toConsumableArray2(r) { return _arrayWithoutHoles2(r) || _iterableToArray2(r) || _unsupportedIterableToArray2(r) || _nonIterableSpread2(); }
+function _nonIterableSpread2() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray2(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray2(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray2(r, a) : void 0; } }
+function _iterableToArray2(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles2(r) { if (Array.isArray(r)) return _arrayLikeToArray2(r); }
+function _arrayLikeToArray2(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 /******/(function () {
   // webpackBootstrap
   /******/
@@ -25,12 +25,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
   /******/
   var __webpack_modules__ = {
-    /***/"./admin/js/modules/AlertBar.js": (
-    /*!**************************************!*\
-      !*** ./admin/js/modules/AlertBar.js ***!
-      \**************************************/
+    /***/"./js/modules/AlertBar.js": (
+    /*!********************************!*\
+      !*** ./js/modules/AlertBar.js ***!
+      \********************************/
     /***/
-    function adminJsModulesAlertBarJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_AlertBarJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -57,12 +57,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/BlockEditor.js": (
-    /*!*****************************************!*\
-      !*** ./admin/js/modules/BlockEditor.js ***!
-      \*****************************************/
+    /***/"./js/modules/BlockEditor.js": (
+    /*!***********************************!*\
+      !*** ./js/modules/BlockEditor.js ***!
+      \***********************************/
     /***/
-    function adminJsModulesBlockEditorJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_BlockEditorJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -72,17 +72,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         /* harmony export */
       });
       /* harmony import */
-      var _RepeaterField__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__( /*! ./RepeaterField */"./admin/js/modules/RepeaterField.js");
+      var _RepeaterField__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./RepeaterField */"./js/modules/RepeaterField.js");
       /* harmony import */
-      var _vendor_ozz_wyg__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__( /*! ../vendor/ozz-wyg */"./admin/js/vendor/ozz-wyg.js");
+      var _vendor_ozz_wyg__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../vendor/ozz-wyg */"./js/vendor/ozz-wyg.js");
       /* harmony import */
-      var _vendor_Sortable__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__( /*! ../vendor/Sortable */"./admin/js/vendor/Sortable.js");
+      var _vendor_Sortable__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../vendor/Sortable */"./js/vendor/Sortable.js");
       /* harmony import */
-      var _utils_State__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__( /*! ../utils/State */"./admin/js/utils/State.js");
+      var _utils_State__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/State */"./js/utils/State.js");
       /* harmony import */
-      var _FormHandler__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__( /*! ./FormHandler */"./admin/js/modules/FormHandler.js");
+      var _FormHandler__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./FormHandler */"./js/modules/FormHandler.js");
       /* harmony import */
-      var _MediaManagerPopup__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__( /*! ./MediaManagerPopup */"./admin/js/modules/MediaManagerPopup.js");
+      var _MediaManagerPopup__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./MediaManagerPopup */"./js/modules/MediaManagerPopup.js");
 
       /* harmony default export */
       var __WEBPACK_DEFAULT_EXPORT__ = function __WEBPACK_DEFAULT_EXPORT__() {
@@ -261,7 +261,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             if (block) {
               blockEvents(block);
             } else {
-              var setStockLayout = function setStockLayout() {
+              var _setStockLayout = function setStockLayout() {
                 var layout = (0, _utils_State__WEBPACK_IMPORTED_MODULE_3__.GetState)('block_editor_stock_layout');
                 layouts.forEach(function (lay, i) {
                   lay.classList.remove('active');
@@ -273,7 +273,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   layout.addEventListener('click', function (el) {
                     var layoutName = el.target.getAttribute('data-lay');
                     (0, _utils_State__WEBPACK_IMPORTED_MODULE_3__.SetState)('block_editor_stock_layout', layoutName);
-                    setStockLayout();
+                    _setStockLayout();
                   });
                 });
               };
@@ -289,7 +289,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               // Set Block stock layout
               var layouts = blockEditorStockHead.querySelectorAll('.lay');
-              setStockLayout();
+              _setStockLayout();
             }
           }
         });
@@ -300,12 +300,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/ChangeTheme.js": (
-    /*!*****************************************!*\
-      !*** ./admin/js/modules/ChangeTheme.js ***!
-      \*****************************************/
+    /***/"./js/modules/ChangeTheme.js": (
+    /*!***********************************!*\
+      !*** ./js/modules/ChangeTheme.js ***!
+      \***********************************/
     /***/
-    function adminJsModulesChangeThemeJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_ChangeThemeJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -315,7 +315,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         /* harmony export */
       });
       /* harmony import */
-      var _utils_State__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__( /*! ../utils/State */"./admin/js/utils/State.js");
+      var _utils_State__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/State */"./js/utils/State.js");
 
       /* harmony default export */
       var __WEBPACK_DEFAULT_EXPORT__ = function __WEBPACK_DEFAULT_EXPORT__() {
@@ -333,12 +333,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/EmbedMedia.js": (
-    /*!****************************************!*\
-      !*** ./admin/js/modules/EmbedMedia.js ***!
-      \****************************************/
+    /***/"./js/modules/EmbedMedia.js": (
+    /*!**********************************!*\
+      !*** ./js/modules/EmbedMedia.js ***!
+      \**********************************/
     /***/
-    function adminJsModulesEmbedMediaJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_EmbedMediaJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -376,12 +376,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/FormHandler.js": (
-    /*!*****************************************!*\
-      !*** ./admin/js/modules/FormHandler.js ***!
-      \*****************************************/
+    /***/"./js/modules/FormHandler.js": (
+    /*!***********************************!*\
+      !*** ./js/modules/FormHandler.js ***!
+      \***********************************/
     /***/
-    function adminJsModulesFormHandlerJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_FormHandlerJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -416,12 +416,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/Forms.js": (
-    /*!***********************************!*\
-      !*** ./admin/js/modules/Forms.js ***!
-      \***********************************/
+    /***/"./js/modules/Forms.js": (
+    /*!*****************************!*\
+      !*** ./js/modules/Forms.js ***!
+      \*****************************/
     /***/
-    function adminJsModulesFormsJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_FormsJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -444,12 +444,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/GlobalSearch.js": (
-    /*!******************************************!*\
-      !*** ./admin/js/modules/GlobalSearch.js ***!
-      \******************************************/
+    /***/"./js/modules/GlobalSearch.js": (
+    /*!************************************!*\
+      !*** ./js/modules/GlobalSearch.js ***!
+      \************************************/
     /***/
-    function adminJsModulesGlobalSearchJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_GlobalSearchJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -459,7 +459,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         /* harmony export */
       });
       /* harmony import */
-      var _utils_Fetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__( /*! ../utils/Fetch */"./admin/js/utils/Fetch.js");
+      var _utils_Fetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/Fetch */"./js/utils/Fetch.js");
 
       /* harmony default export */
       var __WEBPACK_DEFAULT_EXPORT__ = function __WEBPACK_DEFAULT_EXPORT__() {
@@ -507,12 +507,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/InitOzzWyg.js": (
-    /*!****************************************!*\
-      !*** ./admin/js/modules/InitOzzWyg.js ***!
-      \****************************************/
+    /***/"./js/modules/InitOzzWyg.js": (
+    /*!**********************************!*\
+      !*** ./js/modules/InitOzzWyg.js ***!
+      \**********************************/
     /***/
-    function adminJsModulesInitOzzWygJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_InitOzzWygJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -522,7 +522,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         /* harmony export */
       });
       /* harmony import */
-      var _vendor_ozz_wyg__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__( /*! ../vendor/ozz-wyg */"./admin/js/vendor/ozz-wyg.js");
+      var _vendor_ozz_wyg__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../vendor/ozz-wyg */"./js/vendor/ozz-wyg.js");
 
       /* harmony default export */
       var __WEBPACK_DEFAULT_EXPORT__ = function __WEBPACK_DEFAULT_EXPORT__() {
@@ -535,12 +535,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/MediaManager.js": (
-    /*!******************************************!*\
-      !*** ./admin/js/modules/MediaManager.js ***!
-      \******************************************/
+    /***/"./js/modules/MediaManager.js": (
+    /*!************************************!*\
+      !*** ./js/modules/MediaManager.js ***!
+      \************************************/
     /***/
-    function adminJsModulesMediaManagerJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_MediaManagerJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -550,9 +550,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         /* harmony export */
       });
       /* harmony import */
-      var _EmbedMedia__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__( /*! ./EmbedMedia */"./admin/js/modules/EmbedMedia.js");
+      var _EmbedMedia__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EmbedMedia */"./js/modules/EmbedMedia.js");
       /* harmony import */
-      var _utils_Popup__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__( /*! ../utils/Popup */"./admin/js/utils/Popup.js");
+      var _utils_Popup__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/Popup */"./js/utils/Popup.js");
 
       /* harmony default export */
       var __WEBPACK_DEFAULT_EXPORT__ = function __WEBPACK_DEFAULT_EXPORT__() {
@@ -596,12 +596,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/MediaManagerPopup.js": (
-    /*!***********************************************!*\
-      !*** ./admin/js/modules/MediaManagerPopup.js ***!
-      \***********************************************/
+    /***/"./js/modules/MediaManagerPopup.js": (
+    /*!*****************************************!*\
+      !*** ./js/modules/MediaManagerPopup.js ***!
+      \*****************************************/
     /***/
-    function adminJsModulesMediaManagerPopupJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_MediaManagerPopupJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -611,7 +611,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         /* harmony export */
       });
       /* harmony import */
-      var _utils_Popup__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__( /*! ../utils/Popup */"./admin/js/utils/Popup.js");
+      var _utils_Popup__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/Popup */"./js/utils/Popup.js");
 
       /* harmony default export */
       var __WEBPACK_DEFAULT_EXPORT__ = function __WEBPACK_DEFAULT_EXPORT__() {
@@ -619,25 +619,51 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         if (document.querySelectorAll('.ozz-fm__media-selector').length == 0) {
           return;
         }
+        var initialTrigger = false; // Popup opened by this
 
         /**
          * Build Media manager and popup
          * @param {object} media Media elements
          * @param {object} trigger Selector Trigger clicked event
+         * @param {string} breadCrumb Directory URL
          */
         var BuildMediaManager = function BuildMediaManager(media) {
+          var _initialTrigger$targe;
           var trigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-          var treeDOM = media.tree.join(' / '),
-            itemsDOM = '',
+          var breadCrumb = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+          var itemsDOM = '',
             currentValues = false;
           if (trigger) {
-            var fieldName = trigger.target.getAttribute('data-field-name'),
-              actualField = document.getElementById(fieldName),
-              value = actualField.value;
-            currentValues = value !== '' ? JSON.parse(value) : '';
+            initialTrigger = trigger;
+          }
+          var actualField = (_initialTrigger$targe = initialTrigger.target.closest('.ozz-fm__media-selector')) === null || _initialTrigger$targe === void 0 ? void 0 : _initialTrigger$targe.querySelector('input[type=hidden]');
+          var actualFieldValue = actualField === null || actualField === void 0 ? void 0 : actualField.value;
+          currentValues = actualFieldValue !== '' ? JSON.parse(actualFieldValue) : '';
+
+          // Setup breadcrumb
+          var breadCrumbDOM = document.createElement('div');
+          breadCrumbDOM.classList.add('ozz-media-popup__breadcrumb');
+          breadCrumbDOM.innerHTML = "<span class=\"ozz-media-popup__breadcrumb-item home\" data-dir=\"/\"></span>";
+          var buildBreadcrumb = function buildBreadcrumb(url) {
+            var parts = url.split('/');
+            var breadcrumb = '';
+            var cumulativePath = '';
+            parts.forEach(function (part, index) {
+              cumulativePath += part + '/';
+              if (index === parts.length - 1) {
+                breadcrumb += "<span class=\"ozz-media-popup__breadcrumb-current\">".concat(part, "</span>");
+              } else {
+                breadcrumb += "<span class=\"ozz-media-popup__breadcrumb-item\" data-dir=\"".concat(part, "\">").concat(part, "</span> / ");
+              }
+            });
+            return "<span class=\"ozz-media-popup__breadcrumb-item home\" data-dir=\"/\"></span> ".concat(breadcrumb);
+          };
+          if (breadCrumb) {
+            breadCrumbDOM.innerHTML = buildBreadcrumb(breadCrumb);
           }
           var _loop = function _loop() {
             if (media.items.data.hasOwnProperty(key)) {
+              var _checked, _active;
               var val = media.items.data[key];
               var toolTip = val.type !== 'folder' ? "title=\"Size: ".concat(val.size, "&#013;Created: ").concat(val.created, "&#013;Modified: ").concat(val.modified, "&#013;\"") : '';
               var mediaElement;
@@ -646,11 +672,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               } else if (val.format == 'svg') {
                 mediaElement = "<object data=\"".concat(val.absolute_url, "\"></object>");
               } else {
-                mediaElement = "<span title=\"".concat(val.name, "\" class=\"icon ").concat(val.format, "\"></span>");
+                var _val$format;
+                mediaElement = "<span title=\"".concat(val.name, "\" class=\"icon ").concat((_val$format = val.format) !== null && _val$format !== void 0 ? _val$format : val.type, "\"></span>");
               }
 
               // Set item value
-              var _value = encodeURIComponent(JSON.stringify({
+              var value = encodeURIComponent(JSON.stringify({
                 url: val.url,
                 name: val.name
               }));
@@ -665,25 +692,43 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   }
                 });
               }
-              itemsDOM += "\n        <div class=\"ozz-media-popup__thumbnail ".concat(val.type, " ").concat(active, "\" ").concat(toolTip, ">\n          <input type=\"checkbox\" ").concat(checked, " name=\"ozz-fm-media-selected-item[]\" value=\"").concat(_value, "\" />").concat(mediaElement, "\n          <div class=\"ozz-media-popup__thumbnail-name\">").concat(val.name, "</div>\n        </div>");
+              var showCheckbox = "<input type=\"checkbox\" ".concat((_checked = checked) !== null && _checked !== void 0 ? _checked : '', " name=\"ozz-fm-media-selected-item[]\" value=\"").concat(value, "\" />").concat(mediaElement);
+              var folderURL = val.type == 'folder' ? "data-dir=".concat(val.url) : '';
+              itemsDOM += "\n        <div class=\"ozz-media-popup__thumbnail ".concat(val.type, " ").concat((_active = active) !== null && _active !== void 0 ? _active : '', "\" ").concat(toolTip, " ").concat(folderURL, ">\n          ").concat(val.type !== 'folder' ? showCheckbox : mediaElement, "\n          <div class=\"ozz-media-popup__thumbnail-name\">").concat(val.name, "</div>\n        </div>");
             }
           };
           for (var key in media.items.data) {
             _loop();
           }
-          var wrapperDOM = "\n    <div class=\"ozz-media-popup\">\n      <div class=\"ozz-media-popup__tree\">".concat(treeDOM, "</div>\n      <div class=\"ozz-media-popup__grid-wrap\"><div class=\"ozz-media-popup__grid\">").concat(itemsDOM, "</div></div>\n      <div class=\"ozz-media-popup__submit\"><span class=\"button small\">Select</span></div>\n    </div>");
+          var wrapperDOM = "\n    <div class=\"ozz-media-popup\">\n      ".concat(breadCrumbDOM.outerHTML, "\n      <div class=\"ozz-media-popup__grid-wrap\"><div class=\"ozz-media-popup__grid\">").concat(itemsDOM, "</div></div>\n      <div class=\"ozz-media-popup__submit\"><span class=\"button small\">Select</span></div>\n    </div>");
 
           // Open Media Selector popup
           (0, _utils_Popup__WEBPACK_IMPORTED_MODULE_0__.openPopup)(wrapperDOM, function (DOM) {
             var thumbs = DOM.querySelectorAll('.ozz-media-popup__thumbnail');
             var submitBtn = DOM.querySelector('.ozz-media-popup__submit');
+            var links = DOM.querySelectorAll('.ozz-media-popup__breadcrumb-item');
 
             // Select Items
             thumbs.forEach(function (tmb) {
               tmb.addEventListener('click', function (e) {
-                tmb.classList.toggle('active');
-                var selected = tmb.querySelector('input[name="ozz-fm-media-selected-item[]"]');
-                selected.checked = !selected.checked;
+                if (tmb.classList.contains('folder')) {
+                  var _tmb$getAttribute;
+                  // open sub folder
+                  loadMedia(e, (_tmb$getAttribute = tmb.getAttribute('data-dir')) !== null && _tmb$getAttribute !== void 0 ? _tmb$getAttribute : false);
+                } else {
+                  tmb.classList.toggle('active');
+                  var selected = tmb.querySelector('input[name="ozz-fm-media-selected-item[]"]');
+                  selected.checked = !selected.checked;
+
+                  // Remove un selected item
+                  if (!selected.checked) {
+                    var urlToRemove = JSON.parse(decodeURIComponent(selected.value)).url;
+                    var updatedValues = currentValues.filter(function (item) {
+                      return item.url !== urlToRemove;
+                    });
+                    actualField.value = JSON.stringify(updatedValues);
+                  }
+                }
               });
             });
 
@@ -695,16 +740,27 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 var val = JSON.parse(decodeURIComponent(checkbox.value));
                 values.push(val);
               });
-              var finalValue = JSON.stringify(values),
-                fieldName = trigger.target.getAttribute('data-field-name'),
-                actualField = document.getElementById(fieldName);
-              actualField.value = finalValue;
+              var currentValues = actualField.value == '' ? [] : JSON.parse(actualField.value);
+              var finalVals = [].concat(_toConsumableArray2(currentValues), values).filter(function (obj, index, self) {
+                return index === self.findIndex(function (o) {
+                  return o.url === obj.url;
+                });
+              });
+              var finalValues = JSON.stringify(finalVals);
+              actualField.value = finalValues;
               (0, _utils_Popup__WEBPACK_IMPORTED_MODULE_0__.closePopup)();
 
               // Update selected media
               listSelectedMedia(actualField);
             }, {
               once: true
+            });
+
+            // Breadcrumb trigger
+            links.forEach(function (link) {
+              link.addEventListener('click', function (e) {
+                return loadMedia(e, e.target.getAttribute('data-dir'));
+              });
             });
           });
         };
@@ -721,30 +777,64 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           var thisWrapper = actualField.parentNode.querySelector('.ozz-fm__media-embed-wrapper');
           var listingDOM = '';
           selectedItems.forEach(function (item) {
-            listingDOM += "<div class=\"embed-wrapper-item\">\n        <img src=\"/".concat(item.url, "\" alt=\"").concat(item.name, "\" title=\"").concat(item.name, "\">\n      </div>");
+            listingDOM += "<div class=\"embed-wrapper-item\">\n        <span class=\"embed-wrapper-item__remove-btn\" data-imgurl=\"".concat(item.url, "\"></span>\n        <img src=\"/").concat(item.url, "\" alt=\"").concat(item.name, "\" title=\"").concat(item.name, "\">\n      </div>");
           });
           thisWrapper.innerHTML = listingDOM;
+
+          // Bind remove trigger
+          thisWrapper.addEventListener('click', function (e) {
+            if (e.target.classList.contains('embed-wrapper-item__remove-btn')) {
+              var url = e.target.getAttribute('data-imgurl');
+              var updatedValues = JSON.parse(actualField.value).filter(function (item) {
+                return item.url !== url;
+              });
+              actualField.value = JSON.stringify(updatedValues);
+              e.target.closest('.embed-wrapper-item').remove();
+            }
+          });
         };
 
         // Initiate a trigger
         DOM = DOM !== false ? DOM : document;
         var selectors = DOM.querySelectorAll('.ozz-fm__media-selector .media-selector-trigger');
         var loadMedia = /*#__PURE__*/function () {
-          var _ref14 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
-            var response, media;
+          var _ref14 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
+            var dir,
+              response,
+              media,
+              _response,
+              _media,
+              _args = arguments;
             return _regeneratorRuntime().wrap(function _callee$(_context) {
               while (1) switch (_context.prev = _context.next) {
                 case 0:
-                  _context.next = 2;
-                  return fetch(DATA.CMS_URL + "/media/items");
-                case 2:
+                  dir = _args.length > 1 && _args[1] !== undefined ? _args[1] : false;
+                  if (!dir) {
+                    _context.next = 11;
+                    break;
+                  }
+                  _context.next = 4;
+                  return fetch("".concat(DATA.CMS_URL, "media/items?dir=").concat(dir));
+                case 4:
                   response = _context.sent;
-                  _context.next = 5;
+                  _context.next = 7;
                   return response.json();
-                case 5:
-                  media = _context.sent;
-                  BuildMediaManager(media, e);
                 case 7:
+                  media = _context.sent;
+                  BuildMediaManager(media, false, dir);
+                  _context.next = 18;
+                  break;
+                case 11:
+                  _context.next = 13;
+                  return fetch("".concat(DATA.CMS_URL, "media/items"));
+                case 13:
+                  _response = _context.sent;
+                  _context.next = 16;
+                  return _response.json();
+                case 16:
+                  _media = _context.sent;
+                  BuildMediaManager(_media, e);
+                case 18:
                 case "end":
                   return _context.stop();
               }
@@ -758,20 +848,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           mediaSelector.addEventListener('click', loadMedia);
 
           // List down selected media items
-          var fieldName = mediaSelector.getAttribute('data-field-name');
-          var actualField = document.getElementById(fieldName);
+          var actualField = mediaSelector.closest('.ozz-fm__media-selector').querySelector('input[type=hidden]');
+          ;
           listSelectedMedia(actualField);
         });
       };
 
       /***/
     }),
-    /***/"./admin/js/modules/MultiSelector.js": (
-    /*!*******************************************!*\
-      !*** ./admin/js/modules/MultiSelector.js ***!
-      \*******************************************/
+    /***/"./js/modules/MultiSelector.js": (
+    /*!*************************************!*\
+      !*** ./js/modules/MultiSelector.js ***!
+      \*************************************/
     /***/
-    function adminJsModulesMultiSelectorJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_MultiSelectorJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -822,13 +912,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           // Bind search field events
           searchField.addEventListener('focus', function () {
             openDropdown();
-            var closeEvent = function closeEvent(e) {
+            var _closeEvent = function closeEvent(e) {
               if (selector.contains(e.target) === false) {
                 closeDropdown();
-                document.removeEventListener('click', closeEvent);
+                document.removeEventListener('click', _closeEvent);
               }
             };
-            document.addEventListener('click', closeEvent);
+            document.addEventListener('click', _closeEvent);
           });
 
           // Setup search input event
@@ -865,14 +955,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             dd.querySelectorAll('li').forEach(function (li) {
               li.addEventListener('click', function () {
                 toggleTermSelectState(li, li.classList.contains('selected'));
-                modifySelectedItems();
+                _modifySelectedItems();
               });
             });
-            modifySelectedItems();
+            _modifySelectedItems();
           };
 
           // Set and modify selected items DOM
-          var modifySelectedItems = function modifySelectedItems() {
+          var _modifySelectedItems = function modifySelectedItems() {
             var DOM = '';
             dataSelected.forEach(function (item) {
               DOM += "<span class=\"button light mini\" data-value=\"".concat(item.value, "\">").concat(item.label, "<span class=\"remove-btn\"></span></span>");
@@ -890,7 +980,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 });
                 storeValues(dataSelected);
                 removeBtn.closest('.button').remove();
-                modifySelectedItems();
+                _modifySelectedItems();
               });
             });
           };
@@ -950,19 +1040,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
           // Set initial values as selected
           if (dataSelected.length > 0) {
-            modifySelectedItems();
+            _modifySelectedItems();
           }
         });
       };
 
       /***/
     }),
-    /***/"./admin/js/modules/NavBar.js": (
-    /*!************************************!*\
-      !*** ./admin/js/modules/NavBar.js ***!
-      \************************************/
+    /***/"./js/modules/NavBar.js": (
+    /*!******************************!*\
+      !*** ./js/modules/NavBar.js ***!
+      \******************************/
     /***/
-    function adminJsModulesNavBarJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_NavBarJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -972,7 +1062,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         /* harmony export */
       });
       /* harmony import */
-      var _utils_State__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__( /*! ../utils/State */"./admin/js/utils/State.js");
+      var _utils_State__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/State */"./js/utils/State.js");
 
       /* harmony default export */
       var __WEBPACK_DEFAULT_EXPORT__ = function __WEBPACK_DEFAULT_EXPORT__() {
@@ -1029,12 +1119,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/PostTabs.js": (
-    /*!**************************************!*\
-      !*** ./admin/js/modules/PostTabs.js ***!
-      \**************************************/
+    /***/"./js/modules/PostTabs.js": (
+    /*!********************************!*\
+      !*** ./js/modules/PostTabs.js ***!
+      \********************************/
     /***/
-    function adminJsModulesPostTabsJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_PostTabsJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -1095,12 +1185,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/RelocatePostInfoComp.js": (
-    /*!**************************************************!*\
-      !*** ./admin/js/modules/RelocatePostInfoComp.js ***!
-      \**************************************************/
+    /***/"./js/modules/RelocatePostInfoComp.js": (
+    /*!********************************************!*\
+      !*** ./js/modules/RelocatePostInfoComp.js ***!
+      \********************************************/
     /***/
-    function adminJsModulesRelocatePostInfoCompJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_RelocatePostInfoCompJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -1119,12 +1209,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/RepeaterField.js": (
-    /*!*******************************************!*\
-      !*** ./admin/js/modules/RepeaterField.js ***!
-      \*******************************************/
+    /***/"./js/modules/RepeaterField.js": (
+    /*!*************************************!*\
+      !*** ./js/modules/RepeaterField.js ***!
+      \*************************************/
     /***/
-    function adminJsModulesRepeaterFieldJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_RepeaterFieldJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -1244,6 +1334,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   });
                 });
 
+                // Clear selected media files
+                newItem.querySelectorAll('.ozz-fm__media-embed-wrapper').forEach(function (mediaWrapper) {
+                  mediaWrapper.innerHTML = '';
+                });
+
                 // Clear and re-init Wysiwyg editors
                 _this5.repeater__clearAndInitOzzWyg(newItem);
                 newItem.querySelector('.ozz-fm__repeat-number').innerHTML = thisItemCount.length + 1;
@@ -1356,12 +1451,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/SlugUpdate.js": (
-    /*!****************************************!*\
-      !*** ./admin/js/modules/SlugUpdate.js ***!
-      \****************************************/
+    /***/"./js/modules/SlugUpdate.js": (
+    /*!**********************************!*\
+      !*** ./js/modules/SlugUpdate.js ***!
+      \**********************************/
     /***/
-    function adminJsModulesSlugUpdateJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_SlugUpdateJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -1387,12 +1482,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/modules/Taxonomy.js": (
-    /*!**************************************!*\
-      !*** ./admin/js/modules/Taxonomy.js ***!
-      \**************************************/
+    /***/"./js/modules/Taxonomy.js": (
+    /*!********************************!*\
+      !*** ./js/modules/Taxonomy.js ***!
+      \********************************/
     /***/
-    function adminJsModulesTaxonomyJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_modules_TaxonomyJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -1402,11 +1497,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         /* harmony export */
       });
       /* harmony import */
-      var _utils_Fetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__( /*! ../utils/Fetch */"./admin/js/utils/Fetch.js");
+      var _utils_Fetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/Fetch */"./js/utils/Fetch.js");
       /* harmony import */
-      var _utils_Alert__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__( /*! ../utils/Alert */"./admin/js/utils/Alert.js");
+      var _utils_Alert__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/Alert */"./js/utils/Alert.js");
       /* harmony import */
-      var _utils_CommonDelete__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__( /*! ../utils/CommonDelete */"./admin/js/utils/CommonDelete.js");
+      var _utils_CommonDelete__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/CommonDelete */"./js/utils/CommonDelete.js");
 
       /* harmony default export */
       var __WEBPACK_DEFAULT_EXPORT__ = function __WEBPACK_DEFAULT_EXPORT__() {
@@ -1466,12 +1561,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/utils/Alert.js": (
-    /*!*********************************!*\
-      !*** ./admin/js/utils/Alert.js ***!
-      \*********************************/
+    /***/"./js/utils/Alert.js": (
+    /*!***************************!*\
+      !*** ./js/utils/Alert.js ***!
+      \***************************/
     /***/
-    function adminJsUtilsAlertJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_utils_AlertJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -1498,12 +1593,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/utils/CommonDelete.js": (
-    /*!****************************************!*\
-      !*** ./admin/js/utils/CommonDelete.js ***!
-      \****************************************/
+    /***/"./js/utils/CommonDelete.js": (
+    /*!**********************************!*\
+      !*** ./js/utils/CommonDelete.js ***!
+      \**********************************/
     /***/
-    function adminJsUtilsCommonDeleteJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_utils_CommonDeleteJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -1513,9 +1608,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         /* harmony export */
       });
       /* harmony import */
-      var _utils_Fetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__( /*! ../utils/Fetch */"./admin/js/utils/Fetch.js");
+      var _Fetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Fetch */"./js/utils/Fetch.js");
       /* harmony import */
-      var _utils_Alert__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__( /*! ../utils/Alert */"./admin/js/utils/Alert.js");
+      var _Alert__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Alert */"./js/utils/Alert.js");
 
       /**
        * Common fetch API delete request
@@ -1526,9 +1621,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
        */
       var _CommonDelete = function _CommonDelete($url, $method, $data, $confirmation) {
         if (confirm($confirmation)) {
-          var deleteTerm = (0, _utils_Fetch__WEBPACK_IMPORTED_MODULE_0__.send)($url, $method, JSON.stringify($data));
+          var deleteTerm = (0, _Fetch__WEBPACK_IMPORTED_MODULE_0__.send)($url, $method, JSON.stringify($data));
           deleteTerm.then(function (response) {
-            (0, _utils_Alert__WEBPACK_IMPORTED_MODULE_1__.showAlert)(response.message, response.status);
+            (0, _Alert__WEBPACK_IMPORTED_MODULE_1__.showAlert)(response.message, response.status);
             if (response.status == 'success') {
               setTimeout(function () {
                 location.reload();
@@ -1540,12 +1635,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/utils/Fetch.js": (
-    /*!*********************************!*\
-      !*** ./admin/js/utils/Fetch.js ***!
-      \*********************************/
+    /***/"./js/utils/Fetch.js": (
+    /*!***************************!*\
+      !*** ./js/utils/Fetch.js ***!
+      \***************************/
     /***/
-    function adminJsUtilsFetchJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_utils_FetchJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -1578,12 +1673,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/utils/Popup.js": (
-    /*!*********************************!*\
-      !*** ./admin/js/utils/Popup.js ***!
-      \*********************************/
+    /***/"./js/utils/Popup.js": (
+    /*!***************************!*\
+      !*** ./js/utils/Popup.js ***!
+      \***************************/
     /***/
-    function adminJsUtilsPopupJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_utils_PopupJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -1596,7 +1691,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         /* harmony export */
       });
       /* harmony import */
-      var _State__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__( /*! ./State */"./admin/js/utils/State.js");
+      var _State__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./State */"./js/utils/State.js");
 
       /**
        * Bind events after close
@@ -1661,12 +1756,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/utils/State.js": (
-    /*!*********************************!*\
-      !*** ./admin/js/utils/State.js ***!
-      \*********************************/
+    /***/"./js/utils/State.js": (
+    /*!***************************!*\
+      !*** ./js/utils/State.js ***!
+      \***************************/
     /***/
-    function adminJsUtilsStateJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_utils_StateJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -1716,12 +1811,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/vendor/Sortable.js": (
-    /*!*************************************!*\
-      !*** ./admin/js/vendor/Sortable.js ***!
-      \*************************************/
+    /***/"./js/vendor/Sortable.js": (
+    /*!*******************************!*\
+      !*** ./js/vendor/Sortable.js ***!
+      \*******************************/
     /***/
-    function adminJsVendorSortableJs(module, __webpack_exports__, __webpack_require__) {
+    function _js_vendor_SortableJs(module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -1888,7 +1983,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         function off(el, event, fn) {
           el.removeEventListener(event, fn, !IE11OrLess && captureMode);
         }
-        function matches( /**HTMLElement*/el, /**String*/selector) {
+        function matches(/**HTMLElement*/el, /**String*/selector) {
           if (!selector) return;
           selector[0] === '>' && (selector = selector.substring(1));
           if (el) {
@@ -1909,7 +2004,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         function getParentOrHost(el) {
           return el.host && el !== document && el.host.nodeType ? el.host : el.parentNode;
         }
-        function closest( /**HTMLElement*/el, /**String*/selector, /**HTMLElement*/ctx, includeCTX) {
+        function closest(/**HTMLElement*/el, /**String*/selector, /**HTMLElement*/ctx, includeCTX) {
           if (el) {
             ctx = ctx || document;
             do {
@@ -2907,7 +3002,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           _getDirection: function _getDirection(evt, target) {
             return typeof this.options.direction === 'function' ? this.options.direction.call(this, evt, target, dragEl) : this.options.direction;
           },
-          _onTapStart: function _onTapStart( /** Event|TouchEvent */evt) {
+          _onTapStart: function _onTapStart(/** Event|TouchEvent */evt) {
             if (!evt.cancelable) return;
             var _this = this,
               el = this.el,
@@ -2997,7 +3092,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             // Prepare `dragstart`
             this._prepareDragStart(evt, touch, target);
           },
-          _prepareDragStart: function _prepareDragStart( /** Event */evt, /** Touch */touch, /** HTMLElement */target) {
+          _prepareDragStart: function _prepareDragStart(/** Event */evt, /** Touch */touch, /** HTMLElement */target) {
             var _this = this,
               el = _this.el,
               options = _this.options,
@@ -3092,7 +3187,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               }
             }
           },
-          _delayedDragTouchMoveHandler: function _delayedDragTouchMoveHandler( /** TouchEvent|PointerEvent **/e) {
+          _delayedDragTouchMoveHandler: function _delayedDragTouchMoveHandler(/** TouchEvent|PointerEvent **/e) {
             var touch = e.touches ? e.touches[0] : e;
             if (Math.max(Math.abs(touch.clientX - this._lastX), Math.abs(touch.clientY - this._lastY)) >= Math.floor(this.options.touchStartThreshold / (this.nativeDraggable && window.devicePixelRatio || 1))) {
               this._disableDelayedDrag();
@@ -3112,7 +3207,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             off(ownerDocument, 'touchmove', this._delayedDragTouchMoveHandler);
             off(ownerDocument, 'pointermove', this._delayedDragTouchMoveHandler);
           },
-          _triggerDragStart: function _triggerDragStart( /** Event */evt, /** Touch */touch) {
+          _triggerDragStart: function _triggerDragStart(/** Event */evt, /** Touch */touch) {
             touch = touch || evt.pointerType == 'touch' && evt;
             if (!this.nativeDraggable || touch) {
               if (this.options.supportPointer) {
@@ -3198,7 +3293,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               _unhideGhostForTarget();
             }
           },
-          _onTouchMove: function _onTouchMove( /**TouchEvent*/evt) {
+          _onTouchMove: function _onTouchMove(/**TouchEvent*/evt) {
             if (tapEvt) {
               var options = this.options,
                 fallbackTolerance = options.fallbackTolerance,
@@ -3291,7 +3386,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               css(ghostEl, 'transform-origin', tapDistanceLeft / parseInt(ghostEl.style.width) * 100 + '% ' + tapDistanceTop / parseInt(ghostEl.style.height) * 100 + '%');
             }
           },
-          _onDragStart: function _onDragStart( /**Event*/evt, /**boolean*/fallback) {
+          _onDragStart: function _onDragStart(/**Event*/evt, /**boolean*/fallback) {
             var _this = this;
             var dataTransfer = evt.dataTransfer;
             var options = _this.options;
@@ -3355,7 +3450,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             }
           },
           // Returns true - if no further action is needed (either inserted or another condition)
-          _onDragOver: function _onDragOver( /**Event*/evt) {
+          _onDragOver: function _onDragOver(/**Event*/evt) {
             var el = this.el,
               target = evt.target,
               dragRect,
@@ -3624,7 +3719,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             off(ownerDocument, 'touchcancel', this._onDrop);
             off(document, 'selectstart', this);
           },
-          _onDrop: function _onDrop( /**Event*/evt) {
+          _onDrop: function _onDrop(/**Event*/evt) {
             var el = this.el,
               options = this.options;
 
@@ -3777,7 +3872,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             });
             savedInputChecked.length = lastDx = lastDy = 0;
           },
-          handleEvent: function handleEvent( /**Event*/evt) {
+          handleEvent: function handleEvent(/**Event*/evt) {
             switch (evt.type) {
               case 'drop':
               case 'dragend':
@@ -3933,7 +4028,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             }
           }
         };
-        function _globalDragOver( /**Event*/evt) {
+        function _globalDragOver(/**Event*/evt) {
           if (evt.dataTransfer) {
             evt.dataTransfer.dropEffect = 'move';
           }
@@ -5083,12 +5178,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /***/
     }),
-    /***/"./admin/js/vendor/ozz-wyg.js": (
-    /*!************************************!*\
-      !*** ./admin/js/vendor/ozz-wyg.js ***!
-      \************************************/
+    /***/"./js/vendor/ozz-wyg.js": (
+    /*!******************************!*\
+      !*** ./js/vendor/ozz-wyg.js ***!
+      \******************************/
     /***/
-    function adminJsVendorOzzWygJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+    function _js_vendor_ozzWygJs(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
       __webpack_require__.r(__webpack_exports__);
       /* harmony export */
       __webpack_require__.d(__webpack_exports__, {
@@ -5495,13 +5590,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                     popoverDOM.style.top = "".concat(e.clientY - ry, "px");
                     popoverDOM.style.left = "".concat(e.clientX - rx, "px");
                   }
-                  var removePopoverEv = function removePopoverEv(ev) {
+                  var _removePopoverEv = function removePopoverEv(ev) {
                     if (!anchor.contains(ev.target) && !popoverDOM.contains(ev.target)) {
                       popoverDOM.remove();
-                      document.removeEventListener('click', removePopoverEv);
+                      document.removeEventListener('click', _removePopoverEv);
                     }
                   };
-                  document.addEventListener('click', removePopoverEv);
+                  document.addEventListener('click', _removePopoverEv);
 
                   // Unlink
                   popoverDOM.querySelector('.ozz-wyg-unlink').addEventListener('click', function (ev) {
@@ -5509,7 +5604,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                     var textNode = document.createTextNode(anchor.textContent);
                     anchor.parentNode.replaceChild(textNode, anchor);
                     popoverDOM.remove();
-                    document.removeEventListener('click', removePopoverEv);
+                    document.removeEventListener('click', _removePopoverEv);
                   });
 
                   // Edit this link
@@ -5929,14 +6024,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 }
 
                 // Close popover
-                var tempCloseEvent = function tempCloseEvent(ev) {
+                var _tempCloseEvent = function tempCloseEvent(ev) {
                   if (!popoverDOM.contains(ev.target) && ev.target !== popoverDOM && ev.target !== mediaItem) {
                     var _this15$editor$queryS;
                     (_this15$editor$queryS = _this15.editor.querySelector('.ozz-wyg-media-actions')) === null || _this15$editor$queryS === void 0 || _this15$editor$queryS.remove();
-                    document.removeEventListener('click', tempCloseEvent);
+                    document.removeEventListener('click', _tempCloseEvent);
                   }
                 };
-                document.addEventListener('click', tempCloseEvent);
+                document.addEventListener('click', _tempCloseEvent);
               });
             });
           }
@@ -6210,42 +6305,42 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   /******/
   /************************************************************************/
   var __webpack_exports__ = {};
-  // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+  // This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
   (function () {
-    /*!***************************!*\
-      !*** ./admin/js/admin.js ***!
-      \***************************/
+    /*!*********************!*\
+      !*** ./js/admin.js ***!
+      \*********************/
     __webpack_require__.r(__webpack_exports__);
     /* harmony import */
-    var _modules_NavBar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__( /*! ./modules/NavBar */"./admin/js/modules/NavBar.js");
+    var _modules_NavBar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/NavBar */"./js/modules/NavBar.js");
     /* harmony import */
-    var _modules_GlobalSearch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__( /*! ./modules/GlobalSearch */"./admin/js/modules/GlobalSearch.js");
+    var _modules_GlobalSearch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/GlobalSearch */"./js/modules/GlobalSearch.js");
     /* harmony import */
-    var _modules_AlertBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__( /*! ./modules/AlertBar */"./admin/js/modules/AlertBar.js");
+    var _modules_AlertBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/AlertBar */"./js/modules/AlertBar.js");
     /* harmony import */
-    var _modules_RepeaterField__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__( /*! ./modules/RepeaterField */"./admin/js/modules/RepeaterField.js");
+    var _modules_RepeaterField__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/RepeaterField */"./js/modules/RepeaterField.js");
     /* harmony import */
-    var _modules_PostTabs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__( /*! ./modules/PostTabs */"./admin/js/modules/PostTabs.js");
+    var _modules_PostTabs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/PostTabs */"./js/modules/PostTabs.js");
     /* harmony import */
-    var _modules_BlockEditor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__( /*! ./modules/BlockEditor */"./admin/js/modules/BlockEditor.js");
+    var _modules_BlockEditor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/BlockEditor */"./js/modules/BlockEditor.js");
     /* harmony import */
-    var _modules_MediaManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__( /*! ./modules/MediaManager */"./admin/js/modules/MediaManager.js");
+    var _modules_MediaManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/MediaManager */"./js/modules/MediaManager.js");
     /* harmony import */
-    var _modules_MediaManagerPopup__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__( /*! ./modules/MediaManagerPopup */"./admin/js/modules/MediaManagerPopup.js");
+    var _modules_MediaManagerPopup__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/MediaManagerPopup */"./js/modules/MediaManagerPopup.js");
     /* harmony import */
-    var _modules_MultiSelector__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__( /*! ./modules/MultiSelector */"./admin/js/modules/MultiSelector.js");
+    var _modules_MultiSelector__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/MultiSelector */"./js/modules/MultiSelector.js");
     /* harmony import */
-    var _modules_ChangeTheme__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__( /*! ./modules/ChangeTheme */"./admin/js/modules/ChangeTheme.js");
+    var _modules_ChangeTheme__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/ChangeTheme */"./js/modules/ChangeTheme.js");
     /* harmony import */
-    var _modules_SlugUpdate__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__( /*! ./modules/SlugUpdate */"./admin/js/modules/SlugUpdate.js");
+    var _modules_SlugUpdate__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modules/SlugUpdate */"./js/modules/SlugUpdate.js");
     /* harmony import */
-    var _modules_RelocatePostInfoComp__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__( /*! ./modules/RelocatePostInfoComp */"./admin/js/modules/RelocatePostInfoComp.js");
+    var _modules_RelocatePostInfoComp__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modules/RelocatePostInfoComp */"./js/modules/RelocatePostInfoComp.js");
     /* harmony import */
-    var _modules_InitOzzWyg__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__( /*! ./modules/InitOzzWyg */"./admin/js/modules/InitOzzWyg.js");
+    var _modules_InitOzzWyg__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./modules/InitOzzWyg */"./js/modules/InitOzzWyg.js");
     /* harmony import */
-    var _modules_Taxonomy__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__( /*! ./modules/Taxonomy */"./admin/js/modules/Taxonomy.js");
+    var _modules_Taxonomy__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./modules/Taxonomy */"./js/modules/Taxonomy.js");
     /* harmony import */
-    var _modules_Forms__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__( /*! ./modules/Forms */"./admin/js/modules/Forms.js");
+    var _modules_Forms__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./modules/Forms */"./js/modules/Forms.js");
     // Modules
 
     (function () {
