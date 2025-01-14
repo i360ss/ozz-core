@@ -170,6 +170,24 @@ trait Posts {
       $post = array_merge($post, $this->setup_taxonomy_field_values( $post['id'] ));
     }
 
+    // Decode HTML entities
+    foreach ($post as $k => $v) {
+      $ignore = ['content', 'blocks', 'translated_to', 'post_id', 'post_type', 'lang', 'post_status', 'published_at', 'created_at', 'modified_at'];
+      if (!in_array($k, $ignore)) {
+        $post[$k] = html_decode($v);
+      }
+    }
+
+    // Decode HTML entities in content JSON
+    $decoded_content = json_decode($post['content'], true);
+    array_walk_recursive($decoded_content, function (&$value) { $value = html_decode($value); });
+    $post['content'] = json_encode($decoded_content);
+
+    // Decode HTML entities in blocks JSON
+    $decoded_blocks = json_decode($post['blocks'], true);
+    array_walk_recursive($decoded_blocks, function (&$value) { $value = html_decode($value); });
+    $post['blocks'] = json_encode($decoded_blocks);
+
     return $post;
   }
 
