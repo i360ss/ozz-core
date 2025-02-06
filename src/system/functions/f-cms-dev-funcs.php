@@ -314,8 +314,8 @@ class CMSFuncs {
     return $this->get_taxonomy($id_or_slug);
   }
 
-  public function public_get_form_entries($form, $where=[], $page=1, $per_page=10) {
-    return $this->get_form_entries($form, $where, $page, $per_page);
+  public function public_get_form_entries($form, $where=[], $options=[]) {
+    return $this->get_form_entries($form, $where, $options);
   }
 
   public function public_get_form_entry($id) {
@@ -427,12 +427,11 @@ function get_entry($id) {
  * Get form entries
  * @param string $form Form name
  * @param array $where
- * @param int $page Page number
- * @param int $per_page Items per page
+ * @param int $options
  */
-function get_entries($form, $where=[], $page=1, $per_page=10) {
+function get_entries($form, $where=[], $options=[]) {
   $cms = new CMSFuncs;
-  return $cms->public_get_form_entries($form, $where, $page, $per_page);
+  return $cms->public_get_form_entries($form, $where, $options);
 }
 
 /**
@@ -459,6 +458,7 @@ function render_blocks($blocks, $data=[]) {
   if (!empty($blocks)) {
     foreach ($blocks as $block) {
       if ($block['b'] == 'call-component') {
+        $data['this_comp'] = $block['f'];
         echo component($block['f']['component_name'], $data);
       } else {
         echo component($block['b'], $block['f']);

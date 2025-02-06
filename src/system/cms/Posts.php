@@ -174,7 +174,12 @@ trait Posts {
     foreach ($post as $k => $v) {
       $ignore = ['content', 'blocks', 'translated_to', 'post_id', 'post_type', 'lang', 'post_status', 'published_at', 'created_at', 'modified_at'];
       if (!in_array($k, $ignore)) {
-        $post[$k] = html_decode($v);
+        if (is_array($v)) {
+          array_walk_recursive($v, function (&$value) { $value = html_decode($value); });
+          $post[$k] = $v;
+        } else {
+          $post[$k] = html_decode($v);
+        }
       }
     }
 

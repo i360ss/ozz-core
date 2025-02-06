@@ -11,6 +11,7 @@ use Ozz\Core\Form;
 use Ozz\Core\Validate;
 use Ozz\Core\Auth;
 use Ozz\Core\File;
+use Ozz\Core\Medoo;
 
 trait Forms {
 
@@ -241,21 +242,56 @@ trait Forms {
    * @param int $page Page number
    * @param int $per_page Items per page
    */
-  protected function get_form_entries($form, $where=[], $page=1, $per_page=10) {
-    $whr = array_merge([
-      'ORDER' => ['id' => 'DESC'],
-      'LIMIT' => [$page-1, $per_page],
-      'name' => $form
-    ], $where);
+  protected function get_form_entries(string $form, array $where = [], array $options = []): array {
+    $defaultOptions = [
+      'page' => 1,
+      'per_page' => 10,
+      'order_by' => 'id',
+      'order_dir' => 'DESC'
+    ];
 
-    $entries = $this->DB()->select('cms_forms', '*', $whr);
-    foreach ($entries as $key => $entry) {
-      $entries[$key]['fields'] = json_decode($entry['content'], true);
-      $entries[$key]['fields']['created'] = ozz_format_date($entry['created']);
-      unset($entries[$key]['content']);
+    $options = array_merge($defaultOptions, $options);
+    $defaultFields = ['name', 'user_id', 'id', 'ip', 'user_agent', 'geo_info', 'status', 'created', 'updated', 'update_info', 'fields'];
+
+    $conditions = ["name = '{$form}'"];
+
+    // Handle filtering conditions
+    foreach ($where as $key => $value) {
+      $escapedValue = addslashes($value); // Prevent SQL injection
+      if (in_array($key, $defaultFields)) {
+        $conditions[] = "{$key} = '{$escapedValue}'";
+      } else {
+        $conditions[] = "JSON_UNQUOTE(JSON_EXTRACT(content, '$.$key')) = '{$escapedValue}'";
+      }
     }
 
-    return $entries;
+    // Build WHERE clause
+    $whereSql = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
+    // Validate ORDER BY field
+    $orderBy = in_array($options['order_by'], $defaultFields) ? $options['order_by'] : 'id';
+    $orderDir = strtoupper($options['order_dir']) === 'ASC' ? 'ASC' : 'DESC';
+
+    // LIMIT and OFFSET
+    $offset = ($options['page'] - 1) * $options['per_page'];
+
+    // Build raw SQL query (WITHOUT SELECT)
+    $query = Medoo::raw("
+      {$whereSql}
+      ORDER BY {$orderBy} {$orderDir}
+      LIMIT {$offset}, {$options['per_page']}
+    ");
+
+    // Execute query with Medoo
+    $entries = $this->DB()->select('cms_forms', '*', $query);
+
+    // Process and return results
+    return array_map(function ($entry) {
+      $entry['fields'] = json_decode($entry['content'], true);
+      $entry['fields']['created'] = ozz_format_date($entry['created']);
+      unset($entry['content']);
+      return $entry;
+    }, $entries);
   }
 
 
