@@ -284,7 +284,7 @@ trait Posts {
       }
     }
 
-    return back();
+    return redirect('/admin/posts/edit/'.$this->post_type.'/'.$post_id);
   }
 
 
@@ -716,12 +716,15 @@ trait Posts {
         set_error('error', 'Error on deleting your post!');
       }
     } else {
+      $deleted_post = get_post($post_id, ['post_status' => 'trash']);
       if($this->DB()->delete('cms_posts', ['id' => $post_id])){
         $this->clear_post_terms($post_id); // clear taxonomy terms
         set_error('success', 'Post deleted successfully!');
       } else {
         set_error('error', 'Error on deleting your post!');
       }
+
+      return redirect('/admin/posts/'.$deleted_post['post_type']);
     }
 
     return back();
