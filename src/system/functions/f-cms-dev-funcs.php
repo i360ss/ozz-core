@@ -461,6 +461,7 @@ function render_blocks($blocks, $data=[]) {
         $data['this_comp'] = $block['f'];
         echo component($block['f']['component_name'], $data);
       } else {
+        $block['f']['data'] = $data;
         echo component($block['b'], $block['f']);
       }
     }
