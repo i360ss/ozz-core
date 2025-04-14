@@ -78,21 +78,21 @@ class AppInit {
     defined('APP_LANG_PATH') || define('APP_LANG_PATH', __DIR__.SPC_BACK['core'].'app/lang/'.APP_LANG.'/');
 
     // Set Base URL
-    $this_host = $_SERVER['HTTP_HOST'];
-    $valid_domains = explode(' ', $this->env['app']['APP_URLS']);
+    $this_host = $_SERVER['HTTP_HOST'] ?? '';
+    $valid_domains = explode(' ', $this->env['app']['APP_URLS'] ?? '');
 
-    if(in_array($this_host, $valid_domains)) {
-      if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on'){
-        $this->SSL = 'http://';
-        define('HAS_SSL', false);
-      } else {
-        $this->SSL = 'https://';
-        define('HAS_SSL', true);
-      }
+    if (in_array($this_host, $valid_domains)) {
+      // Check for SSL
+      $is_secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
+        (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
 
-      defined('APP_URL') || define('APP_URL', $this_host.'/');
-      defined('BASE_URL') || define('BASE_URL', $this->SSL.APP_URL);
-    } else{
+      $this->SSL = $is_secure ? 'https://' : 'http://';
+      define('HAS_SSL', $is_secure);
+
+      // Define APP_URL and BASE_URL
+      defined('APP_URL') || define('APP_URL', rtrim($this_host, '/') . '/');
+      defined('BASE_URL') || define('BASE_URL', $this->SSL . APP_URL);
+    } else {
       http_response_code(401);
       exit("Unauthorized");
     }

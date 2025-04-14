@@ -121,7 +121,7 @@ class SubHelp {
     $lineInfo = $noLine ? '' : "$line1 $callingFile : $callingFileLine \n";
 
     $out = "\n<!-- Dumpr Begin -->\n".
-    "<style type=\"text/css\" nonce=".CSP_NONCE.">".$style."</style>".
+    "<style type=\"text/css\" nonce=\"".CSP_NONCE."\">".$style."</style>".
     "<div class=\"dumpr\">
       <div>$lineInfo $c</div>
     </div>".

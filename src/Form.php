@@ -198,7 +198,7 @@ class Form {
         if(in_array($type, ['radio', 'checkbox'])){
           // Assign value for checkbox and radio (Single value)
           if(isset($field['value']) && is_string($f_value)){
-            ($field['value'] == $f_value) ? $field['checked'] = 'checked' : false;
+            ($field['value'] == $f_value) ? $field['checked'] = 'true' : false;
           }
 
           // Multiple selection
@@ -482,12 +482,16 @@ class Form {
       foreach ($attrs_only as $ky => $vl) {
         if(!is_array($vl)){
           $vl = is_bool($vl) ? ($vl ? 'true' : 'false') : htmlspecialchars($vl);
-          $this_attrs .= " {$ky}=\"{$vl}\"";
+          if($ky == 'checked'){
+            $this_attrs .= $vl == 'true' ? " checked" : '';
+          } else {
+            $this_attrs .= " {$ky}=\"{$vl}\"";
+          }
         }
       }
 
       if(in_array($type, ['radio', 'checkbox']) && isset($args['options']) && is_array($args['options'])){
-        $has_value = (isset($args['value']) && is_array($args['value'])) ? $args['value'] : false;
+        $has_value = isset($args['value']) ? $args['value'] : false;
         $thisField = '<div class="ozz-fm__'.$type.'-wrapper">';
         $thisField .= '<input type="hidden" name="'.rtrim($args['name'], '[]').'" value="0">';
         foreach ($args['options'] as $key => $val) {
@@ -496,12 +500,20 @@ class Form {
           $checked = '';
 
           if($has_value){
-            foreach ($has_value as $vl) {
-              if($vl == $c_vl){
-                $checked = 'checked';
-                break;
+            if (is_array($args['value'])) {
+              foreach ($has_value as $vl) {
+                if($vl == $c_vl){
+                  $checked = 'checked';
+                  break;
+                }
               }
+            } elseif ($has_value == $c_vl) {
+              $checked = 'checked';
             }
+          }
+
+          if (isset($args['checked']) && $args['checked'] === false) {
+            $checked = '';
           }
 
           $thisField .= "<div class=\"ozz-fm__$type\"><input type=\"$type\"$this_attrs id=\"$id\" $checked value=\"$c_vl\"><label for=\"$id\">$val</label></div>\n";
