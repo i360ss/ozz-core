@@ -533,7 +533,7 @@ class Request extends Router {
 
     if ($key=='') {
       return $info;
-    } elseif (isset($info[$key])) {
+    } elseif (array_key_exists($key, $info)) {
       return $info[$key];
     } else {
       return DEBUG 
