@@ -120,7 +120,7 @@ function getFieldLabelByName($name) {
             <h2 class="ozz-widget__heading">User Info</h2>
             <div class="item user-thumbnail">
               <?php if (!empty($entry['user']['avatar'])) : ?>
-                <img src="/<?=$entry['user']['avatar']?>" alt="Avatar">
+                <img src="<?=$entry['user']['avatar']?>" alt="Avatar">
               <?php else: ?>
                 <img src="<?=get_gravatar($entry['user']['email'], 80);?>" alt="Avatar">
               <?php endif; ?>

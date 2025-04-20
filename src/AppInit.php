@@ -106,6 +106,9 @@ class AppInit {
     // App directory
     defined('APP_DIR') || define('APP_DIR', __DIR__.SPC_BACK['core'].'app/');
 
+    // Storage directory
+    defined('STORAGE_DIR') || define('STORAGE_DIR', __DIR__.SPC_BACK['core'].'storage/');
+
     // Cache directory
     defined('CACHE_DIR') || define('CACHE_DIR', __DIR__.SPC_BACK['core'].'storage/cache/');
 
