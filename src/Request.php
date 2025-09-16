@@ -521,29 +521,30 @@ class Request extends Router {
    * @param string $key
    */
   public function clientInfo($key=''){
-    $info = [];
-    $userIp = $this->ip();
-    $geo = unserialize(file_get_contents("http://www.geoplugin.net/php.gp?ip=$userIp"));
-    unset($geo['geoplugin_credit']);
+    return [];
+    // $info = [];
+    // $userIp = $this->ip();
+    // $geo = unserialize(file_get_contents("http://www.geoplugin.net/php.gp?ip=$userIp"));
+    // unset($geo['geoplugin_credit']);
 
-    foreach ($geo as $k => $val) {
-      $nk = str_replace('geoplugin_', '', $k);
-      $info[$nk] = $val;
-    }
+    // foreach ($geo as $k => $val) {
+    //   $nk = str_replace('geoplugin_', '', $k);
+    //   $info[$nk] = $val;
+    // }
 
-    if ($key=='') {
-      return $info;
-    } elseif (array_key_exists($key, $info)) {
-      return $info[$key];
-    } else {
-      return DEBUG 
-      ? Err::custom([
-        "msg" => "Invalid key provided for client information",
-        "info" => "Please refer to the available client information below",
-        "note" => implode(', ', array_keys($info))
-      ])
-      : false;
-    }
+    // if ($key=='') {
+    //   return $info;
+    // } elseif (array_key_exists($key, $info)) {
+    //   return $info[$key];
+    // } else {
+    //   return DEBUG 
+    //   ? Err::custom([
+    //     "msg" => "Invalid key provided for client information",
+    //     "info" => "Please refer to the available client information below",
+    //     "note" => implode(', ', array_keys($info))
+    //   ])
+    //   : false;
+    // }
   }
 
 }
