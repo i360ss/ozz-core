@@ -28,7 +28,6 @@ trait Forms {
     $entry['__user_info'] = [
       'ip' => $request->ip(),
       'agent' => json_encode($request->userAgent()),
-      'geo' => json_encode($request->clientInfo()),
       'name' => $form // Form name
     ];
 
@@ -96,7 +95,6 @@ trait Forms {
       'ip' => $userInfo['ip'],
       'user_id' => auth_id() ?? null,
       'user_agent' => $userInfo['agent'],
-      'geo_info' => $userInfo['geo'],
       'status' => 1,
       'created' => time()
     ]);
@@ -163,7 +161,6 @@ trait Forms {
     $update_info = [
       'ip' => $request->ip(),
       'agent' => json_encode($request->userAgent()),
-      'geo' => json_encode($request->clientInfo()),
     ];
     $fields = [
       'content' => json_encode($entry),
@@ -251,7 +248,7 @@ trait Forms {
     ];
 
     $options = array_merge($defaultOptions, $options);
-    $defaultFields = ['name', 'user_id', 'id', 'ip', 'user_agent', 'geo_info', 'status', 'created', 'updated', 'update_info', 'fields'];
+    $defaultFields = ['name', 'user_id', 'id', 'ip', 'user_agent', 'status', 'created', 'updated', 'update_info', 'fields'];
 
     $conditions = ["name = '{$form}'"];
 

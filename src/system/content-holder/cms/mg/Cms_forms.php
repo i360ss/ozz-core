@@ -12,7 +12,6 @@ class Cms_forms {
       'user_id'     => ['int'],
       'ip'          => ['str:100', 'nn'],
       'user_agent'  => ['txt'],
-      'geo_info'    => ['txt'],
       'status'      => ['int'],
       'created'     => ['int'],
       'updated'     => ['int'],

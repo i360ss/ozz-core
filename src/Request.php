@@ -176,18 +176,22 @@ class Request extends Router {
    * HTTP Headers
    * @return array Array of headers
    */
-  public function headers(){
+  public function headers(): array {
     $headers = [];
     foreach ($_SERVER as $k => $value) {
-      if(strpos($k, 'HTTP_') === 0){
-        $headers[substr($k, 5)] = $value;
-      } elseif(strpos($k, 'REDIRECT_') === 0){
-        $headers[substr($k, 9)] = $value;
+      if (strpos($k, 'HTTP_') === 0) {
+        $name = strtolower(str_replace('_', '-', substr($k, 5)));
+        $headers[$name] = $value;
+      } elseif (strpos($k, 'REDIRECT_') === 0) {
+        $name = strtolower(str_replace('_', '-', substr($k, 9)));
+        $headers[$name] = $value;
       }
     }
 
-    if(function_exists('getallheaders')){
-      $headers = array_merge($headers, getallheaders());
+    if (function_exists('getallheaders')) {
+      foreach (getallheaders() as $k => $v) {
+        $headers[strtolower($k)] = $v;
+      }
     }
 
     return $headers;
@@ -197,8 +201,13 @@ class Request extends Router {
    * Return HTTP Header value of provided key
    * @param string $key Key for select specific header value
    */
-  public function header($key=false){
-    return $key ? $this->headers()[$key] : $this->headers();
+  public function header(string $key = null) {
+    $headers = $this->headers();
+    if ($key === null) {
+      return $headers;
+    }
+    $key = strtolower($key);
+    return $headers[$key] ?? null;
   }
 
   /**
@@ -248,10 +257,15 @@ class Request extends Router {
    */
   public function content($key=false){
     $output = [];
-    $data = json_decode(file_get_contents('php://input'), true);
-
-    if(is_null($data)){
+    $raw = file_get_contents('php://input');
+    if (!$raw) {
       return false;
+    }
+
+    $data = json_decode($raw, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      return false; // invalid JSON
     }
 
     foreach ($data as $k => $v) {
@@ -373,6 +387,10 @@ class Request extends Router {
 
     if($string === true){
       return $_SERVER['HTTP_USER_AGENT'] ?? null;
+    }
+
+    if (!$ua || strlen($ua) > 500) {
+      return null;
     }
 
     $user_agent = $_SERVER['HTTP_USER_AGENT'];
@@ -501,50 +519,29 @@ class Request extends Router {
 
   /**
    * Get Client IP address
+   * 
+   * @param array $trustedProxies List of proxy IPs you control
+   * @return string
    */
-  public function ip() {
-    $ip = $_SERVER['HTTP_CLIENT_IP'] 
-      ?? $_SERVER["HTTP_CF_CONNECTING_IP"]
-      ?? $_SERVER['HTTP_X_FORWARDED'] 
-      ?? $_SERVER['HTTP_X_FORWARDED_FOR'] 
-      ?? $_SERVER['HTTP_FORWARDED'] 
-      ?? $_SERVER['HTTP_FORWARDED_FOR'] 
-      ?? $_SERVER['REMOTE_ADDR'] 
-      ?? '0.0.0.0';
+  public function ip(array $trustedProxies = []): string {
+    $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+
+    // If behind trusted proxy, allow forwarded headers
+    if (in_array($ip, $trustedProxies, true)) {
+      if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+        return filter_var($_SERVER['HTTP_CF_CONNECTING_IP'], FILTER_VALIDATE_IP) ?: $ip;
+      }
+      if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $forwardedIps = array_map('trim', explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
+        foreach (array_reverse($forwardedIps) as $fwdIp) {
+          if (filter_var($fwdIp, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            return $fwdIp;
+          }
+        }
+      }
+    }
 
     return $ip;
-  }
-
-  /**
-   * Get client information
-   * javascript http://www.geoplugin.net/javascript.gp
-   * @param string $key
-   */
-  public function clientInfo($key=''){
-    return [];
-    // $info = [];
-    // $userIp = $this->ip();
-    // $geo = unserialize(file_get_contents("http://www.geoplugin.net/php.gp?ip=$userIp"));
-    // unset($geo['geoplugin_credit']);
-
-    // foreach ($geo as $k => $val) {
-    //   $nk = str_replace('geoplugin_', '', $k);
-    //   $info[$nk] = $val;
-    // }
-
-    // if ($key=='') {
-    //   return $info;
-    // } elseif (array_key_exists($key, $info)) {
-    //   return $info[$key];
-    // } else {
-    //   return DEBUG 
-    //   ? Err::custom([
-    //     "msg" => "Invalid key provided for client information",
-    //     "info" => "Please refer to the available client information below",
-    //     "note" => implode(', ', array_keys($info))
-    //   ])
-    //   : false;
-    // }
   }
 
 }

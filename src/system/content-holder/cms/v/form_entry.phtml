@@ -6,7 +6,6 @@
  */
 
 $agentInfo = json_decode($entry['user_agent'], true);
-$geoInfo = json_decode($entry['geo_info'], true);
 unset($agentInfo['all']);
 
 // Get field label by name
@@ -176,15 +175,6 @@ function getFieldLabelByName($name) {
               <div class="item">
                 <strong><?=ucfirst(str_replace('_', ' ', $key))?> </strong>
                 <span><?=$value?></span>
-              </div>
-            <?php endforeach; ?>
-          </div><br>
-
-          <div class="post-edit-view__widget info">
-            <h2 class="ozz-widget__heading">Location Info</h2>
-            <?php foreach ($geoInfo as $key => $value) : ?>
-              <div class="item">
-                <strong><?=ucfirst($key)?></strong><?=$value?>
               </div>
             <?php endforeach; ?>
           </div>

@@ -15,7 +15,6 @@ class AppInit {
 
   private $SSL;   // Check (http or https)
   private $env;   // Env App
-  private $csp;   // CSP
 
   use \Ozz\Core\TokenHandler;
 
@@ -49,12 +48,6 @@ class AppInit {
     // Content security policy configuration
     $csp_nonce = self::hashKey('csp-nonce');
     defined('CSP_NONCE') || define('CSP_NONCE', $csp_nonce);
-
-    $this->csp = parse_ini_file(__DIR__.SPC_BACK['core'].'csp.ini', true); // Get CSP Values
-    if($this->csp['CSP']['USE_CSP'] == 1){
-      $csp = $this->csp['CSP'];
-      header("Content-Security-Policy: base-uri ".$csp['base-uri']."; default-src ".$csp['default-src']."; style-src ".$csp['style-src']." 'nonce-".$csp_nonce."'; font-src ".$csp['font-src']."; script-src ".$csp['script-src']." 'nonce-" . $csp_nonce . "'; img-src ".$csp['img-src']."; connect-src ".$csp['connect-src']."; object-src ".$csp['object-src']."; media-src ".$csp['media-src']."; child-src ".$csp['child-src']."; form-action ".$csp['form-action']."; frame-ancestors ".$csp['frame-ancestors']."; worker-src ".$csp['worker-src']."; ");
-    }
 
     // Directory separator
     defined('DS') || define('DS', '/');
