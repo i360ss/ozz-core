@@ -389,11 +389,11 @@ class Request extends Router {
       return $_SERVER['HTTP_USER_AGENT'] ?? null;
     }
 
-    if (!$ua || strlen($ua) > 500) {
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
+    if (!$user_agent || strlen($user_agent) > 500) {
       return null;
     }
 
-    $user_agent = $_SERVER['HTTP_USER_AGENT'];
     $user_agent_info = [
       'all'             => $user_agent,
       'device'          => null,
