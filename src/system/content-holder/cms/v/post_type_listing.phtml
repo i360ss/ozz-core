@@ -31,7 +31,7 @@
         <?php foreach ($post_data as $type => $value) : ?>
           <tr>
             <td class="link-wrap">
-              <a href="/admin/posts/<?=$type?>">
+              <a href="<?=ADMIN_PATH?>/posts/<?=$type?>">
                 <span class="listing-s1__title"><?=$value['label']?></span>
                 <?php if (isset($value['note']) && $value['note'] !== '') :?>
                   <span class="note light-text"><?=$value['note']?></span>
@@ -45,7 +45,7 @@
               <strong><?=$value['fields']?></strong> Fields
             </td>
             <td class="actions align-right">
-              <a href="/admin/posts/create/<?=$type?>" class="button mini">Add New Post</a>
+              <a href="<?=ADMIN_PATH?>/posts/create/<?=$type?>" class="button mini">Add New Post</a>
             </td>
           </tr>
         <?php endforeach; ?>

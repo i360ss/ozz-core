@@ -28,7 +28,7 @@
         <?php foreach ($blocks as $type => $block) : ?>
           <tr>
             <td class="link-wrap">
-              <a href="/admin/blocks/<?=$type?>">
+              <a href="<?=ADMIN_PATH?>/blocks/<?=$type?>">
                 <span class="listing-s1__title"><?=$block['label']?></span>
                 <?php if (isset($block['note']) && $block['note'] !== '') :?>
                   <span class="note light-text"><?=$block['note']?></span>

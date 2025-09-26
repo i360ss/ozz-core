@@ -36,7 +36,7 @@ class AppInit {
     $defConfig = require __DIR__.'/system/default-config.php';
     define('CONFIG', array_merge($defConfig, $devConfig));
 
-    // More Reused
+    // Auth paths
     defined('AUTH_PATHS') || define('AUTH_PATHS', CONFIG['AUTH_PATHS']);
 
     // Initialize session
@@ -60,6 +60,9 @@ class AppInit {
 
     // App Version defined in env.ini
     defined('APP_VERSION') || define('APP_VERSION', $this->env['app']['APP_VERSION']);
+
+    // CMS Admin path
+    defined('ADMIN_PATH') || define('ADMIN_PATH', $this->env['cms']['ADMIN_PATH'] ?? '/admin');
 
     // App current language
     if(!Session::has('app_lang')){

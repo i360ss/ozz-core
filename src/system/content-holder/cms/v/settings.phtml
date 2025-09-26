@@ -20,7 +20,7 @@ $form_data = has_flash('form_data') ? get_flash('form_data') : [];
         <img src="<?=get_gravatar()?>" alt="<?=auth_info('name')?>">
       </div><br>
       <?php _create_form([
-        'action' => '/admin/settings/change-info',
+        'action' => ADMIN_PATH.'/settings/change-info',
         'method' => 'post',
         'class' => 'ozz-fm',
         'field_options' => [
@@ -60,7 +60,7 @@ $form_data = has_flash('form_data') ? get_flash('form_data') : [];
     <div class="ozz-widget">
       <h4 class="ozz-widget__heading">Change Password</h4>
       <?php _create_form([
-        'action' => '/admin/settings/change-pass',
+        'action' => ADMIN_PATH.'/settings/change-pass',
         'method' => 'post',
         'class' => 'ozz-fm',
         'field_options' => [

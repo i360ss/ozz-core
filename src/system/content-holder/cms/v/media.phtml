@@ -16,13 +16,13 @@ $current_dir = '';
   <div class="ozz-media-manager">
     <?php if (!empty($media_directory_tree)) : ?>
       <div class="ozz-media-manager__breadcrumb">
-        <a href="/admin/media" class="ozz-media-manager__breadcrumb-home"><span></span></a>
+        <a href="<?=ADMIN_PATH?>/media" class="ozz-media-manager__breadcrumb-home"><span></span></a>
         <?php
         foreach ($media_directory_tree as $key => $dir) :
           $separator = $key !== 0 && $key !== count($media_directory_tree) ? '/' : '';
           $current_dir .= $separator.$dir;
         ?>
-          <a href="/admin/media?dir=<?=urlencode($current_dir)?>" title="<?=$dir?>">
+          <a href="<?=ADMIN_PATH?>/media?dir=<?=urlencode($current_dir)?>" title="<?=$dir?>">
             <?= char_limit($dir, 15, '..') ?>
           </a> /
         <?php endforeach; ?>
@@ -37,7 +37,7 @@ $current_dir = '';
           <h2>Create New Directory</h2>
           <?php _create_form([
           'method' => 'post',
-          'action' => '/admin/media/action?q=create_folder',
+          'action' => ADMIN_PATH.'/media/action?q=create_folder',
           'class' => 'ozz-fm',
           'fields' => [
             [
@@ -66,7 +66,7 @@ $current_dir = '';
           <h2>Create New File</h2>
           <?php _create_form([
           'method' => 'post',
-          'action' => '/admin/media/action?q=create_file',
+          'action' => ADMIN_PATH.'/media/action?q=create_file',
           'class' => 'ozz-fm',
           'fields' => [
             [
@@ -95,7 +95,7 @@ $current_dir = '';
           <?php _create_form([
             'method' => 'post',
             'enctype' => 'multipart/form-data',
-            'action' => '/admin/media/action?q=upload_file',
+            'action' => ADMIN_PATH.'/media/action?q=upload_file',
             'class' => 'ozz-fm',
             'fields' => [
               [
@@ -121,7 +121,7 @@ $current_dir = '';
       <div class="ozz-media-manager__actions-action popup-trigger delete-dir">
         <?php _create_form([
           'method' => 'post',
-          'action' => '/admin/media/action?q=delete_dir',
+          'action' => ADMIN_PATH.'/media/action?q=delete_dir',
           'class' => 'ozz-fm',
           'fields' => [
             [

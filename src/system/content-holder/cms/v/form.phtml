@@ -16,13 +16,13 @@ $page_title = 'Form | '.($form['label'] ?? ($form['name'] ?? 'Form not found'));
     <div class="container">
       <?php if (!empty($form)) : ?>
         <div class="heading breadcrumb">
-          <span><a href="/admin/forms">Forms</a></span>
+          <span><a href="<?=ADMIN_PATH?>/forms">Forms</a></span>
           <span><?=$form['label']?></span>
         </div>
 
         <h1 class="heading cl cl-6"><?=$form['label']?></h1>
         <div class="cl cl-6 align-right">
-          <a href="/admin/forms/<?=$form['name']?>/entries" class="button small">Entries</a>
+          <a href="<?=ADMIN_PATH?>/forms/<?=$form['name']?>/entries" class="button small">Entries</a>
         </div>
 
         <div class="ozz-widget">

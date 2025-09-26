@@ -23,7 +23,7 @@
         <h3><?=$post_count?></h3>
       </div>
 
-      <a href="/admin/posts" class="button mini">Posts</a>
+      <a href="<?=ADMIN_PATH?>/posts" class="button mini">Posts</a>
     </div>
 
     <div class="widget-box blue">
@@ -31,7 +31,7 @@
         <span class="light-text f-14">Blocks</span>
         <h3><?=count($blocks)?></h3>
       </div>
-      <a href="/admin/blocks" class="button mini">Blocks</a>
+      <a href="<?=ADMIN_PATH?>/blocks" class="button mini">Blocks</a>
     </div>
 
     <div class="widget-box blue">
@@ -44,7 +44,7 @@
         <span class="light-text f-14">Terms</span>
         <h3><?=$terms_count?></h3>
       </div>
-      <a href="/admin/taxonomy" class="button mini">Taxonomies</a>
+      <a href="<?=ADMIN_PATH?>/taxonomy" class="button mini">Taxonomies</a>
     </div>
 
     <div class="widget-box blue">
@@ -57,7 +57,7 @@
         <span class="light-text f-14">Entries</span>
         <h3><?=$entries_count?></h3>
       </div>
-      <a href="/admin/forms" class="button mini">Forms</a>
+      <a href="<?=ADMIN_PATH?>/forms" class="button mini">Forms</a>
     </div>
   </section><br>
 
@@ -78,12 +78,12 @@
           <td><?=$item['name']?></td>
           <td class="light-text f-14"><?=ozz_format_date($item['created'])?></td>
           <td class="align-right">
-            <a href="/admin/forms/<?=$item['name']?>/entry/<?=$item['id']?>" class="button micro">View</a>
+            <a href="<?=ADMIN_PATH?>/forms/<?=$item['name']?>/entry/<?=$item['id']?>" class="button micro">View</a>
           </td>
         </tr>
       <?php endforeach; ?>
     </table>
     <br>
-    <a href="/admin/forms" class="button mini">All Entries</a>
+    <a href="<?=ADMIN_PATH?>/forms" class="button mini">All Entries</a>
   </section>
 {{ content-end }}

@@ -19,7 +19,7 @@
           <span>Total Taxonomies: <strong><?=count($taxonomies)?></strong></span>
         </div>
         <div class="align-right cl cl-6">
-          <a href="/admin/taxonomy/create" class="button green small">Create Taxonomy</a>
+          <a href="<?=ADMIN_PATH?>/taxonomy/create" class="button green small">Create Taxonomy</a>
         </div>
       </div>
 
@@ -33,14 +33,14 @@
         <?php foreach ($taxonomies as $taxonomy) : ?>
           <tr>
             <td class="link-wrap">
-              <a href="/admin/taxonomy/<?=$taxonomy['slug']?>">
+              <a href="<?=ADMIN_PATH?>/taxonomy/<?=$taxonomy['slug']?>">
                 <span class="listing-s1__title"><?=$taxonomy['name']?></span>
               </a>
             </td>
             <td><span class="slug"><?=$taxonomy['slug']?></span></td>
             <td><?=count($taxonomy['terms'])?></td>
             <td class="align-right actions">
-              <a href="/admin/taxonomy/edit/<?=$taxonomy['id']?>">
+              <a href="<?=ADMIN_PATH?>/taxonomy/edit/<?=$taxonomy['id']?>">
                 <span class="icon-button edit" title="Edit"></span>
               </a>
               <span class="icon-button delete delete taxonomy-listing__delete"

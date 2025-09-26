@@ -472,7 +472,7 @@ class CMSAdminController extends CMS {
       set_error('error', trans_e('error'));
     }
 
-    return redirect('/admin/forms/'.$request->input('form-name').'/entries');
+    return redirect(ADMIN_PATH.'/forms/'.$request->input('form-name').'/entries');
   }
 
 
@@ -544,7 +544,7 @@ class CMSAdminController extends CMS {
   // =============================================
   public function media_manager(Request $request) {
     if(!is_dir(UPLOAD_TO.$request->query('dir', ''))){
-      return redirect('/admin/media');
+      return redirect(ADMIN_PATH.'/media');
     }
 
     $media_items = $this->media_get_items(

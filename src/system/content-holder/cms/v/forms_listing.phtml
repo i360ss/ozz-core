@@ -30,7 +30,7 @@
           <?php foreach ($forms as $key => $form) : ?>
             <tr>
               <td class="link-wrap">
-                <a href="/admin/forms/<?=$key?>">
+                <a href="<?=ADMIN_PATH?>/forms/<?=$key?>">
                   <span class="listing-s1__title"><?=$form['label']?></span>
                   <?php if (isset($form['note']) && $form['note'] !== '') :?>
                     <span class="note light-text"><?=$form['note']?></span>
@@ -39,7 +39,7 @@
               </td>
               <td><span class="slug"><?=$key?></span></td>
               <td class="align-right">
-                <a href="/admin/forms/<?=$key?>/entries"><span class="button mini">Entries</span></a>
+                <a href="<?=ADMIN_PATH?>/forms/<?=$key?>/entries"><span class="button mini">Entries</span></a>
               </td>
             </tr>
           <?php endforeach; ?>

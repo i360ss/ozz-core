@@ -7,14 +7,14 @@
 
 $form_data = has_flash('form_data') ? get_flash('form_data') : [];
 $taxonomy_values = isset($edit_data) ? $edit_data : [];
-$action = '/admin/taxonomy/create';
+$action = ADMIN_PATH.'/taxonomy/create';
 $create_class = 'create';
 $button_label = 'Create';
 $title_label = 'Create';
 
 // Update taxonomy
 if (!empty($taxonomy_values)) {
-  $action = '/admin/taxonomy/update';
+  $action = ADMIN_PATH.'/taxonomy/update';
   $form_data = empty($form_data) ? $taxonomy_values : $form_data;
   $create_class = 'edit';
   $button_label = 'Save';
@@ -29,7 +29,7 @@ if (!empty($taxonomy_values)) {
   <section>
     <div class="container">
       <div class="heading breadcrumb">
-        <span><a href="/admin/taxonomy">Taxonomies</a></span>
+        <span><a href="<?=ADMIN_PATH?>/taxonomy">Taxonomies</a></span>
       </div>
 
       <h1 class="heading">

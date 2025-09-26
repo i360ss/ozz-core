@@ -15,19 +15,19 @@ $page_title = 'Taxonomy | '.($taxonomy['name'] ?? 'Not found');
     <div class="container">
       <?php if (!empty($taxonomy)) : ?>
         <div class="heading breadcrumb">
-          <span><a href="/admin/taxonomy">Taxonomies</a></span>
+          <span><a href="<?=ADMIN_PATH?>/taxonomy">Taxonomies</a></span>
           <span><a href="#"><?=$taxonomy['name']?></a></span>
         </div>
 
         <h1 class="heading cl cl-6"><?=$taxonomy['name']?></h1>
         <div class="cl cl-6 align-right">
-          <a href="/admin/taxonomy/edit/<?=$taxonomy['id']?>" class="button small green">Edit Taxonomy</a>
+          <a href="<?=ADMIN_PATH?>/taxonomy/edit/<?=$taxonomy['id']?>" class="button small green">Edit Taxonomy</a>
         </div>
 
         <div class="ozz-widget">
           <div class="ozz-widget__item-raw no-border">
             <?php _create_form([
-              'action' => '/admin/taxonomy/create-term',
+              'action' => ADMIN_PATH.'/taxonomy/create-term',
               'method' => 'post',
               'class' => 'ozz-fm',
               'field_options' => [

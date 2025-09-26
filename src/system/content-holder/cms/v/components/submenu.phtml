@@ -9,7 +9,7 @@
 <ul>
   <label>
     <span><?=$title?></span>
-    <a href="/admin/<?=$slug?>">
+    <a href="<?=ADMIN_PATH.'/'.$slug?>">
       <span class="button mini">All</span>
     </a>
   </label>
@@ -21,7 +21,7 @@
     $entries = ($slug == 'forms') ? '/entries' : '';
   ?>
     <li <?=(isset($url_3) && $url_3 == $key) ?'class="active"' : ''?>>
-      <a href="/admin/<?=$slug?>/<?=$key.$entries?>">
+      <a href="<?=ADMIN_PATH.'/'.$slug.'/'.$key.$entries?>">
         <?=ucfirst(($item['label'] ?? $item['name']))?>
         <?=$new_count?>
       </a>

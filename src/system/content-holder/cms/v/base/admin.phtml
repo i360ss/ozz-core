@@ -33,11 +33,11 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
 
       <ul data-active-link="<?= $context['url_parts'][2] ?? 'dashboard' ?>">
         <li class="dashboard">
-          <a href="/admin" class="dashboard">Dashboard</a>
+          <a href="<?=ADMIN_PATH?>" class="dashboard">Dashboard</a>
         </li>
 
         <li class="posts has-child">
-          <a href="/admin/posts" class="posts">Posts</a>
+          <a href="<?=ADMIN_PATH?>/posts" class="posts">Posts</a>
           <?= component('submenu', [
             'title' => 'Posts types',
             'slug' => 'posts',
@@ -47,7 +47,7 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
         </li>
 
         <li class="blocks has-child">
-          <a href="/admin/blocks" class="blocks">Blocks</a>
+          <a href="<?=ADMIN_PATH?>/blocks" class="blocks">Blocks</a>
           <?= component('submenu', [
             'title' => 'Blocks',
             'slug' => 'blocks',
@@ -57,7 +57,7 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
         </li>
 
         <li class="taxonomy has-child">
-          <a href="/admin/taxonomy" class="taxonomy">Taxonomy</a>
+          <a href="<?=ADMIN_PATH?>/taxonomy" class="taxonomy">Taxonomy</a>
           <?= component('submenu', [
             'title' => 'Taxonomy',
             'slug' => 'taxonomy',
@@ -67,7 +67,7 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
         </li>
 
         <li class="forms has-child">
-          <a href="/admin/forms" class="forms">Forms & Entries <?=$new_entries_flag?></a>
+          <a href="<?=ADMIN_PATH?>/forms" class="forms">Forms & Entries <?=$new_entries_flag?></a>
           <?= component('submenu', [
             'title' => 'Forms & Entries',
             'slug' => 'forms',
@@ -78,11 +78,11 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
         </li>
 
         <li class="media">
-          <a href="/admin/media" class="media">Media</a>
+          <a href="<?=ADMIN_PATH?>/media" class="media">Media</a>
         </li>
 
         <li class="settings">
-          <a href="/admin/settings" class="settings">Settings</a>
+          <a href="<?=ADMIN_PATH?>/settings" class="settings">Settings</a>
         </li>
       </ul>
     </nav>

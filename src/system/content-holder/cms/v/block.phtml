@@ -16,7 +16,7 @@ $page_title = 'Block | '.($block['label'] ?? ($block['name'] ?? 'Block not found
     <div class="container">
       <?php if (!empty($block)) : ?>
         <div class="heading breadcrumb">
-          <span><a href="/admin/blocks">Blocks</a></span>
+          <span><a href="<?=ADMIN_PATH?>/blocks">Blocks</a></span>
           <span><a href=""><?=$block['label']?></a></span>
         </div>
 

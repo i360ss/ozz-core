@@ -10,28 +10,28 @@
 
 {{ content }}
 <div class="heading breadcrumb">
-  <span><a href="/admin/posts">Posts</a></span>
+  <span><a href="<?=ADMIN_PATH?>/posts">Posts</a></span>
 </div>
 <h1><?=$post_type_label?></h1>
 <div class="listing-s2">
   <div class="listing-s2__header">
     <div class="listing-s2__filter"
       data-active-tab="<?=isset($context['query']['status']) ? $context['query']['status'] : '';?>">
-      <a class="button mini light tab-button all" href="/admin/posts/<?=$post_type?>">
+      <a class="button mini light tab-button all" href="<?=ADMIN_PATH?>/posts/<?=$post_type?>">
         <span>All <strong><?=$posts['count']['all']?></strong></span>
       </a>
-      <a class="button mini light tab-button published" href="/admin/posts/<?=$post_type?>?status=published">
+      <a class="button mini light tab-button published" href="<?=ADMIN_PATH?>/posts/<?=$post_type?>?status=published">
         <span>Published <strong><?=$posts['count']['published']?></strong></span>
       </a>
-      <a class="button mini light tab-button draft" href="/admin/posts/<?=$post_type?>?status=draft">
+      <a class="button mini light tab-button draft" href="<?=ADMIN_PATH?>/posts/<?=$post_type?>?status=draft">
         <span>Draft <strong><?=$posts['count']['draft']?></strong></span>
       </a>
-      <a class="button mini light tab-button trash" href="/admin/posts/<?=$post_type?>?status=trash">
+      <a class="button mini light tab-button trash" href="<?=ADMIN_PATH?>/posts/<?=$post_type?>?status=trash">
         <span>Trash <strong><?=$posts['count']['trash']?></strong></span>
       </a>
     </div>
     <div class="align-right">
-      <a href="/admin/posts/create/<?=$post_type?>" class="button small green">Create New</a>
+      <a href="<?=ADMIN_PATH?>/posts/create/<?=$post_type?>" class="button small green">Create New</a>
     </div>
   </div>
 
@@ -52,7 +52,7 @@
         <tr>
           <td>
             <span class="title"><?=$value['title']?></span>
-            <a href="/admin/posts/edit/<?=$value['post_type']?>/<?=$value['post_id']?>" class="anchor-wrapper"></a>
+            <a href="<?=ADMIN_PATH?>/posts/edit/<?=$value['post_type']?>/<?=$value['post_id']?>" class="anchor-wrapper"></a>
           </td>
           <td width="120px">
             <span class="label <?=$value['post_status']?>">
@@ -64,12 +64,12 @@
           <td width="180px" class="f-14"><?=$value['first_name'].' '.$value['last_name']?></td>
           <td class="tr-action" width="180px">
             <div class="show-on-hover">
-              <a href="/admin/posts/edit/<?=$value['post_type']?>/<?=$value['post_id']?>" title="Edit">
+              <a href="<?=ADMIN_PATH?>/posts/edit/<?=$value['post_type']?>/<?=$value['post_id']?>" title="Edit">
                 <span class="icon-button edit"></span>
               </a>
 
               <?php if($value['post_status'] !== 'trash') : ?>
-                <form action="/admin/post/duplicate" method="post" class="action-form duplicate-form">
+                <form action="<?=ADMIN_PATH?>/post/duplicate" method="post" class="action-form duplicate-form">
                   <?=CSRF_FIELD?>
                   <input type="hidden" name="post_id" value="<?=$value['id']?>">
                   <button type="submit" title="Duplicate">
@@ -79,7 +79,7 @@
               <?php endif; ?>
 
               <?php if($value['post_status'] == 'published') : ?>
-                <form action="/admin/post/change-status" method="post" class="action-form draft-form">
+                <form action="<?=ADMIN_PATH?>/post/change-status" method="post" class="action-form draft-form">
                   <?=CSRF_FIELD?>
                   <input type="hidden" name="post_id" value="<?=$value['id']?>">
                   <input type="hidden" name="status" value="draft">
@@ -88,7 +88,7 @@
                   </button>
                 </form>
               <?php else : ?>
-                <form action="/admin/post/change-status" method="post" class="action-form publish-form">
+                <form action="<?=ADMIN_PATH?>/post/change-status" method="post" class="action-form publish-form">
                   <?=CSRF_FIELD?>
                   <input type="hidden" name="post_id" value="<?=$value['id']?>">
                   <input type="hidden" name="status" value="published">
@@ -98,7 +98,7 @@
                 </form>
               <?php endif; ?>
 
-              <form action="/admin/posts/delete" method="post" class="action-form post-delete-form">
+              <form action="<?=ADMIN_PATH?>/posts/delete" method="post" class="action-form post-delete-form">
                 <?=CSRF_FIELD?>
                 <input type="hidden" name="post_id" value="<?=$value['id']?>">
                 <input type="hidden" name="delete_type" value="<?=$value['post_status'] == 'trash' ? 'delete' : 'trash'; ?>">

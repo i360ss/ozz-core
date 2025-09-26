@@ -39,7 +39,7 @@
 
   <?php if (isset($id)) :?>
     <div class="item language-duplicator"><strong>Duplicate to:</strong> <br>
-      <form action="/admin/post/duplicate" method="post" class="ozz-fm">
+      <form action="<?=ADMIN_PATH?>/post/duplicate" method="post" class="ozz-fm">
         <?=CSRF_FIELD?>
         <input type="hidden" name="post_id" value="<?=$id?>">
         <input type="hidden" name="post_id_lang" value="<?=$post_id?>">
@@ -62,7 +62,7 @@
 
     <div class="item delete-post separator">
       <?php _create_form([
-        'action' => '/admin/posts/delete',
+        'action' => ADMIN_PATH.'/posts/delete',
         'method' => 'post',
         'class' => 'action-form post-delete-form',
         'fields' => [
