@@ -284,7 +284,7 @@ trait Posts {
       }
     }
 
-    return redirect('/admin/posts/edit/'.$this->post_type.'/'.$post_id);
+    return redirect(ADMIN_PATH.'/posts/edit/'.$this->post_type.'/'.$post_id);
   }
 
 
@@ -412,7 +412,7 @@ trait Posts {
     // Add form action
     if(!isset($form['action'])){
       if($form_type == 'create'){
-        $form['action'] = '/admin/posts/create/'.$this->post_type;
+        $form['action'] = ADMIN_PATH.'/posts/create/'.$this->post_type;
 
         // Post ID (post_id) for translation
         $form['fields'][] = [
@@ -422,7 +422,7 @@ trait Posts {
           'wrapper' => false
         ];
       } else {
-        $form['action'] = '/admin/posts/update/'.$this->post_type.'/'.$values['id'];
+        $form['action'] = ADMIN_PATH.'/posts/update/'.$this->post_type.'/'.$values['id'];
       }
     }
 
@@ -724,7 +724,7 @@ trait Posts {
         set_error('error', 'Error on deleting your post!');
       }
 
-      return redirect('/admin/posts/'.$deleted_post['post_type']);
+      return redirect(ADMIN_PATH.'/posts/'.$deleted_post['post_type']);
     }
 
     return back();

@@ -35,7 +35,7 @@ trait Utilities {
 
     foreach ($posts as $k => $post) {
       $posts[$k]['type'] = 'Post: '.$post['type'];
-      $posts[$k]['url'] = '/admin/posts/edit/'.$post['type'].'/'.$post['post_id'];
+      $posts[$k]['url'] = ADMIN_PATH.'/posts/edit/'.$post['type'].'/'.$post['post_id'];
     }
 
     // Fetch forms
@@ -57,7 +57,7 @@ trait Utilities {
       $content = implode(', ', $stringValues);
       $forms[$k]['title'] = char_limit($content, 40, '...');
       $forms[$k]['type'] = 'Entry: '.$entry['name'];
-      $forms[$k]['url'] = '/admin/forms/'.$entry['name'].'/entry/'.$entry['id'];
+      $forms[$k]['url'] = ADMIN_PATH.'/forms/'.$entry['name'].'/entry/'.$entry['id'];
     }
 
     // Fetch terms
@@ -82,7 +82,7 @@ trait Utilities {
     foreach ($terms as $k => $term) {
       $terms[$k]['title'] = 'Term: '.$term['term_name'];
       $terms[$k]['type'] = 'Taxonomy: '.$term['name'];
-      $terms[$k]['url'] = '/admin/taxonomy/'.$term['slug'];
+      $terms[$k]['url'] = ADMIN_PATH.'/taxonomy/'.$term['slug'];
     }
 
     return array_merge($posts, $forms, $terms);
