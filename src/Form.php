@@ -49,7 +49,8 @@ class Form {
   ];
 
   public static $custom_field_types = [
-    "rich-text"
+    "rich-text",
+    "link"
   ];
 
   private static $initial_form;
@@ -113,9 +114,6 @@ class Form {
     if(env('app', 'ENABLE_CMS')) {
       $cms = CMS::getInstance();
       $args = $cms->cms_related_form_modifies($args);
-
-      // Add CMS Specific Input fields
-      (!in_array('media', self::$input_types)) ? array_push(self::$input_types, 'media') : false;
     }
 
     // Start form
@@ -226,6 +224,7 @@ class Form {
         }
       }
 
+      // Generate Repeatable fields
       if(in_array($type, ['repeat', 'repeater', 'repeatable'])){
         if(env('app', 'ENABLE_CMS')) {
           $cms = CMS::getInstance();
@@ -596,11 +595,16 @@ class Form {
       $optionField .= '</'.$type.'>'."\n";
       $thisField = $optionField;
     } elseif(in_array($type, self::$custom_field_types)){
-      // Custom Field Types
+      // Rich text field
       if ($type == 'rich-text') {
         $classes = isset($args['class']) ? $args['class'] : '';
         $rich_txt_val = isset($args['value']) ? '<div data-editor-area>'.html_decode($args['value']).'</div>' : ''; // Rich-text value
         $thisField = '<div data-ozz-wyg data-field-name="'.$args['name'].'" class="'.$classes.'">'.$rich_txt_val.'</div>';
+      }
+
+      // Link field
+      if ($type == 'link') {
+        $thisField = self::generateLinkField($type, $args);
       }
     }
 
@@ -609,6 +613,130 @@ class Form {
     }
 
     return $thisLabel.$thisNote.$thisField;
+  }
+
+
+  /**
+   * Generate Link Field (CMS Only)
+   * @param string $type
+   * @param array $args Field settings
+   * @return string $link_field
+   */
+  public static function generateLinkField($type, $args) {
+    // Link field generator (CMS Only)
+    $val = isset($args['value']) ? $args['value'] : ''; // $args['value'] is a JSON string
+    $thisField = '';
+    $posts = get_posts();
+    $posts = !empty($posts) ? $posts['posts'] : [];
+
+    if (isset($val) && is_array($val)) {
+      foreach ($val as $value) {
+        $thisField .= self::createLinkField($type, $args, $value, $posts, true);
+      }
+    } else {
+      $thisField = self::createLinkField($type, $args, $val, $posts);
+    }
+
+    return $thisField;
+  }
+
+
+  /**
+   * Create link field HTML
+   * @param string $type
+   * @param array $args Field settings
+   * @param mixed $val Field value
+   * @param array $posts List of posts for internal linking
+   * @param boolean $multiple Allow multiple links
+   * @return string $link_field
+   */
+  private static function createLinkField($type, $args, $val, $posts, $multiple=false) {
+    $val = is_string($val) ? json_decode($val, true) : $val;
+
+    // Example posts dropdown (replace with your own posts fetcher)
+    $postsOptions = '';
+    foreach ($posts as $post) {
+      $selected = (isset($val['postId']) && $val['postId'] == $post['id']) ? 'selected' : '';
+      $postsOptions .= '<option value="'.$post['id'].'" '.$selected.'>'.$post['title'].'</option>';
+    }
+
+    // Target options
+    $targetOptions = '';
+    $targets = ['_self' => 'Same Window', '_blank' => 'New Tab', '_parent' => 'Parent', '_top' => 'Top'];
+    foreach ($targets as $k => $label) {
+      $selected = (isset($val['target']) && $val['target'] == $k) ? 'selected' : '';
+      $targetOptions .= '<option value="'.$k.'" '.$selected.'>'.$label.'</option>';
+    }
+
+    // Rel options
+    $relOptions = ['nofollow', 'noopener', 'noreferrer', 'sponsored', 'ugc'];
+    $relField = '<select class="cl cl-6" data-link-rel>
+      <option value="">-- rel --</option>';
+    foreach ($relOptions as $rel) {
+      $selected = (isset($val['rel']) && $val['rel'] == $rel) ? 'selected' : '';
+      $relField .= '<option value="'.$rel.'" '.$selected.'>'.$rel.'</option>';
+    }
+    $relField .= '</select>';
+
+    $link_field = '
+    <div class="ozz-fm__link-field" data-ozz-link-field>
+      <div class="sub-field-wrapper">
+        <label>Link Type</label>
+        <select data-link-type>
+          <option value="external" '.((isset($val['type']) && $val['type'] === "external") ? "selected" : "").'>External</option>
+          <option value="internal" '.((isset($val['type']) && $val['type'] === "internal") ? "selected" : "").'>Internal</option>
+        </select>
+      </div>
+
+      <div class="sub-field-wrapper">
+        <label>Select Post</label>
+        <select data-link-post class="cl cl-6 '.((isset($val['type']) && $val['type'] === "internal") ? "show" : "hide").'">
+          <option value="">-- Select Post --</option>
+          '.$postsOptions.'
+        </select>
+      </div>
+
+      <div class="sub-field-wrapper">
+        <label>Title</label>
+        <input type="text" data-link-title placeholder="Title"
+          value="'.(isset($val['title']) ? htmlspecialchars($val['title']) : '').'"
+          class="cl cl-6 '.((!isset($val['type']) || $val['type'] === "external") ? "show" : "hide").'">
+      </div>
+
+      <div class="sub-field-wrapper">
+        <label>URL</label>
+        <input type="text" data-link-url placeholder="URL"
+          value="'.(isset($val['url']) ? htmlspecialchars($val['url']) : '').'"
+          class="cl cl-6 '.((!isset($val['type']) || $val['type'] === "external") ? "show" : "hide").'">
+      </div>
+
+      <div class="sub-field-wrapper">
+        <label>Target</label>
+        <select class="cl cl-6" data-link-target>'.$targetOptions.'</select>
+      </div>
+
+      <div class="sub-field-wrapper">
+        <label>Rel</label>
+        '.$relField.'
+      </div>
+
+      <div class="sub-field-wrapper">
+        <label>Area label</label>
+        <input type="text" class="cl cl-6" data-link-aria placeholder="Aria Label"
+          value="'.(isset($val['aria_label']) ? htmlspecialchars($val['aria_label']) : '').'">
+      </div>
+
+      <div class="sub-field-wrapper">
+        <label>CSS Classes</label>
+        <input type="text" class="cl cl-6" data-link-class placeholder="CSS Class"
+          value="'.(isset($val['class']) ? htmlspecialchars($val['class']) : '').'">
+      </div>
+
+      <input type="hidden" name="'.$args['name'].'" value=\''.json_encode($val, JSON_HEX_APOS | JSON_HEX_QUOT).'\' data-link-actual-value-json>
+    </div>
+    ';
+
+    return $link_field;
   }
 
 

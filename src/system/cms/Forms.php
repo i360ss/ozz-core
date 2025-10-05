@@ -207,6 +207,9 @@ trait Forms {
     $validationRules = [];
     foreach ($this->cms_forms[$form]['fields'] as $field) {
       if (isset($field['validate'])) {
+        if (!isset($form_data[$field['name']])) {
+          $form_data[$field['name']] = false; // Value not submitted from FE (Field removed)
+        }
         $validationRules[$field['name']] = $field['validate'];
       }
     }
