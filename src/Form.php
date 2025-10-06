@@ -55,6 +55,9 @@ class Form {
 
   private static $initial_form;
 
+  // Store posts for link field
+  private static $posts_reference;
+
   /**
    * Start a form
    * @param array $args for arguments
@@ -114,6 +117,7 @@ class Form {
     if(env('app', 'ENABLE_CMS')) {
       $cms = CMS::getInstance();
       $args = $cms->cms_related_form_modifies($args);
+      self::$posts_reference = get_all_posts_reference() ?? [];
     }
 
     // Start form
@@ -626,8 +630,7 @@ class Form {
     // Link field generator (CMS Only)
     $val = isset($args['value']) ? $args['value'] : ''; // $args['value'] is a JSON string
     $thisField = '';
-    $posts = get_posts();
-    $posts = !empty($posts) ? $posts['posts'] : [];
+    $posts = self::$posts_reference;
 
     if (isset($val) && is_array($val)) {
       foreach ($val as $value) {
@@ -653,12 +656,26 @@ class Form {
   private static function createLinkField($type, $args, $val, $posts, $multiple=false) {
     $val = is_string($val) ? json_decode($val, true) : $val;
 
-    // Example posts dropdown (replace with your own posts fetcher)
+    // Post reference selector
     $postsOptions = '';
-    foreach ($posts as $post) {
-      $selected = (isset($val['postId']) && $val['postId'] == $post['id']) ? 'selected' : '';
-      $postsOptions .= '<option value="'.$post['id'].'" '.$selected.'>'.$post['title'].'</option>';
+    if (!empty($posts)) {
+      // Group posts by type
+      $groupedPosts = [];
+      foreach ($posts as $post) {
+        $groupedPosts[$post['post_type']][] = $post;
+      }
+
+      // Generate <optgroup> markup
+      foreach ($groupedPosts as $type => $group) {
+        $postsOptions .= '<optgroup label="' . htmlspecialchars(ucfirst($type)) . '">';
+        foreach ($group as $post) {
+          $selected = (isset($val['post_id']) && $val['post_id'] == $post['id']) ? 'selected' : '';
+          $postsOptions .= '<option value="'.$post['id'].'" '.$selected . '>'.htmlspecialchars($post['title']).'</option>';
+        }
+        $postsOptions .= '</optgroup>';
+      }
     }
+
 
     // Target options
     $targetOptions = '';
@@ -670,7 +687,7 @@ class Form {
 
     // Rel options
     $relOptions = ['nofollow', 'noopener', 'noreferrer', 'sponsored', 'ugc'];
-    $relField = '<select class="cl cl-6" data-link-rel>
+    $relField = '<select data-link-rel>
       <option value="">-- rel --</option>';
     foreach ($relOptions as $rel) {
       $selected = (isset($val['rel']) && $val['rel'] == $rel) ? 'selected' : '';
@@ -679,61 +696,59 @@ class Form {
     $relField .= '</select>';
 
     $link_field = '
-    <div class="ozz-fm__link-field" data-ozz-link-field>
-      <div class="sub-field-wrapper">
-        <label>Link Type</label>
-        <select data-link-type>
-          <option value="external" '.((isset($val['type']) && $val['type'] === "external") ? "selected" : "").'>External</option>
-          <option value="internal" '.((isset($val['type']) && $val['type'] === "internal") ? "selected" : "").'>Internal</option>
-        </select>
-      </div>
+      <div class="ozz-fm__link-field ozz-fm__custom-field-group" data-ozz-link-field>
+        <div class="grid">
+          <div class="ozz-fm__field col-span-12">
+            <label>Link Type</label>
+            <select data-link-type>
+              <option value="external" '.((isset($val['type']) && $val['type'] === "external") ? "selected" : "").'>External</option>
+              <option value="internal" '.((isset($val['type']) && $val['type'] === "internal") ? "selected" : "").'>Internal</option>
+            </select>
+          </div>
 
-      <div class="sub-field-wrapper">
-        <label>Select Post</label>
-        <select data-link-post class="cl cl-6 '.((isset($val['type']) && $val['type'] === "internal") ? "show" : "hide").'">
-          <option value="">-- Select Post --</option>
-          '.$postsOptions.'
-        </select>
-      </div>
+          <div class="ozz-fm__field col-span-12">
+            <label>Select Post</label>
+            <select data-link-post>
+              <option value="">-- Select Post --</option>
+              '.$postsOptions.'
+            </select>
+          </div>
 
-      <div class="sub-field-wrapper">
-        <label>Title</label>
-        <input type="text" data-link-title placeholder="Title"
-          value="'.(isset($val['title']) ? htmlspecialchars($val['title']) : '').'"
-          class="cl cl-6 '.((!isset($val['type']) || $val['type'] === "external") ? "show" : "hide").'">
-      </div>
+          <div class="ozz-fm__field col-span-12 md:col-span-6">
+            <label>Title</label>
+            <input type="text" data-link-title value="'.(isset($val['title']) ? htmlspecialchars($val['title']) : '').'">
+          </div>
 
-      <div class="sub-field-wrapper">
-        <label>URL</label>
-        <input type="text" data-link-url placeholder="URL"
-          value="'.(isset($val['url']) ? htmlspecialchars($val['url']) : '').'"
-          class="cl cl-6 '.((!isset($val['type']) || $val['type'] === "external") ? "show" : "hide").'">
-      </div>
+          <div class="ozz-fm__field col-span-12 md:col-span-6">
+            <label>URL</label>
+            <input type="text" data-link-url value="'.(isset($val['url']) ? htmlspecialchars($val['url']) : '').'">
+          </div>
+        </div>
 
-      <div class="sub-field-wrapper">
-        <label>Target</label>
-        <select class="cl cl-6" data-link-target>'.$targetOptions.'</select>
-      </div>
+        <div class="grid">
+          <div class="ozz-fm__field col-span-12 md:col-span-3">
+            <label>Target</label>
+            <select data-link-target>'.$targetOptions.'</select>
+          </div>
 
-      <div class="sub-field-wrapper">
-        <label>Rel</label>
-        '.$relField.'
-      </div>
+          <div class="ozz-fm__field col-span-12 md:col-span-3">
+            <label>Rel</label>
+            '.$relField.'
+          </div>
 
-      <div class="sub-field-wrapper">
-        <label>Area label</label>
-        <input type="text" class="cl cl-6" data-link-aria placeholder="Aria Label"
-          value="'.(isset($val['aria_label']) ? htmlspecialchars($val['aria_label']) : '').'">
-      </div>
+          <div class="ozz-fm__field col-span-12 md:col-span-3">
+            <label>Aria label</label>
+            <input type="text" data-link-aria value="'.(isset($val['aria_label']) ? htmlspecialchars($val['aria_label']) : '').'">
+          </div>
 
-      <div class="sub-field-wrapper">
-        <label>CSS Classes</label>
-        <input type="text" class="cl cl-6" data-link-class placeholder="CSS Class"
-          value="'.(isset($val['class']) ? htmlspecialchars($val['class']) : '').'">
-      </div>
+          <div class="ozz-fm__field col-span-12 md:col-span-3">
+            <label>CSS Classes</label>
+            <input type="text" data-link-class value="'.(isset($val['class']) ? htmlspecialchars($val['class']) : '').'">
+          </div>
+        </div>
 
-      <input type="hidden" name="'.$args['name'].'" value=\''.json_encode($val, JSON_HEX_APOS | JSON_HEX_QUOT).'\' data-link-actual-value-json>
-    </div>
+        <input type="hidden" name="'.$args['name'].'" value=\''.json_encode($val, JSON_HEX_APOS | JSON_HEX_QUOT).'\' data-link-actual-value-json>
+      </div>
     ';
 
     return $link_field;
@@ -850,6 +865,5 @@ class Form {
   public static function datalist($args=[]){
     return self::input('datalist', $args);
   }
-
 
 }

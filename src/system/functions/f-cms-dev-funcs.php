@@ -21,6 +21,19 @@ class CMSFuncs {
   }
 
   /**
+   * Get all posts (ID, post_type, slug and title only for reference)
+   * @param string $lang Language
+   */
+  public function get_all_posts_reference($lang = APP_LANG) {
+    $query = 'SELECT id, slug, title, post_type FROM cms_posts 
+      WHERE lang = :lang AND post_status = :post_status
+      ORDER BY id DESC';
+    $stmt = $this->DB()->pdo->prepare($query);
+    $stmt->execute(['lang' => $lang, 'post_status' => 'published']);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * Get posts by filtering
    * @param string $post_type Post type to be loaded
    * @param array $params Filters (taxonomy terms, search, WHERE, and pagination)
@@ -190,7 +203,10 @@ class CMSFuncs {
     if (!empty($order_by)) {
       $query .= $order_by;
     }
-    $query .= " LIMIT $items_per_page OFFSET $offset";
+
+    if ($items_per_page !== -1) {
+      $query .= " LIMIT $items_per_page OFFSET $offset";
+    }
 
     // Build the count query for pagination
     $count_query = "SELECT COUNT(p.id) as total_posts FROM cms_posts p";
@@ -337,6 +353,14 @@ class CMSFuncs {
   public function public_get_term($param) {
     return $this->get_term($param);
   }
+}
+
+/**
+ * Get all posts for use as reference
+ */
+function get_all_posts_reference($lang=APP_LANG) {
+  $cms = new CMSFuncs;
+  return $cms->get_all_posts_reference($lang);
 }
 
 /**

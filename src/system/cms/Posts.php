@@ -522,7 +522,7 @@ trait Posts {
     $published_at = [
       'name' => 'published_at',
       'type' => 'datetime-local',
-      'label' => 'Published At',
+      'label' => 'Published at',
       'value' => $published_date,
       'id' => 'post-created-at',
     ];
