@@ -334,8 +334,8 @@ class CMSFuncs {
     return $this->get_form_entries($form, $where, $options);
   }
 
-  public function public_get_form_entry($id) {
-    return $this->get_form_entry($id);
+  public function public_get_form_entry($id, $where=[]) {
+    return $this->get_form_entry($id, $where);
   }
 
   public function public_delete_form_entry($id) {
@@ -445,10 +445,11 @@ function update_entry($form, $id, $request, $check_user=true) {
 /**
  * Get form entry
  * @param int $id Entry ID
+ * @param array $where
  */
-function get_entry($id) {
+function get_entry($id, $where=[]) {
   $cms = new CMSFuncs;
-  return $cms->public_get_form_entry($id);
+  return $cms->public_get_form_entry($id, $where);
 }
 
 /**

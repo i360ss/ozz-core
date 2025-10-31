@@ -17,8 +17,11 @@ class Serve {
     $conf = env('app');
     $url = explode(' ', $conf['APP_URLS'])[0];
 
-    $utils->console_return('Ozz development server started', 'white', 'green', 1, true);
-    $utils->console_return('Press Ctrl+C to stop the server', 'brown', false, 2);
+    $utils->console_return('', '', '', 1);
+    $utils->console_return('  Ozz Dev server started 🚀', 'green', '', 1);
+    $utils->console_return('-----------------------------', 'green', '', 1);
+    $utils->console_return('- PHP Server: http://'.$url, 'brown', '', 1);
+    $utils->console_return('- Press Ctrl + C to stop the server', 'brown', false, 2);
 
     $uname = strtolower(php_uname());
     $os = (strpos($uname, "darwin") !== false) ? 'osx' : ((strpos($uname, "win") !== false) ? 'win32' : 'linux');

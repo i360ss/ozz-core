@@ -296,18 +296,34 @@ trait Forms {
 
 
   /**
-   * Get Single form entry
-   * @param integer $id Entry ID
-   */
-  protected function get_form_entry($id) {
-    $entry = $this->DB()->get('cms_forms', '*', ['id' => $id]);
+ * Get Single form entry
+ * @param int $id Entry ID
+ * @param array $where Optional additional conditions
+ */
+  protected function get_form_entry(int $id, array $where = []): ?array {
+    $conditions = ['id' => $id];
+    $defaultFields = ['name', 'user_id', 'id', 'ip', 'user_agent', 'status', 'created', 'updated', 'update_info', 'fields'];
+
+    foreach ($where as $key => $value) {
+      if (in_array($key, $defaultFields)) {
+        $conditions[$key] = $value;
+      } else {
+        $conditions["JSON_UNQUOTE(JSON_EXTRACT(content, '$.$key'))"] = $value;
+      }
+    }
+
+    $entry = $this->DB()->get('cms_forms', '*', $conditions);
+
+    if (!$entry) {
+      return null;
+    }
+
     $entry['fields'] = json_decode($entry['content'], true);
 
-    // Get set user if available
-    if ( isset($entry['user_id']) && !empty($entry['user_id']) ) {
-      $entry['user'] = Auth::getUser( $entry['user_id'] );
-      unset($entry['user']['password']);
-      unset($entry['user']['activation_key']);
+    // Attach user data if available
+    if (!empty($entry['user_id'])) {
+      $entry['user'] = Auth::getUser($entry['user_id']);
+      unset($entry['user']['password'], $entry['user']['activation_key']);
     } else {
       $entry['user'] = false;
     }
