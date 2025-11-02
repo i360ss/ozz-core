@@ -184,12 +184,12 @@ trait Posts {
     }
 
     // Decode HTML entities in content JSON
-    $decoded_content = json_decode($post['content'], true);
+    $decoded_content = is_string($post['content']) ? json_decode($post['content'], true) : $post['content'];
     array_walk_recursive($decoded_content, function (&$value) { $value = html_decode($value); });
     $post['content'] = json_encode($decoded_content);
 
     // Decode HTML entities in blocks JSON
-    $decoded_blocks = json_decode($post['blocks'], true);
+    $decoded_blocks = is_string($post['blocks']) ? json_decode($post['blocks'], true) : $post['blocks'];
     array_walk_recursive($decoded_blocks, function (&$value) { $value = html_decode($value); });
     $post['blocks'] = json_encode($decoded_blocks);
 
