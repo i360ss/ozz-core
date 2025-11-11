@@ -238,15 +238,17 @@ class File {
     // Without Settings
     if (!self::$settings) {
       if (is_dir(self::$moveTo)) {
-        if (file_exists(self::$moveTo . basename(self::$thisFiles['name']))) {
-          $response['message'] = self::$errors->error('file_already_exist');
-          $response['uploaded'] = self::$uploadedTo . basename(self::$thisFiles['name']);
-        } elseif (move_uploaded_file(self::$thisFiles['tmp_name'], self::$moveTo . basename(self::$thisFiles['name']))) {
+        $ext = strtolower(pathinfo(self::$thisFiles['name'], PATHINFO_EXTENSION));
+        $safeName = bin2hex(random_bytes(16)).'.'.$ext;
+        $destination = self::$moveTo . $safeName;
+        if (move_uploaded_file(self::$thisFiles['tmp_name'], $destination)) {
           $response = [
             'error'    => 0,
             'message'  => self::$errors->message('image_upload_success'),
-            'uploaded' => self::$uploadedTo . basename(self::$thisFiles['name'])
+            'uploaded' => self::$uploadedTo . $safeName
           ];
+        } else {
+          $response['message'] = self::$errors->error('file_error');
         }
       } else {
         DEBUG ? Err::notDir(self::$moveTo) : false;
@@ -314,16 +316,15 @@ class File {
       return $response;
     }
 
-    $destinationPath = self::$moveTo . basename(self::$thisFiles['name']);
+    $ext = strtolower(pathinfo(self::$thisFiles['name'], PATHINFO_EXTENSION));
+    $safeName = bin2hex(random_bytes(16)).'.'.$ext;
+    $destinationPath = self::$moveTo . $safeName;
 
-    if (file_exists($destinationPath)) {
-      $response['message'] = self::$errors->error('file_already_exist');
-      $response['uploaded'] = self::$uploadedTo . basename(self::$thisFiles['name']);
-    } elseif (move_uploaded_file(self::$thisFiles['tmp_name'], $destinationPath)) {
+    if (move_uploaded_file(self::$thisFiles['tmp_name'], $destinationPath)) {
       $response = [
         'error'    => 0,
         'message'  => self::$errors->message('file_upload_success'),
-        'uploaded' => self::$uploadedTo . basename(self::$thisFiles['name']),
+        'uploaded' => self::$uploadedTo . $safeName,
       ];
     } else {
       $response['message'] = self::$errors->error('file_error');

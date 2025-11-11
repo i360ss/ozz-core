@@ -30,7 +30,14 @@ class Csrf {
   public static function setToken($token){
     unset($_SESSION['csrf_token']);
     $cookieLife = CONFIG['CSRF_COOKIE_LIFETIME'] > 0 ? time() + CONFIG['CSRF_COOKIE_LIFETIME'] : 0;
-    Cookie::set('csrf_token', $token, $cookieLife);
+    Cookie::set('csrf_token', $token, [
+      'expires' => $cookieLife,
+      'path' => CONFIG['SESSION_PATH'],
+      'domain' => CONFIG['SESSION_DOMAIN'],
+      'secure' => CONFIG['SESSION_SECURE_COOKIE'],
+      'httponly' => CONFIG['SESSION_HTTP_ONLY'],
+      'samesite' => CONFIG['SESSION_SAME_SITE'],
+    ]);
     $_SESSION['csrf_token'] = $token;
     $_SESSION['csrf_token_expire'] = $cookieLife; // Token expire time
   }

@@ -63,7 +63,15 @@ public static function set($name, $value, $expires_or_opts = 0, $path = '/', $do
    */
   public static function delete($name) {
     unset($_COOKIE[$name]);
-    setcookie($name, null, -1);
+    $options = [
+      'expires' => time() - 3600,
+      'path' => CONFIG['SESSION_PATH'],
+      'domain' => CONFIG['SESSION_DOMAIN'],
+      'secure' => CONFIG['SESSION_SECURE_COOKIE'],
+      'httponly' => CONFIG['SESSION_HTTP_ONLY'],
+      'samesite' => CONFIG['SESSION_SAME_SITE'],
+    ];
+    setcookie($name, '', $options);
   }
 
 }
