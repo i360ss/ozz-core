@@ -75,4 +75,3 @@ public static function set($name, $value, $expires_or_opts = 0, $path = '/', $do
   }
 
 }
-
