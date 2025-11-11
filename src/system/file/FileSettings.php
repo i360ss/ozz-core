@@ -79,7 +79,9 @@ trait FileSettings {
    */
   private static function setName($setts, $name){
     if(isset($setts['rename']) && $setts['rename'] !== ''){
-      $newName = ($setts['rename']=='rand' || $setts['rename'] == 'random') ? rand(1000, time()) : $setts['rename'];
+      $newName = ($setts['rename']=='rand' || $setts['rename'] == 'random')
+        ? bin2hex(random_bytes(8))
+        : $setts['rename'];
       return (isset($setts['prefix'])) 
         ? $setts['prefix'].$newName.'.'.pathinfo($name, PATHINFO_EXTENSION)
         : $newName.'.'.pathinfo($name, PATHINFO_EXTENSION);
@@ -185,7 +187,9 @@ trait FileSettings {
         $prifix = isset(self::$settings['prefix']) ? self::$settings['prefix'] : '';
 
         if((isset($copy['rename']) &&  $copy['rename'] !== '')){
-          $newName = ($copy['rename']=='rand' || $copy['rename'] == 'random') ? rand(1000, time()) : $copy['rename'];
+          $newName = ($copy['rename']=='rand' || $copy['rename'] == 'random')
+            ? bin2hex(random_bytes(8))
+            : $copy['rename'];
           $fileName = $prifix.$newName.$nameSize.pathinfo($imgName, PATHINFO_EXTENSION);
         } else {
           $fileName = $prifix.pathinfo($imgName, PATHINFO_FILENAME).$nameSize.pathinfo($imgName, PATHINFO_EXTENSION);

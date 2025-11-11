@@ -38,7 +38,7 @@ trait TokenHandler {
         break;
 
       case 'csp-nonce':
-        return base64_encode(substr(base64_encode(sha1( mt_rand() )), 0, 20));
+        return rtrim(strtr(base64_encode(random_bytes(16)), '+/', '-_'), '=');
         break;
     }
   }
