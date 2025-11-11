@@ -22,11 +22,11 @@ trait TokenHandler {
     switch ($type) {
       case 'activation':
       case 'verification':
-        return strtoupper(random_str(72, 'A0').sha1(time().$string));
+        return bin2hex(random_bytes(32));
         break;
 
       case 'password-reset':
-        return rtrim(strtr(base64_encode(random_str(32, 'A0').time().$string), '+/', '-_'), '=');
+        return rtrim(strtr(base64_encode(random_bytes(48)), '+/', '-_'), '=');
         break;
 
       case 'password-hash':

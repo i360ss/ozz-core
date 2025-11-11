@@ -324,7 +324,21 @@ class Router extends AppInit {
    * @param int $status Redirect status code
    */
   public static function redirect($to, $status=302){
-    header("Location: $to", true, $status);
+    // Prevent header injection
+    $to = str_replace(["\r", "\n"], '', $to);
+
+    // Only allow relative paths or same-origin absolute URLs
+    $request = Request::getInstance();
+    $host = $request->host();
+    $is_relative = is_string($to) && isset($to[0]) && $to[0] === '/';
+    $is_same_origin = false;
+    if (!$is_relative) {
+      $parsed = parse_url($to);
+      $is_same_origin = $parsed && isset($parsed['host']) && isset($parsed['scheme']) && strcasecmp($parsed['host'], $host) === 0;
+    }
+
+    $final = ($is_relative || $is_same_origin) ? $to : '/';
+    header("Location: $final", true, $status);
     exit;
   }
 
@@ -335,7 +349,15 @@ class Router extends AppInit {
    */
   public static function back($add='', $status=301){
     if(isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] !== ''){
-      $to = $_SERVER['HTTP_REFERER'].$add;
+      $ref = str_replace(["\r", "\n"], '', $_SERVER['HTTP_REFERER']);
+      $add = str_replace(["\r", "\n"], '', $add);
+      $request = Request::getInstance();
+      $host = $request->host();
+      $ref_parts = parse_url($ref);
+      $same_origin = $ref_parts && isset($ref_parts['host']) && strcasecmp($ref_parts['host'], $host) === 0;
+      $path = $ref_parts && isset($ref_parts['path']) ? $ref_parts['path'] : '/';
+      $safe = $same_origin ? $path : '/';
+      $to = $safe.$add;
       header("Location: $to", true, $status);
       exit;
     }

@@ -87,7 +87,13 @@ class Templating extends AppInit {
         foreach ($regComps['view'][1] as $vl) {
           $vl = explode('=', $vl);
           if(count($vl) > 1){
-            $variables[trim($vl[0])] = self::is_string($vl[1]) ? self::trim_string($vl[1]) : self::return_var($vl[1], $vars);
+            $key = trim($vl[0]);
+            $val = self::is_string($vl[1]) ? self::trim_string($vl[1]) : self::return_var($vl[1], $vars);
+            // Escape scalar values by default to reduce XSS risk in base layouts
+            if (!is_array($val) && !is_object($val)) {
+              $val = \esc((string)$val);
+            }
+            $variables[$key] = $val;
           }
         }
 

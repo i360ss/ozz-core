@@ -40,14 +40,23 @@ class Session {
         session_name(CONFIG['SESSION_COOKIE_NAME']);
       }
 
-      session_set_cookie_params(CONFIG['SESSION_LIFETIME'], CONFIG['SESSION_PATH'], CONFIG['SESSION_DOMAIN'], CONFIG['SESSION_SECURE_COOKIE'], CONFIG['SESSION_HTTP_ONLY']);
+      // Apply cookie params with SameSite support
+      $cookieParams = [
+        'lifetime' => CONFIG['SESSION_LIFETIME'],
+        'path' => CONFIG['SESSION_PATH'],
+        'domain' => CONFIG['SESSION_DOMAIN'],
+        'secure' => CONFIG['SESSION_SECURE_COOKIE'],
+        'httponly' => CONFIG['SESSION_HTTP_ONLY'],
+        'samesite' => CONFIG['SESSION_SAME_SITE'],
+      ];
+      session_set_cookie_params($cookieParams);
       session_start(); // Start session
     }
 
     if(!isset($_SESSION['SESSION_INIT_TIME'])){
       $_SESSION['SESSION_INIT_TIME'] = time();
     } elseif (time() - $_SESSION['SESSION_INIT_TIME'] > CONFIG['SESSION_LIFETIME']){
-      session_regenerate_id();
+      session_regenerate_id(true);
       $_SESSION['SESSION_INIT_TIME'] = time();
     }
   }

@@ -574,7 +574,11 @@ class Medoo
         // Log SQL to debug bar
         if(DEBUG){
             $dff = (hrtime(true) - $run_time_start) / 1e9;
-            file_put_contents(__DIR__.SPC_BACK['core'].'storage/log/sql_debug.log', $dff.'<###>'.$this->generate($temp_log_statement, $map).'<####>', FILE_APPEND);
+            $logFile = __DIR__.SPC_BACK['core'].'storage/log/sql_debug.log';
+            $dir = dirname($logFile);
+            if (is_dir($dir) && is_writable($dir)) {
+                @file_put_contents($logFile, $dff.'<###>'.$this->generate($temp_log_statement, $map).'<####>', FILE_APPEND);
+            }
 
             // Log Execution Time
             $this->logs[array_key_last($this->logs)][] = $dff;

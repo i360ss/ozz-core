@@ -1172,7 +1172,7 @@ class Auth extends Model {
 
     $disabled = self::$db->update(CONFIG['AUTH_USERS_TABLE'], [
       self::$status_field => 'disable',
-      self::$active_key_field => self::hashKey('activation', $user_id)
+      self::$active_key_field => self::hashKey('activation', is_numeric($id_or_email) ? (string)$id_or_email : (string)$id_or_email)
     ], $where_args );
 
     return $disabled ? true : false;
