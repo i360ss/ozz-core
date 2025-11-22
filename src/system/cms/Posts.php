@@ -282,9 +282,11 @@ trait Posts {
         remove_error('error');
         set_error('success', 'Post created successfully!');
       }
+
+      return redirect(ADMIN_PATH.'/posts/edit/'.$this->post_type.'/'.$post_id);
     }
 
-    return redirect(ADMIN_PATH.'/posts/edit/'.$this->post_type.'/'.$post_id);
+    return back();
   }
 
 
