@@ -12,11 +12,16 @@ return [
     // 'action' => '/form/submit',
     // 'callback' => [CMSAdminController::class, 'submit1'],
     'method' => 'post',
+    'class' => 'ozz-fm',
+    'field_options' => [
+      'wrapper' => '<div class="ozz-fm__field">##</div>'
+    ],
     'fields' => [
       [
         'name' => 'name',
         'type' => 'text',
-        'label' => 'Your Name'
+        'label' => 'Your Name',
+        'validate' => 'req'
       ],
       [
         'name' => 'email',
@@ -51,6 +56,9 @@ return [
   'checkout' => [
     'label' => 'Checkout',
     'class' => 'ozz-fm',
+    'field_options' => [
+      'wrapper' => '<div class="ozz-fm__field">##</div>'
+    ],
     'entry-status' => [
       1 => 'Pending',
       2 => 'Processing',

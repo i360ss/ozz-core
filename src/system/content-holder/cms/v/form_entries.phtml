@@ -29,8 +29,16 @@ function getFieldLabelByName($name) {
     </div>
 
     <h1 class="heading cl cl-6"><?=$form['label']?></h1>
-    <div class="cl cl-6 align-right">
-      <a href="<?=ADMIN_PATH?>/forms/<?=$this_form?>" class="button small">Open Form</a>
+
+    <div class="listing-s2">
+      <div class="listing-s2__header">
+        <div class="listing-s2__filter">
+          <a href="<?=ADMIN_PATH?>/forms/<?=$this_form?>" class="button small">Form Details</a>
+        </div>
+        <div class="align-right">
+          <a href="<?=ADMIN_PATH?>/forms/create/<?=$this_form?>" class="button green small">Create Entry</a>
+        </div>
+      </div>
     </div>
 
     <table class="ozz-table">

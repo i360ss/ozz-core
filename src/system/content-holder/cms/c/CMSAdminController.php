@@ -371,6 +371,25 @@ class CMSAdminController extends CMS {
 
 
   /**
+   * Entry creation view
+   */
+  public function form_create_entry_view(Request $request) {
+    $form_name = $request->urlParam('form');
+
+    if (!isset($this->data['forms'][$form_name])) return render_error_page(404, 'Page Not Found');
+
+    $this->data['form_name'] = $form_name;
+    $this->data['form'] = $this->data['forms'][$form_name];
+
+    // Override form action and method
+    $this->data['form']['action'] = '/form/track?f='.enc_base64($form_name);
+    $this->data['form']['method'] = 'POST';
+
+    return view('create_entry', $this->data);
+  }
+
+
+  /**
    * Single Form
    */
   public function form(Request $request) {

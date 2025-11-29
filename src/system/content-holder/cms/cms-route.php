@@ -25,6 +25,7 @@ Router::getGroup(['auth', 'admin_access'], 'admin', [
   ADMIN_PATH.'/taxonomy/edit/{id}'                 => [CMSAdminController::class, 'taxonomy_edit_view'],
   ADMIN_PATH.'/forms'                              => [CMSAdminController::class, 'forms_listing'],
   ADMIN_PATH.'/forms/{form}'                       => [CMSAdminController::class, 'form'],
+  ADMIN_PATH.'/forms/create/{form}'                => [CMSAdminController::class, 'form_create_entry_view'],
   ADMIN_PATH.'/forms/{form}/entries'               => [CMSAdminController::class, 'form_entries'],
   ADMIN_PATH.'/forms/{form}/entry/{id}'            => [CMSAdminController::class, 'form_entry'],
   ADMIN_PATH.'/settings'                           => [CMSAdminController::class, 'settings'],

@@ -85,33 +85,6 @@ function getFieldLabelByName($name) {
                 ]
               ]
             ]); ?>
-
-            <?php _create_form([
-              'action' => ADMIN_PATH.'/forms/delete_entry',
-              'class' => 'ozz-fm delete-entry',
-              'method' => 'post',
-              'field_options' => [
-                'wrapper' => '<div class="ozz-fm__field">##</div>'
-              ],
-              'fields' => [
-                [
-                  'name' => 'entry-id',
-                  'type' => 'hidden',
-                  'value' => $entry['id']
-                ],
-                [
-                  'name' => 'form-name',
-                  'type' => 'hidden',
-                  'value' => $form['name']
-                ],
-                [
-                  'name' => 'submit',
-                  'type' => 'submit',
-                  'value' => 'Delete Entry',
-                  'class' => 'button mini danger'
-                ],
-              ]
-            ]); ?>
           </div><br>
 
           <?php if ($entry['user']) : ?>
@@ -164,7 +137,7 @@ function getFieldLabelByName($name) {
           <?php endif; ?>
 
           <div class="post-edit-view__widget info">
-            <h2 class="ozz-widget__heading">Submitted User Agent Info</h2>
+            <h2 class="ozz-widget__heading">User Agent Details</h2>
             <div class="item">
               <strong>IP </strong><?=$entry['ip']?>
             </div>
@@ -177,6 +150,37 @@ function getFieldLabelByName($name) {
                 <span><?=$value?></span>
               </div>
             <?php endforeach; ?>
+          </div><br>
+
+          <div class="post-edit-view__widget delete-entry">
+            <h2 class="ozz-widget__heading">Delete Entry</h2>
+            <?php _create_form([
+              'action' => ADMIN_PATH.'/forms/delete_entry',
+              'class' => 'ozz-fm delete-entry',
+              'method' => 'post',
+              'field_options' => [
+                'wrapper' => '<div class="ozz-fm__field">##</div>'
+              ],
+              'fields' => [
+                [
+                  'name' => 'entry-id',
+                  'type' => 'hidden',
+                  'value' => $entry['id']
+                ],
+                [
+                  'name' => 'form-name',
+                  'type' => 'hidden',
+                  'value' => $form['name']
+                ],
+                [
+                  'note' => 'Deleted entries cannot be recovered and will be permanently removed from the database.<br><br>',
+                  'name' => 'submit',
+                  'type' => 'submit',
+                  'value' => 'Delete Entry',
+                  'class' => 'button small danger'
+                ],
+              ]
+            ]); ?>
           </div>
         </div>
       </div>

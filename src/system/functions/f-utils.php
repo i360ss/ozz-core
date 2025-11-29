@@ -285,19 +285,20 @@ function form_create_fields($args) {
 
 /**
  * Get Form (CMS forms)
- * @param string $form Form name
+ * @param string|array $form Form name or Form array
  * @param array $values
  */
 function get_form($form, $values=[]) {
   $forms = require __DIR__.SPC_BACK['core_2'].'cms/cms-forms.php';
-  if(!isset($forms[$form]) || empty($forms[$form])) return;
+
+  if(is_string($form) && (!isset($forms[$form]) || empty($forms[$form]))) return;
 
   // Check and set flash data
   if(empty($values) && has_flash('form_data')) {
     $values = get_flash('form_data');
   }
 
-  $thisForm = $forms[$form];
+  $thisForm = is_string($form) ? $forms[$form] : $form;
 
   // Default method (post)
   $thisForm['method'] = isset($thisForm['method']) ? $thisForm['method'] : 'POST';
