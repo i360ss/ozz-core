@@ -6,6 +6,7 @@
  */
 
 $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
+$redirect = isset($context['query']['redirect']) ? '?redirect='.$context['query']['redirect'] : '';
 ?>
 
 {{ title        = "Login | <?=APP_NAME?>" }}
@@ -17,7 +18,7 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
   <section class="section auth-comp">
     <div class="container">
       <h1 class="title has-text-centered">Login</h1>
-      <form action="<?=AUTH_PATHS['login']?>" method="post">
+      <form action="<?=AUTH_PATHS['login'].$redirect?>" method="post" class="form">
 
         <?=CSRF_FIELD?>
 

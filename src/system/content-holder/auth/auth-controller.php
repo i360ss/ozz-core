@@ -72,7 +72,7 @@ class ".ucfirst($controllerName)." extends Controller {
       'password'  => 'req | password',
     ]);
 
-    \$validation->pass ? Auth::login(\$email, \$password) : false;
+    \$validation->pass ? Auth::login(\$email, \$password, false, ['redirect_path' => \$request->query('redirect')]) : false;
 
     return redirect('".AUTH_PATHS['login']."');
   }
