@@ -379,11 +379,24 @@ class CMSAdminController extends CMS {
     if (!isset($this->data['forms'][$form_name])) return render_error_page(404, 'Page Not Found');
 
     $this->data['form_name'] = $form_name;
-    $this->data['form'] = $this->data['forms'][$form_name];
 
-    // Override form action and method
-    $this->data['form']['action'] = '/form/track?f='.enc_base64($form_name);
-    $this->data['form']['method'] = 'POST';
+    // Get and update form data
+    $form = $this->data['forms'][$form_name];
+    $form['action'] = '/form/track?f='.enc_base64($form_name);
+    $form['method'] = 'POST';
+
+    if (isset($form['fields']) && !empty($form['fields'])) {
+      foreach ($form['fields'] as $key => $field) {
+        if (isset($field['type']) && $field['type'] === 'submit') {
+          isset($field['class'])
+            ? $form['fields'][$key]['class'] .= ' button green'
+            : $form['fields'][$key]['class'] = 'button green';
+          break;
+        }
+      }
+    }
+
+    $this->data['form'] = $form;
 
     return view('create_entry', $this->data);
   }
