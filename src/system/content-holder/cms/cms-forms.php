@@ -42,7 +42,6 @@ return [
         'name' => 'submit',
         'type' => 'submit',
         'value' => 'Send',
-        'class' => 'button small'
       ]
     ],
     'table-fields' => [
@@ -77,13 +76,15 @@ return [
         'name' => 'f-name',
         'type' => 'text',
         'label' => 'First Name',
-        'validate' => 'req'
+        'validate' => 'req',
+        'wrapper_class' => 'cl cl-6'
       ],
       [
         'name' => 'l-name',
         'type' => 'text',
         'label' => 'Last Name',
-        'validate' => 'req'
+        'validate' => 'req',
+        'wrapper_class' => 'cl cl-6'
       ],
       [
         'name' => 'address',
@@ -100,18 +101,21 @@ return [
         'name' => 'email',
         'type' => 'email',
         'label' => 'Email',
-        'validate' => 'req|email'
+        'validate' => 'req|email',
+        'wrapper_class' => 'cl cl-6'
       ],
       [
         'name' => 'phone',
         'type' => 'text',
         'label' => 'Contact Number',
-        'validate' => 'req'
+        'validate' => 'req',
+        'wrapper_class' => 'cl cl-6'
       ],
       [
         'name' => 'country',
         'type' => 'select',
         'label' => 'Country',
+        'wrapper_class' => 'cl cl-4',
         'options' => [
           'us' => 'USA',
           'ru' => 'Russia',
@@ -121,12 +125,19 @@ return [
       [
         'name' => 'state',
         'type' => 'text',
-        'label' => 'State'
+        'label' => 'State',
+        'wrapper_class' => 'cl cl-4'
       ],
       [
         'name' => 'zip-code',
         'type' => 'number',
-        'label' => 'Zip Code'
+        'label' => 'Zip Code',
+        'wrapper_class' => 'cl cl-4'
+      ],
+      [
+        'name' => 'submit',
+        'type' => 'submit',
+        'value' => 'Submit',
       ]
     ]
   ]
