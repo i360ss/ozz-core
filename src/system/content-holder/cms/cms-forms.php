@@ -54,10 +54,6 @@ return [
   ],
   'checkout' => [
     'label' => 'Checkout',
-    'class' => 'ozz-fm',
-    'field_options' => [
-      'wrapper' => '<div class="ozz-fm__field">##</div>'
-    ],
     'entry-status' => [
       1 => 'Pending',
       2 => 'Processing',

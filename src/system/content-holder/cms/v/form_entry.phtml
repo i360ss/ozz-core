@@ -35,7 +35,13 @@ function getFieldLabelByName($name) {
       <div class="row">
         <div class="col col-9">
           <div class="ozz-widget entry-data">
-            <h2 class="ozz-widget__heading">Entry Data</h2>
+            <div class="header">
+              <h2 class="ozz-widget__heading">Entry Data</h2>
+              <span>
+                <a href="<?=ADMIN_PATH?>/forms/edit/<?=$entry['name']?>/<?=$entry['id']?>" class="button blue small">Edit</a>
+              </span>
+            </div>
+
             <?php foreach ($entry['fields'] as $key => $field) : ?>
               <div class="ozz-widget__item-raw">
                 <label><?=getFieldLabelByName($key)?></label>

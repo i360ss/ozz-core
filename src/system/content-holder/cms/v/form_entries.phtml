@@ -63,6 +63,9 @@ function getFieldLabelByName($name) {
             <span class="label <?=strtolower($entry_status)?>"><?=$entry_status?></span>
           </td>
           <td class="align-right action">
+            <a href="<?=ADMIN_PATH?>/forms/edit/<?=$this_form?>/<?=$value['id']?>" title="Edit">
+              <span class="icon-button edit"></span>
+            </a>
             <a href="<?=ADMIN_PATH?>/forms/<?=$this_form?>/entry/<?=$value['id']?>">
               <span class="button mini">Open</span>
             </a>

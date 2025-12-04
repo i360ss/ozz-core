@@ -285,26 +285,31 @@ function form_create_fields($args) {
 
 /**
  * Get Form (CMS forms)
- * @param string|array $form Form name or Form array
+ * @param string|array $form Form name or array
  * @param array $values
  */
 function get_form($form, $values=[]) {
-  $forms = require __DIR__.SPC_BACK['core_2'].'cms/cms-forms.php';
+  if (is_string($form)) {
+    $forms = require __DIR__.SPC_BACK['core_2'].'cms/cms-forms.php';
+    $form_name = $form;
+    $thisForm = $forms[$form_name];
+  } elseif (is_array($form)) {
+    $form_name = $form['name'] ?? null;
+    $thisForm = $form;
+  }
 
-  if(is_string($form) && (!isset($forms[$form]) || empty($forms[$form]))) return;
+  if(!$thisForm || !$form_name) return;
 
   // Check and set flash data
   if(empty($values) && has_flash('form_data')) {
     $values = get_flash('form_data');
   }
 
-  $thisForm = is_string($form) ? $forms[$form] : $form;
-
   // Default method (post)
   $thisForm['method'] = isset($thisForm['method']) ? $thisForm['method'] : 'POST';
 
   // Update tracking action
-  $thisForm['action'] = isset($thisForm['action']) ? $thisForm['action'] : '/form/track?f='.enc_base64($form);
+  $thisForm['action'] = isset($thisForm['action']) ? $thisForm['action'] : '/form/track?f='.enc_base64($form_name);
 
   // Add Submit button if not defined
   if (!in_array('submit', array_column($thisForm['fields'], 'type'))) {

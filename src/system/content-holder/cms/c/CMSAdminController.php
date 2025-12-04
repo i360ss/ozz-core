@@ -371,22 +371,31 @@ class CMSAdminController extends CMS {
 
 
   /**
-   * Entry creation view
+   * Modify entry form to internal use
+   * @param string $form_name
    */
-  public function form_create_entry_view(Request $request) {
-    $form_name = $request->urlParam('form');
-
-    if (!isset($this->data['forms'][$form_name])) return render_error_page(404, 'Page Not Found');
-
-    $this->data['form_name'] = $form_name;
+  private function modify_entry_form_internal($form_name) {
+    if (!isset($this->data['forms'][$form_name])) return render_error_page();
 
     // Get and update form data
     $form = $this->data['forms'][$form_name];
     $form['action'] = '/form/track?f='.enc_base64($form_name);
     $form['method'] = 'POST';
 
+    // Add form class
+    if (isset($form['class'])) {
+      $form['class'] .= 'ozz-fm';
+    } else {
+      $form['class'] = 'ozz-fm';
+    }
+
+    // Field options
+    $form['field_options']['wrapper'] = '<div class="ozz-fm__field">##</div>';
+
+    // Field updates
     if (isset($form['fields']) && !empty($form['fields'])) {
       foreach ($form['fields'] as $key => $field) {
+        // Submit field
         if (isset($field['type']) && $field['type'] === 'submit') {
           isset($field['class'])
             ? $form['fields'][$key]['class'] .= ' button green'
@@ -397,8 +406,36 @@ class CMSAdminController extends CMS {
     }
 
     $this->data['form'] = $form;
+    $this->data['form']['name'] = $form_name;
+  }
+
+
+  /**
+   * Entry creation view
+   */
+  public function form_create_entry_view(Request $request) {
+    $form_name = $request->urlParam('form');
+    $this->modify_entry_form_internal($form_name);
 
     return view('create_entry', $this->data);
+  }
+
+
+  /**
+   * Edit entry - view
+   */
+  public function form_edit_entry_view(Request $request) {
+    $form_name = $request->urlParam('form');
+    $entry_id = $request->urlParam('entry_id');
+    $this->modify_entry_form_internal($form_name);
+
+    $entry = $this->get_form_entry($entry_id);
+    if (!$entry || $entry['name'] !== $form_name) return render_error_page();
+
+    $this->data['form']['action'] = ADMIN_PATH.'/forms/update_entry/'.$entry_id;
+    $this->data['entry'] = $entry;
+
+    return view('edit_entry', $this->data);
   }
 
 
@@ -477,6 +514,21 @@ class CMSAdminController extends CMS {
   public function form_tracking(Request $request) {
     $form = dec_base64($request->query('f'));
     $this->create_form_entry($form, $request);
+  }
+
+
+  /**
+   * Update form entry
+   */
+  public function form_update_entry(Request $request) {
+    $entry_id = $request->urlParam('entry_id');
+    if ($this->update_form_entry_internal($entry_id, $request, false)) {
+      set_error('success', trans('updated_success'));
+    } else {
+      set_error('error', trans_e('error'));
+    }
+
+    return back();
   }
 
 

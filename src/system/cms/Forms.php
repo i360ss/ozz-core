@@ -38,10 +38,14 @@ trait Forms {
       remove_flash('form_data');
       if (isset($this->cms_forms[$form]['success_message'])) {
         set_error('success', $this->cms_forms[$form]['success_message']);
+      } else {
+        set_error('success', trans('created_success'));
       }
     } else {
       if (isset($this->cms_forms[$form]['error_message'])) {
         set_error('error', $this->cms_forms[$form]['error_message']);
+      } else {
+        set_error('error', trans_e('error'));
       }
       return back();
     }
@@ -331,6 +335,18 @@ trait Forms {
     unset($entry['content']);
 
     return $entry;
+  }
+
+
+  protected function update_form_entry_internal($entry_id, $request) {
+    $data = $request->input();
+    unset($data['f'], $data['csrf_token'], $data['submit']);
+    $update = $this->DB()->update('cms_forms', [
+      'content' => json_encode($data),
+      'updated' => time()
+    ], ['id' => $entry_id]);
+
+    return $update ? true : false;
   }
 
 

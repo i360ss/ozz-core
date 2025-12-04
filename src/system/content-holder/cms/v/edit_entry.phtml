@@ -1,12 +1,12 @@
 <?php
 /**
- * View Name: create_entry
- * Path: view/create_entry
+ * View Name: edit_entry
+ * Path: view/edit_entry
  * @param array $data arguments passed from controller or route
  */
 ?>
-{{ title        = "Create Entry" }}
-{{ body_class   = "view-create_entry" }}
+{{ title        = "Edit Entry" }}
+{{ body_class   = "view-edit_entry" }}
 
 {{ content }}
   <section>
@@ -15,7 +15,7 @@
         <span><a href="<?=ADMIN_PATH?>/forms">Forms</a></span>
         <span><a href="<?=ADMIN_PATH?>/forms/<?=$form['name']?>"><?=$form['label']?></a></span>
         <span><a href="<?=ADMIN_PATH?>/forms/<?=$form['name']?>/entries">Entries</a></span>
-        <span>Create Entry</span>
+        <span><a href="<?=ADMIN_PATH?>/forms/checkout/entry/<?=$entry['id']?>">Edit Entry #<?=$entry['id']?></a></span>
       </div>
 
       <h1><?=$form['label']?></h1>
@@ -24,7 +24,7 @@
       <?php endif; ?>
 
       <div class="ozz-widget">
-        <?=get_form($form)?>
+        <?=get_form($form, $entry['fields'])?>
       </div>
     </div>
   </section>
