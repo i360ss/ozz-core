@@ -384,7 +384,7 @@ class CMSAdminController extends CMS {
 
     // Add form class
     if (isset($form['class'])) {
-      $form['class'] .= 'ozz-fm';
+      $form['class'] .= ' ozz-fm';
     } else {
       $form['class'] = 'ozz-fm';
     }
