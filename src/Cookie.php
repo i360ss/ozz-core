@@ -21,7 +21,7 @@ class Cookie {
    * @param string $sameSite The SameSite attribute for the cookie, controlling when it should be sent in cross-site requests (default: 'Strict')
    * @return bool True on success, false on failure to set the cookie
    */
-public static function set($name, $value, $expires_or_opts = 0, $path = '/', $domain = '', $secure = false, $httpOnly = true, $sameSite = CONFIG['SESSION_SAME_SITE']) {
+public static function set($name, $value, $expires_or_opts = 0, $path = '/', $domain = '', $secure = false, $httpOnly = true, $sameSite = CONFIG['COOKIE_SAMESITE']) {
   $options = [
     'expires' => $expires_or_opts,
     'path' => $path,
@@ -65,11 +65,11 @@ public static function set($name, $value, $expires_or_opts = 0, $path = '/', $do
     unset($_COOKIE[$name]);
     $options = [
       'expires' => time() - 3600,
-      'path' => CONFIG['SESSION_PATH'],
-      'domain' => CONFIG['SESSION_DOMAIN'],
-      'secure' => CONFIG['SESSION_SECURE_COOKIE'],
-      'httponly' => CONFIG['SESSION_HTTP_ONLY'],
-      'samesite' => CONFIG['SESSION_SAME_SITE'],
+      'path' => CONFIG['COOKIE_PATH'],
+      'domain' => CONFIG['COOKIE_DOMAIN'],
+      'secure' => CONFIG['COOKIE_SECURE'],
+      'httponly' => CONFIG['COOKIE_HTTP_ONLY'],
+      'samesite' => CONFIG['COOKIE_SAMESITE'],
     ];
     setcookie($name, '', $options);
   }

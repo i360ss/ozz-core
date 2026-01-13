@@ -602,7 +602,7 @@ class Form {
       // Rich text field
       if ($type == 'rich-text') {
         $classes = isset($args['class']) ? $args['class'] : '';
-        $rich_txt_val = isset($args['value']) ? '<div data-editor-area>'.html_decode($args['value']).'</div>' : ''; // Rich-text value
+        $rich_txt_val = isset($args['value']) ? html_decode($args['value']) : ''; // Rich-text value
         $thisField = '<div data-ozz-wyg data-field-name="'.$args['name'].'" class="'.$classes.'">'.$rich_txt_val.'</div>';
       }
 

@@ -23,7 +23,7 @@ class Session {
     if(session_status() == PHP_SESSION_NONE){
       if(strtolower(CONFIG['SESSION_DRIVER']) == 'file'){
         // File based session
-        $sessionHandler = new FileBasedSessionHandler(__DIR__.SPC_BACK['core'].CONFIG['SESSION_DIRECTORY'], CONFIG['SESSION_SECRET_KEY']);
+        $sessionHandler = new FileBasedSessionHandler(__DIR__.SPC_BACK['core'].CONFIG['SESSION_FILE_DIRECTORY'], CONFIG['SESSION_SECRET_KEY']);
 
         // Configure session options as needed
         session_set_save_handler(
@@ -42,12 +42,12 @@ class Session {
 
       // Apply cookie params with SameSite support
       $cookieParams = [
-        'lifetime' => CONFIG['SESSION_LIFETIME'],
-        'path' => CONFIG['SESSION_PATH'],
-        'domain' => CONFIG['SESSION_DOMAIN'],
-        'secure' => CONFIG['SESSION_SECURE_COOKIE'],
-        'httponly' => CONFIG['SESSION_HTTP_ONLY'],
-        'samesite' => CONFIG['SESSION_SAME_SITE'],
+        'lifetime' => CONFIG['COOKIE_LIFETIME'],
+        'path' => CONFIG['COOKIE_PATH'],
+        'domain' => CONFIG['COOKIE_DOMAIN'],
+        'secure' => CONFIG['COOKIE_SECURE'],
+        'httponly' => CONFIG['COOKIE_HTTP_ONLY'],
+        'samesite' => CONFIG['COOKIE_SAMESITE'],
       ];
       session_set_cookie_params($cookieParams);
       session_start(); // Start session

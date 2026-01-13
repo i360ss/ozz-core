@@ -2,18 +2,6 @@
 return [
   // General
   'CHARSET' => 'utf-8',
-  'SESSION_DRIVER' => 'memory',
-  'SESSION_COOKIE_NAME' => 'ozz_ses_id',
-  'SESSION_LIFETIME' => 1800,
-  'SESSION_PREFIX' => 'ozz_ses_',
-  'SESSION_DIRECTORY' => 'storage/session',
-  'SESSION_SECRET_KEY' => '',
-  'SESSION_SECURE_COOKIE' => true,
-  'SESSION_HTTP_ONLY' => true,
-  'SESSION_DOMAIN' => '',
-  'SESSION_PATH' => '/',
-  'SESSION_SAME_SITE' => 'Strict', // Strict, Lax or None
-  'CSRF_COOKIE_LIFETIME' => 1800,
   'PAGE_CACHE_LIFETIME' => false,
   'MINIFY_HTML' => false,
   'OZZ_EXCEPTION_HANDLER' => true,
@@ -25,6 +13,23 @@ return [
   'EMAIL_CHARSET' => 'utf-8',
   'SANITIZE_SVG' => false,
   'SANITIZE_SVG_ALLOWED_ELEMENTS' => [],
+
+  // Session
+  'SESSION_DRIVER' => 'memory',
+  'SESSION_COOKIE_NAME' => 'ozz_ses_id',
+  'SESSION_LIFETIME' => 1800,
+  'SESSION_PREFIX' => 'ozz_ses_',
+  'SESSION_FILE_DIRECTORY' => 'storage/session',
+  'SESSION_SECRET_KEY' => '',
+
+  // Cookie
+  'COOKIE_LIFETIME' => 1800,
+  'COOKIE_PATH' => '/',
+  'COOKIE_DOMAIN' => '',
+  'COOKIE_SECURE' => true,
+  'COOKIE_HTTP_ONLY' => true,
+  'COOKIE_SAMESITE' =>  'Strict', // Strict, Lax or None
+  'CSRF_COOKIE_LIFETIME' => 1800,
 
   // Auth
   'AUTH_CONTROLLER' => 'AuthController',
