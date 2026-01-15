@@ -6,20 +6,20 @@
  */
 ?>
 
-{{ title      = "Admin" }}
-{{ body_class = "dashboard light-bg" }}
+{{ title = "Admin" }}
+{{ body_class = "dashboard" }}
 
 {{ content }}
-  <section class="section py-6 mt-6">
-    <div class="container has-text-centered">
-      <figure class="image is-128x128 is-inline-block">
-        <img class="is-rounded" src="<?=get_gravatar($email, 128);?>" alt="Avatar">
-      </figure>
-      <div class="content mt-4">
-        <h1 class="title is-4"><?=$first_name.' '.$last_name?></h1>
-        <p class="subtitle is-6">@<?=$username?></p>
-        <p class="is-size-6 has-text-grey"><?=$email?></p>
-      </div>
-    </div>
-  </section>
+<section class="app-view app-view--admin">
+  <div class="app-container auth-card">
+    <img
+      src="<?=get_gravatar($email, 128);?>"
+      alt="Avatar"
+      class="profile-avatar"
+    >
+    <h1 class="profile-name"><?=$first_name.' '.$last_name?></h1>
+    <p class="profile-username">@<?=$username?></p>
+    <p class="profile-email"><?=$email?></p>
+  </div>
+</section>
 {{ content-end }}

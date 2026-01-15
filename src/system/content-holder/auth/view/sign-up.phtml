@@ -14,100 +14,99 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
 {{ body_class   = "auth" }}
 
 {{ content }}
-<section class="section auth-comp">
-  <div class="container">
-    <h1 class="title has-text-centered">Sign Up</h1>
-    <form action="<?=AUTH_PATHS['signup']?>" method="post">
+<section class="auth">
+  <div class="auth-card">
+
+    <h1 class="auth-title">Sign Up</h1>
+
+    <form action="<?=AUTH_PATHS['signup']?>" method="post" class="form">
 
       <?=CSRF_FIELD?>
 
-      <div class="columns">
-        <div class="column">
-          <div class="field">
-            <div class="control">
-              <input
-                type="text"
-                name="first_name"
-                class="input <?=has_error('first_name') ? 'is-danger' : '' ?>"
-                placeholder="First Name"
-                value="<?=$value->first_name ?? '' ?>"
-              >
-            </div>
-            <?=show_error('first_name', '<p class="help is-danger">##</p>')?>
-          </div>
-        </div>
+      <!-- First + Last Name -->
+      <div class="form-grid">
 
-        <div class="column">
-          <div class="field">
-            <div class="control">
-              <input
-                type="text"
-                name="last_name"
-                class="input <?=has_error('last_name') ? 'is-danger' : '' ?>"
-                placeholder="Last Name"
-                value="<?=$value->last_name ?? '' ?>"
-              >
-            </div>
-            <?=show_error('last_name', '<p class="help is-danger">##</p>')?>
-          </div>
-        </div>
-      </div>
-
-      <div class="field mb-5">
-        <div class="control">
+        <div class="form-group">
           <input
-            type="email"
-            name="email"
-            class="input <?=has_error('email') ? 'is-danger' : '' ?>"
-            placeholder="Email Address"
-            value="<?=$value->email ?? '' ?>"
+            type="text"
+            name="first_name"
+            class="form-input <?=has_error('first_name') ? 'is-error' : '' ?>"
+            placeholder="First Name"
+            value="<?=$value->first_name ?? '' ?>"
           >
+          <?=show_error('first_name', '<span class="form-error">##</span>')?>
         </div>
-        <?=show_error('email', '<p class="help is-danger">##</p>')?>
-        <?=show_error('username', '<p class="help is-danger">##</p>')?>
-      </div>
 
-      <div class="field my-5">
-        <div class="control">
+        <div class="form-group">
           <input
-            type="password"
-            name="password"
-            class="input <?=has_error('password') ? 'is-danger' : '' ?>"
-            placeholder="Password"
-            autocomplete="new-password"
+            type="text"
+            name="last_name"
+            class="form-input <?=has_error('last_name') ? 'is-error' : '' ?>"
+            placeholder="Last Name"
+            value="<?=$value->last_name ?? '' ?>"
           >
+          <?=show_error('last_name', '<span class="form-error">##</span>')?>
         </div>
-        <?=show_error('password', '<p class="help is-danger">##</p>')?>
+
       </div>
 
-      <div class="field my-5">
-        <div class="control">
-          <input
-            type="password"
-            name="password_confirmation"
-            class="input <?=has_error('password_confirmation') ? 'is-danger' : '' ?>"
-            placeholder="Confirm Password"
-            autocomplete="new-password"
-          >
-        </div>
-        <?=show_error('password_confirmation', '<p class="help is-danger">##</p>')?>
+      <!-- Email -->
+      <div class="form-group">
+        <input
+          type="email"
+          name="email"
+          class="form-input <?=has_error('email') ? 'is-error' : '' ?>"
+          placeholder="Email Address"
+          value="<?=$value->email ?? '' ?>"
+        >
+        <?=show_error('email', '<span class="form-error">##</span>')?>
+        <?=show_error('username', '<span class="form-error">##</span>')?>
       </div>
 
-      <div class="field">
-        <?=show_error('success', '<p class="message is-success">##</p>')?>
-        <?=show_error('error', '<p class="message is-danger">##</p>')?>
+      <!-- Password -->
+      <div class="form-group">
+        <input
+          type="password"
+          name="password"
+          class="form-input <?=has_error('password') ? 'is-error' : '' ?>"
+          placeholder="Password"
+          autocomplete="new-password"
+        >
+        <?=show_error('password', '<span class="form-error">##</span>')?>
       </div>
 
-      <div class="field">
-        <div class="control">
-          <input type="submit" class="button is-primary is-fullwidth" value="Sign Up">
-        </div>
+      <!-- Confirm Password -->
+      <div class="form-group">
+        <input
+          type="password"
+          name="password_confirmation"
+          class="form-input <?=has_error('password_confirmation') ? 'is-error' : '' ?>"
+          placeholder="Confirm Password"
+          autocomplete="new-password"
+        >
+        <?=show_error('password_confirmation', '<span class="form-error">##</span>')?>
       </div>
+
+      <!-- Messages -->
+      <div class="form-group">
+        <?=show_error('success', '<p class="form-message success">##</p>')?>
+        <?=show_error('error', '<p class="form-message error">##</p>')?>
+      </div>
+
+      <!-- Submit -->
+      <div class="form-group">
+        <button type="submit" class="app-button app-button--primary is-full">
+          Sign Up
+        </button>
+      </div>
+
     </form>
+
+    <div class="auth-footer">
+      Already have an account?
+      <a href="<?=AUTH_PATHS['login']?>">Login</a>
+    </div>
+
   </div>
 </section>
-
-<div class="has-text-centered mt-5">
-  <p>Already have an account? <a href="<?=AUTH_PATHS['login']?>" class="has-text-link">Login</a></p>
-</div>
 {{ content-end }}

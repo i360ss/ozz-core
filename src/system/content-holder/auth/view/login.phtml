@@ -9,50 +9,43 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
 $redirect = isset($context['query']['redirect']) ? '?redirect='.$context['query']['redirect'] : '';
 ?>
 
-{{ title        = "Login | <?=APP_NAME?>" }}
-{{ keywords     = "login" }}
-{{ description  = "Login" }}
-{{ body_class   = "auth" }}
+{{ title = "Login | <?=APP_NAME?>" }}
+{{ body_class = "auth" }}
 
 {{ content }}
-  <section class="section auth-comp">
-    <div class="container">
-      <h1 class="title has-text-centered">Login</h1>
-      <form action="<?=AUTH_PATHS['login'].$redirect?>" method="post" class="form">
+<section class="auth">
+  <div class="auth-card">
 
-        <?=CSRF_FIELD?>
+    <h1 class="auth-title">Login</h1>
 
-        <div class="field my-5">
-          <div class="control">
-            <input type="email" name="email" placeholder="Email" value="<?=$value->email ?? '' ?>" class="input <?=has_error('email') ? 'is-danger' : ''?>">
-          </div>
-          <?=show_error('email', '<span class="help is-danger">##</span>')?>
-        </div>
+    <form method="post" action="<?=AUTH_PATHS['login'].$redirect?>" class="form">
+      <?=CSRF_FIELD?>
 
-        <div class="field my-5">
-          <div class="control">
-            <input type="password" name="password" placeholder="Password" autocomplete="new-password" value="<?=$value->password ?? '' ?>" class="input <?=has_error('password') ? 'is-danger' : ''?>">
-          </div>
-          <?=show_error('password', '<span class="help is-danger">##</span>')?>
-        </div>
+      <div class="form-group">
+        <input type="email" name="email" placeholder="Email"
+          class="form-input <?=has_error('email') ? 'is-error' : '' ?>"
+          value="<?=$value->email ?? ''?>">
+        <?=show_error('email', '<span class="form-error">##</span>')?>
+      </div>
 
-        <div class="field">
-          <?=show_error('success', '<p class="message is-success">##</p>'); ?>
-          <?=show_error('error', '<p class="message is-danger">##</p>'); ?>
-        </div>
+      <div class="form-group">
+        <input type="password" name="password" placeholder="Password"
+          class="form-input <?=has_error('password') ? 'is-error' : '' ?>">
+        <?=show_error('password', '<span class="form-error">##</span>')?>
+      </div>
 
-        <div class="field">
-          <div class="control">
-            <input type="submit" value="Login" class="button is-primary is-fullwidth">
-          </div>
-        </div>
-      </form>
+      <?=show_error('success', '<p class="form-message success">##</p>')?>
+      <?=show_error('error', '<p class="form-message error">##</p>')?>
+
+      <button class="app-button app-button--primary is-full">Login</button>
+    </form>
+
+    <div class="auth-footer">
+      <a href="<?=AUTH_PATHS['signup']?>">Create account</a>
+      ·
+      <a href="<?=AUTH_PATHS['forgot_password']?>">Forgot password?</a>
     </div>
-  </section>
 
-  <div class="has-text-centered">
-    <a href="<?=AUTH_PATHS['signup']?>" class="is-text">Create an account</a>
-    &nbsp;|&nbsp;
-    <a href="<?=AUTH_PATHS['forgot_password']?>" class="is-text">Forgot Password?</a>
   </div>
+</section>
 {{ content-end }}
