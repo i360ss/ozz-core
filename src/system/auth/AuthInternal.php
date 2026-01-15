@@ -137,32 +137,26 @@ trait AuthInternal {
    * @param string $token Password reset token
    * @param boolean $return_status Return a meaningful error message
    */
-  public static function validateResetToken($token, $return_status=true){
+  public static function validateResetToken($token, $return_status = true){
     self::init();
 
-    $meta_data = self::$db->get(CONFIG['AUTH_META_TABLE'], '*', [
-      'meta_key' => 'password_reset_token',
-      'meta_value' => $token
+    $meta = self::$db->get(CONFIG['AUTH_META_TABLE'], '*', [
+      'meta_key'   => 'password_reset_token',
+      'meta_value' => hash('sha256', $token)
     ]);
 
-    if(isset($meta_data) && is_array($meta_data)){
-      $user = self::getUser($meta_data['user_id']);
-      $decoded_token = base64_decode($token);
-
-      if(str_contains($decoded_token, $user[self::$email_field])){
-        if($meta_data['timestamp'] >= time() - CONFIG['PASSWORD_RESET_LINK_LIFETIME']){
-          // Reset token validated
-          return $return_status ? self::$auth_errors['valid_token'] : true;
-        } else {
-          // Token expired
-          set_error('error', trans_e('expired_reset_token'));
-          return $return_status ? self::$auth_errors['expired_token'] : false;
-        }
-      }
+    if (!$meta) {
+      set_error('error', trans_e('invalid_reset_token'));
+      return $return_status ? self::$auth_errors['invalid_token'] : false;
     }
 
-    set_error('error', trans_e('invalid_reset_token'));
-    return $return_status ? self::$auth_errors['invalid_token'] : false;
+    if ($meta['timestamp'] < time() - CONFIG['PASSWORD_RESET_LINK_LIFETIME']) {
+      set_error('error', trans_e('expired_reset_token'));
+      return $return_status ? self::$auth_errors['expired_token'] : false;
+    }
+
+    // Valid token
+    return $return_status ? self::$auth_errors['valid_token'] : true;
   }
 
   /**

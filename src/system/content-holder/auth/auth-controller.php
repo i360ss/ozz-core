@@ -33,12 +33,11 @@ class ".ucfirst($controllerName)." extends Controller {
     ]);
 
     if(\$validation->pass){
-      extract(\$form_data);
       \$user_data = [
-        'first_name' => \$first_name,
-        'last_name'  => \$last_name,
-        'email'      => \$email,
-        'password'   => \$password,
+        'first_name' => \$form_data['first_name'],
+        'last_name'  => \$form_data['last_name'],
+        'email'      => \$form_data['email'],
+        'password'   => \$form_data['password'],
       ];
 
       Auth::register(\$user_data, false);

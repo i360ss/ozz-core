@@ -388,7 +388,7 @@ class Auth extends Model {
   public static function isLoggedIn(){
     self::init();
 
-    if(isset($_SESSION['logged_username']) && !empty($_SESSION['logged_username']) && isset($_SESSION['logged_user_id']) && !empty($_SESSION['logged_user_id'])){
+    if( isset($_SESSION['logged_user_id']) && !empty($_SESSION['logged_user_id']) && self::getUser($_SESSION['logged_user_id']) ){
       return true;
     } else {
       return false;
@@ -606,7 +606,7 @@ class Auth extends Model {
     $user = self::getUser($email_username);
 
     if(isset($user)){
-      $token = self::hashKey('password-reset', $email_username);
+      $token = self::hashKey('password-reset');
       $reset_link = clear_multi_slashes(AUTH_PATHS['reset_password'].'/'.$token);
 
       // Full name or Username
@@ -632,7 +632,7 @@ class Auth extends Model {
         $unlock_time = $last_attempt + AUTH_PASSWORD_RESET_THROTTLE['DELAY_TIME'];
         if($unlock_time <= time()){
           // Store token and send reset mail
-          if(self::addUserMeta($user[self::$id_field], 'password_reset_token', $token)){
+          if(self::addUserMeta($user[self::$id_field], 'password_reset_token', hash('sha256', $token))){
             return self::notify('password-reset', $user[self::$email_field], $args);
           } else {
             return $return_status ? self::$auth_errors['password_reset_error'] : false;
@@ -649,7 +649,7 @@ class Auth extends Model {
         }
       } else {
         // Store token and send reset mail
-        if(self::addUserMeta($user[self::$id_field], 'password_reset_token', $token)){
+        if(self::addUserMeta($user[self::$id_field], 'password_reset_token', hash('sha256', $token))){
           return self::notify('password-reset', $user[self::$email_field], $args);
         } else {
           return $return_status ? self::$auth_errors['password_reset_error'] : false;
@@ -776,7 +776,7 @@ class Auth extends Model {
 
     $user_id = self::$db->get(CONFIG['AUTH_META_TABLE'], 'user_id', [
       'meta_key'     => 'password_reset_token',
-      'meta_value'   => $token,
+      'meta_value'   => hash('sha256', $token),
       'timestamp[>]' => time() - (CONFIG['PASSWORD_RESET_LINK_LIFETIME'] + 1),
       'ORDER'        => ['id' => 'DESC']
     ]);
