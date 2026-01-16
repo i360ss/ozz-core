@@ -179,9 +179,14 @@ function _arrayLikeToArray2(r, a) { (null == a || a > r.length) && (a = r.length
               });
               (0, _MediaManagerPopup__WEBPACK_IMPORTED_MODULE_5__["default"])(draggedItem);
               (0, _LinkField__WEBPACK_IMPORTED_MODULE_6__["default"])();
-              if (typeof _vendor_ozz_wyg__WEBPACK_IMPORTED_MODULE_1__["default"] === 'function') {
-                new _vendor_ozz_wyg__WEBPACK_IMPORTED_MODULE_1__["default"]({
-                  selector: '[data-ozz-wyg]'
+              var editors = draggedItem.querySelectorAll('[data-ozz-wyg]');
+              if (editors.length) {
+                editors.forEach(function (editor) {
+                  editor.setAttribute('data-value', '');
+                  console.log(editor);
+                  new _vendor_ozz_wyg__WEBPACK_IMPORTED_MODULE_1__["default"]({
+                    selector: editor
+                  });
                 });
               }
             }

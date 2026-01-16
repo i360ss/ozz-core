@@ -16,16 +16,11 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
 {{ content }}
 <section class="auth">
   <div class="auth-card">
-
     <h1 class="auth-title">Sign Up</h1>
-
     <form action="<?=AUTH_PATHS['signup']?>" method="post" class="form">
-
       <?=CSRF_FIELD?>
 
-      <!-- First + Last Name -->
       <div class="form-grid">
-
         <div class="form-group">
           <input
             type="text"
@@ -47,10 +42,8 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
           >
           <?=show_error('last_name', '<span class="form-error">##</span>')?>
         </div>
-
       </div>
 
-      <!-- Email -->
       <div class="form-group">
         <input
           type="email"
@@ -63,7 +56,6 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
         <?=show_error('username', '<span class="form-error">##</span>')?>
       </div>
 
-      <!-- Password -->
       <div class="form-group">
         <input
           type="password"
@@ -75,7 +67,6 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
         <?=show_error('password', '<span class="form-error">##</span>')?>
       </div>
 
-      <!-- Confirm Password -->
       <div class="form-group">
         <input
           type="password"
@@ -87,19 +78,18 @@ $value = has_flash('form_data') ? (object) get_flash('form_data') : false;
         <?=show_error('password_confirmation', '<span class="form-error">##</span>')?>
       </div>
 
-      <!-- Messages -->
-      <div class="form-group">
-        <?=show_error('success', '<p class="form-message success">##</p>')?>
-        <?=show_error('error', '<p class="form-message error">##</p>')?>
-      </div>
+      <?php if (has_error('success') || has_error('error')) : ?>
+        <div class="form-group">
+          <?=show_error('success', '<p class="form-message success">##</p>')?>
+          <?=show_error('error', '<p class="form-message error">##</p>')?>
+        </div>
+      <?php endif; ?>
 
-      <!-- Submit -->
       <div class="form-group">
         <button type="submit" class="app-button app-button--primary is-full">
           Sign Up
         </button>
       </div>
-
     </form>
 
     <div class="auth-footer">
