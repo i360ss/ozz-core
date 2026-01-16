@@ -173,7 +173,7 @@ class SubHelp {
    * @param string $string the sql string
    * @return html wrapped html
    */
-  public static function sqlDumper($string, $inlineStyle=true) {
+  public static function sqlDumper($string, $inlineStyle=false) {
     $sqlKeyords = [
       'ADD',
       'EXTERNAL',
@@ -420,9 +420,206 @@ class SubHelp {
   }
 
   /**
+   * Render Debugbar HTML
+   * @param array Debug bar data
+   */
+  private static function renderDebugBarHTML($data) {
+    ob_start();
+    ?>
+    <style nonce="<?=CSP_NONCE?>"><?= Help::minifyCSS(file_get_contents(__DIR__.'/assets/css/debugbar.css')); ?></style>
+    <div class="ozz__debugbar">
+      <!-- Ozz Debug Bar -->
+      <div class="ozz-fw-debug-bar">
+        <div class="ozz-fw-debug-bar__nav wrapper">
+          <button class="ozz-fw-debug-bar__nav item" data-item="console">Console <span class="count"><?= count($data['ozz_message']) ?></span></button>
+          <button class="ozz-fw-debug-bar__nav item" data-item="request">Request</button>
+          <button class="ozz-fw-debug-bar__nav item" data-item="queries">Queries <span class="count"><?= count($data['ozz_sql_queries']) ?></span></button>
+          <button class="ozz-fw-debug-bar__nav item" data-item="view">View</button>
+          <button class="ozz-fw-debug-bar__nav item" data-item="controller">Controller</button>
+          <button class="ozz-fw-debug-bar__nav item" data-item="session">Session <span class="count"></span></button>
+
+          <button class="ozz-fw-debug-bar__nav item expand-button"></button>
+        </div>
+
+        <div class="ozz-fw-debug-bar__body">
+          <div class="ozz-fw-debug-bar__body tab-body console">
+            <?php if (count($data['ozz_message']) < 1) : ?>
+              <pre class="ozz-fw-debug-bar__empty">No Console logs</pre>
+            <?php else: ?>
+              <?php foreach ($data['ozz_message'] as $key => $value) : ?>
+                <?php $class = isset($value['args'][1]) ? $value['args'][1] : ''; ?>
+                <?php 
+                if (is_array($value['args'][0]) || is_object($value['args'][0])) { ?>
+                  <pre class="ozz-fw-debug-bar-tab__message console-msg <?=$class?>">
+                    <span class="ozz-fw-debug-bar-array"><?php self::varDump($value['args'][0], '', false, true); ?></span>
+                    <span style="color: var(--ozz-dark2)"><?=$value['file'].' | ln: '.$value['line']?></span>
+                  </pre>
+                <?php } elseif (is_json($value['args'][0])) { ?>
+                  <pre class="ozz-fw-debug-bar-tab__message console-msg <?=$class?>">
+                    <div><?= self::jsonDumper($key, $value['args'][0], false)?></div>
+                    <span style="color: var(--ozz-dark2)"><?=$value['file'].' | ln: '.$value['line']?></span>
+                  </pre>
+                <?php
+                } else { ?>
+                  <pre class="ozz-fw-debug-bar-tab__message console-msg <?=$class?>">
+                    <span><?=$value['args'][0]?></span>
+                    <span style="color: var(--ozz-dark2)"><?=$value['file'].' | ln: '.$value['line']?></span>
+                  </pre>
+                <?php } ?>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </div>
+
+          <div class="ozz-fw-debug-bar__body tab-body request">
+            <?php if (count($data['ozz_request']) < 1) : ?>
+              <pre class="ozz-fw-debug-bar__empty">Error</pre>
+            <?php else: ?>
+              <?php foreach ($data['ozz_request'] as $key => $value) : ?>
+                <div class="ozz-fw-debug-bar-tab__message-request">
+                  <span class="label"><?=ucfirst($key)?></span>
+                  <span>
+                  <?php
+                    if (is_array($value)) {
+                      foreach ($value as $k => $v) {
+                        if(is_string($v) || is_bool($v)){
+                          echo "<b>$k</b> : $v <br>";
+                        } else {
+                          self::varDump($v, false, true);
+                        }
+                      }
+                    } else {
+                      echo $value;
+                    }
+                  ?>
+                  </span>
+                </div>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </div>
+
+          <div class="ozz-fw-debug-bar__body tab-body queries">
+            <?php if (isset($data['ozz_sql_queries']) && count($data['ozz_sql_queries']) < 1) : ?>
+              <pre class="ozz-fw-debug-bar__empty">No Queries</pre>
+            <?php else: ?>
+              <?php foreach ($data['ozz_sql_queries'] as $key => $value) : ?>
+                <div class="ozz-fw-debug-bar-tab__message-queries">
+                  <span><?=self::sqlDumper($value[1], false)?></span>
+                  <span><?=number_format($value[0]*1000, 3)?> ms</span>
+              </div>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </div>
+
+          <div class="ozz-fw-debug-bar__body tab-body view">
+            <?php if (!isset($data['ozz_view']) || count($data['ozz_view']) < 1) : ?>
+              <pre class="ozz-fw-debug-bar__empty">No View Files</pre>
+            <?php elseif (isset($data['ozz_view'])) : ?>
+              <?php $view = $data['ozz_view']; ?>
+
+              <div class="ozz__dbg_view-comp-wrapper">
+                <div class="ozz__dbg_view-head">
+                  <span><strong>View File:</strong><br> <?=isset($view['view_file']) ? $view['view_file'] : '<em style="color: #a00">Not Found</em>'; ?></span><br><br>
+                  <span><strong>Base Layout:</strong><br> <?=isset($view['base_file']) ? $view['base_file'] : '<em style="color: #a00">Not Found</em>';?></span><br><br>
+                </div>
+
+                <div class="ozz__dbg_view-info">
+                  <div class="ozz-fw-debug-bar-tab__message-view">
+                    <span class="label">View Data: </span><br>
+                    <?php if (is_array($view['view_data']) || is_object($view['view_data'])) {?>
+                      <span class="ozz-fw-debug-bar-array"><?php self::varDump($view['view_data'], '', false, true)?></span>
+                    <?php } elseif (is_json($view['view_data'])) { ?>
+                      <div><?= self::jsonDumper('view_data', $view['view_data'], false)?></div>
+                    <?php } else { ?>
+                      <span><?= is_string($view['view_data']) ? $view['view_data'] : false; ?></span>
+                    <?php } ?>
+                  </div>
+                </div>
+
+                <div class="ozz__dbg_component-info">
+                  <div class="ozz-fw-debug-bar-tab__message-view">
+                    <span class="label">Components</span><br><br>
+                    <?php
+                    if (isset($view['components']) || has_flash('ozz_components')) {
+                      $view['components'] = !isset($view['components']) ? [] : $view['components'];
+
+                      // Merge Components info from flash and default
+                      $view_components = has_flash('ozz_components') ? array_merge(get_flash('ozz_components'), $view['components']) : $view['components'];
+
+                      // remove component info flash
+                      remove_flash('ozz_components');
+
+                      foreach ($view_components as $key => $value) {
+                        echo '<details class="ozz-fw-debug-bar-tab__message-view-component">';
+                        echo '<summary><span class="green">'.$value['file'].'</span></summary>';
+
+                        if (is_json($value['args'])) {
+                          echo '<br><div><pre>'.json_encode($value['args'], JSON_PRETTY_PRINT).'</pre></div>';
+                        } elseif (is_array($value['args']) || is_object($value['args'])) {
+                          echo '<div>'.self::varDump($value['args'], '', false, true).'</div><br>';
+                        } else {
+                          echo '<br><div>'.$value['args'].'</div>';
+                        }
+                        echo '</details>';
+                      }
+                    }
+                    ?>
+                  </div>
+                </div>
+              </div>
+            <?php endif; ?>
+          </div>
+
+          <div class="ozz-fw-debug-bar__body tab-body controller">
+            <?php
+            if (isset($data['ozz_controller'])) { 
+              if (count($data['ozz_controller']) < 1) {
+                echo '<pre class="ozz-fw-debug-bar__empty">No Controller</pre>';
+              } else {
+                $ctl = $data['ozz_controller']; ?>
+                <div class="ozz-fw-debug-bar-tab__message-controller">
+                  <span class="label">Controller:</span>
+                  <span><?=$ctl['controller']?></span>
+                </div>
+
+                <div class="ozz-fw-debug-bar-tab__message-controller">
+                  <span class="label">Method:</span>
+                  <span><?=$ctl['method']?></span>
+                </div>
+              <?php
+              }
+            } else {
+              echo '<pre class="ozz-fw-debug-bar__empty">No Controller</pre>';
+            } ?>
+          </div>
+
+          <div class="ozz-fw-debug-bar__body tab-body session">
+            <?php if (isset($_SESSION) && !empty($_SESSION)) { ?>
+              <?php foreach ($_SESSION as $key => $value) { ?>
+                <div class="ozz-fw-debug-bar-tab__message-session">
+                <span class="label"><?=$key?></span>
+                <?php if (is_array($value) || is_object($value)) { ?>
+                  <span class="ozz-fw-debug-bar-array"><?=self::varDump($value, '', false, true)?></span>
+                <?php } elseif (is_json($value)) { ?>
+                  <span><?= self::jsonDumper('jid_'.rand(), $value, false)?></span>
+                <?php } else { ?>
+                  <span><?=$value?></span>
+                <?php } ?>
+                </div>
+              <?php } ?>
+            <?php } ?>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <?php
+    return ob_get_clean();
+  }
+
+  /**
    * Get Set and Render Debug Bar
    */
-  public function renderDebugBar($data) { 
+  public function renderDebugBar($data) {
     // Get and set SQL temporary debug log
     $sql_temp_log_content = file_get_contents(__DIR__.SPC_BACK['core_1'].'storage/log/sql_debug.log');
     $sql_temp_log_arr = array_filter(explode('<####>', $sql_temp_log_content));
@@ -435,260 +632,75 @@ class SubHelp {
     }
     $data['ozz_sql_queries'] = $final_sql_log;
     ?>
+    <div id="ozz-debugbar-root"></div>
+    <script nonce="<?=CSP_NONCE?>">
+      (function() {
+        const host = document.getElementById('ozz-debugbar-root');
+        if (!host) return;
+        const shadow = host.attachShadow({ mode: 'open' });
+        shadow.innerHTML = <?= json_encode(self::renderDebugBarHTML($data), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
 
-    <div class="ozz__debugbar">
-    <!-- Ozz Debug Bar Styles -->
-    <style nonce="<?=CSP_NONCE?>"><?= Help::minifyCSS(file_get_contents(__DIR__.'/assets/css/debugbar.css')); ?></style>
+        function init(shadow) {
+          var ozzDebugBar__container = shadow.querySelector('.ozz-fw-debug-bar');
+          var ozzDebugBar__nav_item = shadow.querySelectorAll('.ozz-fw-debug-bar__nav.item');
+          var ozzDebugBar__tab_bodies = shadow.querySelectorAll('.ozz-fw-debug-bar__body.tab-body');
+          var ozzDebugBar__tempTabName = '';
+          var ozzDebugBar__expandBtn = shadow.querySelector('.ozz-fw-debug-bar__nav.item.expand-button');
 
-    <!-- Ozz Debug Bar -->
-    <div class="ozz-fw-debug-bar">
-      <div class="ozz-fw-debug-bar__nav wrapper">
-        <button class="ozz-fw-debug-bar__nav item" data-item="console">Console <span class="count"><?= count($data['ozz_message']) ?></span></button>
-        <button class="ozz-fw-debug-bar__nav item" data-item="request">Request</button>
-        <button class="ozz-fw-debug-bar__nav item" data-item="queries">Queries <span class="count"><?= count($data['ozz_sql_queries']) ?></span></button>
-        <button class="ozz-fw-debug-bar__nav item" data-item="view">View</button>
-        <button class="ozz-fw-debug-bar__nav item" data-item="controller">Controller</button>
-        <button class="ozz-fw-debug-bar__nav item" data-item="session">Session <span class="count"></span></button>
+          // Expand to full screen
+          ozzDebugBar__expandBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var hasActive = false;
+            ozzDebugBar__container.classList.toggle('expanded');
+            ozzDebugBar__expandBtn.classList.toggle('expanded');
+            ozzDebugBar__nav_item.forEach(tabItem => {
+              if (tabItem.classList.contains('active')) {
+                hasActive = true;
+              }
+            });
+            if (!hasActive) {
+              ozzDebugBar__nav_item[0].classList.add('active');
+              ozzDebugBar__tab_bodies[0].classList.add('active');
+            }
 
-        <button class="ozz-fw-debug-bar__nav item expand-button"></button>
-      </div>
-
-      <div class="ozz-fw-debug-bar__body">
-        <div class="ozz-fw-debug-bar__body tab-body console">
-          <?php if (count($data['ozz_message']) < 1) : ?>
-            <pre class="ozz-fw-debug-bar__empty">No Console logs</pre>
-          <?php else: ?>
-            <?php foreach ($data['ozz_message'] as $key => $value) : ?>
-              <?php $class = isset($value['args'][1]) ? $value['args'][1] : ''; ?>
-              <?php 
-              if (is_array($value['args'][0]) || is_object($value['args'][0])) { ?>
-                <pre class="ozz-fw-debug-bar-tab__message console-msg <?=$class?>">
-                  <span class="ozz-fw-debug-bar-array"><?php self::varDump($value['args'][0], '', false, true); ?></span>
-                  <span style="color: var(--ozz-dark2)"><?=$value['file'].' | ln: '.$value['line']?></span>
-                </pre>
-              <?php } elseif (is_json($value['args'][0])) { ?>
-                <pre class="ozz-fw-debug-bar-tab__message console-msg <?=$class?>">
-                  <div><?= self::jsonDumper($key, $value['args'][0], false)?></div>
-                  <span style="color: var(--ozz-dark2)"><?=$value['file'].' | ln: '.$value['line']?></span>
-                </pre>
-              <?php
-              } else { ?>
-                <pre class="ozz-fw-debug-bar-tab__message console-msg <?=$class?>">
-                  <span><?=$value['args'][0]?></span>
-                  <span style="color: var(--ozz-dark2)"><?=$value['file'].' | ln: '.$value['line']?></span>
-                </pre>
-              <?php } ?>
-            <?php endforeach; ?>
-          <?php endif; ?>
-        </div>
-
-
-        <div class="ozz-fw-debug-bar__body tab-body request">
-          <?php if (count($data['ozz_request']) < 1) : ?>
-            <pre class="ozz-fw-debug-bar__empty">Error</pre>
-          <?php else: ?>
-            <?php foreach ($data['ozz_request'] as $key => $value) : ?>
-              <div class="ozz-fw-debug-bar-tab__message-request">
-                <span class="label"><?=ucfirst($key)?></span>
-                <span>
-                <?php
-                  if (is_array($value)) {
-                    foreach ($value as $k => $v) {
-                      if(is_string($v) || is_bool($v)){
-                        echo "<b>$k</b> : $v <br>";
-                      } else {
-                        self::varDump($v, false, true);
-                      }
-                    }
-                  } else {
-                    echo $value;
-                  }
-                ?>
-                </span>
-              </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
-        </div>
-
-        <div class="ozz-fw-debug-bar__body tab-body queries">
-          <?php if (isset($data['ozz_sql_queries']) && count($data['ozz_sql_queries']) < 1) : ?>
-            <pre class="ozz-fw-debug-bar__empty">No Queries</pre>
-          <?php else: ?>
-            <?php foreach ($data['ozz_sql_queries'] as $key => $value) : ?>
-              <div class="ozz-fw-debug-bar-tab__message-queries">
-                <span><?=self::sqlDumper($value[1], false)?></span>
-                <span><?=number_format($value[0]*1000, 3)?> ms</span>
-            </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
-        </div>
-
-        <div class="ozz-fw-debug-bar__body tab-body view">
-          <?php if (!isset($data['ozz_view']) || count($data['ozz_view']) < 1) : ?>
-            <pre class="ozz-fw-debug-bar__empty">No View Files</pre>
-          <?php elseif (isset($data['ozz_view'])) : ?>
-            <?php $view = $data['ozz_view']; ?>
-
-            <div class="ozz__dbg_view-comp-wrapper">
-              <div class="ozz__dbg_view-head">
-                <span><strong>View File:</strong><br> <?=isset($view['view_file']) ? $view['view_file'] : '<em style="color: #a00">Not Found</em>'; ?></span><br><br>
-                <span><strong>Base Layout:</strong><br> <?=isset($view['base_file']) ? $view['base_file'] : '<em style="color: #a00">Not Found</em>';?></span><br><br>
-              </div>
-
-              <div class="ozz__dbg_view-info">
-                <div class="ozz-fw-debug-bar-tab__message-view">
-                  <span class="label">View Data: </span><br>
-                  <?php if (is_array($view['view_data']) || is_object($view['view_data'])) {?>
-                    <span class="ozz-fw-debug-bar-array"><?php self::varDump($view['view_data'], '', false, true)?></span>
-                  <?php } elseif (is_json($view['view_data'])) { ?>
-                    <div><?= self::jsonDumper('view_data', $view['view_data'], false)?></div>
-                  <?php } else { ?>
-                    <span><?= is_string($view['view_data']) ? $view['view_data'] : false; ?></span>
-                  <?php } ?>
-                </div>
-              </div>
-
-              <div class="ozz__dbg_component-info">
-                <div class="ozz-fw-debug-bar-tab__message-view">
-                  <span class="label">Components</span><br><br>
-                  <?php
-                  if (isset($view['components']) || has_flash('ozz_components')) {
-
-                    $view['components'] = !isset($view['components']) ? [] : $view['components'];
-
-                    // Merge Components info from flash and default
-                    $view_components = has_flash('ozz_components') ? array_merge(get_flash('ozz_components'), $view['components']) : $view['components'];
-
-                    // remove component info flash
-                    remove_flash('ozz_components');
-
-                    foreach ($view_components as $key => $value) {
-                      echo '<details class="ozz-fw-debug-bar-tab__message-view-component">';
-                      echo '<summary><span class="green">'.$value['file'].'</span></summary>';
-
-                      if (is_json($value['args'])) {
-                        echo '<br><div><pre>'.json_encode($value['args'], JSON_PRETTY_PRINT).'</pre></div>';
-                      } elseif (is_array($value['args']) || is_object($value['args'])) {
-                        echo '<div>'.self::varDump($value['args'], '', false, true).'</div><br>';
-                      } else {
-                        echo '<br><div>'.$value['args'].'</div>';
-                      }
-                      echo '</details>';
-                    }
-                  }
-                  ?>
-                </div>
-              </div>
-            </div>
-
-          <?php endif; ?>
-        </div>
-
-        <div class="ozz-fw-debug-bar__body tab-body controller">
-          <?php
-          if (isset($data['ozz_controller'])) { 
-            if (count($data['ozz_controller']) < 1) {
-              echo '<pre class="ozz-fw-debug-bar__empty">No Controller</pre>';
+            if (ozzDebugBar__container.classList.contains('expanded')) {
+              shadow.body.style.overflow = 'hidden';
             } else {
-              $ctl = $data['ozz_controller']; ?>
-              <div class="ozz-fw-debug-bar-tab__message-controller">
-                <span class="label">Controller:</span>
-                <span><?=$ctl['controller']?></span>
-              </div>
-
-              <div class="ozz-fw-debug-bar-tab__message-controller">
-                <span class="label">Method:</span>
-                <span><?=$ctl['method']?></span>
-              </div>
-            <?php
+              shadow.body.style.overflow = 'unset';
             }
-          } else {
-            echo '<pre class="ozz-fw-debug-bar__empty">No Controller</pre>';
-          } ?>
-        </div>
+          });
 
-        <div class="ozz-fw-debug-bar__body tab-body session">
-          <?php if (isset($_SESSION) && !empty($_SESSION)) { ?>
-            <?php foreach ($_SESSION as $key => $value) { ?>
-              <div class="ozz-fw-debug-bar-tab__message-session">
-              <span class="label"><?=$key?></span>
-              <?php if (is_array($value) || is_object($value)) { ?>
-                <span class="ozz-fw-debug-bar-array"><?=self::varDump($value, '', false, true)?></span>
-              <?php } elseif (is_json($value)) { ?>
-                <span><?= self::jsonDumper('jid_'.rand(), $value, false)?></span>
-              <?php } else { ?>
-                <span><?=$value?></span>
-              <?php } ?>
-              </div>
-            <?php } ?>
-          <?php } ?>
-          </div>
-        </div>
-      </div>
-    </div>
+          ozzDebugBar__nav_item.forEach(el => {
+            if (!el.classList.contains('expand-button')) {
+              el.addEventListener('click', function() {
+                var tabName = this.getAttribute('data-item');
+                ozzDebugBar__container.classList.toggle('open');
 
-    <!-- Ozz Debug Bar Script -->
-    <script type="text/javascript" nonce="<?=CSP_NONCE?>">
-    (function() {
-      var ozzDebugBar__container = document.querySelector('.ozz-fw-debug-bar');
-      var ozzDebugBar__nav_item = document.querySelectorAll('.ozz-fw-debug-bar__nav.item');
-      var ozzDebugBar__tab_bodies = document.querySelectorAll('.ozz-fw-debug-bar__body.tab-body');
-      var ozzDebugBar__tempTabName = '';
-      var ozzDebugBar__expandBtn = document.querySelector('.ozz-fw-debug-bar__nav.item.expand-button');
+                // Active current menu item
+                ozzDebugBar__nav_item.forEach(item => {
+                  item.classList.remove('active');
+                });
+                this.classList.add('active');
 
-      // Expand to full screen
-      ozzDebugBar__expandBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        var hasActive = false;
-        ozzDebugBar__container.classList.toggle('expanded');
-        ozzDebugBar__expandBtn.classList.toggle('expanded');
-        ozzDebugBar__nav_item.forEach(tabItem => {
-          if (tabItem.classList.contains('active')) {
-            hasActive = true;
-          }
-        });
-        if (!hasActive) {
-          ozzDebugBar__nav_item[0].classList.add('active');
-          ozzDebugBar__tab_bodies[0].classList.add('active');
-        }
+                ozzDebugBar__tab_bodies.forEach(tab => {
+                  tab.classList.remove('active');
+                });
 
-        if (ozzDebugBar__container.classList.contains('expanded')) {
-          document.body.style.overflow = 'hidden';
-        } else {
-          document.body.style.overflow = 'unset';
-        }
-      });
+                // Activate current tab
+                shadow.querySelector('.ozz-fw-debug-bar__body.tab-body.'+tabName).classList.add('active');
 
-      ozzDebugBar__nav_item.forEach(el => {
-        if (!el.classList.contains('expand-button')) {
-          el.addEventListener('click', function() {
-            var tabName = this.getAttribute('data-item');
-            ozzDebugBar__container.classList.toggle('open');
+                if (tabName !== ozzDebugBar__tempTabName) {
+                  ozzDebugBar__container.classList.add('open');
+                }
 
-            // Active current menu item
-            ozzDebugBar__nav_item.forEach(item => {
-              item.classList.remove('active');
-            });
-            this.classList.add('active');
-
-            ozzDebugBar__tab_bodies.forEach(tab => {
-              tab.classList.remove('active');
-            });
-
-            // Activate current tab
-            document.querySelector('.ozz-fw-debug-bar__body.tab-body.'+tabName).classList.add('active');
-
-            if (tabName !== ozzDebugBar__tempTabName) {
-              ozzDebugBar__container.classList.add('open');
+                ozzDebugBar__tempTabName = tabName;
+              });
             }
-
-            ozzDebugBar__tempTabName = tabName;
           });
         }
-      });
-    })()
+        init(shadow);
+      })();
     </script>
-    </div>
     <?php
   }
 

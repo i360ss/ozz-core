@@ -1,15 +1,16 @@
 @import '_core';
-:root {
+:host {
+  all: initial;
+
   --ozz-white: #ffffff;
-  --ozz-blue: #666EE8;
-  --ozz-darkBlue: #3E46B1;
+  --ozz-blue: #5168f4;
+  --ozz-darkBlue: #4155d6;
   --ozz-light1: #f1f2f6;
   --ozz-light2: #dfe4ea;
   --ozz-light3: #ced6e0;
   --ozz-light4: #a4b0be;
-  --ozz-dark1: #2f3542;
+  --ozz-dark1: #1e1f27;
   --ozz-dark2: #747d8c;
-  
   --ozz-warn: #ffa502;
   --ozz-error: #ff4757;
   --ozz-info: #2e86de;
@@ -17,11 +18,7 @@
 
 $border-1: 1px solid var(--ozz-light2);
 
-.ozz__debugbar {
-  all: unset;
-}
 .ozz-fw-debug-bar {
-  all: unset;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -55,10 +52,11 @@ $border-1: 1px solid var(--ozz-light2);
   }
   span {
     color: var(--ozz-dark1);
+    overflow-wrap: anywhere;
+    line-height: 1.5;
     b,
     strong,
     &.label {
-      all: unset;
       font-weight: 600;
     }
   }
@@ -186,7 +184,6 @@ $border-1: 1px solid var(--ozz-light2);
 
   // Queries tab
   &-tab__message-queries {
-    all: unset;
     border-bottom: $border-1;
     font-size: 14px;
     margin: 0;
@@ -195,6 +192,7 @@ $border-1: 1px solid var(--ozz-light2);
     color: var(--ozz-dark1);
     display: grid;
     grid-template-columns: 1fr 100px;
+    grid-gap: 0 20px;
     span.high-txt {
       color: var(--ozz-info);
     }
@@ -202,7 +200,6 @@ $border-1: 1px solid var(--ozz-light2);
 
   // View Tab
   &-tab__message-view pre {
-    all: unset;
     white-space: pre-wrap;
     white-space: -moz-pre-wrap;
     white-space: -pre-wrap;
@@ -228,7 +225,6 @@ $border-1: 1px solid var(--ozz-light2);
     }
   }
   .ozz__dbg_view-comp-wrapper {
-    all: unset;
     display: grid;
     grid-template-columns: 0.8fr 2fr 1.5fr;
     grid-gap: 0;
@@ -291,7 +287,6 @@ $border-1: 1px solid var(--ozz-light2);
     margin: 5px 0 0;
   }
   .ozz_debugbar__collapse_btn {
-    all: unset;
     padding: 5px;
     font-size: 14px;
     background: var(--ozz-dark2);
@@ -299,5 +294,16 @@ $border-1: 1px solid var(--ozz-light2);
     border-radius: 3px;
     color: var(--ozz-white);
     cursor: pointer;
+  }
+}
+
+// SQL Dumper
+.ozz-debug-sqldumper {
+  color: var(--ozz-dark1); // #18171B;
+  white-space: pre-wrap;
+  font-family: monospace;
+  .high-txt {
+    color: var(--ozz-info);
+    font-weight: 600;
   }
 }
