@@ -388,7 +388,7 @@ class Auth extends Model {
   public static function isLoggedIn(){
     self::init();
 
-    if( isset($_SESSION['logged_user_id']) && !empty($_SESSION['logged_user_id']) && self::getUser($_SESSION['logged_user_id']) ){
+    if( isset($_SESSION['logged_user_id']) && !empty($_SESSION['logged_user_id']) ){
       return true;
     } else {
       return false;
