@@ -21,6 +21,44 @@ class CMSFuncs {
   }
 
   /**
+   * Convert prepared SQL query with parameters to raw SQL for debugging purposes
+   * @param string $query Prepared SQL query with placeholders
+   * @param array $params Parameters to replace in the query
+   * @return string Raw SQL query with parameters replaced
+   */
+  public function _convert_to_raw_sql($query, $params) {
+    foreach ($params as $key => $value) {
+      if (is_null($value)) {
+        $replacement = 'NULL';
+      } elseif (is_numeric($value)) {
+        $replacement = $value;
+      } else {
+        $replacement = "'" . addslashes($value) . "'";
+      }
+      $query = str_replace($key, $replacement, $query);
+    }
+
+    return $query;
+  }
+
+  /**
+   * Log query to debug bar
+   * @param string $sql Prepared SQL query
+   * @param array $params Parameters to replace in the query
+   * @param int $startTime Query start time in nanoseconds (from hrtime(true))
+   */
+  public function _log_query($sql, $params, $startTime) {
+    if (!DEBUG) return;
+
+    $rawSql = $this->_convert_to_raw_sql($sql, $params);
+    $duration = (hrtime(true) - $startTime) / 1e9;
+    $logFile = __DIR__.SPC_BACK['core_2'].'storage/log/sql_debug.log';
+    if (is_writable(dirname($logFile))) {
+      file_put_contents($logFile, $duration . '<###>' . $rawSql . '<####>', FILE_APPEND);
+    }
+  }
+
+  /**
    * Get all posts (ID, post_type, slug and title only for reference)
    * @param string $lang Language
    */
@@ -28,8 +66,12 @@ class CMSFuncs {
     $query = 'SELECT id, slug, title, post_type FROM cms_posts 
       WHERE lang = :lang AND post_status = :post_status
       ORDER BY id DESC';
+    if(DEBUG) $run_time_start = hrtime(true);
     $stmt = $this->DB()->pdo->prepare($query);
     $stmt->execute(['lang' => $lang, 'post_status' => 'published']);
+
+    if(DEBUG) $this->_log_query($query, ['lang' => $lang, 'post_status' => 'published'], $run_time_start);
+
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
@@ -217,17 +259,25 @@ class CMSFuncs {
       $count_query .= ' WHERE ' . implode(' AND ', $where_conditions);
     }
 
+    if(DEBUG) $run_time_start = hrtime(true);
+
     // Execute the count query
     $count_stmt = $this->DB()->pdo->prepare($count_query);
     $count_stmt->execute($query_params);
     $total_posts = $count_stmt->fetch(PDO::FETCH_ASSOC)['total_posts'];
 
+    if(DEBUG) $this->_log_query($count_query, $query_params, $run_time_start);
+
     $total_pages = ceil($total_posts / $items_per_page);
+
+    if(DEBUG) $run_time_start_2 = hrtime(true);
 
     // Execute the main query
     $stmt = $this->DB()->pdo->prepare($query);
     $stmt->execute($query_params);
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if(DEBUG) $this->_log_query($query, $query_params, $run_time_start_2);
 
     if (!empty($data)) {
       // Decode JSON fields
