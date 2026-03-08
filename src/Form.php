@@ -256,12 +256,17 @@ class Form {
 
         // Common code for creating a repeated field block
         $createRepeatedFieldBlock = function ($i, $repeaterValue, $prefix) use ($repeaterFields, &$html) {
+          $first_title = current(array_filter($repeaterValue, function ($value) {
+            return is_string($value) && !empty($value);
+          }));
+
           $html .= '<div id="rptf-' . random_str(18) . '" class="ozz-fm__repeat-fields">';
-          $html .= '<div class="ozz-fm__repeat-head">';
+          $html .= '<div class="ozz-fm__repeat-head '.(isset($repeaterFields['expand']) && $repeaterFields['expand'] === true ? '' : 'close').'">';
+          $html .= '<span class="ozz-fm__repeat-title">' . esx(html_decode($first_title)) . '</span>';
           $html .= '<span class="ozz-fm__repeat-number">' . ((int)$i + 1) . '</span>';
           $html .= '<span class="ozz-fm__repeat-remove button micro danger">Delete</span>';
           $html .= '</div>';
-          $html .= '<div class="ozz-fm__repeat-body">';
+          $html .= '<div class="ozz-fm__repeat-body '.(isset($repeaterFields['expand']) && $repeaterFields['expand'] === true ? '' : 'close').'">';
           $html .= self::generateFields($repeaterFields, $repeaterValue, $prefix . $i . '__');
           $html .= '</div></div>';
         };
