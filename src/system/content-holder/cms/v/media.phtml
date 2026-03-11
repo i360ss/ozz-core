@@ -141,15 +141,26 @@ $current_dir = '';
 
       <div class="ozz-media-manager__actions-action search">
         <?php _create_form([
-          'method' => 'post',
+          'method' => 'get',
+          'action' => '',
+          'csrf' => false,
           'class' => 'ozz-fm',
           'fields' => [
             [
-              'name' => 'ozz_media_search_keyword',
+              'name' => 'dir',
+              'type' => 'hidden',
+              'value' => $current_dir
+            ],
+            [
+              'name' => 'p',
+              'type' => 'hidden',
+              'value' => $media_items['current_page']
+            ],
+            [
+              'name' => 'q',
               'type' => 'search',
               'placeholder' => 'Search',
             ],[
-              'name' => 'ozz_media_search',
               'value' => 'Search',
               'type' => 'submit',
               'class' => 'button mini'

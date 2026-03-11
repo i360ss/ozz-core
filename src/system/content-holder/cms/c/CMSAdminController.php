@@ -627,13 +627,34 @@ class CMSAdminController extends CMS {
   // Media
   // =============================================
   public function media_manager(Request $request) {
-    if(!is_dir(UPLOAD_TO.$request->query('dir', ''))){
+    $dir = $request->query('dir', '');
+    if(!is_dir(UPLOAD_TO.$dir)){
       return redirect(ADMIN_PATH.'/media');
     }
 
+    $items = get_directory_content(UPLOAD_TO.$dir);
+
+    // Search filter
+    $q = trim($request->query('q', ''));
+    if ($q !== '') {
+      $q = strtolower($q);
+      $items = array_filter($items, function ($item, $key) use ($q) {
+
+        // Folder
+        if (is_array($item)) {
+          $folder = strtolower(trim($key, '/'));
+          return strpos($folder, $q) !== false;
+        }
+
+        // File
+        return strpos(strtolower($item), $q) !== false;
+      }, ARRAY_FILTER_USE_BOTH);
+    }
+
     $media_items = $this->media_get_items(
-      $request->query('dir', ''),
-      $request->query('p', 1)
+      $dir,
+      $request->query('p', 1),
+      $items
     );
 
     $this->data['media_directory_tree'] = $media_items['tree'];
@@ -648,12 +669,13 @@ class CMSAdminController extends CMS {
    * @param string $directory
    * @param integer $page_number Pagination page number
    */
-  public function media_get_items($directory, $page_number) {
+  public function media_get_items($directory, $page_number, $items = null) {
     $directory = esc_url($directory);
-    $items = get_directory_content(UPLOAD_TO.$directory);
-    $media_data['tree'] = $directory !== '' ? explode('/', $directory) : [];
+    if($items === null){
+      $items = get_directory_content(UPLOAD_TO.$directory);
+    }
 
-    // Media items Pagination
+    $media_data['tree'] = $directory !== '' ? explode('/', $directory) : [];
     $media_data['items'] = array_pagination(
       $items,
       $this->cms_media['pagination_items_per_page'],
@@ -687,6 +709,10 @@ class CMSAdminController extends CMS {
       }
     }
     $media_data['items']['data'] = $modified;
+    $media_data['items']['paginationDOM'] = '<div class="ozz-media-manager__pagination ozz-pagination">
+      <span>'.pagination_dom($media_data['items']['number_of_pages'], $media_data['items']['current_page']).'</span>
+      <span class="light-text"><strong>'.count($modified).'</strong> Items</span>
+    </div>';
 
     return $media_data;
   }
