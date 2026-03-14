@@ -72,7 +72,7 @@ class Migrate extends Schema {
         if ($v !== '.gitkeep') {
           $parts = explode('_', $v, 3);
           if (count($parts) === 3) {
-            $class = $parts[2];
+            $class = substr($parts[2], 0, -4);
             $class = new $class;
             $class->up();
           }
@@ -143,7 +143,7 @@ class Migrate extends Schema {
         require_once $this->mgDir.$v;
         $parts = explode('_', $v, 3);
         if (count($parts) === 3) {
-          $class = $parts[2];
+          $class = substr($parts[2], 0, -4);
           $class = new $class;
           method_exists($class, 'down') ? $class->down() : false;
         }
@@ -183,7 +183,7 @@ class Migrate extends Schema {
     foreach ($getAllMigrations as $k => $v) {
       if(file_exists($this->mgDir.$v)){
         $parts = explode('_', $v, 3);
-        $className = $parts[2];
+        $class = substr($parts[2], 0, -4);
 
         if($className == ucfirst($r2)){
           $requestedFileExist = true;
