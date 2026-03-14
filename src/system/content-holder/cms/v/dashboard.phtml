@@ -4,13 +4,38 @@
  * Path: view/admin/dashboard
  * @param array $data arguments passed from controller or route
  */
+require __DIR__."/../../storage/system/OzzUpdater.php";
+$updater = new OzzUpdater;
 ?>
 {{ title        = "Dashboard" }}
 {{ body_class   = "view-dashboard" }}
 
 {{ content }}
-  <h1>Dashboard</h1>
+  <!-- Fixed Notifications -->
+  <?php if ($updater->isUpdateAvailable()) : ?>
+    <div class="ozz-notification info ozz-update-notification">
+      <span><strong>Update:</strong> A new version of Ozz framework is available: 
+        <a href="<?=$updater->getLatestVersion()['support']['source']?>" target="_blank">
+          <strong>v<?=ltrim($updater->getLatestVersion()['version'], 'v')?></strong>
+        </a>
+      </span><br><br>
+      <?php _create_form([
+        'name' => 'ozzUpdateForm',
+        'method' => 'post',
+        'action' => ADMIN_PATH.'/ozz-update',
+        'fields' => [
+          [
+            'name' => 'updatebtn',
+            'type' => 'submit',
+            'value' => 'Update Now',
+            'class' => 'button small'
+          ]
+        ]
+      ]) ?>
+    </div>
+  <?php endif;?>
 
+  <h1>Dashboard</h1>
   <section class="widget-box-wrapper">
     <div class="widget-box blue">
       <div class="cl cl-6">

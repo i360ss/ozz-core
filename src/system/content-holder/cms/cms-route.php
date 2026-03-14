@@ -52,4 +52,5 @@ Router::postGroup(['auth', 'admin_access'], [
   ADMIN_PATH.'/forms/delete_entry'                 => [CMSAdminController::class, 'form_delete_entry'],
   ADMIN_PATH.'/settings/change-pass'               => [CMSAdminController::class, 'change_password'],
   ADMIN_PATH.'/settings/change-info'               => [CMSAdminController::class, 'change_info'],
+  ADMIN_PATH.'/ozz-update'                         => [CMSAdminController::class, 'ozz_update'],
 ]);

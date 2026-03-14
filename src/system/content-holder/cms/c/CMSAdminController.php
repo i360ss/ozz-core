@@ -770,4 +770,14 @@ class CMSAdminController extends CMS {
     return back();
   }
 
+
+  /**
+   * Ozz version update
+   */
+  public function ozz_update() {
+    require __DIR__."/../../storage/system/OzzUpdater.php";
+    $updater = new \OzzUpdater();
+    return $updater->runUpdate();
+  }
+
 }
