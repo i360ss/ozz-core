@@ -49,7 +49,7 @@ class CreateCms {
     $mig_from = $cms_hold_dir.'mg/';
     $mig_files = array_filter(glob("$mig_from*"), "is_file");
     foreach ($mig_files as $f) {
-      if(copy($f, $mig_dir . 'mg_'.date('d_m_Y_').basename($f))){
+      if(copy($f, $mig_dir . 'mg_'.date('YmdHis').'_'.ucfirst(basename($f)))){
         $utils->console_return("Migration file created [ database/migration/".basename($f)." ]", 'green');
       } else {
         $utils->console_return("Error on creating migration file [ database/migration/".basename($f)." ]", 'red');
