@@ -14,7 +14,7 @@ $updater = new OzzUpdater;
   <!-- Fixed Notifications -->
   <?php if ($updater->isUpdateAvailable()) : ?>
     <div class="ozz-notification info ozz-update-notification">
-      <span><strong>Update:</strong> A new version of Ozz framework is available: 
+      <span class="content"><strong>Update:</strong> A new version of Ozz framework is available: 
         <a href="<?=$updater->getLatestVersion()['support']['source']?>" target="_blank">
           <strong>v<?=ltrim($updater->getLatestVersion()['version'], 'v')?></strong>
         </a>
