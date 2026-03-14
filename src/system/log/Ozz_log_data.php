@@ -60,7 +60,9 @@ trait Ozz_log_data {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         `type` TEXT,
         `key` TEXT,
-        item_id INTEGER
+        `value` TEXT,
+        `updated_by` TEXT,
+        `updated_at` TEXT
       )");
     }
 
