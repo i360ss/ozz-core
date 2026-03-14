@@ -110,7 +110,7 @@ class CreateAuth {
     global $utils;
     require $this->auth_content_holder.'/'.$base_file.'.php';
 
-    $newFile = $this->migration_dir.'mg_'.date('d_m_Y_').ucfirst($name).'.php';
+    $newFile = $this->migration_dir.'mg_'.date('YmdHis').'_'.ucfirst($name).'.php';
     $migration_file = fopen($newFile, 'w');
 
     if(fwrite($migration_file, $content)){
