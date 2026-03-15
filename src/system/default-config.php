@@ -17,19 +17,19 @@ return [
   // Session
   'SESSION_DRIVER' => 'memory',
   'SESSION_COOKIE_NAME' => 'ozz_ses_id',
-  'SESSION_LIFETIME' => 1800,
+  'SESSION_LIFETIME' => 18000,
   'SESSION_PREFIX' => 'ozz_ses_',
   'SESSION_FILE_DIRECTORY' => 'storage/session',
   'SESSION_SECRET_KEY' => '',
 
   // Cookie
-  'COOKIE_LIFETIME' => 1800,
+  'COOKIE_LIFETIME' => 18000,
   'COOKIE_PATH' => '/',
   'COOKIE_DOMAIN' => '',
   'COOKIE_SECURE' => true,
   'COOKIE_HTTP_ONLY' => true,
   'COOKIE_SAMESITE' =>  'Strict', // Strict, Lax or None
-  'CSRF_COOKIE_LIFETIME' => 1800,
+  'CSRF_COOKIE_LIFETIME' => 18000,
 
   // Auth
   'AUTH_CONTROLLER' => 'AuthController',

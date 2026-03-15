@@ -4,6 +4,7 @@
  * Path: view/admin/post_listing
  * @param array $data arguments passed from controller or route
  */
+$create_label = isset($post_config['singular_label']) ? 'New '.$post_config['singular_label'] : 'Add New';
 ?>
 {{ title        = "Posts" }}
 {{ body_class   = "post post__listing" }}
@@ -31,7 +32,7 @@
       </a>
     </div>
     <div class="align-right">
-      <a href="<?=ADMIN_PATH?>/posts/create/<?=$post_type?>" class="button small green">Create New</a>
+      <a href="<?=ADMIN_PATH?>/posts/create/<?=$post_type?>" class="button small green"><?=$create_label?></a>
     </div>
   </div>
 
@@ -61,7 +62,7 @@
           </td>
           <td width="120px"><span class="light-text"><?=date('M d, Y', $value['created_at'])?></span></td>
           <td width="120px"><span class="light-text"><?=date('M d, Y', $value['modified_at'])?></span></td>
-          <td width="180px" class="f-14"><?=$value['first_name'].' '.$value['last_name']?></td>
+          <td width="180px" class="f-14 light-text"><?=$value['first_name'].' '.$value['last_name']?></td>
           <td class="tr-action" width="180px">
             <div class="show-on-hover">
               <a href="<?=ADMIN_PATH?>/posts/edit/<?=$value['post_type']?>/<?=$value['post_id']?>" title="Edit">

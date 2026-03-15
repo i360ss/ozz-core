@@ -55,7 +55,7 @@ $page_title = 'Taxonomy | '.($taxonomy['name'] ?? 'Not found');
                 [
                   'name' => 'submit',
                   'type' => 'submit',
-                  'value' => '+ Add Term',
+                  'value' => isset($taxonomy['singular_name']) ? '+ Add '.$taxonomy['singular_name'] : '+ Add Term',
                   'class' => 'button small green',
                 ]
               ]

@@ -14,86 +14,120 @@ $form_data = has_flash('form_data') ? get_flash('form_data') : [];
 <section>
   <div class="container">
     <h1>Settings</h1>
-    <div class="ozz-widget">
-      <h4 class="ozz-widget__heading">User Info</h4>
-      <div class="profile-image">
-        <img src="<?=get_gravatar()?>" alt="<?=auth_info('name')?>">
-      </div><br>
-      <?php _create_form([
-        'action' => ADMIN_PATH.'/settings/change-info',
-        'method' => 'post',
-        'class' => 'ozz-fm',
-        'field_options' => [
-          'wrapper' => '<div class="ozz-fm__field">##</div>'
-        ],
-        'fields' => [
-          [
-            'name' => 'first-name',
-            'type' => 'text',
-            'label' => 'First Name',
-            'value' => $form_data['first-name'] ?? auth_info('first_name'),
-            'wrapper_class' => 'cl cl-6'
-          ],
-          [
-            'name' => 'last-name',
-            'type' => 'text',
-            'label' => 'Last Name',
-            'value' => $form_data['last-name'] ?? auth_info('last_name'),
-            'wrapper_class' => 'cl cl-6'
-          ],
-          [
-            'name' => 'email',
-            'type' => 'text',
-            'label' => 'Email Address',
-            'value' => $form_data['email'] ?? auth_info('email')
-          ],
-          [
-            'name' => 'submit_name',
-            'type' => 'submit',
-            'value' => 'Save',
-            'class' => 'button small green'
-          ]
-        ]
-      ]);?>
-    </div><br>
+    <div class="ozz-widget-wrap">
+      <div class="ozz-widget-wrap__main-col">
+        <div class="ozz-widget">
+          <h4 class="ozz-widget__heading">User Info</h4>
+          <div class="profile-image">
+            <img src="<?=get_gravatar()?>" alt="<?=auth_info('name')?>">
+          </div><br>
+          <?php _create_form([
+            'action' => ADMIN_PATH.'/settings/change-info',
+            'method' => 'post',
+            'class' => 'ozz-fm',
+            'field_options' => [
+              'wrapper' => '<div class="ozz-fm__field">##</div>'
+            ],
+            'fields' => [
+              [
+                'name' => 'first-name',
+                'type' => 'text',
+                'label' => 'First Name',
+                'value' => $form_data['first-name'] ?? auth_info('first_name'),
+                'wrapper_class' => 'cl cl-6'
+              ],
+              [
+                'name' => 'last-name',
+                'type' => 'text',
+                'label' => 'Last Name',
+                'value' => $form_data['last-name'] ?? auth_info('last_name'),
+                'wrapper_class' => 'cl cl-6'
+              ],
+              [
+                'name' => 'email',
+                'type' => 'text',
+                'label' => 'Email Address',
+                'value' => $form_data['email'] ?? auth_info('email')
+              ],
+              [
+                'name' => 'submit_name',
+                'type' => 'submit',
+                'value' => 'Save',
+                'class' => 'button small green'
+              ]
+            ]
+          ]);?>
+        </div><br>
 
-    <div class="ozz-widget">
-      <h4 class="ozz-widget__heading">Change Password</h4>
-      <?php _create_form([
-        'action' => ADMIN_PATH.'/settings/change-pass',
-        'method' => 'post',
-        'class' => 'ozz-fm',
-        'field_options' => [
-          'wrapper' => '<div class="ozz-fm__field">##</div>'
-        ],
-        'fields' => [
-          [
-            'name' => 'current-pass',
-            'type' => 'password',
-            'label' => 'Current Password',
-            'autocomplete' => 'new-password',
-            'value' => isset($form_data['current-pass']) ? $form_data['current-pass'] : '',
-          ],
-          [
-            'name' => 'new-pass',
-            'type' => 'password',
-            'label' => 'New Password',
-            'value' => isset($form_data['new-pass']) ? $form_data['new-pass'] : '',
-          ],
-          [
-            'name' => 'confirm-pass',
-            'type' => 'password',
-            'label' => 'Confirm New Password',
-            'value' => isset($form_data['confirm-pass']) ? $form_data['confirm-pass'] : '',
-          ],
-          [
-            'name' => 'submit',
-            'type' => 'submit',
-            'value' => 'Change Password',
-            'class' => 'button small danger'
-          ]
-        ]
-      ]);?>
+        <div class="ozz-widget">
+          <h4 class="ozz-widget__heading">Change Password</h4>
+          <?php _create_form([
+            'action' => ADMIN_PATH.'/settings/change-pass',
+            'method' => 'post',
+            'class' => 'ozz-fm',
+            'field_options' => [
+              'wrapper' => '<div class="ozz-fm__field">##</div>'
+            ],
+            'fields' => [
+              [
+                'name' => 'current-pass',
+                'type' => 'password',
+                'label' => 'Current Password',
+                'autocomplete' => 'new-password',
+                'value' => isset($form_data['current-pass']) ? $form_data['current-pass'] : '',
+              ],
+              [
+                'name' => 'new-pass',
+                'type' => 'password',
+                'label' => 'New Password',
+                'value' => isset($form_data['new-pass']) ? $form_data['new-pass'] : '',
+              ],
+              [
+                'name' => 'confirm-pass',
+                'type' => 'password',
+                'label' => 'Confirm New Password',
+                'value' => isset($form_data['confirm-pass']) ? $form_data['confirm-pass'] : '',
+              ],
+              [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'Change Password',
+                'class' => 'button small danger'
+              ]
+            ]
+          ]);?>
+        </div>
+      </div>
+
+      <aside class="ozz-widget-wrap__right-col">
+        <div class="ozz-widget">
+          <h4 class="ozz-widget__heading">System Info</h4>
+          <?php foreach ($system_info as $key => $value) : ?>
+            <?php if (is_string($value)) : ?>
+              <div class="ozz-widget__item-v2-raw">
+                <label><?=str_replace('_', ' ', $key)?></label>
+                <span><?=$value?></span>
+              </div>
+            <?php endif; ?>
+          <?php endforeach; ?>
+        </div><br>
+
+        <?php if ($update_logs && !empty($update_logs)) : ?>
+          <div class="ozz-widget">
+            <h4 class="ozz-widget__heading">Update Log</h4>
+            <?php foreach ($update_logs as $log) : ?>
+              <div ozz-cms-popup>
+                <div class="ozz-widget__tab" popupTrigger>
+                  <span class="label <?=$log['type']?>"><?=$log['type']?></span><br>
+                  <span>At: <?=$log['updated_at']?></span><br>
+                  <span>By: <?=$log['updated_by']?></span>
+                </div>
+                <div popupDOM><?=$log['value']?></div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+      </aside>
     </div>
   </div>
 </section>

@@ -564,6 +564,42 @@ class CMSAdminController extends CMS {
   // Settings
   // =============================================
   public function settings() {
+    // Composer version
+    $composerVersion = null;
+    if (shell_exec('composer --version')) {
+      $composerVersion = trim(shell_exec('composer --version'));
+    }
+
+    // Project version (ozz/core) from composer.lock
+    function getInstalledVersion() {
+      $lockFile = __DIR__.'/../../composer.lock';
+      if (!file_exists($lockFile)) {
+        return 'Unknown';
+      }
+      $data = json_decode(file_get_contents($lockFile), true);
+      foreach ($data['packages'] as $package) {
+        if ($package['name'] === 'ozz/core') {
+          return ltrim($package['version'], 'v');
+        }
+      }
+      return 'Unknown';
+    }
+
+    $info = [
+      'Ozz_version' => getInstalledVersion(),
+      'PHP_version' => phpversion(),
+      'Composer_version' => explode(' ', $composerVersion)[2] ?? 'Composer not found',
+      'Server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown',
+      'Memory_limit' => ini_get('memory_limit'),
+      'Upload_max_filesize' => ini_get('upload_max_filesize'),
+      'OS' => PHP_OS,
+      'Server_time' => date('Y-m-d H:i:s'),
+      'Loaded_extensions' => get_loaded_extensions(),
+    ];
+
+    $this->data['system_info'] = $info;
+    $this->data['update_logs'] = array_slice(array_reverse(ozz_log_get('ozz_logs', '*', ['key' => 'ozz_update'])), 0, 10);
+
     return view('settings', $this->data);
   }
 
