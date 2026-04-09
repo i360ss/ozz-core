@@ -598,7 +598,8 @@ class CMSAdminController extends CMS {
     ];
 
     $this->data['system_info'] = $info;
-    $this->data['update_logs'] = array_slice(array_reverse(ozz_log_get('ozz_logs', '*', ['key' => 'ozz_update'])), 0, 10);
+    $log = ozz_log_get('ozz_logs', '*', ['key' => 'ozz_update']);
+    $this->data['update_logs'] = array_slice(array_reverse( $log ? $log : []), 0, 10);
 
     return view('settings', $this->data);
   }
