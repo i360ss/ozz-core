@@ -388,6 +388,7 @@ trait Posts {
   protected function cms_post_form($form_type='create', $post_type=null, $values=[]) {
     $post_type = is_null($post_type) ? $this->post_type : $post_type;
     $form = $this->cms_post_types[$post_type]['form'];
+    $show_block_editor = !isset($this->cms_post_types[$post_type]['disable_block_editor']) || $this->cms_post_types[$post_type]['disable_block_editor'] === false;
 
     // Add form class
     $form_class = 'ozz-fm';
@@ -429,11 +430,13 @@ trait Posts {
     }
 
     // If flash blocks available
-    if(has_flash('form_data')){
-      $flash_blocks = json_encode($this->cms_filter_form_data(get_flash('form_data'))['block']);
-      $form['fields'][] = $this->cms_block_editor_field($flash_blocks);
-    } else {
-      $form['fields'][] = isset($values['blocks']) ? $this->cms_block_editor_field($values['blocks']) : $this->cms_block_editor_field();
+    if ($show_block_editor) {
+      if(has_flash('form_data')){
+        $flash_blocks = json_encode($this->cms_filter_form_data(get_flash('form_data'))['block']);
+        $form['fields'][] = $this->cms_block_editor_field($flash_blocks);
+      } else {
+        $form['fields'][] = isset($values['blocks']) ? $this->cms_block_editor_field($values['blocks']) : $this->cms_block_editor_field();
+      }
     }
 
     // Users

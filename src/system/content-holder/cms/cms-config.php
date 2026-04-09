@@ -5,6 +5,78 @@
 
 return [
   'post_types' => [
+    'global' => [
+      'label' => 'Global',
+      'note' => 'Create global content on this post type (Nav menu, Site title, Site Logo, Contact details ect.)',
+      'disable_block_editor' => true,
+      'fields' => [
+        [
+          'name' => 'site_title',
+          'type' => 'text',
+          'label' => 'Site Title'
+        ],
+        [
+          'name' => 'primary_logo',
+          'type' => 'media',
+          'label' => 'Primary Logo'
+        ],
+        [
+          'name' => 'secondary_logo',
+          'type' => 'media',
+          'label' => 'Secondary Logo'
+        ],
+        [
+          'name' => 'contact_number',
+          'type' => 'tel',
+          'label' => 'Contact Number'
+        ],
+        [
+          'name' => 'email',
+          'type' => 'email',
+          'label' => 'Email'
+        ],
+        [
+          'name' => 'address',
+          'type' => 'text',
+          'label' => 'Address'
+        ]
+      ],
+      'tabs' => [
+        'header' => [
+          'slug' => 'header',
+          'label' => 'Header',
+          'fields' => [
+            [
+              'name' => 'nav_menu',
+              'type' => 'repeater',
+              'label' => 'Navigation Menu',
+              'fields' => [
+                [
+                  'name' => 'title',
+                  'type' => 'text',
+                  'label' => 'Menu Title',
+                ],
+                [
+                  'name' => 'slug',
+                  'type' => 'text',
+                  'label' => 'Menu URL',
+                ]
+              ]
+            ],
+            [
+              'name' => 'primary_cta',
+              'type' => 'link',
+              'label' => 'Primary CTA'
+            ],
+            [
+              'name' => 'secondary_cta',
+              'type' => 'link',
+              'label' => 'Secondary CTA'
+            ]
+          ]
+        ]
+      ]
+    ],
     'pages' => [
       'label' => 'Pages',
       'note' => 'This post type can be used to create pages',
@@ -55,6 +127,7 @@ return [
       'label' => 'Testimonials',
       'singular_label' => 'Testimonial',
       'note' => 'Customer testimonial posts',
+      'disable_block_editor' => true,
       'fields' => [
         [
           'name' => 'customer_name',
@@ -91,6 +164,7 @@ return [
       'label' => 'Team Members',
       'singular_label' => 'Member',
       'note' => 'This post type can be used to create team members',
+      'disable_block_editor' => true,
       'fields' => [
         [
           'name' => 'name',
@@ -137,6 +211,7 @@ return [
       'label' => 'FAQs',
       'singular_label' => 'FAQ',
       'note' => 'Frequently asked questions',
+      'disable_block_editor' => true,
       'fields' => [
         [
           'name' => 'question',
