@@ -58,6 +58,7 @@ trait Ozz_log_data {
     if(!$this->is_table_exist($table)){
       $this->log_DB()->exec("CREATE TABLE IF NOT EXISTS $table (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        `item_id` TEXT,
         `type` TEXT,
         `key` TEXT,
         `value` TEXT,
