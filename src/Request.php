@@ -294,8 +294,8 @@ class Request extends Router {
           : $query_string;
       } else {
         $output = ($key && isset($query_string[$key]))
-          ? Sanitize::url($query_string[$key])
-          : Sanitize::array($query_string, 'url');
+          ? Sanitize::string($query_string[$key])
+          : Sanitize::array($query_string, 'string');
       }
 
       return (is_array($output) && $key !== false) ? $fallback : $output;
