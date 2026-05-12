@@ -87,6 +87,22 @@ class CMSFuncs {
     $where_conditions = [];
     $query_params = [];
 
+    $allowed_fields = [
+      'id',
+      'post_id',
+      'title',
+      'post_type',
+      'slug',
+      'lang',
+      'post_status',
+      'published_at',
+      'created_at',
+      'modified_at',
+      'content',
+      'blocks',
+      'author'
+    ];
+
     // Set Default filter values
     $default_where = [
       'post_status' => 'published'
@@ -112,30 +128,60 @@ class CMSFuncs {
 
         // Generate unique parameter names for the taxonomy slug and terms
         $slug_param = ":taxonomy_slug_$taxonomy_count";
-        $term_params = [];
+        $term_params = [
+          'in' => [],
+          'not_in' => [],
+        ];
+
         foreach ($terms as $index => $term) {
-          $term_params[] = ":taxonomy_term_{$taxonomy_count}_{$index}";
+          $param = ":taxonomy_term_{$taxonomy_count}_{$index}";
+          if (is_string($term) && str_starts_with($term, '!')) {
+            $term_params['not_in'][] = $param;
+            $query_params[$param] = substr($term, 1);
+          } else {
+            $term_params['in'][] = $param;
+            $query_params[$param] = $term;
+          }
         }
-        $placeholders = implode(",", $term_params);
+
+        $placeholders_in = implode(",", $term_params['in']);
+        $placeholders_not_in = implode(",", $term_params['not_in']);
+
         $txf = is_numeric($slug) ? "$alias_t.id" : "$alias_t.slug";
-        $ttf = is_numeric($terms[0]) ? "$alias_tt.id" : "$alias_tt.slug";
+        $first_term = ltrim((string)$terms[0], '!');
+        $ttf = is_numeric($first_term) ? "$alias_tt.id" : "$alias_tt.slug";
 
         $joins[] = "LEFT JOIN cms_post_terms $alias_pt ON p.id = $alias_pt.post_id";
         $joins[] = "LEFT JOIN cms_taxonomy $alias_t ON $alias_pt.taxonomy_id = $alias_t.id";
         $joins[] = "LEFT JOIN cms_terms $alias_tt ON $alias_pt.term_id = $alias_tt.id";
 
-        $taxonomy_conditions[] = "($txf = $slug_param AND $ttf IN ($placeholders))";
+        if (!empty($placeholders_in)) {
+          $taxonomy_conditions[] = "($txf = $slug_param AND $ttf IN ($placeholders_in))";
+        }
+        if (!empty($placeholders_not_in)) {
+          $negative_txf = is_numeric($slug) ? "nx_t.id" : "nx_t.slug";
+          $negative_ttf = is_numeric($first_term) ? "nx_tt.id" : "nx_tt.slug";
+          $taxonomy_conditions[] = "
+          NOT EXISTS (
+            SELECT 1
+            FROM cms_post_terms nx_pt
+            JOIN cms_taxonomy nx_t
+              ON nx_pt.taxonomy_id = nx_t.id
+            JOIN cms_terms nx_tt
+              ON nx_pt.term_id = nx_tt.id
+            WHERE nx_pt.post_id = p.id
+            AND $negative_txf = $slug_param
+            AND $negative_ttf IN ($placeholders_not_in)
+          )";
+        }
 
         // Bind the slug parameter
         $query_params[$slug_param] = is_numeric($slug) ? $slug : str_replace('[]', '', $slug);
-
-        // Bind the term parameters
-        foreach ($terms as $index => $term) {
-          $query_params[$term_params[$index]] = $term;
-        }
       }
 
-      $tx_operator = $params['taxonomy']['operator'] ?? 'AND';
+      $tx_operator = strtoupper($params['taxonomy']['operator'] ?? 'AND');
+      $tx_operator = $tx_operator === 'OR' ? 'OR' : 'AND';
+
       $where_conditions[] = '(' . implode(" $tx_operator ", $taxonomy_conditions) . ')';
     }
 
@@ -148,8 +194,10 @@ class CMSFuncs {
         $search_conditions = [];
         if (!empty($search_fields)) {
           foreach ($search_fields as $index => $field) {
+            $is_json_field = !in_array($field, $allowed_fields);
+            $field_expression = $is_json_field ? "JSON_UNQUOTE(JSON_EXTRACT(p.content, '$.\"$field\"'))" : "p.$field";
             $search_param = ":search_query_$index";
-            $search_conditions[] = "p.$field LIKE $search_param";
+            $search_conditions[] = "$field_expression LIKE $search_param";
             $query_params[$search_param] = "%$search_query%";
           }
         } else {
@@ -170,10 +218,7 @@ class CMSFuncs {
         $placeholder = ":where_{$field}";
 
         // Check if the field should be treated as a JSON field
-        $is_json_field = !in_array($field, [
-          'id', 'post_id', 'title', 'post_type', 'slug', 'lang', 'post_status',
-          'published_at', 'created_at', 'modified_at', 'content', 'blocks', 'author'
-        ]);
+        $is_json_field = !in_array($field, $allowed_fields);
         $field_expression = $is_json_field ? "JSON_UNQUOTE(JSON_EXTRACT(p.content, '$.\"$field\"'))" : "p.$field";
 
         switch (strtoupper($operator)) {
@@ -221,7 +266,9 @@ class CMSFuncs {
       $order_conditions = [];
       foreach ($params['order'] as $field => $direction) {
         $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
-        $order_conditions[] = "p.$field $direction";
+        if (in_array($field, $allowed_fields)) {
+          $order_conditions[] = "p.$field $direction";
+        }
       }
       if (!empty($order_conditions)) {
         $order_by = ' ORDER BY ' . implode(', ', $order_conditions);
@@ -232,7 +279,7 @@ class CMSFuncs {
     $items_per_page = $params['pagination']['items_per_page'] ?? $params['pagination']['posts_per_page'] ?? 10;
     $page_number = $params['pagination']['page_number'] ?? $params['pagination']['page'] ?? 1;
     $page_number = filter_var($page_number, FILTER_VALIDATE_INT) !== false ? (int) $page_number : 1;
-    $offset = ($page_number - 1) * $items_per_page;
+    $offset = $items_per_page == -1 ? 0 : ($page_number - 1) * $items_per_page;
 
     // Build the final query
     $query = $select;
@@ -251,7 +298,7 @@ class CMSFuncs {
     }
 
     // Build the count query for pagination
-    $count_query = "SELECT COUNT(p.id) as total_posts FROM cms_posts p";
+    $count_query = "SELECT COUNT(DISTINCT p.id) as total_posts FROM cms_posts p";
     if (!empty($joins)) {
       $count_query .= ' ' . implode(' ', $joins);
     }
@@ -268,7 +315,7 @@ class CMSFuncs {
 
     if(DEBUG) $this->_log_query($count_query, $query_params, $run_time_start);
 
-    $total_pages = ceil($total_posts / $items_per_page);
+    $total_pages = $items_per_page == -1 ? 1 : ceil($total_posts / $items_per_page);
 
     if(DEBUG) $run_time_start_2 = hrtime(true);
 
@@ -283,12 +330,14 @@ class CMSFuncs {
       // Decode JSON fields
       foreach ($data as $k => $v) {
         $data[$k]['content'] = json_decode($v['content'], true);
-        $data[$k]['blocks'] = json_decode($v['blocks'], true);
+        $data[$k]['blocks'] = json_decode($v['blocks'], true) ?: [];
 
         // Reorder blocks by correct index
-        usort($data[$k]['blocks'], function ($a, $b) {
-          return $a['i'] <=> $b['i'];
-        });
+        if (!empty($data[$k]['blocks'])) {
+          usort($data[$k]['blocks'], function ($a, $b) {
+            return $a['i'] <=> $b['i'];
+          });
+        }
       }
     }
 
