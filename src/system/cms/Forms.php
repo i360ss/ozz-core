@@ -73,7 +73,7 @@ trait Forms {
     $org_form = $this->cms_forms[$userInfo['name']];
     foreach ($entry as $key => $value) {
       foreach ($org_form['fields'] as $field) {
-        if ($field['name'] == $key && $field['type'] == 'file') {
+        if (isset($field['name']) && $field['name'] == $key && $field['type'] == 'file') {
           if ($value['tmp_name'] !== '') {
             $file_settings = isset($field['settings']) ? $field['settings'] : []; // Upload file settings
             $validation = $file_settings['validation'] ?? $file_settings['validate'] ?? null; // max size and allowed formats

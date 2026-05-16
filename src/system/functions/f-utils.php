@@ -419,3 +419,25 @@ function convert_php_size_to_bytes($sSize) {
 
   return $iValue;
 }
+
+/**
+ * Asset loader
+ * @param string $path Path for the asset
+ */
+function asset($path) {
+  if (is_json($path)) {
+    $path = json_decode($path, true)[0]['url'] ?? '';
+  }
+
+  if (empty($path)) {
+    return false;
+  }
+
+  $decoded_path = rawurldecode($path);
+  $fullPath = __DIR__ . SPC_BACK['core_2'] . env('app', 'PUBLIC_DIR') . '/' . $decoded_path;
+  if (!file_exists($fullPath)) {
+    return BASE_URL . $path;
+  }
+
+  return BASE_URL . $path . "?v=" . base_convert(filemtime($fullPath), 10, 36);
+}

@@ -121,13 +121,13 @@ class AppInit {
     defined('UPLOAD_DIR_PUBLIC') || define('UPLOAD_DIR_PUBLIC', $this->env['app']['UPLOAD_DIR_PUBLIC']);
 
     // Debug mode, defined in env.ini
-    defined('DEBUG') || define('DEBUG', $this->env['app']['DEBUG'] == 1 ? true : false);
+    defined('DEBUG') || define('DEBUG', $this->env['app']['DEBUG'] === 1 ? true : false);
 
     // Enable/Disable Debug bar, defined in env.ini
-    defined('SHOW_DEBUG_BAR') || define('SHOW_DEBUG_BAR', $this->env['app']['SHOW_DEBUG_BAR'] == 1 ? true : false);
+    defined('SHOW_DEBUG_BAR') || define('SHOW_DEBUG_BAR', $this->env['app']['SHOW_DEBUG_BAR'] === 1 ? true : false);
 
     // Debug Email template output, defined in env.ini
-    defined('DEBUG_EMAIL') || define('DEBUG_EMAIL', $this->env['app']['DEBUG_EMAIL'] == 1 ? true : false);
+    defined('DEBUG_EMAIL') || define('DEBUG_EMAIL', $this->env['app']['DEBUG_EMAIL'] === 1 ? true : false);
 
     // Create initial CSRF token
     if(empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token']) || (isset($_SESSION['csrf_token_expire']) && time() > $_SESSION['csrf_token_expire'])){

@@ -180,8 +180,14 @@ function to_single_dimensional_array($arr) {
  * @param string @str
  * @return bool
  */
-function is_json($str){
-  return is_string($str) && is_array(json_decode($str, true)) ? true : false;
+function is_json($str) {
+  if (!is_string($str)) {
+    return false;
+  }
+
+  json_decode($str, true);
+
+  return json_last_error() === JSON_ERROR_NONE;
 }
 
 /**
