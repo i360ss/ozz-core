@@ -423,10 +423,22 @@ function convert_php_size_to_bytes($sSize) {
 /**
  * Asset loader
  * @param string $path Path for the asset
+ * @param boolean $firstOnly Return first item if multiple paths provided (for media library)
+ * @return string Asset URL with version query for cache busting
  */
-function asset($path) {
+function asset($path, $firstOnly=true) {
   if (is_json($path)) {
-    $path = json_decode($path, true)[0]['url'] ?? '';
+    // Handle media library single and multiple paths
+    $paths = json_decode($path, true);
+    if (count($paths) === 1) {
+      return asset($paths[0]['url'] ?? '');
+    } else {
+      $result = [];
+      foreach ($paths as $item) {
+        $result[] = asset($item['url'] ?? '');
+      }
+      return $firstOnly === true ? $result[0] : $result;
+    }
   }
 
   if (empty($path)) {
