@@ -35,7 +35,7 @@ function get_file_type_by_url($url) {
     return 'vimeo';
   }
 
-  $url = ltrim($url, '/');
+  $url = file_exists($url) ? $url : ltrim($url, '/');
 
   if (file_exists($url)) {
     $fileInfo = new finfo(FILEINFO_MIME_TYPE);
@@ -437,7 +437,7 @@ function asset($path, $firstOnly=true) {
       foreach ($paths as $item) {
         $result[] = asset($item['url'] ?? '');
       }
-      return $firstOnly === true ? $result[0] : $result;
+      return $firstOnly === true ? ($result[0] ?? '') : $result;
     }
   }
 

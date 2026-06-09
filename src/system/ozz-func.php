@@ -28,6 +28,7 @@ if(!function_exists('ozz_func_loaded')) {
   require __DIR__.'/functions/f-utils.php'; // Utilities
   require __DIR__.'/functions/f-escaping.php'; // Escaping
   require __DIR__.'/functions/f-content-manipulation.php'; // Var, Array, JSON, String, ect Manipulation
+  require __DIR__.'/functions/f-xml.php'; // XML
   require __DIR__.'/functions/f-router.php'; // Router
   require __DIR__.'/functions/f-dumper.php'; // Dumper
   require __DIR__.'/functions/f-flash.php'; // Flash session

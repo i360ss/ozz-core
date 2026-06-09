@@ -41,7 +41,7 @@ class Serve {
     @pclose(@popen($cmd1, "r"));
 
     // Build PHP dev server command
-    $php_cmd = 'php -S ' . $url . ' -t ' . $conf['PUBLIC_DIR'];
+    $php_cmd = 'php -S ' . $url . ' -t ' . $conf['PUBLIC_DIR'] . ' ' . $conf['PUBLIC_DIR'] . '/index.php';
 
     // Run server depending on OS
     if ($os === 'win32') {

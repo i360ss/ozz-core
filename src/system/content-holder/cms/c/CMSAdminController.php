@@ -724,17 +724,19 @@ class CMSAdminController extends CMS {
     foreach ($media_data['items']['data'] as $key => $item) {
       if(!is_array($item)) {
         $url = clear_multi_slashes(UPLOAD_DIR_PUBLIC.$directory.'/'.$item);
+        $path = clear_multi_slashes(UPLOAD_TO.$directory.'/'.$item);
+
         $modified[$key] = [
           'name' => esx($item),
           'dir' => $directory.'/',
           'type' => 'file',
-          'size' => format_size_units(filesize($url)),
-          'format' => get_file_type_by_url($url),
-          'url' => esc_url($url),
+          'size' => format_size_units(filesize($path)),
+          'format' => get_file_type_by_url($path),
+          'url' => $url,
           'absolute_url' => BASE_URL.$url,
-          'created' => date('M d, Y | h:i a', filectime($url)),
-          'modified' => date('M d, Y | h:i a', filemtime($url)),
-          'access' => date('M d, Y | h:i a', fileatime($url)),
+          'created' => date('M d, Y | h:i a', filectime($path)),
+          'modified' => date('M d, Y | h:i a', filemtime($path)),
+          'access' => date('M d, Y | h:i a', fileatime($path)),
         ];
       } else {
         $key = trim($key, '/');

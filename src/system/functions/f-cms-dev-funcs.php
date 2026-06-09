@@ -275,6 +275,11 @@ class CMSFuncs {
       }
     }
 
+    if (!empty($params['order_by_ids'])) {
+      $ids = array_map('intval', $params['order_by_ids']);
+      $order_by = ' ORDER BY FIELD(p.id, ' . implode(',', $ids) . ')';
+    }
+
     // Handle pagination
     $items_per_page = $params['pagination']['items_per_page'] ?? $params['pagination']['posts_per_page'] ?? 10;
     $page_number = $params['pagination']['page_number'] ?? $params['pagination']['page'] ?? $params['pagination']['current_page'] ?? 1;

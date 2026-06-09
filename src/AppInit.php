@@ -93,6 +93,9 @@ class AppInit {
       exit("Unauthorized");
     }
 
+    // Public directory
+    defined('PUBLIC_DIR') || define('PUBLIC_DIR', __DIR__.SPC_BACK['core'] . DS . $this->env['app']['PUBLIC_DIR'] . DS);
+
     // Root directory
     defined('ROOT') || define('ROOT', $_SERVER['DOCUMENT_ROOT'] . DS);
 
