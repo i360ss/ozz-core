@@ -10,9 +10,8 @@ use Ozz\Core\Response;
  * @param array $data The data to convert to XML
  * @param string $rootName Root element name (default: 'root')
  * @param array $options XML conversion options
- * @return Response Returns response instance for method chaining
  */
-function xml(array $data, string $rootName = 'root', array $options = []): Response {
+function xml(array $data, string $rootName = 'root', array $options = []) {
   $response = Response::getInstance();
 
   // Convert array to XML string
