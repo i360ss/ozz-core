@@ -65,7 +65,7 @@ class File {
     }
 
     // Upload Directory
-    self::$moveTo = $to !== null ? UPLOAD_TO.$to.DIRECTORY_SEPARATOR : UPLOAD_TO;
+    self::$moveTo = $to !== null ? UPLOAD_DIR.$to.DIRECTORY_SEPARATOR : UPLOAD_DIR;
     self::$moveTo = preg_replace("/\/+/", "/", self::$moveTo);
     self::$uploadedTo = $to !== null ? UPLOAD_DIR_PUBLIC.$to.'/' : UPLOAD_DIR_PUBLIC;
     self::$uploadedTo = '/'.preg_replace("/\/+/", "/", self::$uploadedTo);

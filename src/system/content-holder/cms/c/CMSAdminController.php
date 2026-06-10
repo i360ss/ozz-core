@@ -665,11 +665,11 @@ class CMSAdminController extends CMS {
   // =============================================
   public function media_manager(Request $request) {
     $dir = $request->query('dir', '');
-    if(!is_dir(UPLOAD_TO.$dir)){
+    if(!is_dir(UPLOAD_DIR.$dir)){
       return redirect(ADMIN_PATH.'/media');
     }
 
-    $items = get_directory_content(UPLOAD_TO.$dir);
+    $items = get_directory_content(UPLOAD_DIR.$dir);
 
     // Search filter
     $q = trim($request->query('q', ''));
@@ -709,7 +709,7 @@ class CMSAdminController extends CMS {
   public function media_get_items($directory, $page_number, $items = null) {
     $directory = esc_url($directory);
     if($items === null){
-      $items = get_directory_content(UPLOAD_TO.$directory);
+      $items = get_directory_content(UPLOAD_DIR.$directory);
     }
 
     $media_data['tree'] = $directory !== '' ? explode('/', $directory) : [];
@@ -760,7 +760,7 @@ class CMSAdminController extends CMS {
    */
   public function media_get_items_json(Request $request) {
     $url = esc_url($request->query('dir', ''));
-    if(!is_dir(UPLOAD_TO.$url)){
+    if(!is_dir(UPLOAD_DIR.$url)){
       exit(404);
     }
 
@@ -779,7 +779,7 @@ class CMSAdminController extends CMS {
   public function media_action(Request $request) {
     $action = $request->query('q');
     $current_dir = esc_url($request->input('ozz_media_current_directory')).DS;
-    $base_dir = UPLOAD_TO . $current_dir;
+    $base_dir = UPLOAD_DIR . $current_dir;
 
     $validation = Validate::check($request->input(), [
       'ozz_media_folder_name' => 'req|no-space|max:30',

@@ -32,7 +32,8 @@ class AppInit {
     $this->env = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
 
     // App configurations
-    $devConfig = include __DIR__.SPC_BACK['core'].'app/config.php';
+    $core_dir = !empty($this->env['app']['CORE_DIR']) ? rtrim($this->env['app']['CORE_DIR'], '/').'/' : '';
+    $devConfig = include __DIR__.SPC_BACK['core'].$core_dir.'app/config.php';
     $defConfig = require __DIR__.'/system/default-config.php';
     define('CONFIG', array_merge($defConfig, $devConfig));
 
@@ -71,7 +72,7 @@ class AppInit {
     defined('APP_LANG') || define('APP_LANG', Session::get('app_lang'));
 
     // App current language path
-    defined('APP_LANG_PATH') || define('APP_LANG_PATH', __DIR__.SPC_BACK['core'].'app/lang/'.APP_LANG.'/');
+    defined('APP_LANG_PATH') || define('APP_LANG_PATH', __DIR__.SPC_BACK['core'].$core_dir.'app/lang/'.APP_LANG.'/');
 
     // Set Base URL
     $this_host = $_SERVER['HTTP_HOST'] ?? '';
@@ -93,36 +94,45 @@ class AppInit {
       exit("Unauthorized");
     }
 
+    // Framework Directories
+    // Base directory
+    defined('BASE_DIR') || define('BASE_DIR', __DIR__.SPC_BACK['core']);
+
     // Public directory
-    defined('PUBLIC_DIR') || define('PUBLIC_DIR', __DIR__.SPC_BACK['core'] . DS . $this->env['app']['PUBLIC_DIR'] . DS);
+    defined('PUBLIC_DIR') || define('PUBLIC_DIR', BASE_DIR . trim(CONFIG['APP_PATHS']['public'], DS) . DS);
 
     // Root directory
     defined('ROOT') || define('ROOT', $_SERVER['DOCUMENT_ROOT'] . DS);
 
-    // Base directory
-    defined('BASE_DIR') || define('BASE_DIR', __DIR__.SPC_BACK['core']);
+    // Core directory
+    $core_dir = trim(CONFIG['APP_PATHS']['core'], DS);
+    defined('CORE_DIR') || define('CORE_DIR', BASE_DIR . (!empty($core_dir) ? $core_dir . DS : ''));
 
     // App directory
-    defined('APP_DIR') || define('APP_DIR', __DIR__.SPC_BACK['core'].'app/');
+    defined('APP_DIR') || define('APP_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['app'], DS) . DS);
 
     // Storage directory
-    defined('STORAGE_DIR') || define('STORAGE_DIR', __DIR__.SPC_BACK['core'].'storage/');
+    defined('STORAGE_DIR') || define('STORAGE_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['storage'], DS). DS);
 
     // Cache directory
-    defined('CACHE_DIR') || define('CACHE_DIR', __DIR__.SPC_BACK['core'].'storage/cache/');
+    defined('CACHE_DIR') || define('CACHE_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['cache'], DS) . DS);
+
+    // Cache directory
+    defined('DB_DIR') || define('DB_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['database'], DS) . DS);
 
     // View directory
-    defined('VIEW') || define('VIEW', APP_DIR.'view/');
+    defined('VIEW') || define('VIEW', CORE_DIR . trim(CONFIG['APP_PATHS']['view'], DS) . DS);
 
-    // Assets directory
+    // Assets URL
     defined('ASSETS') || define('ASSETS', BASE_URL . "assets".DS);
 
-    // Upload directory, Inside public directory (for internal use)
-    defined('UPLOAD_TO') || define('UPLOAD_TO', __DIR__.SPC_BACK['core'].$this->env['app']['UPLOAD_DIR']);
+    // Upload directory
+    defined('UPLOAD_DIR') || define('UPLOAD_DIR', __DIR__.SPC_BACK['core'] . trim(CONFIG['APP_PATHS']['upload_dir'], DS) . DS);
 
-    // Upload directory, point to URL
-    defined('UPLOAD_DIR_PUBLIC') || define('UPLOAD_DIR_PUBLIC', $this->env['app']['UPLOAD_DIR_PUBLIC']);
+    // Public Upload directory, point to URL
+    defined('UPLOAD_DIR_PUBLIC') || define('UPLOAD_DIR_PUBLIC', rtrim(CONFIG['APP_PATHS']['upload_dir_public'], DS) . DS);
 
+    // Debug constants
     // Debug mode, defined in env.ini
     defined('DEBUG') || define('DEBUG', $this->env['app']['DEBUG'] == 1 ? true : false);
 

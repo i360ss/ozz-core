@@ -125,5 +125,26 @@ return [
     'audio'     => [ '6M', 'mp3' ],
     'video'     => [ '12M', 'mp4' ],
     'font'      => [ '60K', 'ttf|otf' ]
+  ],
+
+  // Define application paths
+  'APP_PATHS' => [
+    'core' => '',
+    'public' => 'public_html',
+    'app' => 'app',
+    'view' => 'app/view',
+    'assets' => 'assets',
+    'upload_dir' => 'uploads',
+    'upload_dir_public' => 'uploads',
+    'database' => 'database',
+    'migration' => 'database/migration',
+    'sqlite' => 'database/sqlite',
+    'resources' => 'resources',
+    'cms' => 'cms',
+    'storage' => 'storage',
+    'cache' => 'storage/cache',
+    'log' => 'storage/log',
+    'session' => 'storage/session',
+    'system' => 'storage/system',
   ]
 ];

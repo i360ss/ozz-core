@@ -196,7 +196,7 @@ trait FileSettings {
         }
 
         // Final Copy DIR + NAME
-        $copyDir = isset($copy['dir']) ? UPLOAD_TO.$copy['dir'] : UPLOAD_TO;
+        $copyDir = isset($copy['dir']) ? UPLOAD_DIR.$copy['dir'] : UPLOAD_DIR;
         $copyDirWithName = $copyDir.$fileName;
 
         // Make Copy
