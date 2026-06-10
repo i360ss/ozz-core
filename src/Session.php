@@ -23,7 +23,7 @@ class Session {
     if(session_status() == PHP_SESSION_NONE){
       if(strtolower(CONFIG['SESSION_DRIVER']) == 'file'){
         // File based session
-        $sessionHandler = new FileBasedSessionHandler(__DIR__.SPC_BACK['core'].CONFIG['SESSION_FILE_DIRECTORY'], CONFIG['SESSION_SECRET_KEY']);
+        $sessionHandler = new FileBasedSessionHandler(SESSION_DIR, CONFIG['SESSION_SECRET_KEY']);
 
         // Configure session options as needed
         session_set_save_handler(

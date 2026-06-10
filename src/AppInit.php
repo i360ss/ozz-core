@@ -40,56 +40,8 @@ class AppInit {
     // Auth paths
     defined('AUTH_PATHS') || define('AUTH_PATHS', CONFIG['AUTH_PATHS']);
 
-    // Initialize session
-    Session::init();
-
-    // Set default timezone
-    date_default_timezone_set(@date_default_timezone_get());
-
-    // Content security policy configuration
-    $csp_nonce = self::hashKey('csp-nonce');
-    defined('CSP_NONCE') || define('CSP_NONCE', $csp_nonce);
-
     // Directory separator
     defined('DS') || define('DS', '/');
-
-    // App environment (local, dev, prod)
-    defined('APP_ENV') || define('APP_ENV', $this->env['app']['APP_ENV']);
-
-    // The Name of the app defined in env.ini
-    defined('APP_NAME') || define('APP_NAME', $this->env['app']['APP_NAME']);
-
-    // App Version defined in env.ini
-    defined('APP_VERSION') || define('APP_VERSION', $this->env['app']['APP_VERSION']);
-
-    // CMS Admin path
-    defined('ADMIN_PATH') || define('ADMIN_PATH', $this->env['cms']['ADMIN_PATH'] ?? '/admin');
-
-    // App current language
-    if(!Session::has('app_lang')){
-      Session::set('app_lang', $this->env['app']['APP_LANG']);
-    }
-    defined('APP_LANG') || define('APP_LANG', Session::get('app_lang'));
-
-    // Set Base URL
-    $this_host = $_SERVER['HTTP_HOST'] ?? '';
-    $valid_domains = explode(' ', $this->env['app']['APP_URLS'] ?? '');
-
-    if (in_array($this_host, $valid_domains)) {
-      // Check for SSL
-      $is_secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
-        (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
-
-      $this->SSL = $is_secure ? 'https://' : 'http://';
-      define('HAS_SSL', $is_secure);
-
-      // Define APP_URL and BASE_URL
-      defined('APP_URL') || define('APP_URL', rtrim($this_host, '/') . '/');
-      defined('BASE_URL') || define('BASE_URL', $this->SSL . APP_URL);
-    } else {
-      http_response_code(401);
-      exit("Unauthorized");
-    }
 
     // Framework Directories
     // Base directory
@@ -138,17 +90,65 @@ class AppInit {
     // View directory
     defined('VIEW') || define('VIEW', CORE_DIR . trim(CONFIG['APP_PATHS']['view'], DS) . DS);
 
+    // Upload directory
+    defined('UPLOAD_DIR') || define('UPLOAD_DIR', BASE_DIR . trim(CONFIG['APP_PATHS']['upload_dir'], DS) . DS);
+
+    // Public Upload directory, point to URL
+    defined('UPLOAD_DIR_PUBLIC') || define('UPLOAD_DIR_PUBLIC', rtrim(CONFIG['APP_PATHS']['upload_dir_public'], DS) . DS);
+
+    // Initialize session
+    Session::init();
+
+    // Set default timezone
+    date_default_timezone_set(@date_default_timezone_get());
+
+    // Content security policy configuration
+    $csp_nonce = self::hashKey('csp-nonce');
+    defined('CSP_NONCE') || define('CSP_NONCE', $csp_nonce);
+
+    // App environment (local, dev, prod)
+    defined('APP_ENV') || define('APP_ENV', $this->env['app']['APP_ENV']);
+
+    // The Name of the app defined in env.ini
+    defined('APP_NAME') || define('APP_NAME', $this->env['app']['APP_NAME']);
+
+    // App Version defined in env.ini
+    defined('APP_VERSION') || define('APP_VERSION', $this->env['app']['APP_VERSION']);
+
+    // CMS Admin path
+    defined('ADMIN_PATH') || define('ADMIN_PATH', $this->env['cms']['ADMIN_PATH'] ?? '/admin');
+
+    // App current language
+    if(!Session::has('app_lang')){
+      Session::set('app_lang', $this->env['app']['APP_LANG']);
+    }
+    defined('APP_LANG') || define('APP_LANG', Session::get('app_lang'));
+
+    // Set Base URL
+    $this_host = $_SERVER['HTTP_HOST'] ?? '';
+    $valid_domains = explode(' ', $this->env['app']['APP_URLS'] ?? '');
+
+    if (in_array($this_host, $valid_domains)) {
+      // Check for SSL
+      $is_secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
+        (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+
+      $this->SSL = $is_secure ? 'https://' : 'http://';
+      define('HAS_SSL', $is_secure);
+
+      // Define APP_URL and BASE_URL
+      defined('APP_URL') || define('APP_URL', rtrim($this_host, '/') . '/');
+      defined('BASE_URL') || define('BASE_URL', $this->SSL . APP_URL);
+    } else {
+      http_response_code(401);
+      exit("Unauthorized");
+    }
+
     // Assets directory
     defined('ASSETS_DIR') || define('ASSETS_DIR', PUBLIC_DIR . trim(CONFIG['APP_PATHS']['assets'], DS) . DS);
 
     // Assets URL
     defined('ASSETS') || define('ASSETS', BASE_URL . trim(CONFIG['APP_PATHS']['assets'], DS) . DS);
-
-    // Upload directory
-    defined('UPLOAD_DIR') || define('UPLOAD_DIR', __DIR__.SPC_BACK['core'] . trim(CONFIG['APP_PATHS']['upload_dir'], DS) . DS);
-
-    // Public Upload directory, point to URL
-    defined('UPLOAD_DIR_PUBLIC') || define('UPLOAD_DIR_PUBLIC', rtrim(CONFIG['APP_PATHS']['upload_dir_public'], DS) . DS);
 
     // Debug constants
     // Debug mode, defined in env.ini

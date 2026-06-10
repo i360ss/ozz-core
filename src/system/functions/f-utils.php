@@ -446,7 +446,7 @@ function asset($path, $firstOnly=true) {
   }
 
   $decoded_path = rawurldecode($path);
-  $fullPath = __DIR__ . SPC_BACK['core_2'] . env('app', 'PUBLIC_DIR') . '/' . $decoded_path;
+  $fullPath = PUBLIC_DIR . $decoded_path;
   if (!file_exists($fullPath)) {
     return BASE_URL . $path;
   }

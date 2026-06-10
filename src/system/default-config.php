@@ -19,7 +19,6 @@ return [
   'SESSION_COOKIE_NAME' => 'ozz_ses_id',
   'SESSION_LIFETIME' => 18000,
   'SESSION_PREFIX' => 'ozz_ses_',
-  'SESSION_FILE_DIRECTORY' => 'storage/session',
   'SESSION_SECRET_KEY' => '',
 
   // Cookie
