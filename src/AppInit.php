@@ -114,14 +114,35 @@ class AppInit {
     // Cache directory
     defined('CACHE_DIR') || define('CACHE_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['cache'], DS) . DS);
 
-    // Cache directory
+    // Database directory
     defined('DB_DIR') || define('DB_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['database'], DS) . DS);
+
+    // Migration directory
+    defined('MIGRATION_DIR') || define('MIGRATION_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['migration'], DS) . DS);
+
+    // SQLite directory
+    defined('SQLITE_DIR') || define('SQLITE_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['sqlite'], DS) . DS);
+
+    // CMS directory
+    defined('CMS_DIR') || define('CMS_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['cms'], DS) . DS);
+
+    // Log directory
+    defined('LOG_DIR') || define('LOG_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['log'], DS) . DS);
+
+    // Session directory
+    defined('SESSION_DIR') || define('SESSION_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['session'], DS) . DS);
+
+    // System directory
+    defined('SYSTEM_DIR') || define('SYSTEM_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['system'], DS) . DS);
 
     // View directory
     defined('VIEW') || define('VIEW', CORE_DIR . trim(CONFIG['APP_PATHS']['view'], DS) . DS);
 
+    // Assets directory
+    defined('ASSETS_DIR') || define('ASSETS_DIR', PUBLIC_DIR . trim(CONFIG['APP_PATHS']['assets'], DS) . DS);
+
     // Assets URL
-    defined('ASSETS') || define('ASSETS', BASE_URL . "assets" . DS);
+    defined('ASSETS') || define('ASSETS', BASE_URL . trim(CONFIG['APP_PATHS']['assets'], DS) . DS);
 
     // Upload directory
     defined('UPLOAD_DIR') || define('UPLOAD_DIR', __DIR__.SPC_BACK['core'] . trim(CONFIG['APP_PATHS']['upload_dir'], DS) . DS);
