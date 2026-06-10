@@ -16,7 +16,7 @@ class Middleware {
     $request = Request::getInstance();
     $response = Response::getInstance();
 
-    require __DIR__.SPC_BACK['core'].'/app/RegisterMiddleware.php';
+    require APP_DIR.'RegisterMiddleware.php';
 
     if($middleware == null){
       $mv = $auto_middleware;

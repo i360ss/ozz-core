@@ -290,7 +290,7 @@ function form_create_fields($args) {
  */
 function get_form($form, $values=[]) {
   if (is_string($form)) {
-    $forms = require __DIR__.SPC_BACK['core_2'].'cms/cms-forms.php';
+    $forms = require CMS_DIR.'cms-forms.php';
     $form_name = $form;
     $thisForm = $forms[$form_name];
   } elseif (is_array($form)) {

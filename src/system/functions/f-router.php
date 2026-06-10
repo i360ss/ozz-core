@@ -42,7 +42,8 @@ function redirect($to, $status=301) {
  */
 function component($component, $args = null, $instance = 'app/') {
   $dom = '';
-  $dir = BASE_DIR . $instance . '/view/components/';
+  $isCms = in_array($instance, ['cms', 'cms/'], true);
+  $dir = $isCms ? CMS_DIR.'view/components/' : VIEW.'components/';
   $comp = $dir . $component;
   $component_info = has_flash('ozz_components') ? get_flash('ozz_components') : [];
   $comp_key = count($component_info);

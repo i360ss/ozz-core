@@ -9,7 +9,6 @@ namespace Ozz\Core\system\cli;
 
 class CliCreate {
 
-  private $createTo = SPC_BACK['core_2'].'app/';
   private $fallback_content = __DIR__.'/../content-holder/fallback_codegen.php';
 
   public function index($com){
@@ -60,8 +59,8 @@ class CliCreate {
       $name = $name.'Controller';
     }
 
-    $fileName = $this->createTo.'controller/' .$name.'.php';
-    $fileName_check = $this->createTo.'controller/' .ucfirst($name).'.php';
+    $fileName = APP_DIR.'controller/'.$name.'.php';
+    $fileName_check = APP_DIR.'controller/'.ucfirst($name).'.php';
     $namespace = self::SetNamespace('App\controller\\'.$name);
     $nameFinal = explode("/", $name);
     $file_data = [
@@ -81,7 +80,7 @@ class CliCreate {
       return false;
     }
 
-    $fileName = $this->createTo.'view/' .$name.'.phtml';
+    $fileName = VIEW.$name.'.phtml';
     $nameFinal = explode("/", $name);
     $file_data = [
       'name' => end($nameFinal),
@@ -100,8 +99,8 @@ class CliCreate {
       return false;
     }
 
-    $fileName = $this->createTo.'model/' .$name.'.php';
-    $fileName_check = $this->createTo.'model/' .ucfirst($name).'.php';
+    $fileName = APP_DIR.'model/'.$name.'.php';
+    $fileName_check = APP_DIR.'model/'.ucfirst($name).'.php';
     $namespace = self::SetNamespace('App\model\\'.$name);
     $nameFinal = explode("/", $name);
     $file_data = [
@@ -121,8 +120,8 @@ class CliCreate {
       return false;
     }
 
-    $fileName = $this->createTo.'middleware/' .$name.'.php';
-    $fileName_check = $this->createTo.'middleware/' .ucfirst($name).'.php';
+    $fileName = APP_DIR.'middleware/'.$name.'.php';
+    $fileName_check = APP_DIR.'middleware/'.ucfirst($name).'.php';
     $namespace = self::SetNamespace('App\middleware\\'.$name);
     $nameFinal = explode("/", $name);
     $file_data = [
@@ -143,7 +142,7 @@ class CliCreate {
     }
 
     // Ensure the 'mail' directory exists
-    $mailDirectory = $this->createTo . 'mail/';
+    $mailDirectory = APP_DIR.'mail/';
     if (!is_dir($mailDirectory)) {
       mkdir($mailDirectory, 0755, true);
     }
@@ -167,7 +166,7 @@ class CliCreate {
       return false;
     }
 
-    $fileName = $this->createTo.'view/base/'.$name.'.phtml';
+    $fileName = VIEW.'base/'.$name.'.phtml';
     $nameFinal = explode("/", $name);
     $file_data = [
       'name' => end($nameFinal),
@@ -186,7 +185,7 @@ class CliCreate {
       return false;
     }
 
-    $fileName = $this->createTo.'view/components/'.$name.'.phtml';
+    $fileName = VIEW.'components/'.$name.'.phtml';
     $nameFinal = explode("/", $name);
     $file_data = [
       'name' => end($nameFinal),
@@ -204,31 +203,22 @@ class CliCreate {
    * @param string $name file name only
    */
   private static function Create($typ, $fullName, $content, $name){
-    $DS = DIRECTORY_SEPARATOR;
-    $dirName = explode("/", $fullName);
-    $dirArr = array_slice($dirName, 0, -1);
-    $dir = implode($DS, $dirArr);
+    $dir = dirname($fullName);
 
-    if(PHP_OS_FAMILY === 'Windows' && !is_dir(__DIR__.$dir)){
-      mkdir(__DIR__.$dir.$DS, 0777, true);
-    } elseif(!file_exists(__DIR__.$dir)) {
-      mkdir(__DIR__.$dir.$DS, 0755, true);
+    if(!is_dir($dir)) {
+      mkdir($dir, PHP_OS_FAMILY === 'Windows' ? 0777 : 0755, true);
     }
 
     if($typ == "controller" || $typ == "model" || $typ == "middleware"){
-      $onlyName = substr($fullName, strrpos($fullName, '/') + 1); // Only Name
+      $onlyName = substr($fullName, strrpos($fullName, '/') + 1);
       $onlyName = ucwords($onlyName);
-
-      $onlyDir = explode('/', $fullName);
-      array_pop($onlyDir);
-
-      $fileFinalPath = implode($DS, $onlyDir).$DS.$onlyName;
+      $fileFinalPath = $dir.DIRECTORY_SEPARATOR.$onlyName;
     } else {
       $fileFinalPath = $fullName;
     }
 
     // Create File
-    $fl = fopen(__DIR__.$fileFinalPath, 'w');
+    $fl = fopen($fileFinalPath, 'w');
     fwrite($fl, $content);
     if(fclose($fl)){
       return ozz_console_success("$typ $name Created successfully");
@@ -254,10 +244,10 @@ class CliCreate {
    * Common pre-create
    */
   private function common_create($typ, $fileName_check, $fileName, $name, $file_data){
-    if(!file_exists(__DIR__.$fileName_check)){
+    if(!file_exists($fileName_check)){
 
-      file_exists(__DIR__.$this->createTo.'codegen.php') 
-        ? require_once __DIR__.$this->createTo.'codegen.php' 
+      file_exists(APP_DIR.'codegen.php')
+        ? require_once APP_DIR.'codegen.php'
         : false;
 
       if(is_callable('ozz_code_gen_'.$typ)){

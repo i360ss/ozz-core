@@ -572,7 +572,7 @@ class CMSAdminController extends CMS {
 
     // Project version (ozz/core) from composer.lock
     function getInstalledVersion() {
-      $lockFile = __DIR__.'/../../composer.lock';
+      $lockFile = BASE_DIR.'composer.lock';
       if (!file_exists($lockFile)) {
         return 'Unknown';
       }
@@ -812,7 +812,7 @@ class CMSAdminController extends CMS {
    * Ozz version update
    */
   public function ozz_update() {
-    require __DIR__."/../../storage/system/OzzUpdater.php";
+    require SYSTEM_DIR.'OzzUpdater.php';
     $updater = new \OzzUpdater();
     return $updater->runUpdate();
   }

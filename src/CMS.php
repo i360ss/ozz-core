@@ -66,7 +66,7 @@ class CMS {
     $request = Request::getInstance();
 
     // Initialize CMS Configurations
-    $this->cms_config = require __DIR__.SPC_BACK['core'].'cms/cms-config.php';
+    $this->cms_config = require CMS_DIR.'cms-config.php';
     $this->cms_config['languages'] = array_merge(['en' => 'English'], isset($this->cms_config['languages']) ? $this->cms_config['languages'] : []);
     $this->cms_config['media'] = array_merge($this->media_default, isset($this->cms_config['media']) ? $this->cms_config['media'] : []);
     $this->cms_media = $this->cms_config['media'];
@@ -88,7 +88,7 @@ class CMS {
     $this->cms_tabs = isset($this->post_config['tabs']) ? $this->post_config['tabs'] : [];
 
     // Forms
-    $this->cms_forms = require __DIR__.SPC_BACK['core'].'cms/cms-forms.php';
+    $this->cms_forms = require CMS_DIR.'cms-forms.php';
     // Modify forms
     foreach ($this->cms_forms as $k => $fm) {
       !isset($fm['entry-status']) ? $this->cms_forms[$k]['entry-status'] = [

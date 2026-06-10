@@ -90,7 +90,7 @@ class Err {
   // Base template file Not Found Error
   public static function baseTemplateNotFound($i){
     return self::renderErr([
-      "msg" => "Base Template file (app/view/base/".$i.".phtml) not found",
+      "msg" => "Base Template file (".trim(CONFIG['APP_PATHS']['view'], '/')."/base/".$i.".phtml) not found",
       "info" => "Please create your base template first. Run [ php ozz c:lay ".$i." ]",
     ]);
   }
@@ -98,7 +98,7 @@ class Err {
   // View file Not Found Error
   public static function viewNotFound($i){
     return self::renderErr([
-      "msg" => "View file (app/view/".$i.".phtml ) not found",
+      "msg" => "View file (".trim(CONFIG['APP_PATHS']['view'], '/')."/".$i.".phtml ) not found",
       "info" => "Please create your view file [ php ozz c:v ".$i." ]",
       "note" => "View directory should contain only PHTML files"
     ]);
@@ -116,8 +116,8 @@ class Err {
   // Invalid Middleware name
   public static function invalidMiddleware($i){
     return self::renderErr([
-      "msg" => "Middleware (app/middleware/".$i.") Not registered",
-      "info" => "First create your middleware and register it on [ app/RegisterMiddleware.php ]",
+      "msg" => "Middleware (".trim(CONFIG['APP_PATHS']['app'], '/')."/middleware/".$i.") Not registered",
+      "info" => "First create your middleware and register it on [ ".trim(CONFIG['APP_PATHS']['app'], '/')."/RegisterMiddleware.php ]",
       "note" => "To create a middleware just run [ php ozz c:md ".$i." ]"
     ]);
   }

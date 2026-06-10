@@ -19,7 +19,7 @@ class ExceptionHandler {
       return false;
     }
 
-    $this->config = parse_ini_file(__DIR__.'/../../../../'.'env.ini', true);
+    $this->config = parse_ini_file(BASE_DIR.'env.ini', true);
 
     if($this->config['app']['DEBUG']){
       error_reporting(E_ALL | E_DEPRECATED);
@@ -28,7 +28,7 @@ class ExceptionHandler {
       if(CONFIG['ERROR_LOG'] === true){
         ini_set('display_errors', 1);
         ini_set('log_errors', 1);
-        ini_set('error_log', __DIR__.'/../../../../storage/log/error_log.log');
+        ini_set('error_log', LOG_DIR.'error_log.log');
       }
 
       // Handle exceptions

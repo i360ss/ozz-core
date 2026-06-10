@@ -621,7 +621,7 @@ class SubHelp {
    */
   public function renderDebugBar($data) {
     // Get and set SQL temporary debug log
-    $sql_temp_log_content = file_get_contents(__DIR__.SPC_BACK['core_1'].'storage/log/sql_debug.log');
+    $sql_temp_log_content = file_get_contents(LOG_DIR.'sql_debug.log');
     $sql_temp_log_arr = array_filter(explode('<####>', $sql_temp_log_content));
     $final_sql_log = [];
 

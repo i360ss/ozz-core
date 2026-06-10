@@ -9,13 +9,23 @@ namespace Ozz\Core\system\auth;
 
 class CreateAuth {
 
-  private $app_dir             = __DIR__.SPC_BACK['core_2'].'app/';
-  private $migration_dir       = __DIR__.SPC_BACK['core_2'].'database/migration/';
-  private $controller_dir      = __DIR__.SPC_BACK['core_2'].'app/controller/';
-  private $view_dir            = __DIR__.SPC_BACK['core_2'].'app/view/';
-  private $middleware_dir      = __DIR__.SPC_BACK['core_2'].'app/middleware/';
-  private $email_template_dir  = __DIR__.SPC_BACK['core_2'].'app/mail/';
-  private $auth_content_holder = __DIR__.'/../content-holder/auth';
+  private $app_dir;
+  private $migration_dir;
+  private $controller_dir;
+  private $view_dir;
+  private $middleware_dir;
+  private $email_template_dir;
+  private $auth_content_holder;
+
+  public function __construct() {
+    $this->app_dir = APP_DIR;
+    $this->migration_dir = MIGRATION_DIR;
+    $this->controller_dir = APP_DIR.'controller/';
+    $this->view_dir = VIEW;
+    $this->middleware_dir = APP_DIR.'middleware/';
+    $this->email_template_dir = APP_DIR.'mail/';
+    $this->auth_content_holder = __DIR__.'/../content-holder/auth';
+  }
 
   public function index($com){
     //Create New Auth

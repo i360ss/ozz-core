@@ -33,7 +33,7 @@ trait Ozz_CLI_Connection {
    */
   private function log_DB() {
     $this->init();
-    $this->ozz_log_DB = new \PDO("sqlite:" . __DIR__.'/../../../../../'.$this->config['app_log']['DB_NAME']);
+    $this->ozz_log_DB = new \PDO("sqlite:" . BASE_DIR . ltrim($this->config['app_log']['DB_NAME'], '/'));
     $this->ozz_log_DB->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     return $this->ozz_log_DB;
   }

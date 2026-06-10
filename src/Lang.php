@@ -24,13 +24,13 @@ class Lang {
     if(file_exists(LANG_DIR.'errors.php')){
       $this->errors = include LANG_DIR.'errors.php';
     } else {
-      $this->errors = include APP_DIR.'lang/en/errors.php';
+      $this->errors = include CORE_DIR.trim(CONFIG['APP_PATHS']['lang'], DS).DS.'en'.DS.'errors.php';
     }
 
     if(file_exists(LANG_DIR.'messages.php')){
       $this->messages = include LANG_DIR.'messages.php';
     } else {
-      $this->messages = include APP_DIR.'lang/en/messages.php';
+      $this->messages = include CORE_DIR.trim(CONFIG['APP_PATHS']['lang'], DS).DS.'en'.DS.'messages.php';
     }
   }
 

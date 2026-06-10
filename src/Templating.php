@@ -35,20 +35,21 @@ class Templating extends AppInit {
     global $DEBUG_BAR;
 
     // Find current view file
-    $base_cms_viv = BASE_DIR.'cms/view/'.$vv.'.phtml';
-    $base_app_viv = BASE_DIR.'app/view/'.$vv.'.phtml';
+    $cms_view_dir = CMS_DIR.'view/';
+    $base_cms_viv = $cms_view_dir.$vv.'.phtml';
+    $base_app_viv = VIEW.$vv.'.phtml';
 
     if(file_exists($base_cms_viv) && env('app', 'ENABLE_CMS')){
       // CMS instance
-      self::$view_dir = BASE_DIR.'cms/view/';
+      self::$view_dir = $cms_view_dir;
       self::$view_file = $base_cms_viv;
-      self::$view_outer_use = 'cms/view/';
+      self::$view_outer_use = trim(CONFIG['APP_PATHS']['cms'], '/').'/view/';
       $context['instance'] = 'cms/';
     } elseif(file_exists($base_app_viv)){
       // App instance
-      self::$view_dir = BASE_DIR.'app/view/';
+      self::$view_dir = VIEW;
       self::$view_file = $base_app_viv;
-      self::$view_outer_use = 'app/view/';
+      self::$view_outer_use = trim(CONFIG['APP_PATHS']['view'], '/').'/';
       $context['instance'] = 'app/';
     } else {
       $context['instance'] = 'app/';

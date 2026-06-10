@@ -53,7 +53,7 @@ trait DB {
   protected function sqlite() : void {
     $this->connect = new Medoo([
       'type' => 'sqlite',
-      'database' => __DIR__ .SPC_BACK['core'].$this->db_name,
+      'database' => BASE_DIR . ltrim($this->db_name, '/'),
       'logging' => DEBUG,
       'prefix' => isset($this->db_prefix) ? $this->db_prefix : false,
     ]);

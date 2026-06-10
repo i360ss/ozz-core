@@ -17,7 +17,7 @@ class CMSFuncs {
   protected $cms_forms;
 
   public function __construct() {
-    $this->cms_forms = require __DIR__.SPC_BACK['core_2'].'cms/cms-forms.php';
+    $this->cms_forms = require CMS_DIR.'cms-forms.php';
   }
 
   /**
@@ -52,7 +52,7 @@ class CMSFuncs {
 
     $rawSql = $this->_convert_to_raw_sql($sql, $params);
     $duration = (hrtime(true) - $startTime) / 1e9;
-    $logFile = __DIR__.SPC_BACK['core_2'].'storage/log/sql_debug.log';
+    $logFile = LOG_DIR.'sql_debug.log';
     if (is_writable(dirname($logFile))) {
       file_put_contents($logFile, $duration . '<###>' . $rawSql . '<####>', FILE_APPEND);
     }

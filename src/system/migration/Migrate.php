@@ -17,13 +17,14 @@ class Migrate extends Schema {
   use Ozz_log_data;
   use Ozz_CLI_Connection;
 
-  private $mgDir = __DIR__.SPC_BACK['core_2'].'database/migration/'; // Migrations Directory
+  private $mgDir; // Migrations Directory
   private $vals;
   private $dbCred; // DB Cred
   private $conn; // DB Connection
   private $cli_utils; // CLI styling Utilities
 
   function __construct(){
+    $this->mgDir = MIGRATION_DIR;
     $this->conn = $this->mysql();
     $this->cli_utils = new CliUtils;
   }

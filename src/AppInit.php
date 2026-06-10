@@ -40,61 +40,8 @@ class AppInit {
     // Auth paths
     defined('AUTH_PATHS') || define('AUTH_PATHS', CONFIG['AUTH_PATHS']);
 
-    // Directory separator
-    defined('DS') || define('DS', '/');
-
-    // Framework Directories
-    // Base directory
-    defined('BASE_DIR') || define('BASE_DIR', __DIR__.SPC_BACK['core']);
-
-    // Public directory
-    defined('PUBLIC_DIR') || define('PUBLIC_DIR', BASE_DIR . trim(CONFIG['APP_PATHS']['public'], DS) . DS);
-
-    // Root directory
-    defined('ROOT') || define('ROOT', $_SERVER['DOCUMENT_ROOT'] . DS);
-
-    // Core directory
-    $core_dir = trim(CONFIG['APP_PATHS']['core'], DS);
-    defined('CORE_DIR') || define('CORE_DIR', BASE_DIR . (!empty($core_dir) ? $core_dir . DS : ''));
-
-    // App directory
-    defined('APP_DIR') || define('APP_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['app'], DS) . DS);
-
-    // Storage directory
-    defined('STORAGE_DIR') || define('STORAGE_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['storage'], DS). DS);
-
-    // Cache directory
-    defined('CACHE_DIR') || define('CACHE_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['cache'], DS) . DS);
-
-    // Database directory
-    defined('DB_DIR') || define('DB_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['database'], DS) . DS);
-
-    // Migration directory
-    defined('MIGRATION_DIR') || define('MIGRATION_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['migration'], DS) . DS);
-
-    // SQLite directory
-    defined('SQLITE_DIR') || define('SQLITE_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['sqlite'], DS) . DS);
-
-    // CMS directory
-    defined('CMS_DIR') || define('CMS_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['cms'], DS) . DS);
-
-    // Log directory
-    defined('LOG_DIR') || define('LOG_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['log'], DS) . DS);
-
-    // Session directory
-    defined('SESSION_DIR') || define('SESSION_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['session'], DS) . DS);
-
-    // System directory
-    defined('SYSTEM_DIR') || define('SYSTEM_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['system'], DS) . DS);
-
-    // View directory
-    defined('VIEW') || define('VIEW', CORE_DIR . trim(CONFIG['APP_PATHS']['view'], DS) . DS);
-
-    // Upload directory
-    defined('UPLOAD_DIR') || define('UPLOAD_DIR', BASE_DIR . trim(CONFIG['APP_PATHS']['upload_dir'], DS) . DS);
-
-    // Public Upload directory, point to URL
-    defined('UPLOAD_DIR_PUBLIC') || define('UPLOAD_DIR_PUBLIC', rtrim(CONFIG['APP_PATHS']['upload_dir_public'], DS) . DS);
+    require_once __DIR__.'/system/define-paths.php';
+    ozz_define_paths(__DIR__.SPC_BACK['core']);
 
     // Initialize session
     Session::init();
@@ -144,11 +91,7 @@ class AppInit {
       exit("Unauthorized");
     }
 
-    // Assets directory
-    defined('ASSETS_DIR') || define('ASSETS_DIR', PUBLIC_DIR . trim(CONFIG['APP_PATHS']['assets'], DS) . DS);
-
-    // Assets URL
-    defined('ASSETS') || define('ASSETS', BASE_URL . trim(CONFIG['APP_PATHS']['assets'], DS) . DS);
+    ozz_define_paths(BASE_DIR);
 
     // Debug constants
     // Debug mode, defined in env.ini
@@ -171,8 +114,7 @@ class AppInit {
     // Input Field with CSRF token
     defined('CSRF_FIELD') || define('CSRF_FIELD', Csrf::getTokenField());
 
-    // App current language directory
-    defined('LANG_DIR') || define('LANG_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['lang'], DS) . DS . APP_LANG . DS);
+    ozz_define_paths(BASE_DIR);
   }
 
   /**

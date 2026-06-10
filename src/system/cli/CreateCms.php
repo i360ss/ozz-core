@@ -17,10 +17,10 @@ class CreateCms {
   // Generate files
   private function create_cms() {
     global $utils;
-    $app_dir = __DIR__.SPC_BACK['core_2'].'app/';
-    $cms_dir = __DIR__.SPC_BACK['core_2'].'cms/';
-    $mig_dir = __DIR__.SPC_BACK['core_2'].'database/migration/';
-    $assets_dir = __DIR__.SPC_BACK['core_2'].trim(CONFIG['APP_PATHS']['public'], '/').'/'.trim(CONFIG['APP_PATHS']['assets'], '/').'/admin/';
+    $app_dir = APP_DIR;
+    $cms_dir = CMS_DIR;
+    $mig_dir = MIGRATION_DIR;
+    $assets_dir = ASSETS_DIR.'admin/';
     $cms_hold_dir = __DIR__.'/../content-holder/cms/';
 
     // Create CMS directory

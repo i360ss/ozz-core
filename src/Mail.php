@@ -164,7 +164,7 @@ class Mail extends AppInit {
     } else {
       return DEBUG
         ? Err::custom([
-          'msg' => "Email template [ app/mail/$tmp ] not found",
+          'msg' => "Email template [ ".trim(CONFIG['APP_PATHS']['app'], '/')."/mail/$tmp ] not found",
           'info' => 'Please check your email template name or create one if it is not exist.',
           'note' => "You can create an email template by running this command <br> [ php ozz c:email-temp template_name ]",
         ])

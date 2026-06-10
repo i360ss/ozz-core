@@ -9,8 +9,12 @@ namespace Ozz\Core\system\migration;
 
 class CreateMigration {
   
-  private $mgDir = __DIR__.SPC_BACK['core_2'].'database/migration/'; // Migrations Directory
-  
+  private $mgDir; // Migrations Directory
+
+  public function __construct() {
+    $this->mgDir = MIGRATION_DIR;
+  }
+
   public function index($com){
     // CLI Input
     extract($com);

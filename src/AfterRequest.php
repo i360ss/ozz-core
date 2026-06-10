@@ -39,7 +39,7 @@ class AfterRequest {
    * Clear Temporary debug log files
    */
   private function remove_temp_logs() {
-    file_put_contents(__DIR__.SPC_BACK['core'].'storage/log/sql_debug.log', '');
+    file_put_contents(LOG_DIR.'sql_debug.log', '');
   }
 
 }
