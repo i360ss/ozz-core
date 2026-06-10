@@ -32,8 +32,8 @@ class AppInit {
     $this->env = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
 
     // App configurations
-    $core_dir = !empty($this->env['app']['CORE_DIR']) ? rtrim($this->env['app']['CORE_DIR'], '/').'/' : '';
-    $devConfig = include __DIR__.SPC_BACK['core'].$core_dir.'app/config.php';
+    $config_file = $this->env['app']['CONFIG_FILE'] ?? 'app/config.php';
+    $devConfig = include __DIR__.SPC_BACK['core'].$config_file;
     $defConfig = require __DIR__.'/system/default-config.php';
     define('CONFIG', array_merge($defConfig, $devConfig));
 
