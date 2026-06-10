@@ -296,6 +296,10 @@ trait Posts {
    * @param array $form_data Data to store
    */
   protected function cms_update_post($post_id, $form_data) {
+    // Current Tab name to redirect back to it
+    $current_tab = $form_data['___taburl'] ? '#'.$form_data['___taburl'] : '';
+    unset($form_data['___taburl']);
+
     // set taxonomy fields flash data
     if(isset($form_data['___taxonomy___']) && !empty($form_data['___taxonomy___'])){
       foreach ($form_data['___taxonomy___'] as $key => $taxonomy) {
@@ -375,7 +379,7 @@ trait Posts {
       }
     }
 
-    return back();
+    return back($current_tab);
   }
 
 
