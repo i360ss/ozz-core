@@ -21,14 +21,14 @@ class Lang {
       ? Session::get('app_lang') 
       : Session::set('app_lang', env('app', 'APP_LANG'));
 
-    if(file_exists(APP_LANG_PATH.'errors.php')){
-      $this->errors = include APP_LANG_PATH.'errors.php';
+    if(file_exists(LANG_DIR.'errors.php')){
+      $this->errors = include LANG_DIR.'errors.php';
     } else {
       $this->errors = include APP_DIR.'lang/en/errors.php';
     }
 
-    if(file_exists(APP_LANG_PATH.'messages.php')){
-      $this->messages = include APP_LANG_PATH.'messages.php';
+    if(file_exists(LANG_DIR.'messages.php')){
+      $this->messages = include LANG_DIR.'messages.php';
     } else {
       $this->messages = include APP_DIR.'lang/en/messages.php';
     }

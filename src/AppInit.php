@@ -71,9 +71,6 @@ class AppInit {
     }
     defined('APP_LANG') || define('APP_LANG', Session::get('app_lang'));
 
-    // App current language path
-    defined('APP_LANG_PATH') || define('APP_LANG_PATH', __DIR__.SPC_BACK['core'].$core_dir.'app/lang/'.APP_LANG.'/');
-
     // Set Base URL
     $this_host = $_SERVER['HTTP_HOST'] ?? '';
     $valid_domains = explode(' ', $this->env['app']['APP_URLS'] ?? '');
@@ -124,7 +121,7 @@ class AppInit {
     defined('VIEW') || define('VIEW', CORE_DIR . trim(CONFIG['APP_PATHS']['view'], DS) . DS);
 
     // Assets URL
-    defined('ASSETS') || define('ASSETS', BASE_URL . "assets".DS);
+    defined('ASSETS') || define('ASSETS', BASE_URL . "assets" . DS);
 
     // Upload directory
     defined('UPLOAD_DIR') || define('UPLOAD_DIR', __DIR__.SPC_BACK['core'] . trim(CONFIG['APP_PATHS']['upload_dir'], DS) . DS);
@@ -152,6 +149,9 @@ class AppInit {
 
     // Input Field with CSRF token
     defined('CSRF_FIELD') || define('CSRF_FIELD', Csrf::getTokenField());
+
+    // App current language directory
+    defined('LANG_DIR') || define('LANG_DIR', CORE_DIR . trim(CONFIG['APP_PATHS']['lang'], DS) . DS . APP_LANG . DS);
   }
 
   /**
