@@ -4,7 +4,7 @@
  * Path: view/admin/dashboard
  * @param array $data arguments passed from controller or route
  */
-require __DIR__."/../../storage/system/OzzUpdater.php";
+require SYSTEM_DIR."/OzzUpdater.php";
 $updater = new OzzUpdater;
 ?>
 {{ title        = "Dashboard" }}

@@ -112,7 +112,7 @@ $form_data = has_flash('form_data') ? get_flash('form_data') : [];
           <?php endforeach; ?>
         </div><br>
 
-        <?php if ($update_logs && !empty($update_logs)) : ?>
+        <?php if (!empty($update_logs)) : ?>
           <div class="ozz-widget">
             <h4 class="ozz-widget__heading">Update Log</h4>
             <?php foreach ($update_logs as $log) : ?>
