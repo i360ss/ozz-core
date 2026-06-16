@@ -8,7 +8,7 @@ if(APP_ENV !== 'local'){
 $env = parse_ini_file(ENV_FILE, true);
 $devConfig = include CONFIG_FILE;
 $defConfig = require __DIR__.'/default-config.php';
-defined('CONFIG') || define('CONFIG', array_merge($defConfig, $devConfig));
+defined('CONFIG') || define('CONFIG', array_replace_recursive($defConfig, $devConfig));
 defined('AUTH_PATHS') || define('AUTH_PATHS', CONFIG['AUTH_PATHS']);
 require_once __DIR__.'/define-paths.php';
 ozz_define_paths();
