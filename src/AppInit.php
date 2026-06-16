@@ -29,19 +29,15 @@ class AppInit {
     $this->dependencyCheck();
 
     // Get content from env.ini and assign to $this->env
-    $this->env = parse_ini_file(__DIR__.SPC_BACK['core'].'env.ini', true);
+    $this->env = parse_ini_file(ENV_FILE, true);
 
     // App configurations
-    $config_file = $this->env['app']['CONFIG_FILE'] ?? 'app/config.php';
-    $devConfig = include __DIR__.SPC_BACK['core'].$config_file;
+    $devConfig = include CONFIG_FILE;
     $defConfig = require __DIR__.'/system/default-config.php';
     define('CONFIG', array_merge($defConfig, $devConfig));
 
     // Auth paths
     defined('AUTH_PATHS') || define('AUTH_PATHS', CONFIG['AUTH_PATHS']);
-
-    require_once __DIR__.'/system/define-paths.php';
-    ozz_define_paths(__DIR__.SPC_BACK['core']);
 
     // Initialize session
     Session::init();
@@ -91,9 +87,6 @@ class AppInit {
       exit("Unauthorized");
     }
 
-    ozz_define_paths(BASE_DIR);
-
-    // Debug constants
     // Debug mode, defined in env.ini
     defined('DEBUG') || define('DEBUG', $this->env['app']['DEBUG'] == 1 ? true : false);
 
@@ -114,7 +107,9 @@ class AppInit {
     // Input Field with CSRF token
     defined('CSRF_FIELD') || define('CSRF_FIELD', Csrf::getTokenField());
 
-    ozz_define_paths(BASE_DIR);
+    // Define paths
+    require_once __DIR__.'/system/define-paths.php';
+    ozz_define_paths();
   }
 
   /**

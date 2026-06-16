@@ -14,7 +14,7 @@ if(!function_exists('ozz_func_loaded')) {
    * @param string $key the key of .env value
    */
   function env($key=null, $key2=null){
-    $env = parse_ini_file((defined('BASE_DIR') ? BASE_DIR : __DIR__.SPC_BACK['core_1']).'env.ini', true);
+    $env = parse_ini_file(ENV_FILE, true);
     if($key !== null && $key2 !== null){
       return $env[$key][$key2];
     } elseif($key !== null){

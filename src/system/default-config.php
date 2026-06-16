@@ -128,7 +128,6 @@ return [
 
   // Define application paths
   'APP_PATHS' => [
-    'core' => '',
     'public' => 'public_html',
     'app' => 'app',
     'view' => 'app/view',

@@ -103,7 +103,7 @@ class Response {
     $this->setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
 
     // Apply CSP if enabled
-    $this->csp = parse_ini_file(BASE_DIR.'csp.ini', true); // Get CSP Values
+    $this->csp = parse_ini_file(CSP_FILE, true); // Get CSP Values
     if($this->csp['CSP']['USE_CSP'] == 1){
       $csp = $this->csp['CSP'];
       $csp_nonce = CSP_NONCE;
