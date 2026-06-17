@@ -184,8 +184,9 @@ class Migrate extends Schema {
     foreach ($getAllMigrations as $k => $v) {
       if(file_exists($this->mgDir.$v)){
         $parts = explode('_', $v, 3);
-        $class = substr($parts[2], 0, -4);
+        if (!isset($parts[2])) continue;
 
+        $className = substr($parts[2], 0, -4);
         if($className == ucfirst($r2)){
           $requestedFileExist = true;
           require_once $this->mgDir.$v;

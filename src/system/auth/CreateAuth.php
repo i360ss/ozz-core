@@ -64,9 +64,9 @@ class CreateAuth {
     $this->createAuthMigration('user-table', CONFIG['AUTH_USERS_TABLE']);
     $this->createAuthMigration('user-log-table', CONFIG['AUTH_LOG_TABLE']);
     $this->createAuthMigration('user-meta-table', CONFIG['AUTH_META_TABLE']);
-    $this->runAuthMigration(ucfirst(CONFIG['AUTH_USERS_TABLE']));
-    $this->runAuthMigration(ucfirst(CONFIG['AUTH_LOG_TABLE']));
-    $this->runAuthMigration(ucfirst(CONFIG['AUTH_META_TABLE']));
+    $this->runAuthMigration(CONFIG['AUTH_USERS_TABLE']);
+    $this->runAuthMigration(CONFIG['AUTH_LOG_TABLE']);
+    $this->runAuthMigration(CONFIG['AUTH_META_TABLE']);
 
     // Generate View files
     $this->createAuthViewFile('sign-up', AUTH_VIEWS['sign-up']);
@@ -137,8 +137,12 @@ class CreateAuth {
    */
   private function runAuthMigration($name){
     global $utils;
-    if(exec("php ozz migrate $name")){
-      $utils->console_return("Table created [ $name ]", 'green');
+
+    $output = [];
+    $returnVar = 0;
+    exec("php ozz migrate $name", $output, $returnVar);
+    foreach ($output as $msg) {
+      $utils->console_return($msg);
     }
   }
 
