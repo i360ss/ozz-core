@@ -252,6 +252,7 @@ class Auth extends Model {
         if(password_verify($password, $user[self::$password_field])){
           // User logged in
           session_regenerate_id();
+          Csrf::refreshToken();
           $redirect_to = (isset($redirect_path) && $redirect_path !== '') ? $redirect_path : AUTH_USER_ROLES[$user[self::$role_field]]['landing_page'];
           $_SESSION['logged_user_id']         = $user[self::$id_field];
           $_SESSION['logged_username']        = $user[self::$username_field];

@@ -28,7 +28,6 @@ return [
   'COOKIE_SECURE' => true,
   'COOKIE_HTTP_ONLY' => true,
   'COOKIE_SAMESITE' =>  'Strict', // Strict, Lax or None
-  'CSRF_COOKIE_LIFETIME' => 18000,
 
   // Auth
   'AUTH_CONTROLLER' => 'AuthController',

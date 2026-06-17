@@ -57,6 +57,7 @@ class Session {
       $_SESSION['SESSION_INIT_TIME'] = time();
     } elseif (time() - $_SESSION['SESSION_INIT_TIME'] > CONFIG['SESSION_LIFETIME']){
       session_regenerate_id(true);
+      Csrf::refreshToken();
       $_SESSION['SESSION_INIT_TIME'] = time();
     }
   }

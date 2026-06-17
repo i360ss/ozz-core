@@ -50,6 +50,7 @@ class ExceptionHandler {
           $fatal_error = "<div class='ozz_errorOutput' style='padding:10px 20px; max-width: 900px; margin: 3px auto; border: 1px solid #FF5968; background: #FF5968;'><code><strong><h3 style='color: #fff;'>Error: ".$f_error['message']."</code></strong></h3></div>
           <div style='padding:10px 20px; max-width: 900px; margin: 3px auto; color: #fff; font-size: 14px; line-height: 1.7; border: 1px solid #666EE8; background:#666EE8;'><code>File: ".$f_error['file']." : ".$f_error['line']."</code></div>";
 
+          http_response_code(500);
           echo $fatal_error;
         }
       });
@@ -212,6 +213,8 @@ class ExceptionHandler {
     $modified_exception .= '</div></div>'; // Parent and container classed end
 
     $shadow_wrapper_id = 'ozz-exception-shadow-host';
+
+    http_response_code(500);
 
     echo '<div id="' . $shadow_wrapper_id . '"></div>';
     echo '<script type="text/javascript" nonce="'.CSP_NONCE.'">
