@@ -62,7 +62,7 @@ class ExceptionHandler {
   public static function handler($exception) {
     // Print the context to the screen
     $style = '<style nonce="'.CSP_NONCE.'">'.Help::minifyCSS(file_get_contents(__DIR__.'/system/assets/css/exceptions.css')).'</style>';
-    $script = '<script type="text/javascript" nonce="'.CSP_NONCE.'">'.file_get_contents(__DIR__.'/system/assets/js/exceptions.js').'</script>';
+    $script_content = file_get_contents(__DIR__.'/system/assets/js/exceptions.js');
     $modified_exception = '<div class="ozz-exceptions"><div class="ozz-exceptions-container">';
 
     // Exception Heading
@@ -211,10 +211,22 @@ class ExceptionHandler {
     $modified_exception .= '</div>'; // Trace code highlight wrapper end
     $modified_exception .= '</div></div>'; // Parent and container classed end
 
+    $shadow_wrapper_id = 'ozz-exception-shadow-host';
+
+    echo '<div id="' . $shadow_wrapper_id . '"></div>';
+    echo '<script type="text/javascript" nonce="'.CSP_NONCE.'">
+      (function() {
+        const host = document.getElementById("' . $shadow_wrapper_id . '");
+        if (!host) return;
+
+        const shadow = host.attachShadow({ mode: "open" });
+        shadow.innerHTML = ' . json_encode($style . $modified_exception) . ';
+        (function(shadowRoot) { ' . $script_content . ' })(shadow);
+      })();
+    </script>';
+
     global $DEBUG_BAR;
     $DEBUG_BAR->show();
-
-    echo $style.$modified_exception.$script;
   }
 
   /**

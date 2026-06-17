@@ -23,7 +23,6 @@
   background: var(--ozz-white);
   border-top: 2px solid var(--ozz-blue);
   z-index: 99999;
-  /* Pretty JSON */
 }
 .ozz-fw-debug-bar.open {
   height: 380px;
@@ -259,6 +258,9 @@
 .ozz-fw-debug-bar .dumpr .xdebug-var-dump > small {
   display: none;
 }
+.ozz-fw-debug-bar {
+  /* Pretty JSON */
+}
 .ozz-fw-debug-bar .json-viewer {
   margin: 5px 0 0;
 }
@@ -280,4 +282,4 @@
 .ozz-debug-sqldumper .high-txt {
   color: var(--ozz-info);
   font-weight: 600;
-}
+}/*# sourceMappingURL=debugbar.css.map */

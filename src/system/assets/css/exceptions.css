@@ -1,11 +1,21 @@
+:host {
+  all: initial;
+  display: block;
+  color: #333;
+}
+
+:host *, :host *::before, :host *::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
 }
 
 .ozz-exceptions {
-  height: calc(100vh - 48px);
-  width: calc(100% - 48px);
+  height: 100vh;
+  width: 100%;
   position: fixed;
   top: 0;
   left: 0;
@@ -147,4 +157,4 @@ body {
 }
 .ozz-exceptions .code-highlight .single-code-snippet.active {
   display: inline;
-}
+}/*# sourceMappingURL=exceptions.css.map */

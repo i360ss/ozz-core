@@ -1,4 +1,5 @@
-@import '_core';
+@use 'core' as *;
+
 :host {
   all: initial;
 
