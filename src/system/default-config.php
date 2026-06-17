@@ -143,5 +143,13 @@ return [
     'session' => 'storage/session',
     'system' => 'storage/system',
     'lang' => 'app/lang',
+  ],
+
+  'CMS_TABLES' => [
+    'forms' => 'Cms_forms',
+    'post_terms' => 'Cms_post_terms',
+    'posts' => 'Cms_posts',
+    'taxonomy' => 'Cms_taxonomy',
+    'terms' => 'Cms_terms'
   ]
 ];
