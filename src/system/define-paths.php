@@ -23,10 +23,6 @@ function ozz_define_paths(): void {
   defined('UPLOAD_DIR_PUBLIC') || define('UPLOAD_DIR_PUBLIC', rtrim($paths['upload_dir_public'], DS) . DS);
   defined('ASSETS_DIR') || define('ASSETS_DIR', PUBLIC_DIR . trim($paths['assets'], DS) . DS);
 
-  if (defined('BASE_URL')) {
-    defined('ASSETS') || define('ASSETS', BASE_URL . trim($paths['assets'], DS) . DS);
-  }
-
   if (locale()) {
     defined('LANG_DIR') || define('LANG_DIR', BASE_DIR . trim($paths['lang'], DS) . DS . locale() . DS);
   }

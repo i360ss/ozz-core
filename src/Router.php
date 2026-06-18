@@ -58,7 +58,7 @@ class Router extends AppInit {
       $domain = trim($dom_route[0]);
       $route = trim($dom_route[1]);
     } else {
-      $domain = trim(APP_URL, '/');
+      $domain = trim(app_url(), '/');
     }
 
     $finalPath = self::finalizeRoutePath($route, 'get');
@@ -86,7 +86,7 @@ class Router extends AppInit {
       $domain = $dom_route[0];
       $route = $dom_route[1];
     } else {
-      $domain = trim(APP_URL, '/');
+      $domain = trim(app_url(), '/');
     }
 
     $finalPath = self::finalizeRoutePath($route, $method);

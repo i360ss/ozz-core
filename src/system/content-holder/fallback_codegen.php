@@ -155,15 +155,15 @@ function ozz_content_Layout(){
   <meta name="description" content="{% description %}">
   <meta name="robots" content="index, follow">
   <meta name="csrf-token" content="<?=csrf_token()?>">
-  <meta name="url" content="<?=BASE_URL?>">
-  <link rel="icon" type="image/x-icon" href="<?=ASSETS?>icons/favicon.ico">
-  <link nonce="<?=csp_nonce()?>" rel="stylesheet" href="<?=ASSETS?>css/styles.css">
+  <meta name="url" content="<?=base_url()?>">
+  <link rel="icon" type="image/x-icon" href="<?=assets_url()?>icons/favicon.ico">
+  <link nonce="<?=csp_nonce()?>" rel="stylesheet" href="<?=assets_url()?>css/styles.css">
 </head>
 <body class="{% body_class %}">
 <main>
   {% content %}
 </main>
-<script nonce="<?=csp_nonce()?>" src="<?=ASSETS?>js/app.js"></script>
+<script nonce="<?=csp_nonce()?>" src="<?=assets_url()?>js/app.js"></script>
 </body>
 </html>';
 }

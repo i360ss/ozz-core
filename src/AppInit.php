@@ -8,12 +8,13 @@
 namespace Ozz\Core;
 
 use Ozz\Core\Session;
-use Ozz\Core\Cookie;
 use Ozz\Core\Csrf;
 
 class AppInit {
 
-  private $env;   // Env App
+  private $env;
+  private static $cachedEnv = null;
+  private static $dependenciesChecked = false;
 
   use \Ozz\Core\TokenHandler;
 
@@ -24,11 +25,17 @@ class AppInit {
       'core_2' => '/../../../../../../',
     ]);
 
-    // Dependency check
-    $this->dependencyCheck();
+    // Only check dependencies once
+    if (!self::$dependenciesChecked) {
+      $this->dependencyCheck();
+      self::$dependenciesChecked = true;
+    }
 
-    // Get content from env.ini and assign to $this->env
-    $this->env = parse_ini_file(ENV_FILE, true);
+    // Cache env
+    if (self::$cachedEnv === null) {
+      self::$cachedEnv = parse_ini_file(ENV_FILE, true);
+    }
+    $this->env = self::$cachedEnv;
 
     // Auth paths
     defined('AUTH_PATHS') || define('AUTH_PATHS', CONFIG['AUTH_PATHS']);
@@ -39,43 +46,23 @@ class AppInit {
     // Set default timezone
     date_default_timezone_set(@date_default_timezone_get());
 
-    // App environment (local, dev, prod)
     defined('APP_ENV') || define('APP_ENV', $this->env['app']['APP_ENV']);
-
-    // The Name of the app defined in env.ini
     defined('APP_NAME') || define('APP_NAME', $this->env['app']['APP_NAME']);
-
-    // App Version defined in env.ini
     defined('APP_VERSION') || define('APP_VERSION', $this->env['app']['APP_VERSION']);
-
-    // CMS Admin path
     defined('ADMIN_PATH') || define('ADMIN_PATH', $this->env['cms']['ADMIN_PATH'] ?? '/admin');
+    defined('DEBUG') || define('DEBUG', $this->env['app']['DEBUG'] == 1 ? true : false);
+    defined('SHOW_DEBUG_BAR') || define('SHOW_DEBUG_BAR', $this->env['app']['SHOW_DEBUG_BAR'] == 1 ? true : false);
+    defined('DEBUG_EMAIL') || define('DEBUG_EMAIL', $this->env['app']['DEBUG_EMAIL'] == 1 ? true : false);
 
-    // Set Base URL
+    // Validate host
     $this_host = $_SERVER['HTTP_HOST'] ?? '';
     $valid_domains = explode(' ', $this->env['app']['APP_URLS'] ?? '');
 
-    if (in_array($this_host, $valid_domains)) {
-      // Check for SSL
-      $is_secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
-        (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
-
-      // Define APP_URL and BASE_URL
-      defined('APP_URL') || define('APP_URL', rtrim($this_host, '/') . '/');
-      defined('BASE_URL') || define('BASE_URL', ($is_secure ? 'https://' : 'http://') . APP_URL);
-    } else {
+    if (!in_array($this_host, $valid_domains)) {
       http_response_code(401);
-      exit("Unauthorized");
+      echo "Unauthorized Host Access"; 
+      return; 
     }
-
-    // Debug mode, defined in env.ini
-    defined('DEBUG') || define('DEBUG', $this->env['app']['DEBUG'] == 1 ? true : false);
-
-    // Enable/Disable Debug bar, defined in env.ini
-    defined('SHOW_DEBUG_BAR') || define('SHOW_DEBUG_BAR', $this->env['app']['SHOW_DEBUG_BAR'] == 1 ? true : false);
-
-    // Debug Email template output, defined in env.ini
-    defined('DEBUG_EMAIL') || define('DEBUG_EMAIL', $this->env['app']['DEBUG_EMAIL'] == 1 ? true : false);
 
     // Create initial CSRF token
     if(empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token']) || (isset($_SESSION['csrf_token_expire']) && time() > $_SESSION['csrf_token_expire'])){
@@ -83,7 +70,11 @@ class AppInit {
     }
 
     // Define paths
-    require_once __DIR__.'/system/define-paths.php';
+    if (function_exists('frankenphp_handle_request')) {
+      require_once __DIR__.'/system/define-paths.php';
+    } else {
+      require __DIR__.'/system/define-paths.php';
+    }
     ozz_define_paths();
   }
 
@@ -91,10 +82,12 @@ class AppInit {
    * Run Application
    */
   public function run(){
-    // Load ozz functions
-    require "system/ozz-func.php";
+    if (function_exists('frankenphp_handle_request')) {
+      require_once "system/ozz-func.php";
+    } else {
+      require "system/ozz-func.php";
+    }
 
-    // Resolve Route
     return Router::resolve();
   }
 

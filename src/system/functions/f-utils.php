@@ -3,10 +3,8 @@
 // Utility functions
 # ----------------------------------------------------
 use Ozz\Core\Form;
-use Ozz\Core\TokenHandler;
-use Ozz\Core\Response;
+use Ozz\Core\AppInit;
 use Ozz\Core\Session;
-use Ozz\Core\Request;
 use Ozz\Core\Csrf;
 
 /**
@@ -30,8 +28,8 @@ function get_file_type_by_url($url) {
     return $type;
   }
 
-  if (strpos($url, BASE_URL) !== false) {
-    $url = str_replace(BASE_URL, '', $url);
+  if (strpos($url, base_url()) !== false) {
+    $url = str_replace(base_url(), '', $url);
   }
 
   if (strpos($url, 'youtube.com') !== false || strpos($url, 'youtu.be') !== false) {
@@ -421,6 +419,45 @@ function convert_php_size_to_bytes($sSize) {
   return $iValue;
 }
 
+// Dynamically resolves the current application request URL
+function app_url(): string {
+  return rtrim($_SERVER['HTTP_HOST'] ?? '', '/') . '/';
+}
+
+// Dynamically resolves the full secure protocol base url string
+function base_url(bool $reset = false): string {
+  static $cachedBaseUrl = null;
+
+  if ($reset) {
+    $cachedBaseUrl = null;
+    return '';
+  }
+
+  if ($cachedBaseUrl === null) {
+    $is_secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
+      (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+    $cachedBaseUrl = ($is_secure ? 'https://' : 'http://') . app_url();
+  }
+
+  return $cachedBaseUrl;
+}
+
+// Assets URL
+function assets_url(bool $reset = false): string {
+  static $cachedAssetsUrl = null;
+
+  if ($reset) {
+    $cachedAssetsUrl = null;
+    return '';
+  }
+
+  if ($cachedAssetsUrl === null) {
+    $cachedAssetsUrl = '/' . trim(CONFIG['APP_PATHS']['assets'], '/') . '/';
+  }
+
+  return $cachedAssetsUrl;
+}
+
 /**
  * Asset loader
  * @param string $path Path for the asset
@@ -449,40 +486,74 @@ function asset($path, $firstOnly=true) {
   $decoded_path = rawurldecode($path);
   $fullPath = PUBLIC_DIR . $decoded_path;
   if (!file_exists($fullPath)) {
-    return BASE_URL . $path;
+    return base_url() . $path;
   }
 
-  return BASE_URL . $path . "?v=" . base_convert(filemtime($fullPath), 10, 36);
+  return base_url() . $path . "?v=" . base_convert(filemtime($fullPath), 10, 36);
 }
 
 // App CSP nonce
-function csp_nonce() {
-  $response = Response::getInstance();
-  if (!$response->hasNonce()) {
-    $response->setNonce(TokenHandler::hashKey('csp-nonce'));
+function csp_nonce(bool $reset = false) {
+  static $localNonce = null;
+  if ($reset) {
+    $localNonce = null;
+    return '';
   }
-  return $response->getNonce();
+
+  if ($localNonce === null) {
+    $localNonce = AppInit::hashKey('csp-nonce');
+  }
+
+  return $localNonce;
 }
 
 // Locale (Current app language)
-function locale() {
-  if(!Session::has('app_lang')){
-    Session::set('app_lang', env('app', 'APP_LANG'));
-  }
-  return Session::get('app_lang');
-}
+function locale(bool $reset = false) {
+  static $cachedLang = null;
 
-// check is secure http request
-function has_ssl() {
-  return Request::getInstance()->isSecure();
+  if ($reset) {
+    $cachedLang = null;
+    return '';
+  }
+
+  if ($cachedLang === null) {
+    if (!Session::has('app_lang')) {
+      Session::set('app_lang', env('app', 'APP_LANG'));
+    }
+    $cachedLang = Session::get('app_lang'); 
+  }
+
+  return $cachedLang;
 }
 
 // CSRF token
-function csrf_token() {
-  return Csrf::getToken();
+function csrf_token(bool $reset = false) {
+  static $cachedToken = null;
+
+  if ($reset) {
+    $cachedToken = null;
+    return '';
+  }
+
+  if ($cachedToken === null) {
+    $cachedToken = Csrf::getToken();
+  }
+
+  return $cachedToken;
 }
 
 // CSRF Field
-function csrf_field() {
-  return Csrf::getTokenField();
+function csrf_field(bool $reset = false) {
+  static $cachedField = null;
+
+  if ($reset) {
+    $cachedField = null;
+    return '';
+  }
+
+  if ($cachedField === null) {
+    $cachedField = Csrf::getTokenField();
+  }
+
+  return $cachedField;
 }
