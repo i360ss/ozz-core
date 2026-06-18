@@ -3,6 +3,11 @@
 // Utility functions
 # ----------------------------------------------------
 use Ozz\Core\Form;
+use Ozz\Core\TokenHandler;
+use Ozz\Core\Response;
+use Ozz\Core\Session;
+use Ozz\Core\Request;
+use Ozz\Core\Csrf;
 
 /**
  * Check if absolute URL
@@ -448,4 +453,36 @@ function asset($path, $firstOnly=true) {
   }
 
   return BASE_URL . $path . "?v=" . base_convert(filemtime($fullPath), 10, 36);
+}
+
+// App CSP nonce
+function csp_nonce() {
+  $response = Response::getInstance();
+  if (!$response->hasNonce()) {
+    $response->setNonce(TokenHandler::hashKey('csp-nonce'));
+  }
+  return $response->getNonce();
+}
+
+// Locale (Current app language)
+function locale() {
+  if(!Session::has('app_lang')){
+    Session::set('app_lang', env('app', 'APP_LANG'));
+  }
+  return Session::get('app_lang');
+}
+
+// check is secure http request
+function has_ssl() {
+  return Request::getInstance()->isSecure();
+}
+
+// CSRF token
+function csrf_token() {
+  return Csrf::getToken();
+}
+
+// CSRF Field
+function csrf_field() {
+  return Csrf::getTokenField();
 }

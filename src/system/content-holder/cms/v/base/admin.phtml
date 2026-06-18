@@ -10,14 +10,14 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
 
 ?>
 <!DOCTYPE html>
-<html lang="<?=APP_LANG?>">
+<html lang="<?=locale()?>">
 <head>
   <meta charset=<?=CONFIG['CHARSET']?>>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% title %}</title>
-  <meta name="csrf-token" content="<?=CSRF_TOKEN?>">
+  <meta name="csrf-token" content="<?=csrf_token()?>">
   <link rel="icon" type="image/x-icon" href="<?=ASSETS?>icons/favicon.svg">
-  <link rel="stylesheet" href="<?=ASSETS?>admin/admin.min.css" nonce="<?=CSP_NONCE?>">
+  <link rel="stylesheet" href="<?=ASSETS?>admin/admin.min.css" nonce="<?=csp_nonce()?>">
 </head>
 <body class="ozz-cms {% body_class %}">
   <div class="app-container">
@@ -107,7 +107,7 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
 
             <!-- Language switcher -->
             <div class="cms-header__language-switch">
-              <span class="current-lang"><?=APP_LANG?></span>
+              <span class="current-lang"><?=locale()?></span>
               <ul class="dropdown">
                 <?php foreach ($data['languages'] as $code => $language) : ?>
                   <li><a href="/lang/<?=$code?>"><?=$language?></a></li>
@@ -159,7 +159,7 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
     </div>
     </main>
   </div>
-<script nonce="<?=CSP_NONCE?>">
+<script nonce="<?=csp_nonce()?>">
   const DATA = JSON.parse('<?=json_encode([
     'HOST'     => $context['request']['host'],
     'URL'      => $context['url'],
@@ -168,6 +168,6 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
   ]);
   ?>');
 </script>
-<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>admin/admin.min.js"></script>
+<script nonce="<?=csp_nonce()?>" src="<?=ASSETS?>admin/admin.min.js"></script>
 </body>
 </html>

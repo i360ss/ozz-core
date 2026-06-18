@@ -13,13 +13,12 @@ use Ozz\Core\Csrf;
 
 class AppInit {
 
-  private $SSL;   // Check (http or https)
   private $env;   // Env App
 
   use \Ozz\Core\TokenHandler;
 
   public function __construct() {
-    define('SPC_BACK', [
+    defined('SPC_BACK') || define('SPC_BACK', [
       'core' => '/../../../../',
       'core_1' => '/../../../../../',
       'core_2' => '/../../../../../../',
@@ -40,10 +39,6 @@ class AppInit {
     // Set default timezone
     date_default_timezone_set(@date_default_timezone_get());
 
-    // Content security policy configuration
-    $csp_nonce = self::hashKey('csp-nonce');
-    defined('CSP_NONCE') || define('CSP_NONCE', $csp_nonce);
-
     // App environment (local, dev, prod)
     defined('APP_ENV') || define('APP_ENV', $this->env['app']['APP_ENV']);
 
@@ -56,12 +51,6 @@ class AppInit {
     // CMS Admin path
     defined('ADMIN_PATH') || define('ADMIN_PATH', $this->env['cms']['ADMIN_PATH'] ?? '/admin');
 
-    // App current language
-    if(!Session::has('app_lang')){
-      Session::set('app_lang', $this->env['app']['APP_LANG']);
-    }
-    defined('APP_LANG') || define('APP_LANG', Session::get('app_lang'));
-
     // Set Base URL
     $this_host = $_SERVER['HTTP_HOST'] ?? '';
     $valid_domains = explode(' ', $this->env['app']['APP_URLS'] ?? '');
@@ -71,12 +60,9 @@ class AppInit {
       $is_secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
         (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
 
-      $this->SSL = $is_secure ? 'https://' : 'http://';
-      define('HAS_SSL', $is_secure);
-
       // Define APP_URL and BASE_URL
       defined('APP_URL') || define('APP_URL', rtrim($this_host, '/') . '/');
-      defined('BASE_URL') || define('BASE_URL', $this->SSL . APP_URL);
+      defined('BASE_URL') || define('BASE_URL', ($is_secure ? 'https://' : 'http://') . APP_URL);
     } else {
       http_response_code(401);
       exit("Unauthorized");
@@ -95,12 +81,6 @@ class AppInit {
     if(empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token']) || (isset($_SESSION['csrf_token_expire']) && time() > $_SESSION['csrf_token_expire'])){
       Csrf::refreshToken();
     }
-
-    // CSRF Token
-    defined('CSRF_TOKEN') || define('CSRF_TOKEN', Csrf::getToken());
-
-    // Input Field with CSRF token
-    defined('CSRF_FIELD') || define('CSRF_FIELD', Csrf::getTokenField());
 
     // Define paths
     require_once __DIR__.'/system/define-paths.php';

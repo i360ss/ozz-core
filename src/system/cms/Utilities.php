@@ -14,7 +14,8 @@ trait Utilities {
    * @param string $keyword
    * @param string $lang Language code (default: current language)
    */
-  protected function cms_global_search($keyword, $lang=APP_LANG) {
+  protected function cms_global_search($keyword, $lang=null) {
+    $lang = $lang ?? locale();
     // Fetch posts
     $posts = $this->DB()->select('cms_posts', [
       'post_id(post_id)',

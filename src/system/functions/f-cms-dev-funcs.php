@@ -62,7 +62,8 @@ class CMSFuncs {
    * Get all posts (ID, post_type, slug and title only for reference)
    * @param string $lang Language
    */
-  public function get_all_posts_reference($lang = APP_LANG) {
+  public function get_all_posts_reference($lang = null) {
+    $lang = $lang ?? locale();
     $query = 'SELECT id, slug, title, post_type FROM cms_posts 
       WHERE lang = :lang AND post_status = :post_status
       ORDER BY id DESC';
@@ -81,7 +82,8 @@ class CMSFuncs {
    * @param array $params Filters (taxonomy terms, search, WHERE, and pagination)
    * @param string $lang Language
    */
-  public function get_posts($post_type=false, $params=[], $lang=APP_LANG) {
+  public function get_posts($post_type=false, $params=[], $lang=null) {
+    $lang = $lang ?? locale();
     $select = "SELECT DISTINCT p.* FROM cms_posts p";
     $joins = [];
     $where_conditions = [];
@@ -366,7 +368,8 @@ class CMSFuncs {
    * @param array $where SQL where arguments
    * @param string $lang Language code
    */
-  public function get_post($post_id_slug, $where=[], $lang=APP_LANG) {
+  public function get_post($post_id_slug, $where=[], $lang=null) {
+    $lang = $lang ?? locale();
     $where = array_merge([
       'OR' => [
         'id' => $post_id_slug,
@@ -462,7 +465,8 @@ class CMSFuncs {
 /**
  * Get all posts for use as reference
  */
-function get_all_posts_reference($lang=APP_LANG) {
+function get_all_posts_reference($lang=null) {
+  $lang = $lang ?? locale();
   $cms = new CMSFuncs;
   return $cms->get_all_posts_reference($lang);
 }
@@ -472,7 +476,8 @@ function get_all_posts_reference($lang=APP_LANG) {
  * @param string|integer $post_id_or_slug
  * @return array Post data
  */
-function get_post($post_id_or_slug, $where=[], $lang=APP_LANG) {
+function get_post($post_id_or_slug, $where=[], $lang=null) {
+  $lang = $lang ?? locale();
   $cms = new CMSFuncs;
   return $cms->get_post($post_id_or_slug, $where, $lang);
 }
@@ -483,7 +488,8 @@ function get_post($post_id_or_slug, $where=[], $lang=APP_LANG) {
  * @param array $params Filters (Taxonomy terms, search, WHERE conditions, pagination)
  * @param string $lang Language
  */
-function get_posts($post_type=false, $params=[], $lang=APP_LANG) {
+function get_posts($post_type=false, $params=[], $lang=null) {
+  $lang = $lang ?? locale();
   $cms = new CMSFuncs;
   return $cms->get_posts($post_type, $params, $lang);
 }

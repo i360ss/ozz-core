@@ -31,7 +31,7 @@
 
   <p class="item available-translations"><strong>Available Translations:</strong> <br>
     <?php foreach ($translated_to as $code => $language) : ?>
-      <a href="/lang/<?=$code?>" class="button mini light<?=$code == APP_LANG ? ' active' : '';?>">
+      <a href="/lang/<?=$code?>" class="button mini light<?=$code == locale() ? ' active' : '';?>">
         <?=$language?>
       </a>
     <?php endforeach; ?>
@@ -40,7 +40,7 @@
   <?php if (isset($id)) :?>
     <div class="item language-duplicator"><strong>Duplicate to:</strong> <br>
       <form action="<?=ADMIN_PATH?>/post/duplicate" method="post" class="ozz-fm">
-        <?=CSRF_FIELD?>
+        <?=csrf_field()?>
         <input type="hidden" name="post_id" value="<?=$id?>">
         <input type="hidden" name="post_id_lang" value="<?=$post_id?>">
         <div class="inner">

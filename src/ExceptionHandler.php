@@ -62,7 +62,7 @@ class ExceptionHandler {
    */
   public static function handler($exception) {
     // Print the context to the screen
-    $style = '<style nonce="'.CSP_NONCE.'">'.Help::minifyCSS(file_get_contents(__DIR__.'/system/assets/css/exceptions.css')).'</style>';
+    $style = '<style nonce="'.csp_nonce().'">'.Help::minifyCSS(file_get_contents(__DIR__.'/system/assets/css/exceptions.css')).'</style>';
     $script_content = file_get_contents(__DIR__.'/system/assets/js/exceptions.js');
     $modified_exception = '<div class="ozz-exceptions"><div class="ozz-exceptions-container">';
 
@@ -217,7 +217,7 @@ class ExceptionHandler {
     http_response_code(500);
 
     echo '<div id="' . $shadow_wrapper_id . '"></div>';
-    echo '<script type="text/javascript" nonce="'.CSP_NONCE.'">
+    echo '<script type="text/javascript" nonce="'.csp_nonce().'">
       (function() {
         const host = document.getElementById("' . $shadow_wrapper_id . '");
         if (!host) return;
