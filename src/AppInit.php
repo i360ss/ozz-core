@@ -31,11 +31,6 @@ class AppInit {
     // Get content from env.ini and assign to $this->env
     $this->env = parse_ini_file(ENV_FILE, true);
 
-    // App configurations
-    $devConfig = include CONFIG_FILE;
-    $defConfig = require __DIR__.'/system/default-config.php';
-    define('CONFIG', array_replace_recursive($defConfig, $devConfig));
-
     // Auth paths
     defined('AUTH_PATHS') || define('AUTH_PATHS', CONFIG['AUTH_PATHS']);
 

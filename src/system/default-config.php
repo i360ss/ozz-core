@@ -2,7 +2,6 @@
 return [
   // General
   'CHARSET' => 'utf-8',
-  'PAGE_CACHE_LIFETIME' => false,
   'MINIFY_HTML' => false,
   'OZZ_EXCEPTION_HANDLER' => true,
   'ERROR_LOG' => false,
@@ -28,6 +27,20 @@ return [
   'COOKIE_SECURE' => true,
   'COOKIE_HTTP_ONLY' => true,
   'COOKIE_SAMESITE' =>  'Strict', // Strict, Lax or None
+
+  // Cache
+  'PAGE_CACHE_LIFETIME' => false,
+  'PREVENT_PAGE_CACHE' => [
+    'login',
+    'logout',
+    'sign-up',
+    'forgot-password',
+    'reset-password',
+    'verify-account',
+    'verify-email',
+    'admin',
+    'admin/*',
+  ],
 
   // Auth
   'AUTH_CONTROLLER' => 'AuthController',

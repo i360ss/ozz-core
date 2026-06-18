@@ -199,11 +199,6 @@ class Router extends AppInit {
     $request = Request::getInstance();
     $response = Response::getInstance();
 
-    // Return page cache if available
-    if($page_cache = (new Cache)->get('page', $request->url())){
-      return $page_cache;
-    }
-
     $host = $request->host();
     $path = $request->path();
     $method = $request->method();
