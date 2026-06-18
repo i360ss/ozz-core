@@ -217,7 +217,7 @@ class Auth extends Model {
     self::init();
 
     // Optional Arguments
-    list($redirect_path, $query) = false;
+    list($redirect_path, $query) = [null, null];
     if(!empty($args)){
       extract($args, EXTR_IF_EXISTS);
     }

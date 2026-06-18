@@ -264,7 +264,7 @@ trait FileSettings {
     }
 
     // Free up parent image memory
-    if ($gdImage && (is_resource($gdImage) || $gdImage instanceof \GdImage)) {
+    if (isset($gdImage) && ($gdImage instanceof \GdImage || is_resource($gdImage))) {
       imagedestroy($gdImage);
     }
 

@@ -344,18 +344,14 @@ function get_mime_type($file=false) {
   if (is_string($file) && file_exists($file)) {
     // If $file is a string (file path), check its MIME type
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $mime = finfo_file($finfo, $file);
-    finfo_close($finfo);
-    return $mime;
+    return finfo_file($finfo, $file);
   } elseif (is_array($file) && isset($file['tmp_name']) && file_exists($file['tmp_name'])) {
     // If $file is an array (file input), check its MIME type
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $mime = finfo_file($finfo, $file['tmp_name']);
-    finfo_close($finfo);
-    return $mime;
-  } else {
-    return 'unknown';
+    return finfo_file($finfo, $file['tmp_name']);;
   }
+
+  return 'unknown';
 }
 
 /**

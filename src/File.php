@@ -197,7 +197,6 @@ class File {
     if (in_array($ext, self::$formats)) {
       $finfo = finfo_open(FILEINFO_MIME_TYPE);
       $mime = finfo_file($finfo, $tempFile);
-      finfo_close($finfo);
 
       require __DIR__.'/system/utils/mime_types.php';
 
