@@ -33,6 +33,10 @@ trait FileSettings {
         break;
       case 'png':
         $im = @imagecreatefrompng($tmp);
+        if ($im) {
+          imagealphablending($im, false);
+          imagesavealpha($im, true);
+        }
         !$copies ? $image = @imagepng($im, $dir) : false;
         break;
       case 'bmp':
@@ -41,6 +45,10 @@ trait FileSettings {
         break;
       case 'webp':
         $im = @imagecreatefromwebp($tmp);
+        if ($im) {
+          imagealphablending($im, false);
+          imagesavealpha($im, true);
+        }
         !$copies ? $image = @imagewebp($im, $dir, $qlt) : false;
         break;
       case 'svg':
@@ -143,6 +151,11 @@ trait FileSettings {
 
     // Create and Upload Copies
     if(isset(self::$settings['copies']) && !empty(self::$settings['copies'])){
+      $copiesToProcess = self::$settings['copies'];
+      if (array_keys($copiesToProcess) !== range(0, count($copiesToProcess) - 1)) {
+        self::$settings['copies'] = [$copiesToProcess];
+      }
+
       foreach (self::$settings['copies'] as $key => $copy) {
         $finalOut['copies']['url'][$key] = null;
         $finalOut['copies']['error'] = false;
@@ -202,6 +215,13 @@ trait FileSettings {
         // Make Copy
         if($gdImage){
           $newCopy = imagecreatetruecolor(intval($newWidth), intval($newHeight));
+
+          if ($ext === 'png' || $ext === 'webp') {
+            imagealphablending($newCopy, false); // Turn off alpha blending
+            imagesavealpha($newCopy, true);      // Tell GD to save full alpha channel info
+            imagefill($newCopy, 0, 0, imagecolorallocatealpha($newCopy, 0, 0, 0, 127));
+          }
+
           imagecopyresampled($newCopy, $gdImage, $dstX, $dstY, $srcX, $srcY, intval($newWidth), intval($newHeight), $origWidth, $origHeight);
           $qlt = $copy['quality'] ?? 100;
 
@@ -225,19 +245,30 @@ trait FileSettings {
               $finalCopy = @imagewebp($newCopy, $copyDirWithName, $qlt);
               break;
           }
+
+          // Free up memory for this specific copy canvas
+          if (is_resource($newCopy) || $newCopy instanceof \GdImage) {
+            imagedestroy($newCopy);
+          }
         }
 
         // Copies Response
         if($finalCopy){
           $imgurl = isset($copy['dir']) ? $copy['dir'].$fileName : $fileName;
-          $finalOut['copies']['url'][$key] = '/uploads/'.$imgurl;
+          $finalOut['copies']['url'][$key] = $imgurl;
         }
         else{
-          $finalOut['copies']['error'] = 1;
+          $finalOut['copies']['error'] = true;
         }
       }
     }
 
+    // Free up parent image memory
+    if ($gdImage && (is_resource($gdImage) || $gdImage instanceof \GdImage)) {
+      imagedestroy($gdImage);
+    }
+
+    // dd($finalOut);
     return $finalOut;
   }
 

@@ -81,7 +81,7 @@ class File {
       foreach ($currentFiles['name'] as $key => $value) {
         $singleFile = array(
           'name'      => $currentFiles['name'][$key],
-          'full_path' => $currentFiles['full_path'][$key],
+          'full_path' => $currentFiles['full_path'][$key] ?? null,
           'type'      => $currentFiles['type'][$key],
           'tmp_name'  => $currentFiles['tmp_name'][$key],
           'error'     => $currentFiles['error'][$key],
