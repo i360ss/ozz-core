@@ -154,7 +154,7 @@ function ozz_content_Layout(){
   <meta name="keywords" content="{% keywords %}">
   <meta name="description" content="{% description %}">
   <meta name="robots" content="index, follow">
-  <meta name="csrf-token" content="<?=csrf_token()?>">
+  <meta name="csrf-token" content="<?=CSRF_TOKEN?>">
   <meta name="url" content="<?=base_url()?>">
   <link rel="icon" type="image/x-icon" href="<?=asset("assets/icons/favicon.ico")?>">
   <link nonce="<?=csp_nonce()?>" rel="stylesheet" href="<?=asset("assets/css/styles.css")?>">
