@@ -512,7 +512,7 @@ class Medoo
      * @codeCoverageIgnore
      * @return \PDOStatement|null
      */
-    public function exec(string $statement, array $map = [], callable $callback = null): ?PDOStatement
+    public function exec(string $statement, array $map = [], ?callable $callback = null ): ?PDOStatement
     {
         $this->statement = null;
         $this->errorInfo = null;
@@ -1406,7 +1406,7 @@ class Medoo
         array $columnMap,
         array &$stack,
         bool $root,
-        array &$result = null
+        ?array &$result = null
     ): void {
         if ($root) {
             $columnsKey = array_keys($columns);
@@ -1678,7 +1678,7 @@ class Medoo
      * @param string $primaryKey
      * @return \PDOStatement|null
      */
-    public function insert(string $table, array $values, string $primaryKey = null): ?PDOStatement
+    public function insert(string $table, array $values, ?string $primaryKey = null): ?PDOStatement
     {
         $stack = [];
         $columns = [];
@@ -2141,7 +2141,7 @@ class Medoo
      * @codeCoverageIgnore
      * @return string|null
      */
-    public function id(string $name = null): ?string
+    public function id(?string $name = null): ?string
     {
         $type = $this->type;
 

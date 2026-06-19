@@ -201,7 +201,7 @@ class Request extends Router {
    * Return HTTP Header value of provided key
    * @param string $key Key for select specific header value
    */
-  public function header(string $key = null) {
+  public function header(?string $key = null) {
     $headers = $this->headers();
     if ($key === null) {
       return $headers;

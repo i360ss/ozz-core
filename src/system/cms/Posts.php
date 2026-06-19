@@ -21,8 +21,7 @@ trait Posts {
    * Post count (return the number of posts)
    * @param string $by Group by columns
    */
-  protected function cms_post_count($by='post_types', $post_type=null, $lang=null) {
-    $lang = $lang ?? locale();
+  protected function cms_post_count($by='post_types', $post_type=null, $lang=APP_LANG) {
     $return = [];
     $post_type = is_null($post_type) ? $this->post_type : $post_type;
 
@@ -68,8 +67,7 @@ trait Posts {
    * @param string $post_type
    * @param string $lang Language code
    */
-  protected function cms_get_posts($where=[], $post_type=null, $lang=null) {
-    $lang = $lang ?? locale();
+  protected function cms_get_posts($where=[], $post_type=null, $lang=APP_LANG) {
     $post_type = is_null($post_type) ? $this->post_type : $post_type;
     $where = array_merge([
       'post_type' => $post_type,
@@ -106,8 +104,7 @@ trait Posts {
    * @param array $where SQL where arguments
    * @param string $lang Language code
    */
-  protected function cms_get_post_to_edit($post_id, $post_type=null, $where=[], $lang=null) {
-    $lang = $lang ?? locale();
+  protected function cms_get_post_to_edit($post_id, $post_type=null, $where=[], $lang=APP_LANG) {
     $post_type = is_null($post_type) ? $this->post_type : $post_type;
     $where_1 = [
       'post_id' => $post_id,
@@ -251,7 +248,7 @@ trait Posts {
 
       // Save the post
       $post_created = $this->DB()->insert('cms_posts', [
-        'lang' => locale(),
+        'lang' => APP_LANG,
         'post_type' => $this->post_type,
         'post_id' => $post_id,
         'author' => $author,

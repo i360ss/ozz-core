@@ -8,13 +8,13 @@
 namespace Ozz\Core;
 
 use Ozz\Core\Session;
+use Ozz\Core\Cookie;
 use Ozz\Core\Csrf;
 
 class AppInit {
 
-  private $env;
-  private static $cachedEnv = null;
-  private static $dependenciesChecked = false;
+  private $SSL;   // Check (http or https)
+  private $env;   // Env App
 
   use \Ozz\Core\TokenHandler;
 
@@ -25,17 +25,11 @@ class AppInit {
       'core_2' => '/../../../../../../',
     ]);
 
-    // Only check dependencies once
-    if (!self::$dependenciesChecked) {
-      $this->dependencyCheck();
-      self::$dependenciesChecked = true;
-    }
+    // Dependency check
+    $this->dependencyCheck();
 
-    // Cache env
-    if (self::$cachedEnv === null) {
-      self::$cachedEnv = parse_ini_file(ENV_FILE, true);
-    }
-    $this->env = self::$cachedEnv;
+    // Get content from env.ini and assign to $this->env
+    $this->env = parse_ini_file(ENV_FILE, true);
 
     // Auth paths
     defined('AUTH_PATHS') || define('AUTH_PATHS', CONFIG['AUTH_PATHS']);
@@ -46,35 +40,70 @@ class AppInit {
     // Set default timezone
     date_default_timezone_set(@date_default_timezone_get());
 
-    defined('APP_ENV') || define('APP_ENV', $this->env['app']['APP_ENV']);
-    defined('APP_NAME') || define('APP_NAME', $this->env['app']['APP_NAME']);
-    defined('APP_VERSION') || define('APP_VERSION', $this->env['app']['APP_VERSION']);
-    defined('ADMIN_PATH') || define('ADMIN_PATH', $this->env['cms']['ADMIN_PATH'] ?? '/admin');
-    defined('DEBUG') || define('DEBUG', $this->env['app']['DEBUG'] == 1 ? true : false);
-    defined('SHOW_DEBUG_BAR') || define('SHOW_DEBUG_BAR', $this->env['app']['SHOW_DEBUG_BAR'] == 1 ? true : false);
-    defined('DEBUG_EMAIL') || define('DEBUG_EMAIL', $this->env['app']['DEBUG_EMAIL'] == 1 ? true : false);
+    // Content security policy configuration
+    $csp_nonce = self::hashKey('csp-nonce');
+    defined('CSP_NONCE') || define('CSP_NONCE', $csp_nonce);
 
-    // Validate host
+    // App environment (local, dev, prod)
+    defined('APP_ENV') || define('APP_ENV', $this->env['app']['APP_ENV']);
+
+    // The Name of the app defined in env.ini
+    defined('APP_NAME') || define('APP_NAME', $this->env['app']['APP_NAME']);
+
+    // App Version defined in env.ini
+    defined('APP_VERSION') || define('APP_VERSION', $this->env['app']['APP_VERSION']);
+
+    // CMS Admin path
+    defined('ADMIN_PATH') || define('ADMIN_PATH', $this->env['cms']['ADMIN_PATH'] ?? '/admin');
+
+    // App current language
+    if(!Session::has('app_lang')){
+      Session::set('app_lang', $this->env['app']['APP_LANG']);
+    }
+    defined('APP_LANG') || define('APP_LANG', Session::get('app_lang'));
+
+    // Set Base URL
     $this_host = $_SERVER['HTTP_HOST'] ?? '';
     $valid_domains = explode(' ', $this->env['app']['APP_URLS'] ?? '');
 
-    if (!in_array($this_host, $valid_domains)) {
+    if (in_array($this_host, $valid_domains)) {
+      // Check for SSL
+      $is_secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
+        (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+
+      $this->SSL = $is_secure ? 'https://' : 'http://';
+      define('HAS_SSL', $is_secure);
+
+      // Define APP_URL and BASE_URL
+      defined('APP_URL') || define('APP_URL', rtrim($this_host, '/') . '/');
+      defined('BASE_URL') || define('BASE_URL', $this->SSL . APP_URL);
+    } else {
       http_response_code(401);
-      echo "Unauthorized Host Access"; 
-      return; 
+      exit("Unauthorized");
     }
+
+    // Debug mode, defined in env.ini
+    defined('DEBUG') || define('DEBUG', $this->env['app']['DEBUG'] == 1 ? true : false);
+
+    // Enable/Disable Debug bar, defined in env.ini
+    defined('SHOW_DEBUG_BAR') || define('SHOW_DEBUG_BAR', $this->env['app']['SHOW_DEBUG_BAR'] == 1 ? true : false);
+
+    // Debug Email template output, defined in env.ini
+    defined('DEBUG_EMAIL') || define('DEBUG_EMAIL', $this->env['app']['DEBUG_EMAIL'] == 1 ? true : false);
 
     // Create initial CSRF token
     if(empty($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token']) || (isset($_SESSION['csrf_token_expire']) && time() > $_SESSION['csrf_token_expire'])){
       Csrf::refreshToken();
     }
 
+    // CSRF Token
+    defined('CSRF_TOKEN') || define('CSRF_TOKEN', Csrf::getToken());
+
+    // Input Field with CSRF token
+    defined('CSRF_FIELD') || define('CSRF_FIELD', Csrf::getTokenField());
+
     // Define paths
-    if (function_exists('frankenphp_handle_request')) {
-      require_once __DIR__.'/system/define-paths.php';
-    } else {
-      require __DIR__.'/system/define-paths.php';
-    }
+    require_once __DIR__.'/system/define-paths.php';
     ozz_define_paths();
   }
 
@@ -82,12 +111,10 @@ class AppInit {
    * Run Application
    */
   public function run(){
-    if (function_exists('frankenphp_handle_request')) {
-      require_once "system/ozz-func.php";
-    } else {
-      require "system/ozz-func.php";
-    }
+    // Load ozz functions
+    require "system/ozz-func.php";
 
+    // Resolve Route
     return Router::resolve();
   }
 

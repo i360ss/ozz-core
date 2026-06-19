@@ -89,7 +89,7 @@ class Form {
     $form = '<form'.$formAttributes.'>'."\n";
 
     // CSRF
-    $csrf = csrf_field()."\n";
+    $csrf = CSRF_FIELD."\n";
     if(isset($args['csrf']) && $args['csrf'] === false){
       $csrf = '';
     }

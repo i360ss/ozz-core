@@ -8,6 +8,11 @@ function ozz_define_paths(): void {
   $paths = CONFIG['APP_PATHS'];
 
   defined('PUBLIC_DIR') || define('PUBLIC_DIR', BASE_DIR . trim($paths['public'], DS) . DS);
+
+  if (isset($_SERVER['DOCUMENT_ROOT'])) {
+    defined('ROOT') || define('ROOT', $_SERVER['DOCUMENT_ROOT'] . DS);
+  }
+
   defined('APP_DIR') || define('APP_DIR', BASE_DIR . trim($paths['app'], DS) . DS);
   defined('STORAGE_DIR') || define('STORAGE_DIR', BASE_DIR . trim($paths['storage'], DS) . DS);
   defined('CACHE_DIR') || define('CACHE_DIR', BASE_DIR . trim($paths['cache'], DS) . DS);
@@ -23,7 +28,11 @@ function ozz_define_paths(): void {
   defined('UPLOAD_DIR_PUBLIC') || define('UPLOAD_DIR_PUBLIC', rtrim($paths['upload_dir_public'], DS) . DS);
   defined('ASSETS_DIR') || define('ASSETS_DIR', PUBLIC_DIR . trim($paths['assets'], DS) . DS);
 
-  if (locale()) {
-    defined('LANG_DIR') || define('LANG_DIR', BASE_DIR . trim($paths['lang'], DS) . DS . locale() . DS);
+  if (defined('BASE_URL')) {
+    defined('ASSETS') || define('ASSETS', BASE_URL . trim($paths['assets'], DS) . DS);
+  }
+
+  if (defined('APP_LANG')) {
+    defined('LANG_DIR') || define('LANG_DIR', BASE_DIR . trim($paths['lang'], DS) . DS . APP_LANG . DS);
   }
 }

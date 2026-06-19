@@ -193,7 +193,7 @@ trait AuthInternal {
       'img'       => $args['images'],
     ]);
 
-    return (boolean) $mail;
+    return (bool) $mail;
   }
 
   /**

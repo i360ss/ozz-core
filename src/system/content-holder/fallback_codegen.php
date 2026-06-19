@@ -146,7 +146,7 @@ function ozz_content_Component($data){
  */
 function ozz_content_Layout(){
   return '<!DOCTYPE html>
-<html lang="<?=locale()?>">
+<html lang="<?=APP_LANG?>">
 <head>
   <meta charset=<?=CONFIG[\'CHARSET\']?>>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -154,16 +154,16 @@ function ozz_content_Layout(){
   <meta name="keywords" content="{% keywords %}">
   <meta name="description" content="{% description %}">
   <meta name="robots" content="index, follow">
-  <meta name="csrf-token" content="<?=csrf_token()?>">
-  <meta name="url" content="<?=base_url()?>">
-  <link rel="icon" type="image/x-icon" href="<?=assets_url()?>icons/favicon.ico">
-  <link nonce="<?=csp_nonce()?>" rel="stylesheet" href="<?=assets_url()?>css/styles.css">
+  <meta name="csrf-token" content="<?=CSRF_TOKEN?>">
+  <meta name="url" content="<?=BASE_URL?>">
+  <link rel="icon" type="image/x-icon" href="<?=ASSETS?>icons/favicon.ico">
+  <link nonce="<?=CSP_NONCE?>" rel="stylesheet" href="<?=ASSETS?>css/styles.css">
 </head>
 <body class="{% body_class %}">
 <main>
   {% content %}
 </main>
-<script nonce="<?=csp_nonce()?>" src="<?=assets_url()?>js/app.js"></script>
+<script nonce="<?=CSP_NONCE?>" src="<?=ASSETS?>js/app.js"></script>
 </body>
 </html>';
 }

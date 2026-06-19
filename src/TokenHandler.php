@@ -18,7 +18,7 @@ trait TokenHandler {
    * @param string $type hash $type
    * @param string $string string to include to hash
    */
-  public static function hashKey($type='activation', $string=''){
+  private static function hashKey($type='activation', $string=''){
     switch ($type) {
       case 'activation':
       case 'verification':

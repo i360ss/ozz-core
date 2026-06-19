@@ -17,7 +17,6 @@ class Response {
   private $status_code;
   private $headers = [];
   private $csp;
-  private $csp_nonce = null;
 
   /**
    * Single Instance of Response
@@ -27,19 +26,6 @@ class Response {
       self::$instance = new self();
     }
     return self::$instance;
-  }
-
-  // CSP Nonce
-  public function hasNonce(): bool {
-    return !is_null($this->csp_nonce);
-  }
-
-  public function setNonce(string $nonce): void {
-    $this->csp_nonce = $nonce;
-  }
-
-  public function getNonce(): ?string {
-    return $this->csp_nonce;
   }
 
   /**
@@ -120,7 +106,7 @@ class Response {
     $this->csp = parse_ini_file(CSP_FILE, true); // Get CSP Values
     if($this->csp['CSP']['USE_CSP'] == 1){
       $csp = $this->csp['CSP'];
-      $csp_nonce = csp_nonce();
+      $csp_nonce = CSP_NONCE;
       $this->setHeader('Content-Security-Policy', "base-uri ".$csp['base-uri']."; default-src ".$csp['default-src']."; style-src ".$csp['style-src']." 'nonce-".$csp_nonce."'; font-src ".$csp['font-src']."; script-src ".$csp['script-src']." 'nonce-" . $csp_nonce . "'; img-src ".$csp['img-src']."; connect-src ".$csp['connect-src']."; object-src ".$csp['object-src']."; media-src ".$csp['media-src']."; child-src ".$csp['child-src']."; form-action ".$csp['form-action']."; frame-ancestors ".$csp['frame-ancestors']."; worker-src ".$csp['worker-src']."; ");
     }
 
@@ -178,8 +164,6 @@ class Response {
     $this->headers = [];
     $this->content = null;
     $this->status_code = null;
-
-    self::$instance = null;
 
     (new AfterRequest)->run();
   }

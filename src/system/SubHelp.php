@@ -121,7 +121,7 @@ class SubHelp {
     $lineInfo = $noLine ? '' : "$line1 $callingFile : $callingFileLine \n";
 
     $out = "\n<!-- Dumpr Begin -->\n".
-    "<style type=\"text/css\" nonce=\"".csp_nonce()."\">".$style."</style>".
+    "<style type=\"text/css\" nonce=\"".CSP_NONCE."\">".$style."</style>".
     "<div class=\"dumpr\">
       <div>$lineInfo $c</div>
     </div>".
@@ -143,10 +143,10 @@ class SubHelp {
     include 'core_vendor/pretty-json/pretty-json.php';
     $styl = $bg_padd ? 'style="padding: 20px;"' : '';
 
-    return '<style nonce="'.csp_nonce().'">'.$pretty_json_style.'</style><script type="text/javascript" nonce="'.csp_nonce().'">'.$pretty_json_script.'</script><div '.$styl.'>
+    return '<style nonce="'.CSP_NONCE.'">'.$pretty_json_style.'</style><script type="text/javascript" nonce="'.CSP_NONCE.'">'.$pretty_json_script.'</script><div '.$styl.'>
       <button id="ozz_debugbar__collapseBtn_'.$id.'" class="ozz_debugbar__collapse_btn active">Collapse</button>
       <div id="ozz_debugbar__jsonDump_'.$id.'"></div>
-      <script type="text/javascript" nonce="'.csp_nonce().'">
+      <script type="text/javascript" nonce="'.CSP_NONCE.'">
         var ozz_debug_jsondump'.$id.' = new JSONViewer();
         document.querySelector("#ozz_debugbar__jsonDump_'.$id.'").appendChild(ozz_debug_jsondump'.$id.'.getContainer());
         ozz_debug_jsondump'.$id.'.showJSON('.$jsonString.');
@@ -369,7 +369,7 @@ class SubHelp {
     }
 
     if ($inlineStyle) {
-      $style = "<div class='ozz-debug-sqldumper'><style nonce='".csp_nonce()."'>.ozz-debug-sqldumper {color:#18171B;} .ozz-debug-sqldumper span.high-txt { color: #2e86de; }</style>";
+      $style = "<div class='ozz-debug-sqldumper'><style nonce='".CSP_NONCE."'>.ozz-debug-sqldumper {color:#18171B;} .ozz-debug-sqldumper span.high-txt { color: #2e86de; }</style>";
       return $style.$string.'</div>';
     } else {
       return $string;
@@ -426,7 +426,7 @@ class SubHelp {
   private static function renderDebugBarHTML($data) {
     ob_start();
     ?>
-    <style nonce="<?=csp_nonce()?>"><?= Help::minifyCSS(file_get_contents(__DIR__.'/assets/css/debugbar.css')); ?></style>
+    <style nonce="<?=CSP_NONCE?>"><?= Help::minifyCSS(file_get_contents(__DIR__.'/assets/css/debugbar.css')); ?></style>
     <div class="ozz__debugbar">
       <!-- Ozz Debug Bar -->
       <div class="ozz-fw-debug-bar">
@@ -633,7 +633,7 @@ class SubHelp {
     $data['ozz_sql_queries'] = $final_sql_log;
     ?>
     <div id="ozz-debugbar-root"></div>
-    <script nonce="<?=csp_nonce()?>">
+    <script nonce="<?=CSP_NONCE?>">
       (function() {
         const host = document.getElementById('ozz-debugbar-root');
         if (!host) return;

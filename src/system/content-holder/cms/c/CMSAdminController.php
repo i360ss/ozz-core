@@ -731,7 +731,7 @@ class CMSAdminController extends CMS {
           'size' => format_size_units(filesize($url)),
           'format' => get_file_type_by_url($url),
           'url' => esc_url($url),
-          'absolute_url' => base_url().$url,
+          'absolute_url' => BASE_URL.$url,
           'created' => date('M d, Y | h:i a', filectime($url)),
           'modified' => date('M d, Y | h:i a', filemtime($url)),
           'access' => date('M d, Y | h:i a', fileatime($url)),

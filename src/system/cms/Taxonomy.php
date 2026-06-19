@@ -17,8 +17,7 @@ trait Taxonomy {
    * @param array $taxonomy Taxonomy name and slug as array
    * @param string $lang Language code (default: current language)
    */
-  protected function create_taxonomy($taxonomy, $lang=null) {
-    $lang = $lang ?? locale();
+  protected function create_taxonomy($taxonomy, $lang=APP_LANG) {
     unset($taxonomy['crete-btn'], $taxonomy['csrf_token']);
     set_flash('form_data', $taxonomy);
 
@@ -194,8 +193,7 @@ trait Taxonomy {
    * @param array $term Taxonomy ID, Term name, and slug as array
    * @param string $lang Language code (default: current language)
    */
-  protected function create_term($term, $lang=null) {
-    $lang = $lang ?? locale();
+  protected function create_term($term, $lang=APP_LANG) {
     $term['lang'] = $lang;
 
     // Check if already exist
