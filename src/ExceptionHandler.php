@@ -103,9 +103,6 @@ class ExceptionHandler {
         case E_USER_NOTICE:
           $severity = 'User Notice';
           break;
-        case E_STRICT:
-          $severity = 'Strict Standards';
-          break;
         case E_RECOVERABLE_ERROR:
           $severity = 'Recoverable Fatal Error';
           break;

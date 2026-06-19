@@ -12,7 +12,6 @@ return [
   'EMAIL_CHARSET' => 'utf-8',
   'SANITIZE_SVG' => false,
   'SANITIZE_SVG_ALLOWED_ELEMENTS' => [],
-  'SERVER' => 'php',
 
   // Session
   'SESSION_DRIVER' => 'memory',

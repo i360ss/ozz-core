@@ -13,8 +13,6 @@ use Ozz\Core\Csrf;
 class AppInit {
 
   private $env;
-  private static $cachedEnv = null;
-  private static $dependenciesChecked = false;
 
   use \Ozz\Core\TokenHandler;
 
@@ -25,17 +23,9 @@ class AppInit {
       'core_2' => '/../../../../../../',
     ]);
 
-    // Only check dependencies once
-    if (!self::$dependenciesChecked) {
-      $this->dependencyCheck();
-      self::$dependenciesChecked = true;
-    }
+    $this->dependencyCheck();
 
-    // Cache env
-    if (self::$cachedEnv === null) {
-      self::$cachedEnv = parse_ini_file(ENV_FILE, true);
-    }
-    $this->env = self::$cachedEnv;
+    $this->env = parse_ini_file(ENV_FILE, true);
 
     // Auth paths
     defined('AUTH_PATHS') || define('AUTH_PATHS', CONFIG['AUTH_PATHS']);
@@ -70,11 +60,7 @@ class AppInit {
     }
 
     // Define paths
-    if (function_exists('frankenphp_handle_request')) {
-      require_once __DIR__.'/system/define-paths.php';
-    } else {
-      require __DIR__.'/system/define-paths.php';
-    }
+    require __DIR__.'/system/define-paths.php';
     ozz_define_paths();
   }
 
@@ -82,12 +68,7 @@ class AppInit {
    * Run Application
    */
   public function run(){
-    if (function_exists('frankenphp_handle_request')) {
-      require_once "system/ozz-func.php";
-    } else {
-      require "system/ozz-func.php";
-    }
-
+    require "system/ozz-func.php";
     return Router::resolve();
   }
 
