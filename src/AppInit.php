@@ -13,8 +13,7 @@ use Ozz\Core\Csrf;
 
 class AppInit {
 
-  private $SSL;   // Check (http or https)
-  private $env;   // Env App
+  private $env;
 
   use \Ozz\Core\TokenHandler;
 
@@ -25,10 +24,8 @@ class AppInit {
       'core_2' => '/../../../../../../',
     ]);
 
-    // Dependency check
     $this->dependencyCheck();
 
-    // Get content from env.ini and assign to $this->env
     $this->env = parse_ini_file(ENV_FILE, true);
 
     // Auth paths
@@ -103,7 +100,7 @@ class AppInit {
     defined('CSRF_FIELD') || define('CSRF_FIELD', Csrf::getTokenField());
 
     // Define paths
-    require_once __DIR__.'/system/define-paths.php';
+    require __DIR__.'/system/define-paths.php';
     ozz_define_paths();
   }
 
@@ -111,10 +108,7 @@ class AppInit {
    * Run Application
    */
   public function run(){
-    // Load ozz functions
     require "system/ozz-func.php";
-
-    // Resolve Route
     return Router::resolve();
   }
 
