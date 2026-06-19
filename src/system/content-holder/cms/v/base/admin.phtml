@@ -17,7 +17,7 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
   <title>{% title %}</title>
   <meta name="csrf-token" content="<?=csrf_token()?>">
   <link rel="icon" type="image/x-icon" href="<?=asset("assets/icons/favicon.svg")?>">
-  <link rel="stylesheet" href="<?=asset("assets/admin/admin.min.css")?>" nonce="<?=CSP_NONCE?>">
+  <link rel="stylesheet" href="<?=asset("assets/admin/admin.min.css")?>" nonce="<?=csp_nonce()?>">
 </head>
 <body class="ozz-cms {% body_class %}">
   <div class="app-container">
