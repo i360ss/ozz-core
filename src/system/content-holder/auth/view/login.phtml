@@ -19,7 +19,7 @@ $redirect = isset($context['query']['redirect']) ? '?redirect='.$context['query'
     <h1 class="auth-title">Login</h1>
 
     <form method="post" action="<?=AUTH_PATHS['login'].$redirect?>" class="form">
-      <?=CSRF_FIELD?>
+      <?=csrf_field()?>
 
       <div class="form-group">
         <input type="email" name="email" placeholder="Email"

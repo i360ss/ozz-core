@@ -16,7 +16,7 @@
     <?php if ($status == 'success') : ?>
       <h1 class="title has-text-success">Congratulations!</h1>
       <p class="subtitle">Your account has been verified successfully.</p>
-      <a href="<?=BASE_URL?>login" class="button is-primary">Login to your account</a>
+      <a href="<?=base_url()?>login" class="button is-primary">Login to your account</a>
 
     <?php elseif ($status == 'suspended') : ?>
       <h1 class="title has-text-warning">Account is Disabled</h1>
@@ -25,12 +25,12 @@
     <?php elseif ($status == 'invalid_token') : ?>
       <h1 class="title has-text-danger">Invalid Link</h1>
       <p class="subtitle">The verification link is invalid.</p>
-      <a href="<?=BASE_URL?>login" class="button is-primary">Go to Login Page</a>
+      <a href="<?=base_url()?>login" class="button is-primary">Go to Login Page</a>
 
     <?php else : ?>
       <h1 class="title has-text-danger">Error</h1>
       <p class="subtitle">Something went wrong. There was an error verifying your account!</p>
-      <a href="<?=BASE_URL?>login" class="button is-primary">Go to Login Page</a>
+      <a href="<?=base_url()?>login" class="button is-primary">Go to Login Page</a>
     <?php endif; ?>
 
   </div>
