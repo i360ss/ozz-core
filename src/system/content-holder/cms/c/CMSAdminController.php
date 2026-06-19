@@ -796,7 +796,8 @@ class CMSAdminController extends CMS {
         'upload_file' => File::upload(
           $request->file('ozz_media_upload_file'),
           [
-            'dir' => $current_dir
+            'dir' => $current_dir,
+            'convert_to' => 'webp'
           ],
           $this->cms_media['validation']
         ),

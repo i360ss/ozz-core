@@ -21,56 +21,38 @@ trait FileSettings {
    */
   private static function uploadEachImage($img, $tmp=null, $dir=null, $qlt=null, $copies=false){
     $ext = strtolower(pathinfo($img, PATHINFO_EXTENSION));
-    switch ($ext) {
-      case 'gif':
-        $im = @imagecreatefromgif($tmp);
-        !$copies ? $image = @imagegif($im, $dir, $qlt) : false;
-        break;
-      case 'jpg':
-      case 'jpeg':
-        $im = @imagecreatefromjpeg($tmp);
-        !$copies ? $image = @imagejpeg($im, $dir, $qlt) : false;
-        break;
-      case 'png':
-        $im = @imagecreatefrompng($tmp);
-        if ($im) {
-          imagealphablending($im, false);
-          imagesavealpha($im, true);
-        }
-        !$copies ? $image = @imagepng($im, $dir) : false;
-        break;
-      case 'bmp':
-        $im = @imagecreatefrombmp($tmp);
-        !$copies ? $image = @imagebmp($im, $dir, $qlt) : false;
-        break;
-      case 'webp':
-        $im = @imagecreatefromwebp($tmp);
-        if ($im) {
-          imagealphablending($im, false);
-          imagesavealpha($im, true);
-        }
-        !$copies ? $image = @imagewebp($im, $dir, $qlt) : false;
-        break;
-      case 'svg':
-        $svgContent = file_get_contents($tmp);
+    $targetFormat = self::$settings['convert_to'] ?? $ext;
 
-        // SVG Sanitization - Set allowed element
-        $sanitizedSVG = false;
-        $conf = CMS_CONFIG ? CMS_CONFIG : CONFIG;
-        if($conf['SANITIZE_SVG'] === true) {
-          $wildcard = $conf['SANITIZE_SVG_ALLOWED_ELEMENTS'] ? $conf['SANITIZE_SVG_ALLOWED_ELEMENTS'] : [];
-          $sanitizedSVG = esx_svg($svgContent, $wildcard);
-        }
+    if($ext !== 'svg'){
+      $im = self::createImageResource($tmp);
 
-        $dom = new \DOMDocument();
-        if($sanitizedSVG){
-          $dom->loadXML($sanitizedSVG);
-        } else {
-          $dom->loadXML($svgContent);
-        }
-        $im = file_put_contents($dir, $dom->saveXML()) !== false ? $img : false;
-        !$copies ? $image = $img : false;
-        break;
+      if($im && ($ext === 'png' || $ext === 'webp')){
+        imagealphablending($im, false);
+        imagesavealpha($im, true);
+      }
+
+      if(!$copies){
+        $image = self::saveImageResource( $im, $dir, $targetFormat, $qlt );
+      }
+    } else {
+      $svgContent = file_get_contents($tmp);
+
+      // SVG Sanitization - Set allowed element
+      $sanitizedSVG = false;
+      $conf = CMS_CONFIG ? CMS_CONFIG : CONFIG;
+      if($conf['SANITIZE_SVG'] === true) {
+        $wildcard = $conf['SANITIZE_SVG_ALLOWED_ELEMENTS'] ? $conf['SANITIZE_SVG_ALLOWED_ELEMENTS'] : [];
+        $sanitizedSVG = esx_svg($svgContent, $wildcard);
+      }
+
+      $dom = new \DOMDocument();
+      if($sanitizedSVG){
+        $dom->loadXML($sanitizedSVG);
+      } else {
+        $dom->loadXML($svgContent);
+      }
+      $im = file_put_contents($dir, $dom->saveXML()) !== false ? $img : false;
+      !$copies ? $image = $img : false;
     }
 
     if (isset($copies) && $copies === true) {
@@ -81,23 +63,59 @@ trait FileSettings {
   }
 
   /**
+   * Create GD image resource
+   */
+  private static function createImageResource($tmp) {
+    $info = getimagesize($tmp);
+
+    if(!$info){
+      return false;
+    }
+
+    return match($info[2]){
+      IMAGETYPE_JPEG => imagecreatefromjpeg($tmp),
+      IMAGETYPE_PNG  => imagecreatefrompng($tmp),
+      IMAGETYPE_GIF  => imagecreatefromgif($tmp),
+      IMAGETYPE_WEBP => imagecreatefromwebp($tmp),
+      IMAGETYPE_BMP  => imagecreatefrombmp($tmp),
+      default        => false,
+    };
+  }
+
+  /**
+   * Save GD image resource
+   */
+  private static function saveImageResource( $image, $path, $format, $quality = 100 ){
+    return match ($format) {
+      'gif'         => @imagegif($image, $path),
+      'jpg',
+      'jpeg'        => @imagejpeg($image, $path, $quality),
+      'png'         => @imagepng($image, $path),
+      'bmp'         => @imagebmp($image, $path, $quality),
+      'webp'        => @imagewebp($image, $path, $quality),
+      default       => false,
+    };
+  }
+
+  /**
    * Set Up File Name
    * @param $setts Settings to get rename options
    * @param $name Current name
    */
-  private static function setName($setts, $name){
+  private static function setName($setts, $name, $format = null){
+    $ext = $format ?: pathinfo($name, PATHINFO_EXTENSION);
+    $baseName = pathinfo($name, PATHINFO_FILENAME);
     if(isset($setts['rename']) && $setts['rename'] !== ''){
-      $newName = ($setts['rename']=='rand' || $setts['rename'] == 'random')
+      $baseName = ( $setts['rename'] === 'rand' || $setts['rename'] === 'random' )
         ? bin2hex(random_bytes(8))
         : $setts['rename'];
-      return (isset($setts['prefix'])) 
-        ? $setts['prefix'].$newName.'.'.pathinfo($name, PATHINFO_EXTENSION)
-        : $newName.'.'.pathinfo($name, PATHINFO_EXTENSION);
-    } elseif(isset($setts['prefix'])) {
-      return $setts['prefix'].$name;
-    } else{
-      return $name;
     }
+
+    if(isset($setts['prefix'])){
+      $baseName = $setts['prefix'].$baseName;
+    }
+
+    return $baseName.'.'.$ext;
   }
 
   /**
@@ -121,7 +139,9 @@ trait FileSettings {
         DEBUG ? Err::paramsRequiredForUploadSettings('File::upload() settings') : false;
       }
     } else {
-      $name = self::setName(self::$settings, $imgName);
+      $targetFormat = self::$settings['convert_to'] ?? strtolower(pathinfo($imgName, PATHINFO_EXTENSION));
+      $name = self::setName(self::$settings, $imgName, $targetFormat);
+
       if(isset(self::$settings['mkdir']) && self::$settings['mkdir'] === true){
         !is_dir(self::$moveTo) ? mkdir(self::$moveTo, 0777, true) : false; // Make directory if not exist
       } else {
@@ -197,15 +217,16 @@ trait FileSettings {
 
         // Rename the Copy (with prefix)
         $nameSize = '-'.round($newWidth).'x'.round($newHeight).'.';
+        $copyFormat = $copy['convert_to'] ?? $targetFormat;
         $prifix = isset(self::$settings['prefix']) ? self::$settings['prefix'] : '';
 
         if((isset($copy['rename']) &&  $copy['rename'] !== '')){
           $newName = ($copy['rename']=='rand' || $copy['rename'] == 'random')
             ? bin2hex(random_bytes(8))
             : $copy['rename'];
-          $fileName = $prifix.$newName.$nameSize.pathinfo($imgName, PATHINFO_EXTENSION);
+          $fileName = $prifix.$newName.$nameSize.$copyFormat;
         } else {
-          $fileName = $prifix.pathinfo($imgName, PATHINFO_FILENAME).$nameSize.pathinfo($imgName, PATHINFO_EXTENSION);
+          $fileName = $prifix.pathinfo($imgName, PATHINFO_FILENAME).$nameSize.$copyFormat;
         }
 
         // Final Copy DIR + NAME
@@ -227,24 +248,16 @@ trait FileSettings {
 
           !is_dir($copyDir) ? mkdir($copyDir, 0777, true) : false; // Make directory if not exist
 
-          switch ($ext) {
-            case 'gif':
-              $finalCopy = @imagegif($newCopy, $copyDirWithName, $qlt);
-              break;
-            case 'jpg':
-            case 'jpeg':
-              $finalCopy = @imagejpeg($newCopy, $copyDirWithName, $qlt);
-              break;
-            case 'png':
-              $finalCopy = @imagepng($newCopy, $copyDirWithName);
-              break;
-            case 'bmp':
-              $finalCopy = @imagebmp($newCopy, $copyDirWithName, $qlt);
-              break;
-            case 'webp':
-              $finalCopy = @imagewebp($newCopy, $copyDirWithName, $qlt);
-              break;
+          if(($ext === 'png' || $ext === 'webp') && in_array($copyFormat, ['jpg','jpeg'])){
+            $bg = imagecreatetruecolor( intval($newWidth), intval($newHeight) );
+            $white = imagecolorallocate( $bg, 255, 255, 255 );
+            imagefill($bg, 0, 0, $white);
+            imagecopy( $bg, $newCopy, 0, 0, 0, 0, intval($newWidth), intval($newHeight) );
+            imagedestroy($newCopy);
+            $newCopy = $bg;
           }
+
+          $finalCopy = self::saveImageResource( $newCopy, $copyDirWithName, $copyFormat, $qlt );
 
           // Free up memory for this specific copy canvas
           if (is_resource($newCopy) || $newCopy instanceof \GdImage) {
