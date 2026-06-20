@@ -12,9 +12,11 @@ defined('CACHE_DIR') || define('CACHE_DIR', BASE_DIR . trim(CONFIG['APP_PATHS'][
 class Cache {
 
   private $page_cache_file;
+  private $cms_config_cache_file;
 
   public function __construct(){
     $this->page_cache_file = CACHE_DIR.'page/'.md5($_SERVER['REQUEST_URI']);
+    $this->cms_config_cache_file = CACHE_DIR.'cms/cache.config.php';
   }
 
   /**
@@ -40,16 +42,18 @@ class Cache {
   /**
    * Store Cache
    * @param string $type Cache type (page, array, object etc.)
-   * @param string $key Key for access the cache
-   * @param array|object|string Cache value
+   * @param array|object|string $val Cache value
    */
-  public function store($type, $key, $val){
+  public function store($type, $val){
     switch ($type) {
       case 'page':
         if (!$this->isPageAllowedToCache()) {
           return false; 
         }
-        return $this->pageCache($val);
+        return $this->createPageCache($val);
+        break;
+      case 'cms_config':
+        return $this->createCmsConfigCache($val);
         break;
     }
   }
@@ -57,10 +61,10 @@ class Cache {
   /**
    * Return stored cache if available
    * @param string $type Cache type (page, array, object etc.)
-   * @param string $key Key for access the cache
    */
-  public function get($type='page', $key=null){
+  public function get($type='page'){
     if ($type == 'page') {
+      // Page Cache
       if (!$this->isPageAllowedToCache()) {
         return false; 
       }
@@ -73,6 +77,13 @@ class Cache {
       }
 
       return file_get_contents($this->page_cache_file);
+    }
+    elseif ($type == 'cms_config') {
+      // CMS Config Cache
+      if (!file_exists($this->cms_config_cache_file)) {
+        $this->createCmsConfigCache();
+      }
+      return require $this->cms_config_cache_file;
     }
   }
 
@@ -98,11 +109,28 @@ class Cache {
    * Page Cache
    * @param string|HTML Full page content to cache
    */
-  private function pageCache($content){
+  private function createPageCache($content){
     if(false !== ($f = @fopen($this->page_cache_file, 'w'))) {
       fwrite($f, "<!-- OZZ PAGE CACHED @ ".date('M d, Y h:m:s a', time())." /-->\n".$content);
       fclose($f);
     }
+  }
+
+  /**
+   * CMS configurations cache
+   * @param array Compiled CMS configuration
+   */
+  private function createCmsConfigCache($content=false) {
+    if (!$content) {
+      $content = require CMS_DIR.'cms-config.php';
+    }
+
+    $php = "<?php\n";
+    $php .= "// OZZ CMS CONFIG CACHE\n";
+    $php .= "// Generated: " . date('Y-m-d H:i:s') . "\n";
+    $php .= "return " . var_export($content, true) . ";\n";
+
+    file_put_contents($this->cms_config_cache_file, $php, LOCK_EX);
   }
 
 }

@@ -74,15 +74,6 @@ class CreateCms {
       }
     }
 
-    // CMS Forms (config)
-    if(!file_exists($cms_dir.'cms-forms.php')){
-      if(copy($cms_hold_dir.'cms-forms.php', $cms_dir.'cms-forms.php')){
-        $utils->console_return("CMS Forms file created [ ".CMS_DIR."cms-forms.php ]", 'green');
-      } else {
-        $utils->console_return("Error on creating CMS Forms file [ ".CMS_DIR."cms-forms.php ]", 'red');
-      }
-    }
-
     // CMS related files that should be inside the app directory
     $this->copy_directory($cms_hold_dir.'copy-to-app-dir/v/', $app_dir.'view/');
 

@@ -1,6 +1,7 @@
 <?php
 use Ozz\Core\CMS;
 use Ozz\Core\Request;
+use Ozz\Core\Cache;
 
 # ----------------------------------------------------
 // CMS Specific functions (Common usage)
@@ -15,10 +16,6 @@ class CMSFuncs {
   use \Ozz\Core\system\cms\Forms;
 
   protected $cms_forms;
-
-  public function __construct() {
-    $this->cms_forms = require CMS_DIR.'cms-forms.php';
-  }
 
   /**
    * Convert prepared SQL query with parameters to raw SQL for debugging purposes
@@ -629,4 +626,152 @@ function get_all_components() {
   }
 
   return $return;
+}
+
+/**
+ * Get Form (CMS forms)
+ * @param string|array $form Form name or array
+ * @param array $values
+ */
+function get_form($form, $values=[]) {
+  if (is_string($form)) {
+    if(CONFIG['CACHE_CMS_CONFIG']){
+      $cmsConfig = (new Cache)->get('cms_config');
+    } else {
+      $cmsConfig = require CMS_DIR.'cms-config.php';
+    }
+
+    $form_name = $form;
+    $thisForm = $cmsConfig['forms'][$form_name];
+  } elseif (is_array($form)) {
+    $form_name = $form['name'] ?? null;
+    $thisForm = $form;
+  }
+
+  if(!$thisForm || !$form_name) return;
+
+  // Check and set flash data
+  if(empty($values) && has_flash('form_data')) {
+    $values = get_flash('form_data');
+  }
+
+  // Default method (post)
+  $thisForm['method'] = isset($thisForm['method']) ? $thisForm['method'] : 'POST';
+
+  // Update tracking action
+  $thisForm['action'] = isset($thisForm['action']) ? $thisForm['action'] : '/form/track?f='.enc_base64($form_name);
+
+  // Add Submit button if not defined
+  if (!in_array('submit', array_column($thisForm['fields'], 'type'))) {
+    $thisForm['fields'] = array_merge($thisForm['fields'], [
+      [
+        'name' => 'submit',
+        'type' => 'submit',
+        'value' => 'Submit',
+        'class' => 'button submit'
+      ]
+    ]);
+  }
+
+  // Add default field wrapper
+  if(!isset($thisForm['field_options']['wrapper'])){
+    $thisForm['field_options']['wrapper'] = '<div class="form__field-wrapper">##</div>';
+  }
+
+  // Add default field class
+  if(!isset($thisForm['field_options']['class'])){
+    $thisForm['field_options']['class'] = 'form__field';
+  }
+
+  return create_form($thisForm, $values);
+}
+
+/**
+ * Resolve schema
+ * Compile JSON schemas to single PHP array with dynamic data type
+ */
+function resolve_schema(mixed $value): mixed {
+  if (is_array($value)) {
+    foreach ($value as $k => $v) {
+      $value[$k] = resolve_schema($v);
+    }
+    return $value;
+  }
+
+  if (!is_string($value)) {
+    return $value;
+  }
+
+  // VARIABLE
+  if (str_starts_with($value, '@var:')) {
+    $key = substr($value, 5);
+    return $GLOBALS['schema_vars'][$key] ?? null;
+  }
+
+  // FUNCTION
+  if (str_starts_with($value, '@fn:')) {
+    $fn = substr($value, 4);
+    if (!function_exists($fn)) {
+      throw new Exception("Function not found: $fn");
+    }
+    return function (...$args) use ($fn) {
+      return $fn(...$args);
+    };
+  }
+
+  // STATIC CLASS METHOD Class::method
+  if (str_contains($value, '::')) {
+    [$class, $method] = explode('::', $value, 2);
+    if (!class_exists($class)) {
+      throw new Exception("Class not found: $class");
+    }
+    if (!method_exists($class, $method)) {
+      throw new Exception("Method not found: $class::$method");
+    }
+    return [$class, $method];
+  }
+
+  // INSTANCE METHOD Class@method
+  if (str_contains($value, '@')) {
+    [$class, $method] = explode('@', $value, 2);
+    return [
+      '__instance__' => true,
+      'class' => $class,
+      'method' => $method,
+    ];
+  }
+
+  return $value;
+}
+
+/**
+ * Register Schema
+ * @param string post-types / blocks / forms
+ */
+function register_schema(string $type): array {
+  static $cache = [];
+
+  if (isset($cache[$type])) {
+    return $cache[$type];
+  }
+
+  $path = CMS_DIR.'schema/'.$type;
+  $result = [];
+
+  foreach (glob($path . "/*.json") as $file) {
+    $name = basename($file, '.json');
+    $json = json_decode(file_get_contents($file), true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      throw new Exception("Invalid JSON: {$file}");
+    }
+
+    // resolve everything here
+    if ($type == 'blocks') {
+      $result[] = resolve_schema($json);
+    } else {
+      $result[$name] = resolve_schema($json);
+    }
+  }
+
+  return $cache[$type] = $result;
 }

@@ -53,7 +53,16 @@ trait Forms {
     // Return callback
     if(isset($this->cms_forms[$form]['callback']) && $this->cms_forms[$form]['callback'] !== false){
       $this_entry = get_entry($saved);
-      return call_user_func_array($this->cms_forms[$form]['callback'], [$this_entry, $request]);
+      $callback = $this->cms_forms[$form]['callback'];
+
+      if (is_array($callback) && isset($callback['__instance__'])) {
+        $callback = [
+          new $callback['class'],
+          $callback['method']
+        ];
+      }
+
+      return call_user_func_array($callback, [$this_entry, $request]);
     } else {
       return back();
     }

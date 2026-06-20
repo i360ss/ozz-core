@@ -7,6 +7,8 @@
 
 namespace Ozz\Core;
 
+use Ozz\Core\Cache;
+
 class CMS {
 
   use \Ozz\Core\DB;
@@ -66,7 +68,12 @@ class CMS {
     $request = Request::getInstance();
 
     // Initialize CMS Configurations
-    $this->cms_config = require CMS_DIR.'cms-config.php';
+    if(CONFIG['CACHE_CMS_CONFIG']){
+      $this->cms_config = (new Cache)->get('cms_config');
+    } else {
+      $this->cms_config = require CMS_DIR.'cms-config.php';
+    }
+
     $this->cms_config['languages'] = array_merge(['en' => 'English'], isset($this->cms_config['languages']) ? $this->cms_config['languages'] : []);
     $this->cms_config['media'] = array_merge($this->media_default, isset($this->cms_config['media']) ? $this->cms_config['media'] : []);
     $this->cms_media = $this->cms_config['media'];
@@ -88,7 +95,7 @@ class CMS {
     $this->cms_tabs = isset($this->post_config['tabs']) ? $this->post_config['tabs'] : [];
 
     // Forms
-    $this->cms_forms = require CMS_DIR.'cms-forms.php';
+    $this->cms_forms = $this->cms_config['forms'];
     // Modify forms
     foreach ($this->cms_forms as $k => $fm) {
       !isset($fm['entry-status']) ? $this->cms_forms[$k]['entry-status'] = [

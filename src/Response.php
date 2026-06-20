@@ -165,7 +165,7 @@ class Response {
 
     if(!in_array($this->status_code, $http_error_codes) && CONFIG['PAGE_CACHE_LIFETIME'] && $page_cache === true){
       $request = Request::getInstance();
-      (new Cache)->store('page', $request->url(), $this->content);
+      (new Cache)->store('page', $this->content);
     }
 
     // Show debug bar
