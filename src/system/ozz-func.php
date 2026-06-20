@@ -14,14 +14,12 @@ if(!function_exists('ozz_func_loaded')) {
    * @param string $key the key of .env value
    */
   function env($key=null, $key2=null){
-    $env = parse_ini_file(ENV_FILE, true);
-    if($key !== null && $key2 !== null){
-      return $env[$key][$key2];
-    } elseif($key !== null){
-      return $env[$key];
-    } else {
-      return $env;
-    }
+    static $env = null;
+    $env ??= parse_ini_file(ENV_FILE, true);
+
+    if($key !== null && $key2 !== null) return $env[$key][$key2] ?? null;
+    if($key !== null) return $env[$key] ?? null;
+    return $env;
   }
 
   require __DIR__.'/functions/ozz-f-internal.php'; // Ozz internal functions

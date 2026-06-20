@@ -12,7 +12,23 @@ class Request extends Router {
   private $all;
   private static $instance;
 
-  private function __construct() {
+  private function __construct() {}
+
+  /**
+   * Single Request instance
+   */
+  public static function getInstance() {
+    if (self::$instance === null) {
+      self::$instance = new self();
+    }
+    return self::$instance;
+  }
+
+  /**
+   * Return all values of Request object as array
+   * @param string $key Specific key to return specific value
+   */
+  public function all($key=''){
     $this->all = [
       'server'            => $this->server(),
       'root'              => $this->root(),
@@ -39,23 +55,7 @@ class Request extends Router {
       'files'             => $this->files(),
       'secure'            => $this->isSecure(),
     ];
-  }
 
-  /**
-   * Single Request instance
-   */
-  public static function getInstance() {
-    if (self::$instance === null) {
-      self::$instance = new self();
-    }
-    return self::$instance;
-  }
-
-  /**
-   * Return all values of Request object as array
-   * @param string $key Specific key to return specific value
-   */
-  public function all($key=''){
     return !empty($key) 
       ? $this->all[$key] 
       : $this->all;

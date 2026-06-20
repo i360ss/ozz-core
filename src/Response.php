@@ -16,7 +16,6 @@ class Response {
   private $content;
   private $status_code;
   private $headers = [];
-  private $csp;
   private $csp_nonce = null;
 
   /**
@@ -117,9 +116,8 @@ class Response {
     $this->setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
 
     // Apply CSP if enabled
-    $this->csp = parse_ini_file(CSP_FILE, true); // Get CSP Values
-    if($this->csp['CSP']['USE_CSP'] == 1){
-      $csp = $this->csp['CSP'];
+    if(env('app', 'USE_CSP') == 1){
+      $csp = parse_ini_file(BASE_DIR.'csp.ini', true);
       $csp_nonce = csp_nonce();
       $this->setHeader('Content-Security-Policy', "base-uri ".$csp['base-uri']."; default-src ".$csp['default-src']."; style-src ".$csp['style-src']." 'nonce-".$csp_nonce."'; font-src ".$csp['font-src']."; script-src ".$csp['script-src']." 'nonce-" . $csp_nonce . "'; img-src ".$csp['img-src']."; connect-src ".$csp['connect-src']."; object-src ".$csp['object-src']."; media-src ".$csp['media-src']."; child-src ".$csp['child-src']."; form-action ".$csp['form-action']."; frame-ancestors ".$csp['frame-ancestors']."; worker-src ".$csp['worker-src']."; ");
     }
