@@ -1,0 +1,18 @@
+{
+  "label": "Blogs",
+  "singular_label": "Blog",
+  "note": "This post type can be used to create blog posts",
+  "form": {
+    "fields": [
+      {
+        "name": "post_body",
+        "type": "textarea",
+        "label": "Post Body",
+        "validate": "req"
+      }
+    ]
+  },
+  "labels": {
+    "create_button": "Create event"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "label": "Checkout",
+  "entry-status": {
+    "1": "Pending",
+    "2": "Processing",
+    "3": "Shipped",
+    "4": "Delivered",
+    "5": "Cancelled",
+    "6": "Refunded",
+    "7": "Returned",
+    "8": "Completed",
+    "9": "On Hold",
+    "10": "Overdue",
+    "11": "Spam"
+  },
+  "fields": [
+    {
+      "name": "f-name",
+      "type": "text",
+      "label": "First Name",
+      "validate": "req",
+      "wrapper_class": "cl cl-6"
+    },
+    {
+      "name": "l-name",
+      "type": "text",
+      "label": "Last Name",
+      "validate": "req",
+      "wrapper_class": "cl cl-6"
+    },
+    {
+      "name": "address",
+      "type": "text",
+      "label": "Address",
+      "validate": "req"
+    },
+    {
+      "name": "address-2",
+      "type": "text",
+      "label": "Address Line Two"
+    },
+    {
+      "name": "email",
+      "type": "email",
+      "label": "Email",
+      "validate": "req|email",
+      "wrapper_class": "cl cl-6"
+    },
+    {
+      "name": "phone",
+      "type": "text",
+      "label": "Contact Number",
+      "validate": "req",
+      "wrapper_class": "cl cl-6"
+    },
+    {
+      "name": "country",
+      "type": "select",
+      "label": "Country",
+      "wrapper_class": "cl cl-4",
+      "options": {
+        "us": "USA",
+        "ru": "Russia",
+        "uk": "United Kingdom"
+      }
+    },
+    {
+      "name": "state",
+      "type": "text",
+      "label": "State",
+      "wrapper_class": "cl cl-4"
+    },
+    {
+      "name": "zip-code",
+      "type": "number",
+      "label": "Zip Code",
+      "wrapper_class": "cl cl-4"
+    },
+    {
+      "name": "submit",
+      "type": "submit",
+      "value": "Submit"
+    }
+  ]
+}

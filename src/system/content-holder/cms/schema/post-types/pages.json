@@ -1,0 +1,28 @@
+{
+  "label": "Pages",
+  "note": "This post type can be used to create pages",
+  "tabs": {
+    "seo": {
+      "slug": "seo",
+      "label": "SEO",
+      "fields": [
+        {
+          "name": "meta_title",
+          "type": "text",
+          "label": "Title"
+        },
+        {
+          "name": "meta_description",
+          "type": "textarea",
+          "label": "Meta Description"
+        },
+        {
+          "name": "meta_keywords",
+          "type": "text",
+          "label": "Meta Keywords",
+          "note": "Separate each keyword by commas (,)"
+        }
+      ]
+    }
+  }
+}

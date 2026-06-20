@@ -1,0 +1,54 @@
+{
+  "name": "hero-banner",
+  "label": "Hero Banner",
+  "note": "Simple banner section",
+  "form": {
+    "fields": [
+      {
+        "name": "image",
+        "type": "media",
+        "label": "Banner Image"
+      },
+      {
+        "name": "title",
+        "type": "text",
+        "label": "Main Title",
+        "wrapper_class": "cl cl-8",
+        "validate": "req"
+      },
+      {
+        "name": "highlight_text",
+        "type": "text",
+        "label": "Highlight Text",
+        "wrapper_class": "cl cl-4"
+      },
+      {
+        "name": "sub_title",
+        "type": "text",
+        "label": "Sub Title"
+      },
+      {
+        "name": "eyebrow_text",
+        "type": "text",
+        "label": "Eyebrow Text"
+      },
+      {
+        "name": "description",
+        "type": "textarea",
+        "label": "Description"
+      },
+      {
+        "name": "cta_label",
+        "type": "text",
+        "label": "CTA Label",
+        "wrapper_class": "cl cl-6"
+      },
+      {
+        "name": "cta_link",
+        "type": "text",
+        "label": "CTA Link (URL)",
+        "wrapper_class": "cl cl-6"
+      }
+    ]
+  }
+}

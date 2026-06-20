@@ -36,6 +36,9 @@ class CreateCms {
     // Controllers
     $this->copy_directory($cms_hold_dir.'c/', $cms_dir.'controller/');
 
+    // Schema
+    $this->copy_directory($cms_hold_dir.'schema/', $cms_dir.'schema/');
+
     // View files
     $this->copy_directory($cms_hold_dir.'v/', $cms_dir.'view/');
 

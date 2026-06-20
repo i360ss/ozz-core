@@ -1,0 +1,27 @@
+{
+  "label": "FAQs",
+  "singular_label": "FAQ",
+  "note": "Frequently asked questions",
+  "disable_block_editor": true,
+  "fields": [
+    {
+      "name": "question",
+      "type": "text",
+      "label": "Question"
+    },
+    {
+      "name": "answer",
+      "type": "textarea",
+      "label": "Answer"
+    },
+    {
+      "name": "category",
+      "type": "select",
+      "label": "Category",
+      "options": [
+        "General",
+        "Billing"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "label": "Team Members",
+  "singular_label": "Member",
+  "note": "This post type can be used to create team members",
+  "disable_block_editor": true,
+  "fields": [
+    {
+      "name": "name",
+      "type": "text",
+      "label": "Name"
+    },
+    {
+      "name": "designation",
+      "type": "text",
+      "label": "Designation"
+    },
+    {
+      "name": "bio",
+      "type": "textarea",
+      "label": "Bio"
+    },
+    {
+      "name": "photo",
+      "type": "media",
+      "label": "Photo"
+    },
+    {
+      "name": "social_links",
+      "type": "repeater",
+      "label": "Social Media Links",
+      "fields": [
+        {
+          "name": "platform",
+          "type": "text",
+          "label": "Social media platform",
+          "wrapper_class": "cl cl-5"
+        },
+        {
+          "name": "link",
+          "type": "text",
+          "label": "Link (URL)",
+          "wrapper_class": "cl cl-6"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "rich-text",
+  "label": "Rich Text",
+  "note": "Default rich-text block",
+  "form": {
+    "fields": [
+      {
+        "name": "rich_text",
+        "type": "rich-text",
+        "label": "Rich Text Content",
+        "rows": "10"
+      }
+    ]
+  }
+}

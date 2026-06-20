@@ -1,0 +1,26 @@
+{
+    "name": "accordion",
+    "label": "Accordion",
+    "note": "Default accordion block",
+    "form": {
+      "fields": [
+        {
+          "name": "items",
+          "label": "Accordion Items",
+          "type": "repeater",
+          "fields": [
+            {
+              "name": "title",
+              "type": "text",
+              "label": "Item Title"
+            },
+            {
+              "name": "body",
+              "type": "textarea",
+              "label": "Item Body Content"
+            }
+          ]
+        }
+      ]
+    }
+  }

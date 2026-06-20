@@ -1,0 +1,37 @@
+{
+  "label": "Testimonials",
+  "singular_label": "Testimonial",
+  "note": "Customer testimonial posts",
+  "disable_block_editor": true,
+  "fields": [
+    {
+      "name": "customer_name",
+      "type": "text",
+      "label": "Customer Name",
+      "validate": "req"
+    },
+    {
+      "name": "customer_company",
+      "type": "text",
+      "label": "Customer Company",
+      "wrapper_class": "cl cl-6"
+    },
+    {
+      "name": "customer_designation",
+      "type": "text",
+      "label": "Customer Designation",
+      "wrapper_class": "cl cl-6"
+    },
+    {
+      "name": "customer_photo",
+      "type": "media",
+      "label": "Customer Photo"
+    },
+    {
+      "name": "review",
+      "type": "textarea",
+      "label": "Review",
+      "validate": "req"
+    }
+  ]
+}

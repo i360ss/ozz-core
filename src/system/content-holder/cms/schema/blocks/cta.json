@@ -1,0 +1,41 @@
+{
+    "name": "cta",
+    "label": "CTA",
+    "note": "Simple call to action section",
+    "form": {
+      "fields": [
+        {
+          "name": "image",
+          "type": "media",
+          "label": "CTA Image"
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "label": "Main Title"
+        },
+        {
+          "name": "sub_title",
+          "type": "text",
+          "label": "Sub Title"
+        },
+        {
+          "name": "description",
+          "type": "textarea",
+          "label": "Description"
+        },
+        {
+          "name": "cta_label",
+          "type": "text",
+          "label": "CTA Label",
+          "wrapper_class": "cl cl-6"
+        },
+        {
+          "name": "cta_link",
+          "type": "text",
+          "label": "CTA Link (URL)",
+          "wrapper_class": "cl cl-6"
+        }
+      ]
+    }
+  }

@@ -1,0 +1,44 @@
+{
+  "label": "Contact Us",
+  "note": "Default Contact form",
+  "method": "post",
+  "class": "ozz-fm",
+  "field_options": {
+    "wrapper": "<div class=\"ozz-fm__field\">##</div>"
+  },
+  "fields": [
+    {
+      "name": "name",
+      "type": "text",
+      "label": "Your Name",
+      "validate": "req"
+    },
+    {
+      "name": "email",
+      "type": "email",
+      "label": "Email Address"
+    },
+    {
+      "name": "subject",
+      "type": "text",
+      "label": "Subject"
+    },
+    {
+      "name": "message",
+      "type": "textarea",
+      "label": "Message"
+    },
+    {
+      "name": "submit",
+      "type": "submit",
+      "value": "Send"
+    }
+  ],
+  "table-fields": [
+    "name",
+    "email",
+    "subject",
+    "message",
+    "created"
+  ]
+}
