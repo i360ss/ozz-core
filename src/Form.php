@@ -12,6 +12,7 @@ use Ozz\Core\CMS;
 
 class Form {
 
+  private static $assetsLoaded = false;
   public static $input_types = [
     "text",
     "password",
@@ -101,7 +102,16 @@ class Form {
   /**
    * End Form
    */
-  public static function end(){
+  public static function end($args){
+    if (!self::$assetsLoaded && !empty($args['load_js']) && $args['load_js'] === true) {
+      self::$assetsLoaded = true;
+      if (file_exists(ASSETS_DIR.'js/ozz-form.js')) {
+        return "</form>\n<script nonce=\"" . csp_nonce() . "\" defer src=\"" . asset('assets/js/ozz-form.js') . "\"></script>";
+      } else {
+        return "</form>\n";
+      }
+    }
+
     return "</form>\n";
   }
 
@@ -128,7 +138,7 @@ class Form {
     }
 
     // Close form
-    $form .= self::end();
+    $form .= self::end($args);
 
     return $form;
   }
