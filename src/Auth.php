@@ -12,6 +12,7 @@ use Ozz\Core\Request;
 use Ozz\Core\Response;
 use Ozz\Core\Router;
 use Ozz\Core\Csrf;
+use Ozz\Core\UserAgent;
 
 class Auth extends Model {
   
@@ -550,6 +551,7 @@ class Auth extends Model {
    */
   public static function isNewLogin(){
     $request = Request::getInstance();
+    $userAgent = new UserAgent;
 
     if(!self::isLoggedIn()){
       return false;
@@ -579,7 +581,7 @@ class Auth extends Model {
       $known_agents['browser'][$key]    = $ag['browser'];
     }
 
-    $current_agent              = $request->userAgent();
+    $current_agent              = $userAgent->parse();
     $current_agent['ip']        = $request->ip();
     $current_agent['date_time'] = date("M d, Y | H:i:s");
     $new_entries                = [];
@@ -796,6 +798,7 @@ class Auth extends Model {
    */
   public static function changePassword($user_id, $new_password){
     self::init();
+    $userAgent = new UserAgent;
 
     // Check password change throttle
     if(self::isPasswordChangeAttemptsExceeded($user_id)){
@@ -836,7 +839,7 @@ class Auth extends Model {
           ? $user[self::$first_name_field].' '.$user[self::$last_name_field] 
           : $user[self::$username_field];
 
-        $info = $request->userAgent();
+        $info = $userAgent->parse();
         $info['ip'] = $request->ip();
 
         $info_dom = '<p><strong>IP Address: </strong>'.$info['ip'].'</p>';

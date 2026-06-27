@@ -199,6 +199,13 @@ class Router extends AppInit {
     $request = Request::getInstance();
     $response = Response::getInstance();
 
+    if (!$request->isMethod('get')) {
+      // Validate CSRF token on very requests except GET requests
+      if (!Csrf::validateToken()) {
+        return render_error_page(403, 'Forbidden');
+      }
+    }
+
     $host = $request->host();
     $path = $request->path();
     $method = $request->method();

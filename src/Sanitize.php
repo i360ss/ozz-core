@@ -9,89 +9,41 @@ namespace Ozz\Core;
 
 class Sanitize {
 
-  public static function string($i){
-    return htmlspecialchars($i, ENT_QUOTES);
+  public static function string(string $value): string {
+    return trim($value);
   }
 
-  public static function email($i){
-    return filter_var($i, FILTER_SANITIZE_EMAIL);
+  public static function number(int|float|string $value): int|float|null {
+    $value = trim((string) $value);
+    return is_numeric($value) ? $value + 0 : null;
   }
 
-  public static function number($i){
-    return filter_var($i, FILTER_SANITIZE_NUMBER_INT);
-  }
-
-  public static function phone($i){
-    return filter_var($i, FILTER_SANITIZE_NUMBER_FLOAT);
-  }
-
-  public static function htmlEncode($i, $flag=false){
-    return $flag ? htmlspecialchars($i, $flag) : htmlspecialchars($i);
-  }
-
-  public static function htmlDecode($i, $flag=false){
-    return $flag ? htmlspecialchars_decode($i, $flag) : htmlspecialchars_decode($i);
-  }
-
-  public static function encoded($i){
-    return filter_var($i, FILTER_SANITIZE_ENCODED);
-  }
-
-  public static function specialChar($i){
-    return filter_var($i, FILTER_SANITIZE_SPECIAL_CHARS);
-  }
-
-  public static function specialCharFull($i){
-    return filter_var($i, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  }
-
-  public static function url($i){
-    $i = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $i);
-    return filter_var($i, FILTER_SANITIZE_URL);
-  }
-
-  public static function sanitize_each($v, $typ){
-    switch ($typ) {
-      case 'url':
-        return self::url($v);
-        break;
-
-      case 'string':
-        return self::string($v);
-        break;
-
-      case 'email':
-        return self::email($v);
-        break;
-
-      case 'number':
-        return self::number($v);
-        break;
-
-      case 'phone':
-        return self::phone($v);
-        break;
-
-      case 'htmlEncode':
-        return self::htmlEncode($v);
-        break;
-
-      case 'htmlDecode':
-        return self::htmlDecode($v);
-        break;
-
-      case 'encoded':
-        return self::encoded($v);
-        break;
-
-      case 'specialCharFull':
-        return self::specialCharFull($v);
-        break;
-
-      default:
-        return self::specialChar($v);
-        break;
+  public static function phone(string $value): string{
+    $value = trim($value);
+    if (str_starts_with($value, '+')) {
+      return '+' . preg_replace('/\D/', '', substr($value, 1));
     }
+    return preg_replace('/\D/', '', $value);
+  }
+
+  public static function htmlEncode(string $value): string {
+    return htmlspecialchars( $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
+  }
+
+  public static function htmlDecode(string $value): string {
+    return htmlspecialchars_decode( $value, ENT_QUOTES );
+  }
+
+  public static function sanitizeEach($value, ?string $type = null) {
+    $value = is_scalar($value) ? (string)$value : $value;
+    return match ($type) {
+      'string' => self::string($value),
+      'number' => self::number($value),
+      'phone' => self::phone($value),
+      'htmlEncode' => self::htmlEncode($value),
+      'htmlDecode' => self::htmlDecode($value),
+      default => self::string($value),
+    };
   }
 
   /**
@@ -122,9 +74,9 @@ class Sanitize {
    * @param array $arr The array to be sanitized
    * @param string $sanType Sanitization method for each array item
    */
-  public static function array($arr, $sanType=false){
+  public static function array(array $arr, ?string $sanType = null): array {
     foreach ($arr as $k => $v) {
-      (is_array($v)) ? $arr[$k] = self::array($v) : $arr[$k] = self::sanitize_each($v, $sanType);
+      (is_array($v)) ? $arr[$k] = self::array($v) : $arr[$k] = self::sanitizeEach($v, $sanType);
     }
     return $arr;
   }

@@ -11,7 +11,6 @@ use Ozz\Core\Request;
 use Ozz\Core\Router;
 use Ozz\Core\Auth;
 use Ozz\Core\Validate;
-use Ozz\Core\Csrf;
 
 class ".ucfirst($controllerName)." extends Controller {
 
@@ -19,7 +18,6 @@ class ".ucfirst($controllerName)." extends Controller {
    * Register / Create new user account
    */
   public function registerUser(Request \$request){
-    Csrf::validateToken();
     \$form_data = \$request->input();
     set_flash('form_data', \$form_data);
 
@@ -61,7 +59,6 @@ class ".ucfirst($controllerName)." extends Controller {
    * Login User
    */
   public function loginUser(Request \$request){
-    Csrf::validateToken();
     \$form_data = \$request->input();
     set_flash('form_data', \$form_data);
     extract(\$form_data);
@@ -81,7 +78,6 @@ class ".ucfirst($controllerName)." extends Controller {
    * Password reset request
    */
   public function passwordResetRequest(Request \$request){
-    Csrf::validateToken();
     \$form_data = \$request->input();
     set_flash('form_data', \$form_data);
 

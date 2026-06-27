@@ -778,7 +778,7 @@ class CMSAdminController extends CMS {
    */
   public function media_action(Request $request) {
     $action = $request->query('q');
-    $current_dir = esc_url($request->input('ozz_media_current_directory')).DS;
+    $current_dir = esc_url($request->input('ozz_media_current_directory') ?? '').DS;
     $base_dir = UPLOAD_DIR . $current_dir;
 
     $validation = Validate::check($request->input(), [

@@ -77,7 +77,7 @@ class CMS {
     $this->cms_config['languages'] = array_merge(['en' => 'English'], isset($this->cms_config['languages']) ? $this->cms_config['languages'] : []);
     $this->cms_config['media'] = array_merge($this->media_default, isset($this->cms_config['media']) ? $this->cms_config['media'] : []);
     $this->cms_media = $this->cms_config['media'];
-    $this->cms_user_meta = $this->cms_config['user_meta'];
+    $this->cms_user_meta = $this->cms_config['user_meta'] ?? [];
 
     // Modify post types
     $this->cms_post_types = $this->modify_cms_post_types($this->cms_config['post_types']);

@@ -38,8 +38,7 @@ class Request extends Router {
       'host'              => $this->host(),
       'time'              => $this->time(),
       'ip'                => $this->ip(),
-      'user_agent_string' => $this->userAgent(true),
-      'user_agent'        => $this->userAgent(),
+      'user_agent'        => $this->header('user-agent'),
       'headers'           => $this->headers(),
       'cookies'           => $this->cookies(),
       'cache'             => $this->cache(),
@@ -49,6 +48,7 @@ class Request extends Router {
       'url'               => $this->url(),
       'url_parts'         => $this->urlPart(),
       'url_params'        => $this->urlParam(),
+      'postData'          => $this->postData(),
       'query'             => $this->query(),
       'input'             => $this->input(),
       'content'           => $this->content(),
@@ -107,7 +107,7 @@ class Request extends Router {
    * Request Time
    */
   public function time(){
-    return date( 'M d, Y - H:i:s', $_SERVER['REQUEST_TIME']);
+    return $_SERVER['REQUEST_TIME'];
   }
 
   /**
@@ -122,10 +122,10 @@ class Request extends Router {
    * @param string $key Cookie key
    */
   public function cookie($key=false){
-    if ($key === null) {
+    if ($key === false) {
       return $_COOKIE;
     }
-    return isset($_COOKIE[$key]) ? $_COOKIE[$key] : null;
+    return $_COOKIE[$key] ?? null;
   }
 
   /**
@@ -169,7 +169,7 @@ class Request extends Router {
   public function isJson(){
     $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
 
-    return $contentType === "application/json";
+    return str_contains($contentType, 'application/json');
   }
 
   /**
@@ -177,20 +177,16 @@ class Request extends Router {
    * @return array Array of headers
    */
   public function headers(): array {
-    $headers = [];
-    foreach ($_SERVER as $k => $value) {
-      if (strpos($k, 'HTTP_') === 0) {
-        $name = strtolower(str_replace('_', '-', substr($k, 5)));
-        $headers[$name] = $value;
-      } elseif (strpos($k, 'REDIRECT_') === 0) {
-        $name = strtolower(str_replace('_', '-', substr($k, 9)));
-        $headers[$name] = $value;
-      }
+    if (function_exists('getallheaders')) {
+      return array_change_key_case(getallheaders(), CASE_LOWER);
     }
 
-    if (function_exists('getallheaders')) {
-      foreach (getallheaders() as $k => $v) {
-        $headers[strtolower($k)] = $v;
+    $headers = [];
+
+    foreach ($_SERVER as $k => $v) {
+      if (str_starts_with($k, 'HTTP_')) {
+        $name = strtolower(str_replace('_', '-', substr($k, 5)));
+        $headers[$name] = $v;
       }
     }
 
@@ -215,7 +211,7 @@ class Request extends Router {
    */
   public function path(){
     if(isset($_SERVER['REQUEST_URI'])){
-      $path = Sanitize::url($_SERVER['REQUEST_URI']);
+      $path = $_SERVER['REQUEST_URI'] ?? '/';
       $pos = is_string($path) ? strpos($path, '?') : false;
       if(!$pos){
         return $path;
@@ -227,81 +223,102 @@ class Request extends Router {
   }
 
   /**
-   * Input data sent via request (Form data and Query string)
-   * @param string|array|int $key key of the input value 
-   * @param boolean $evil ignore sanitization if this is true
-   * @return array|string|int|bool Returns sanitized input data
+   * Get POST data only
+   * @param string|int|false $key  Specific key to retrieve, or false for all
+   * @param mixed $default Default value if key not found
+   * @return mixed Single value, full array, or default
    */
-  public function input($key=false, $evil=false){
-    $output = $_FILES;
-    if($evil === true){
-      $output = $_REQUEST;
-    } else {
-      foreach ($_REQUEST as $k => $v) {
-        (is_array($v))
-          ? $output[$k] = Sanitize::array($v)
-          : $output[$k] = is_json($v) ? $v : Sanitize::specialChar($v);
-      }
+  public function postData(string|int|false $key = false, mixed $default = null): mixed {
+    if ($key === false) {
+      return $_POST;
     }
 
-    if ($key !== false) {
-      return isset($output[$key]) ? $output[$key] : '';
-    } else {
-      return $output;
-    }
+    return $_POST[$key] ?? $default;
   }
 
   /**
-   * Return Raw Data data
-   * @param string $key
+   * Get merged GET + POST data
+   * (POST overrides GET on duplicate keys)
+   * @param string|int|false $key Specific key to retrieve, or false for all
+   * @param mixed $default Default value if key not found
+   * @return mixed Single value, full array, or default
    */
-  public function content($key=false){
-    $output = [];
-    $raw = file_get_contents('php://input');
+  public function input(string|int|false $key = false, mixed $default = null): mixed {
+    $data = array_merge($_GET, $_POST);
+    if ($key === false) {
+      return $data;
+    }
+
+    return $data[$key] ?? $default;
+  }
+
+  /**
+   * Get JSON-decoded request body
+   * @param bool $assoc Return as associative array if true
+   * @return mixed Decoded JSON or null if invalid/empty
+   */
+  public function content($key = false, bool $assoc = true): mixed {
+    $raw = $this->raw();
+
     if (!$raw) {
-      return false;
+      return null;
     }
 
-    $data = json_decode($raw, true);
+    $data = json_decode($raw, $assoc);
+    $d = (json_last_error() === JSON_ERROR_NONE) ? $data : null;
 
-    if (json_last_error() !== JSON_ERROR_NONE) {
-      return false; // invalid JSON
+    if ($key === false) {
+      return $d;
     }
 
-    foreach ($data as $k => $v) {
-      (is_array($v))
-        ? $output[$k] = Sanitize::array($v)
-        : $output[$k] = is_json($v) ? $v : Sanitize::specialChar($v);
-    }
-
-    return ($key && isset($output[$key])) ? $output[$key] : $output;
+    return $d[$key];
   }
 
   /**
-   * Returns URL query strings array or string
-   * @param string|int $key
-   * @param array|string|int|bool $fallback
-   * @param boolean $evil ignore sanitization if this is true
-   * @return array|string|int|bool
+   * Get GET query parameters only
+   * @param string|int|false $key Specific key to retrieve, or false for all
+   * @param mixed $default Default value if key not found
+   * @return mixed Single value, full array, or default
    */
-  public function query($key=false, $fallback=false, $evil=false){
-    if (isset($_SERVER['QUERY_STRING'])) {
-      parse_str($_SERVER['QUERY_STRING'], $query_string);
-
-      if($evil === true){
-        $output = ($key && isset($query_string[$key]))
-          ? $query_string[$key]
-          : $query_string;
-      } else {
-        $output = ($key && isset($query_string[$key]))
-          ? Sanitize::string($query_string[$key])
-          : Sanitize::array($query_string, 'string');
-      }
-
-      return (is_array($output) && $key !== false) ? $fallback : $output;
-    } else {
-      return $fallback;
+  public function query(string|int|false $key = false, mixed $default = null): mixed {
+    if ($key === false) {
+      return $_GET;
     }
+
+    return $_GET[$key] ?? $default;
+  }
+
+  /**
+   * Returns All Files sent over the request
+   */
+  public function files(){
+    return $_FILES;
+  }
+
+  /**
+   * Returns Files sent over the request
+   * @param string|int|false $key Specific file key, or false for all files
+   * @return mixed Single file array, full files array, or null
+   */
+  public function file(string|int|false $key = false): mixed {
+    if ($key === false) {
+      return $_FILES;
+    }
+
+    return $_FILES[$key] ?? null;
+  }
+
+  /**
+   * Get raw request body (unparsed)
+   * @return string|null Raw body string or null if empty
+   */
+  public function raw(): ?string {
+    static $raw = null;
+    if ($raw === null) {
+      $raw = file_get_contents('php://input');
+    }
+
+    return $raw ?: null;
   }
 
   /**
@@ -350,21 +367,6 @@ class Request extends Router {
   }
 
   /**
-   * Returns All Files sent over the request
-   */
-  public function files(){
-    return $_FILES;
-  }
-
-  /**
-   * Returns Files sent over the request
-   * @param $key the key for specific file
-   */
-  public function file($key=false){
-    return ($key !== false && isset($_FILES[$key])) ? $_FILES[$key] : $_FILES;
-  }
-
-  /**
    * Returns the Request method (get, post, ect...)
    */
   public function method(){
@@ -377,144 +379,6 @@ class Request extends Router {
    */
   public function isMethod($method){
     return $this->method() === strtolower($method);
-  }
-
-  /**
-   * User agent info (Separated)
-   * @param boolean Return only the user-agent string if (true)
-   */
-  public function userAgent($string=false){
-
-    if($string === true){
-      return $_SERVER['HTTP_USER_AGENT'] ?? null;
-    }
-
-    $user_agent = $_SERVER['HTTP_USER_AGENT'];
-    if (!$user_agent || strlen($user_agent) > 500) {
-      return null;
-    }
-
-    $user_agent_info = [
-      'all'             => $user_agent,
-      'device'          => null,
-      'os'              => null,
-      'device_name'     => null,
-      'os_version'      => null,
-      'browser'         => null,
-      'browser_version' => null,
-    ];
-
-    $device_list = [
-      'Computer' => 'Windows|Mac|Linux|UNIX|BeOS|FreeBSD|OpenBSD|NetBSD|SunOS|Solaris|IRIX|HP-UX|AIX|OSF1|IOS',
-      'Mobile' => 'Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|SymbianOS|S60|Series60|Series40|Opera Mini|Opera Mobi|Nokia|SonyEricsson|Samsung|LG|HTC|Sony|Asus|Micromax|Palm|Vertu|Pantech|Fly|iMobile|SimValley|Ubuntu Touch|Windows CE|WindowsCE|Smartphone|Armv|Spice|Bird|ZTE|Alcatel|Lenovo|SonyEricsson|Ericsson|Bada|Meizu|Xolo|Lava|iOne|Celkon|Gionee|Vivo|Nexus|OnePlus|Yu|Acer|Xiaomi|OPPO|vivo|Coolpad|Wiko|Generic Smartphone',
-      'Tablet' => 'iPad|Android|Windows Tablet|Kindle|PlayBook|Samsung Tablet|Galaxy Tab|Nexus 7|Nexus 10|Asus Tablet|Transformer|Lenovo|Acer|HP|Toshiba|Sony|Sony Tablet|Galaxy|Galaxy Tab|Xoom|Dell|Motorola|LG|Asus|Nook|Fonepad|Ainol|Nabi|Nexus|Sony Xperia Tablet|Iconia|IdeaTab|ThinkPad Tablet|Yoga Tablet|Zenpad|Xiaomi|Surface Pro|NuVision|Venue|Nexus 9|Nexus 7|Surface|Pixel C|Lenovo Yoga Tablet 2|Lenovo Yoga Tablet|Lenovo IdeaPad|Lenovo Miix|Lenovo ThinkPad',
-    ];
-
-    $os_list = [
-      'Windows' => 'Windows NT|Windows NT 10.0|Windows NT 6.2|Windows NT 6.1|Windows NT 6.0|Windows NT 5.1|Windows NT 5.0|Windows 2000|Windows NT 4.0|Windows 98|Windows 95|Windows CE|Windows Phone|Windows',
-      'Mac' => 'Mac OS X|Macintosh|Mac OS X 10.10|Mac OS X 10.9|Mac OS X 10.8|Mac OS X 10.7|Mac OS X 10.6|Mac OS X 10.5|Mac OS X 10.4|Mac OS X 10.3|Mac OS X 10.2|Mac OS X 10.1|Mac OS X 10.0',
-      'Linux' => 'Linux|Red Hat|Fedora|Debian|Ubuntu|FreeBSD|OpenBSD|NetBSD|SunOS|Solaris|IRIX|HP-UX|AIX|OSF1|IOS',
-      'UNIX' => 'UNIX',
-      'BeOS' => 'BeOS',
-      'iOS' => 'iPhone|iPad|iPod',
-      'Android' => 'Android',
-      'BlackBerry' => 'BlackBerry|BB10|RIM Tablet OS',
-      'Symbian' => 'SymbianOS|S60|Series60|Series40',
-      'Palm' => 'PalmOS',
-      'Chrome OS' => 'CrOS'
-    ];
-
-    $browser_list = [
-      'Chrome' => 'Chrome',
-      'Firefox' => 'Firefox',
-      'Safari' => 'Safari',
-      'Opera' => 'Opera',
-      'Edge' => 'Edge',
-      'MSIE' => 'MSIE|IEMobile|MSIEMobile',
-      'BlackBerry' => 'BlackBerry|BB10|RIM Tablet OS',
-      'UC Browser' => 'UCBrowser',
-      'Opera Mini' => 'Opera Mini',
-      'Opera Mobi' => 'Opera Mobi',
-      'Nokia' => 'Nokia',
-      'SonyEricsson' => 'SonyEricsson',
-      'Samsung' => 'Samsung',
-      'LG' => 'LG',
-      'HTC' => 'HTC',
-      'Sony' => 'Sony',
-      'Asus' => 'Asus',
-      'Micromax' => 'Micromax',
-      'Palm' => 'Palm',
-      'Vertu' => 'Vertu',
-      'Pantech' => 'Pantech',
-      'Fly' => 'Fly',
-      'iMobile' => 'iMobile',
-      'SimValley' => 'SimValley',
-      'Ubuntu Touch' => 'Ubuntu Touch',
-      'Windows CE' => 'Windows CE',
-      'WindowsCE' => 'WindowsCE',
-      'Smartphone' => 'Smartphone',
-      'Armv' => 'Armv',
-      'Spice' => 'Spice',
-      'Bird' => 'Bird',
-      'ZTE' => 'ZTE',
-      'Alcatel' => 'Alcatel',
-      'Lenovo' => 'Lenovo',
-      'SonyEricsson' => 'SonyEricsson',
-      'Ericsson' => 'Ericsson',
-      'Bada' => 'Bada',
-      'Meizu' => 'Meizu',
-      'Xolo' => 'Xolo',
-      'Lava' => 'Lava',
-      'iOne' => 'iOne',
-      'Celkon' => 'Celkon',
-      'Gionee' => 'Gionee',
-      'Vivo' => 'Vivo',
-      'Nexus' => 'Nexus',
-      'OnePlus' => 'OnePlus',
-      'Yu' => 'Yu',
-      'Acer' => 'Acer',
-      'Xiaomi' => 'Xiaomi',
-      'OPPO' => 'OPPO',
-      'Coolpad' => 'Coolpad',
-      'Wiko' => 'Wiko',
-      'Generic Smartphone' => 'Generic Smartphone'
-    ];
-
-    // check device
-    foreach ($device_list as $device => $regex) {
-      if(preg_match("/$regex/i", $user_agent, $match)){
-        $user_agent_info['device'] = $device;
-        $user_agent_info['device_name'] = $match[0];
-        break;
-      }
-    }
-
-    // check os
-    foreach ($os_list as $os => $regex) {
-      if(preg_match("/$regex/i", $user_agent, $base_matches)){
-        $user_agent_info['os'] = $os;
-        $user_agent_info['os_version'] = $base_matches[0];
-        if(is_null($user_agent_info['os_version'])){
-          if(preg_match("/$os (.*);/i", $user_agent, $matches)){
-            $user_agent_info['os_version'] = $matches[1];
-          }
-        }
-        break;
-      }
-    }
-
-    // check browser
-    foreach ($browser_list as $browser => $regex) {
-      if(preg_match("/$regex/i", $user_agent)){
-        $user_agent_info['browser'] = $browser;
-        if(preg_match("/$browser\/(.*);/i", $user_agent, $matches)){
-          $user_agent_info['browser_version'] = $matches[1];
-        }
-        break;
-      }
-    }
-
-    return $user_agent_info;
   }
 
   /**

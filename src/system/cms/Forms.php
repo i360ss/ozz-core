@@ -12,6 +12,7 @@ use Ozz\Core\Validate;
 use Ozz\Core\Auth;
 use Ozz\Core\File;
 use Ozz\Core\Medoo;
+use Ozz\Core\UserAgent;
 
 trait Forms {
 
@@ -22,12 +23,13 @@ trait Forms {
    */
   protected function create_form_entry($form, $request) {
     $this->tracking_validation($form, $request->input()); // Validate form
+    $userAgent = new UserAgent;
 
     // Get form and client info
     $entry = $request->input();
     $entry['__user_info'] = [
       'ip' => $request->ip(),
-      'agent' => json_encode($request->userAgent()),
+      'agent' => json_encode( $userAgent->parse() ),
       'name' => $form // Form name
     ];
 
@@ -132,6 +134,7 @@ trait Forms {
    */
   protected function update_form_entry($form, $id, $request, $check_user=true) {
     $this->tracking_validation($form, $request->input()); // Validate form
+    $userAgent = new UserAgent;
 
     $current_entry = get_entry($id);
     $entry = $request->input();
@@ -173,7 +176,7 @@ trait Forms {
     // Updated from (IP, user agent and Geo information)
     $update_info = [
       'ip' => $request->ip(),
-      'agent' => json_encode($request->userAgent()),
+      'agent' => json_encode( $userAgent->parse() ),
     ];
     $fields = [
       'content' => json_encode($entry),

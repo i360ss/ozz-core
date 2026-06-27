@@ -10,6 +10,7 @@ namespace Ozz\Core\system\auth;
 use Ozz\Core\Request;
 use Ozz\Core\Medoo;
 use Ozz\Core\Mail;
+use Ozz\Core\UserAgent;
 
 trait AuthInternal {
 
@@ -19,9 +20,10 @@ trait AuthInternal {
    */
   public static function addUserLog($log_data){
     $request = Request::getInstance();
+    $userAgent = new UserAgent;
 
     $log_data['user_ip']    = $request->ip();
-    $log_data['user_agent'] = json_encode($request->userAgent());
+    $log_data['user_agent'] = json_encode( $userAgent->parse() );
     $log_data['timestamp']  = time();
 
     self::$db->insert(CONFIG['AUTH_LOG_TABLE'], $log_data);

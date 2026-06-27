@@ -32,7 +32,7 @@ class Csrf {
 
   /**
    * Validate CSRF Token
-   * @param boolean $fresh Refresh token (Default: true)
+   * @param string $token
    */
   public static function validateToken($token=null){
     $csrfToken = $token;
@@ -49,18 +49,12 @@ class Csrf {
       }
     }
 
-    if (empty($csrfToken)) {
-      set_error('csrf_error', trans_e('invalid_token', ['type' => 'CSRF']));
-      throw new Exception("CSRF token missing");
-    }
-
     // Validate Token
     if (hash_equals($_SESSION['csrf_token'] ?? '', $csrfToken)) {
       return true; // Token is valid
     }
 
-    set_error('csrf_error', trans_e('invalid_token', ['type' => 'CSRF']));
-    throw new Exception("CSRF token invalid");
+    return false;
   }
 
   /**
