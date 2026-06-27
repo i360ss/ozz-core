@@ -76,10 +76,10 @@ class Lang {
           if(is_array($v)){
             $v = implode(', ', $v);
           }
-          $res = str_replace(":$k", esc_x($v), $res);
+          $res = str_replace(":$k", esc($v), $res);
         }
       } elseif(is_string($param)) {
-        $res = str_replace('::', esc_x($param), $res);
+        $res = str_replace('::', esc($param), $res);
       }
     }
 

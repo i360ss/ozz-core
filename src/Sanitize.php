@@ -27,7 +27,7 @@ class Sanitize {
   }
 
   public static function htmlEncode(string $value): string {
-    return htmlspecialchars( $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
+    return htmlspecialchars( $value, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8', false );
   }
 
   public static function htmlDecode(string $value): string {

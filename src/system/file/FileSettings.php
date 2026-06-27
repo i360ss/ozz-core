@@ -42,7 +42,7 @@ trait FileSettings {
       $conf = CMS_CONFIG ? CMS_CONFIG : CONFIG;
       if($conf['SANITIZE_SVG'] === true) {
         $wildcard = $conf['SANITIZE_SVG_ALLOWED_ELEMENTS'] ? $conf['SANITIZE_SVG_ALLOWED_ELEMENTS'] : [];
-        $sanitizedSVG = esx_svg($svgContent, $wildcard);
+        $sanitizedSVG = esc_svg($svgContent, $wildcard);
       }
 
       $dom = new \DOMDocument();
