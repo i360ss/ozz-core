@@ -6,7 +6,7 @@
  */
 
 $post_info = array_merge($form_data, ['languages' => $languages]);
-$page_title = "Edit ".$post_config['label'].' - '.$form_data['title'];
+$page_title = esc("Edit ".$post_config['label'].' - '.$form_data['title']);
 
 ?>
 {{ title        = page_title }}
@@ -17,12 +17,12 @@ $page_title = "Edit ".$post_config['label'].' - '.$form_data['title'];
     <div class="container">
       <div class="heading breadcrumb">
         <span><a href="<?=ADMIN_PATH?>/posts">Post</a></span>
-        <span><a href="<?=ADMIN_PATH?>/posts/<?=$post_type?>"><?=$post_config['label']?></a></span>
+        <span><a href="<?=ADMIN_PATH?>/posts/<?=esc_url($post_type)?>"><?=esc($post_config['label'])?></a></span>
       </div>
 
       <h1>
         <span class="label dot <?=$form_data['post_status']?>"></span>
-        <span class="j-title-onchange"><?=$form_data['title']?></span>
+        <span class="j-title-onchange"><?=esc($form_data['title'])?></span>
       </h1>
 
       <div class="post-edit-view <?=isset($post_config['tabs']) ? 'has-tabs' : ''; ?>">

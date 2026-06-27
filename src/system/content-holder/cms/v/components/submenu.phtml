@@ -8,8 +8,8 @@
 
 <ul>
   <label>
-    <span><?=$title?></span>
-    <a href="<?=ADMIN_PATH.'/'.$slug?>">
+    <span><?=esc($title)?></span>
+    <a href="<?=ADMIN_PATH.'/'.esc_url($slug)?>">
       <span class="button mini">All</span>
     </a>
   </label>
@@ -22,7 +22,7 @@
   ?>
     <li <?=(isset($url_3) && $url_3 == $key) ?'class="active"' : ''?>>
       <a href="<?=ADMIN_PATH.'/'.$slug.'/'.$key.$entries?>">
-        <?=ucfirst(($item['label'] ?? $item['name']))?>
+        <?= esc(ucfirst(($item['label'] ?? $item['name']))) ?>
         <?=$new_count?>
       </a>
     </li>

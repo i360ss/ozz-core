@@ -5,8 +5,8 @@
  * @param array $data arguments passed from controller or route
  */
 
-$page_title = 'Form Entries | '.($form['label'] ?? ($this_form ?? 'Form not found'));
-$this_form = $form['name'];
+$page_title = esc('Form Entries | '.($form['label'] ?? ($this_form ?? 'Form not found')));
+$this_form = esc($form['name']);
 $new_entries = isset($notify['form_entries'][$this_form]) ? $notify['form_entries'][$this_form]['ids'] : [];
 
 // Get field label by name
@@ -28,7 +28,7 @@ function getFieldLabelByName($name) {
       <span>Entries</span>
     </div>
 
-    <h1 class="heading cl cl-6"><?=$form['label']?></h1>
+    <h1 class="heading cl cl-6"><?=esc($form['label'])?></h1>
 
     <div class="listing-s2">
       <div class="listing-s2__header">

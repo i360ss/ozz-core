@@ -176,31 +176,35 @@ $current_dir = '';
           <div class="ozz-media-manager__items">
             <?php
               foreach ($media_items['data'] as $key => $item) :
+                $name = esc($item['name']);
+                $url = esc_url($item['url']);
+
                 if ($item['type'] == 'file') :
+                  $format = esc($item['format']);
               ?>
                 <div class="ozz-media-manager__item media-file" data-fileInfo='<?=json_encode($item, true)?>'>
                   <div class="ozz-media-manager__item-file">
                     <div class="ozz-media-manager__item-thumbnail">
                       <?php if($item['format'] == 'image') :?>
-                        <img src="/<?=$item['url'] ?>" alt="<?=$item['name']?>" width="150px" />
+                        <img src="/<?= $url ?>" alt="<?=$name?>" width="150px" />
                       <?php elseif($item['format'] == 'svg') :?>
-                        <object type="image/svg+xml" data="/<?=$item['url'] ?>">
-                          <img src="/<?=$item['url'] ?>" alt="<?=$item['name'] ?>" />
+                        <object type="image/svg+xml" data="/<?= $url ?>">
+                          <img src="/<?= $url ?>" alt="<?=$name?>" />
                         </object>
                       <?php else : ?>
-                        <div class="icon <?=$item['format']?>">
-                          <strong><?=$item['format']?></strong>
+                        <div class="icon <?= $format ?>">
+                          <strong><?= $format ?></strong>
                         </div>
                       <?php endif; ?>
                     </div>
-                    <div class="name"><p><?= $item['name'] ?></p></div>
+                    <div class="name"><p><?=$name?></p></div>
                   </div>
                 </div>
               <?php else: ?>
                 <div class="ozz-media-manager__item media-folder">
-                  <a href="?dir=<?=urlencode($item['url'])?>"
-                    class="ozz-media-manager__item-folder" title="<?=$item['name']?>">
-                    <span class="name"><p><?= $item['name'] ?></p></span>
+                  <a href="?dir=<?= urlencode($url) ?>"
+                    class="ozz-media-manager__item-folder" title="<?=$name?>">
+                    <span class="name"><p><?=$name?></p></span>
                   </a>
                 </div>
               <?php endif; ?>

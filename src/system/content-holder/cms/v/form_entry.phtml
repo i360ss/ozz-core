@@ -25,8 +25,8 @@ function getFieldLabelByName($name) {
     <div class="container">
       <div class="heading breadcrumb">
         <span><a href="<?=ADMIN_PATH?>/forms">Forms</a></span>
-        <span><a href="<?=ADMIN_PATH?>/forms/<?=$form['name']?>"><?=$form['label']?></a></span>
-        <span><a href="<?=ADMIN_PATH?>/forms/<?=$form['name']?>/entries">Entries</a></span>
+        <span><a href="<?=ADMIN_PATH?>/forms/<?=esc($form['name'])?>"><?=esc($form['label'])?></a></span>
+        <span><a href="<?=ADMIN_PATH?>/forms/<?=esc($form['name'])?>/entries">Entries</a></span>
         <span>ID: <?=$entry['id']?></span>
       </div>
 
@@ -38,7 +38,7 @@ function getFieldLabelByName($name) {
             <div class="header">
               <h2 class="ozz-widget__heading">Entry Data</h2>
               <span>
-                <a href="<?=ADMIN_PATH?>/forms/edit/<?=$entry['name']?>/<?=$entry['id']?>" class="button blue small">Edit</a>
+                <a href="<?=ADMIN_PATH?>/forms/edit/<?=esc_url($entry['name'])?>/<?=esc_url($entry['id'])?>" class="button blue small">Edit</a>
               </span>
             </div>
 
@@ -48,11 +48,11 @@ function getFieldLabelByName($name) {
                 <span class="value">
                   <?php
                     if(is_string($field)) {
-                      echo $field;
+                      echo esc($field);
                     } elseif(is_array($field)) {
                       echo json_dump(json_encode($field), false);
                     } else {
-                      echo strval($field);
+                      echo esc(strval($field));
                     }
                   ?>
                 </span>

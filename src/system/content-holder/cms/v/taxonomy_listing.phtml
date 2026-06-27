@@ -33,8 +33,8 @@
         <?php foreach ($taxonomies as $taxonomy) : ?>
           <tr>
             <td class="link-wrap">
-              <a href="<?=ADMIN_PATH?>/taxonomy/<?=$taxonomy['slug']?>">
-                <span class="listing-s1__title"><?=$taxonomy['name']?></span>
+              <a href="<?=ADMIN_PATH?>/taxonomy/<?=esc_url($taxonomy['slug'])?>">
+                <span class="listing-s1__title"><?=esc($taxonomy['name'])?></span>
               </a>
             </td>
             <td><span class="slug"><?=$taxonomy['slug']?></span></td>

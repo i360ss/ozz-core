@@ -5,7 +5,7 @@
  * @param array $data arguments passed from controller or route
  */
 
-$page_title = 'Block | '.($block['label'] ?? ($block['name'] ?? 'Block not found'));
+$page_title = 'Block | '.($block['label'] ?? (esc($block['name']) ?? 'Block not found'));
 
 ?>
 {{ title        = page_title }}
@@ -17,7 +17,7 @@ $page_title = 'Block | '.($block['label'] ?? ($block['name'] ?? 'Block not found
       <?php if (!empty($block)) : ?>
         <div class="heading breadcrumb">
           <span><a href="<?=ADMIN_PATH?>/blocks">Blocks</a></span>
-          <span><a href=""><?=$block['label']?></a></span>
+          <span><a href=""><?=esc($block['label'])?></a></span>
         </div>
 
         <h1 class="heading"><?=$block['label']?></h1>
@@ -25,23 +25,23 @@ $page_title = 'Block | '.($block['label'] ?? ($block['name'] ?? 'Block not found
         <div class="ozz-widget">
           <h4 class="ozz-widget__heading">Block Info</h4>
           <div class="ozz-widget__item-raw">
-            <label>Name: </label><span><?=$block['name']?></span>
+            <label>Name: </label><span><?=esc($block['name'])?></span>
           </div>
           <div class="ozz-widget__item-raw">
-            <label>Label: </label><span><?=$block['label']?></span>
+            <label>Label: </label><span><?=esc($block['label'])?></span>
           </div>
           <div class="ozz-widget__item-raw">
-            <label>Singular Name: </label><span><?=$block['singular'] ?? ''?></span>
+            <label>Singular Name: </label><span><?=esc($block['singular'] ?? '')?></span>
           </div>
           <div class="ozz-widget__item-raw">
-            <label>Note: </label><span><?=$block['note'] ?? ''?></span>
+            <label>Note: </label><span><?=esc($block['note'] ?? '')?></span>
           </div>
 
           <?php if (isset($block['fields'])) : ?>
             <div class="ozz-widget__item-raw">
               <label>Values: </label><br><br>
               <?php foreach ($block['value'] as $value) : ?>
-                <span class="button mini light"><?=$value['label']?></span>
+                <span class="button mini light"><?=esc($value['label'])?></span>
               <?php endforeach; ?>
             </div>
           <?php endif; ?>

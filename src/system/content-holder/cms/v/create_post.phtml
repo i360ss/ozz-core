@@ -17,10 +17,10 @@
       </div>
 
       <h1 class="heading">
-        <span>Create <?=$post_config['singular_label'] ?? ' Entry'?></span>
+        <span>Create <?=esc($post_config['singular_label'] ?? ' Entry')?></span>
       </h1>
 
-      <p class="light-text"><?=$post_config['note']?></p>
+      <p class="light-text"><?=esc($post_config['note'])?></p>
 
       <div class="post-edit-view <?=isset($post_config['tabs']) ? 'has-tabs' : ''; ?>">
         <?php _create_form($form['data'], $form['values']); ?>

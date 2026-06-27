@@ -7,6 +7,7 @@ $user = (object) auth_info();
 $has_alert = has_error('success') || has_error('error');
 $new_entries = $data['notify']['form_entries'];
 $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entries"></span>' : '';
+$grav_img = esc_url(get_gravatar($user->email, 80));
 
 ?>
 <!DOCTYPE html>
@@ -118,16 +119,16 @@ $new_entries_flag = $new_entries ? '<span class="has-new-notify" title="New entr
             <!-- User information (dropdown) -->
             <div class="cms-header__user-info">
               <div class="cms-header__avatar">
-                <img src="<?=get_gravatar($user->email, 80);?>" alt="Avatar">
+                <img src="<?= $grav_img ?>" alt="Avatar">
                 <span class="cms-header__avatar-arrow"></span>
               </div>
               <div class="cms-header__info">
                 <div class="user-info">
-                  <img src="<?=get_gravatar($user->email, 80);?>" alt="Avatar">
+                  <img src="<?= $grav_img ?>" alt="Avatar">
                   <p>
-                    <strong><?=$user->first_name.' '.$user->last_name?></strong><br>
-                    <?=$user->email?><br>
-                    <span class="light-text">@<?=$user->username?></span>
+                    <strong><?=esc($user->first_name.' '.$user->last_name)?></strong><br>
+                    <?=esc($user->email)?><br>
+                    <span class="light-text">@<?=esc($user->username)?></span>
                   </p>
                 </div>
                 <p class="mode-switcher">

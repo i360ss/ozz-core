@@ -100,10 +100,10 @@ $updater = new OzzUpdater;
         <tr class="<?=in_array($item['id'], $new_entries_ids) ? 'new-entry-label' : ''?>">
           <td><?=$key+1?></td>
           <td><?=substr($item['content'], 0, 100)?>...</td>
-          <td><?=$item['name']?></td>
+          <td><?=esc($item['name'])?></td>
           <td class="light-text f-14"><?=ozz_format_date($item['created'])?></td>
           <td class="align-right">
-            <a href="<?=ADMIN_PATH?>/forms/<?=$item['name']?>/entry/<?=$item['id']?>" class="button micro">View</a>
+            <a href="<?=ADMIN_PATH?>/forms/<?=esc_url($item['name'])?>/entry/<?=$item['id']?>" class="button micro">View</a>
           </td>
         </tr>
       <?php endforeach; ?>

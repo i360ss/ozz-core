@@ -76,7 +76,7 @@ if (!empty($taxonomy_values)) {
                 [
                   'name' => !empty($taxonomy_values) ? 'taxonomy_id' : '',
                   'type' => 'hidden',
-                  'value' => $context['url_parts'][4] ?? ''
+                  'value' => esc_url($context['url_parts'][4] ?? '')
                 ],
                 [
                   'name' => 'crete-btn',
