@@ -125,6 +125,11 @@ class Cache {
       $content = require CMS_DIR.'cms-config.php';
     }
 
+    $dir = dirname($this->cms_config_cache_file);
+    if (!is_dir($dir)) {
+      mkdir($dir, 0755, true);
+    }
+
     $php = "<?php\n";
     $php .= "// OZZ CMS CONFIG CACHE\n";
     $php .= "// Generated: " . date('Y-m-d H:i:s') . "\n";

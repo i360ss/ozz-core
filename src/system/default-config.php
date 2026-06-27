@@ -166,5 +166,5 @@ return [
     'taxonomy' => 'Cms_taxonomy',
     'terms' => 'Cms_terms'
   ],
-  'CACHE_CMS_CONFIG' => true,
+  'CACHE_CMS_CONFIG' => false,
 ];
