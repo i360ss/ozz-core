@@ -222,8 +222,13 @@ class Form {
           // Assign values to Selections
           $field['selected'] = $values[$name];
         } elseif(!isset($field['value'])){
-          // Assign values to other fields
-          $field['value'] = $values[$name];
+          if ($type === 'textarea') {
+            // Textarea will have both value attribute and inner content
+            $field['value'] = is_string($values[$name]) ? esc($values[$name]) : $values[$name];
+          } else {
+            // Assign values to other fields
+            $field['value'] = $values[$name];
+          }
         }
 
         // Show/Embed file after the field (Image, video, audio, doc, ect)
@@ -272,7 +277,7 @@ class Form {
 
           $html .= '<div id="rptf-' . random_str(18) . '" class="ozz-fm__repeat-fields">';
           $html .= '<div class="ozz-fm__repeat-head '.(isset($repeaterFields['expand']) && $repeaterFields['expand'] === true ? '' : 'close').'">';
-          $html .= '<span class="ozz-fm__repeat-title">' . esx(html_decode($first_title)) . '</span>';
+          $html .= '<span class="ozz-fm__repeat-title">' . esc(html_decode($first_title)) . '</span>';
           $html .= '<span class="ozz-fm__repeat-number">' . ((int)$i + 1) . '</span>';
           $html .= '<span class="ozz-fm__repeat-remove button micro danger">Delete</span>';
           $html .= '</div>';
@@ -499,7 +504,7 @@ class Form {
       $this_attrs = '';
       foreach ($attrs_only as $ky => $vl) {
         if(!is_array($vl)){
-          $vl = is_bool($vl) ? ($vl ? 'true' : 'false') : htmlspecialchars($vl);
+          $vl = is_bool($vl) ? ($vl ? 'true' : 'false') : esc($vl);
           if($ky == 'checked'){
             $this_attrs .= $vl == 'true' ? " checked" : '';
           } else {
@@ -552,7 +557,7 @@ class Form {
       }
 
       $thisField = '<'.$type.$this_attrs.'>';
-      $thisField .= (isset($args['value']) && is_string($args['value'])) ? $args['value'] : '';
+      $thisField .= (isset($args['value']) && is_string($args['value'])) ? esc($args['value']) : '';
       $thisField .= '</'.$type.'>';
     } elseif(in_array($type, self::$tag_option_types)){
       // Tag option fields
@@ -682,10 +687,10 @@ class Form {
 
       // Generate <optgroup> markup
       foreach ($groupedPosts as $type => $group) {
-        $postsOptions .= '<optgroup label="' . htmlspecialchars(ucfirst($type)) . '">';
+        $postsOptions .= '<optgroup label="' . esc(ucfirst($type)) . '">';
         foreach ($group as $post) {
           $selected = (isset($val['post_id']) && $val['post_id'] == $post['id']) ? 'selected' : '';
-          $postsOptions .= '<option value="'.$post['id'].'" '.$selected . '>'.htmlspecialchars($post['title']).'</option>';
+          $postsOptions .= '<option value="'.$post['id'].'" '.$selected . '>'.esc($post['title']).'</option>';
         }
         $postsOptions .= '</optgroup>';
       }
@@ -731,12 +736,12 @@ class Form {
 
           <div class="ozz-fm__field col-span-12 md:col-span-6">
             <label>Title</label>
-            <input type="text" data-link-title value="'.(isset($val['title']) ? htmlspecialchars($val['title']) : '').'">
+            <input type="text" data-link-title value="'.(isset($val['title']) ? esc($val['title']) : '').'">
           </div>
 
           <div class="ozz-fm__field col-span-12 md:col-span-6">
             <label>URL</label>
-            <input type="text" data-link-url value="'.(isset($val['url']) ? htmlspecialchars($val['url']) : '').'">
+            <input type="text" data-link-url value="'.(isset($val['url']) ? esc($val['url']) : '').'">
           </div>
         </div>
 
@@ -753,12 +758,12 @@ class Form {
 
           <div class="ozz-fm__field col-span-12 md:col-span-3">
             <label>Aria label</label>
-            <input type="text" data-link-aria value="'.(isset($val['aria_label']) ? htmlspecialchars($val['aria_label']) : '').'">
+            <input type="text" data-link-aria value="'.(isset($val['aria_label']) ? esc($val['aria_label']) : '').'">
           </div>
 
           <div class="ozz-fm__field col-span-12 md:col-span-3">
             <label>CSS Classes</label>
-            <input type="text" data-link-class value="'.(isset($val['class']) ? htmlspecialchars($val['class']) : '').'">
+            <input type="text" data-link-class value="'.(isset($val['class']) ? esc($val['class']) : '').'">
           </div>
         </div>
 

@@ -645,9 +645,9 @@ class CMSAdminController extends CMS {
 
     if($validate->pass){
       $update_user = Auth::update([
-        'first_name' => esx($request->input('first-name')),
-        'last_name' => esx($request->input('last-name')),
-        'email' => esx($request->input('email')),
+        'first_name' => $request->input('first-name'),
+        'last_name' => $request->input('last-name'),
+        'email' => $request->input('email'),
       ]);
 
       if($update_user){
@@ -725,7 +725,7 @@ class CMSAdminController extends CMS {
       if(!is_array($item)) {
         $url = clear_multi_slashes(UPLOAD_DIR_PUBLIC.$directory.'/'.$item);
         $modified[$key] = [
-          'name' => esx($item),
+          'name' => esc($item),
           'dir' => $directory.'/',
           'type' => 'file',
           'size' => format_size_units(filesize($url)),

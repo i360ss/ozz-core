@@ -90,7 +90,7 @@ function esc_svg($svg, $allowed_elms=[]) {
  * @return HTML
  */
 function html_decode($str, $flag=false){
-  return htmlspecialchars_decode( $value, ENT_QUOTES );
+  return htmlspecialchars_decode( $str, ENT_QUOTES );
 }
 
 /**
