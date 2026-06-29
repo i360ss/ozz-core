@@ -108,7 +108,11 @@ class Validate {
    */
   private static function checkRule($val, $rule, $valueKey=null) {
     $valueKey = ($valueKey == null && Errors::has()) ? count(Errors::get())+1 : $valueKey;
-    $rule = preg_match_all("/([^,= ]+):([^,= ]+)/", $rule, $r) ? array_combine($r[1], $r[2]) : $rule;
+    if (is_string($rule) && strpos($rule, ':') !== false) {
+      list($ruleName, $ruleValue) = explode(':', $rule, 2);
+      $rule = [$ruleName => $ruleValue];
+    }
+
     if(is_array($rule)){
       foreach ($rule as $k => $v) {
         switch ($k) {
@@ -118,6 +122,10 @@ class Validate {
 
           case 'min':
             return self::minLength($val, $v, $valueKey);
+            break;
+
+          case 'regex':
+            return self::regex($v, $val, $valueKey); // $v is the pattern, $val is user input
             break;
 
           case 'match':
@@ -268,6 +276,12 @@ class Validate {
       : !empty($v);
 
     return self::response($valueNotEmpty, $key, self::$lang->error('required', ['field' => $key, 'value' => $v]));
+  }
+
+  public static function regex($pattern, $v, $key=''){
+    return $v!==''
+      ? self::response((bool)preg_match($pattern, $v), $key, self::$lang->error('regex', ['field' => $key]))
+      : true;
   }
 
   public static function boolean($v, $key=''){
