@@ -274,8 +274,8 @@ function start_form($args) {
 /**
  * End Form
  */
-function end_form() {
-  return Form::end();
+function end_form($args=false) {
+  return Form::end($args);
 }
 
 /**
