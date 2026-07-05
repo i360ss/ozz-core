@@ -638,6 +638,9 @@ class Form {
         unset($args['name']);
         unset($args['label']);
         empty($args['autocomplete']) ? $args['autocomplete'] = 'off' : false;
+
+        $hiddenArgs = [...$args, 'name' => $fieldName, 'data-ozz-filter-hiddenfield' => '' ];
+
         $args['data-ozz-filter-textfield'] = '';
         $args['options'] = !empty($args['options']) ? $args['options'] : [];
         $filter_classes = isset($args['filter-class']) ? $args['filter-class'] : '';
@@ -655,7 +658,7 @@ class Form {
           data-ozz-filter-multiple="'.$multiple.'"
           class="filter-field '.$filter_classes.'"
           >
-          '.self::text($args) . self::hidden([...$args, 'name' => $fieldName, 'data-ozz-filter-hiddenfield' => '' ]) .'
+          '.self::text($args) . self::hidden($hiddenArgs) .'
           <ul class="hidden" data-ozz-filter-dropdown tabindex="-1">'.$dropdown.'</ul>
         </div>';
       }
