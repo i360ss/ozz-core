@@ -51,7 +51,8 @@ class Form {
 
   public static $custom_field_types = [
     "rich-text",
-    "link"
+    "link",
+    "filter"
   ];
 
   private static $initial_form;
@@ -629,6 +630,34 @@ class Form {
       // Link field
       if ($type == 'link') {
         $thisField = self::generateLinkField($type, $args);
+      }
+
+      // Filter dropdown field
+      if ($type == 'filter') {
+        $fieldName = $args['name'];
+        unset($args['name']);
+        unset($args['label']);
+        empty($args['autocomplete']) ? $args['autocomplete'] = 'off' : false;
+        $args['data-ozz-filter-textfield'] = '';
+        $args['options'] = !empty($args['options']) ? $args['options'] : [];
+        $filter_classes = isset($args['filter-class']) ? $args['filter-class'] : '';
+        $allow_custom_value = !empty($args['allow-custom']) && $args['allow-custom'] == true ? 'true' : 'false';
+        $multiple = !empty($args['multiple']) && $args['multiple'] == true ? 'true' : 'false';
+
+        $dropdown = '';
+        foreach ($args['options'] as $key => $value) {
+          $dropdown .= '<li data-value="'.$key.'">'.$value.'</li>';
+        }
+
+        $thisField = '<div
+          data-ozz-filter
+          data-ozz-filter-allow-custom="'.$allow_custom_value.'"
+          data-ozz-filter-multiple="'.$multiple.'"
+          class="filter-field '.$filter_classes.'"
+          >
+          '.self::text($args) . self::hidden([...$args, 'name' => $fieldName, 'data-ozz-filter-hiddenfield' => '' ]) .'
+          <ul class="hidden" data-ozz-filter-dropdown tabindex="-1">'.$dropdown.'</ul>
+        </div>';
       }
     }
 
