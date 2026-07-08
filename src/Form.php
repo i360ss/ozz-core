@@ -234,13 +234,22 @@ class Form {
 
         // Show/Embed file after the field (Image, video, audio, doc, ect)
         if(isset($field['view_file']) && $field['view_file'] === true){
-          $uploaded_file_DOM = embed_files_to_dom($values[$name]);
+          $uploaded_file_DOM = embed_files_to_dom($values[$name], $field['name']);
 
           if(isset($field['after'])){
             $field['after'] .= $uploaded_file_DOM;
           } else {
             $field['after'] = $uploaded_file_DOM;
           }
+        }
+      }
+
+      // Show empty file embed div
+      if(isset($field['view_file']) && $field['view_file'] === true){
+        if(isset($field['after'])){
+          $field['after'] .= '<div class="ozz-embed-file" data-ozz-embed="'.$field['name'].'"></div>';
+        } else {
+          $field['after'] = '<div class="ozz-embed-file" data-ozz-embed="'.$field['name'].'"></div>';
         }
       }
 
@@ -501,6 +510,11 @@ class Form {
 
     // Set up field by input type
     if(in_array($type, self::$input_types)){
+      if ($type === 'file') {
+        // Add file data attribute if type is file
+        $attrs_only['data-ozz-file'] = '';
+      }
+
       // Input field
       $this_attrs = '';
       foreach ($attrs_only as $ky => $vl) {

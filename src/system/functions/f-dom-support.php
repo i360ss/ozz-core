@@ -5,10 +5,10 @@
 /**
 * Embed Uploaded file to view under the field
 * @param mixed $value The file path/URL or multiple file paths/URLs as array
-* @param boolean $thumb_only Show the thumbnail/Icon of the file if true. Else embed the complete document
+* @param string $fieldName Actual field name
 * @return html $viewDOM HTML DOM to render after the file field
 */
-function embed_files_to_dom($value, $thumb_only=false) {
+function embed_files_to_dom($value, $fieldName) {
   $viewDOM = '';
 
   if(is_string($value)){
@@ -17,7 +17,7 @@ function embed_files_to_dom($value, $thumb_only=false) {
     $paths = get_all_strings_from_array($value);
   }
 
-  $viewDOM .= '<div class="ozz-embed-file">';
+  $viewDOM .= '<div class="ozz-embed-file" data-ozz-embed="'.$fieldName.'">';
   foreach ($paths as $k => $path) {
     $file_type = get_file_type_by_url($path);
 
