@@ -97,12 +97,9 @@ class Response {
   }
 
   /**
-   * Send Response to client
+   * Send only the HTTP status code and response headers to the client
    */
-  public function send(){
-    $page_cache = false;
-    $show_debug_bar = false;
-
+  public function sendHeaders() {
     if (is_null($this->status_code)) {
       $this->status_code = 200;
     }
@@ -116,21 +113,41 @@ class Response {
     $this->setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
 
     // Apply CSP if enabled
-    if(env('app', 'USE_CSP') == 1){
+    if (env('app', 'USE_CSP') == 1) {
       $csp = parse_ini_file(BASE_DIR.'csp.ini', true);
       $csp_nonce = csp_nonce();
       $this->setHeader('Content-Security-Policy', "base-uri ".$csp['base-uri']."; default-src ".$csp['default-src']."; style-src ".$csp['style-src']." 'nonce-".$csp_nonce."'; font-src ".$csp['font-src']."; script-src ".$csp['script-src']." 'nonce-" . $csp_nonce . "'; img-src ".$csp['img-src']."; connect-src ".$csp['connect-src']."; object-src ".$csp['object-src']."; media-src ".$csp['media-src']."; child-src ".$csp['child-src']."; form-action ".$csp['form-action']."; frame-ancestors ".$csp['frame-ancestors']."; worker-src ".$csp['worker-src']."; ");
     }
 
-    if(isset($this->headers) && !empty($this->headers)){
+    if (isset($this->headers) && !empty($this->headers)) {
       foreach ($this->headers as $key => $values) {
         $key = trim(str_replace(["\r", "\n"], '', $key));
         $values = is_array($values) ? $values : [$values];
         foreach ($values as $val) {
           $val = trim(str_replace(["\r", "\n"], '', $val));
           header("$key: $val", false); // false = allow multiple headers of same name
+        }
+      }
+    } else {
+      // Default header
+      header('Content-Type: text/html; charset='.CONFIG['CHARSET']);
+    }
+  }
 
-          // Only for page view Response
+  /**
+   * Send Response to client
+   */
+  public function send(){
+    $page_cache = false;
+    $show_debug_bar = false;
+
+    $this->sendHeaders();
+
+    // Check if it's a page view for debug bar / cache logic
+    if (isset($this->headers) && !empty($this->headers)) {
+      foreach ($this->headers as $key => $values) {
+        $values = is_array($values) ? $values : [$values];
+        foreach ($values as $val) {
           if (strtolower($key) === 'content-type' && in_array(strtolower($val), [
             'text/html',
             'text/html; charset=' . strtolower(CONFIG['CHARSET'])
@@ -140,9 +157,6 @@ class Response {
           }
         }
       }
-    } else {
-      // Default header
-      header('Content-Type', 'text/html; charset='.CONFIG['CHARSET']);
     }
 
     // Render Exceptions
