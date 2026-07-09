@@ -504,3 +504,25 @@ function csrf_field(bool $reset = false) {
 
   return $cachedField;
 }
+
+// Check if input file selected
+function has_file($fileInput) {
+  if (!isset($fileInput) || empty($fileInput['name'])) {
+    return false;
+  }
+
+  if (is_array($fileInput['error'])) {
+    foreach ($fileInput['error'] as $key => $error) {
+      if ($error !== UPLOAD_ERR_NO_FILE && $fileInput['size'][$key] > 0) {
+        return true; 
+      }
+    }
+    return false;
+  }
+  else {
+    if ($fileInput['error'] !== UPLOAD_ERR_NO_FILE && $fileInput['size'] > 0) {
+      return true;
+    }
+    return false;
+  }
+}
