@@ -65,8 +65,20 @@ function to_snakecase($str) {
  * @param string $str String to convert
  * @param string $delimiter Delimiter to replace (Optional)
  */
-function to_slug($str, $delimiter='-') {
-  return strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv(CONFIG['CHARSET'], 'ASCII//TRANSLIT', urldecode($str)))))), $delimiter));
+function to_slug($str, $delimiter = '-') {
+  $str = urldecode($str);
+
+  if (defined('CONFIG') && isset(CONFIG['CHARSET'])) {
+    $str = iconv(CONFIG['CHARSET'], 'ASCII//TRANSLIT//IGNORE', $str);
+  } else {
+    $str = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
+  }
+
+  $str = str_replace("'", '', $str);
+  $str = str_replace('&', 'and', $str);
+  $str = preg_replace('/[^A-Za-z0-9\s-]+/', '', $str);
+  $str = preg_replace('/[\s-]+/', $delimiter, $str);
+  return strtolower(trim($str, $delimiter));
 }
 
 /**
