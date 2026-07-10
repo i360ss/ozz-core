@@ -309,6 +309,13 @@ class Request extends Router {
   }
 
   /**
+   * Ceck file exists in request
+   */
+  public function hasFile($file=false) {
+    return has_file($this->file($file));
+  }
+
+  /**
    * Get raw request body (unparsed)
    * @return string|null Raw body string or null if empty
    */
