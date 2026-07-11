@@ -12,6 +12,7 @@ return [
   'EMAIL_CHARSET' => 'utf-8',
   'SANITIZE_SVG' => false,
   'SANITIZE_SVG_ALLOWED_ELEMENTS' => [],
+  'DEFAULT_TIME_ZONE' => 'UTC',
 
   // Session
   'SESSION_DRIVER' => 'memory',

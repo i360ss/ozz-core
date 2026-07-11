@@ -34,7 +34,7 @@ class AppInit {
     Session::init();
 
     // Set default timezone
-    date_default_timezone_set(@date_default_timezone_get());
+    date_default_timezone_set(CONFIG['DEFAULT_TIME_ZONE'] ?? 'UTC');
 
     defined('APP_ENV') || define('APP_ENV', $this->env['app']['APP_ENV']);
     defined('APP_NAME') || define('APP_NAME', $this->env['app']['APP_NAME']);
