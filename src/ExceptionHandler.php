@@ -24,19 +24,16 @@ class ExceptionHandler {
     if($this->config['app']['DEBUG']){
       error_reporting(E_ALL | E_DEPRECATED);
 
-      // Enable error log and error display
       if(CONFIG['ERROR_LOG'] === true){
-        ini_set('display_errors', 1);
+        ini_set('display_errors', 0);
         ini_set('log_errors', 1);
         ini_set('error_log', LOG_DIR.'error_log.log');
       }
 
-      // Handle exceptions
       set_exception_handler(function($exception){
-        self::handler($exception);
+        self::handler($exception, $this->config['app']['DEBUG']);
       });
 
-      // Handle Warnings
       set_error_handler(function($type, $errstr, $err_file, $err_line) {
         if(in_array($type, [E_NOTICE, E_WARNING, E_DEPRECATED])){
           throw new \ErrorException($errstr, 0, $type, $err_file, $err_line);
@@ -46,11 +43,23 @@ class ExceptionHandler {
       register_shutdown_function(function(){
         $f_error = error_get_last();
         if(isset($f_error) && count($f_error) > 0){
-          // Temporary fatal error handler
+          http_response_code(500);
+
+          // Check if client expects JSON during a fatal crash
+          if (self::hasJsonHeader()) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'message' => 'Fatal Error: ' . $f_error['message'],
+                'exception' => 'FatalErrorException',
+                'file' => $f_error['file'],
+                'line' => $f_error['line']
+            ]);
+            exit;
+          }
+
           $fatal_error = "<div class='ozz_errorOutput' style='padding:10px 20px; max-width: 900px; margin: 3px auto; border: 1px solid #FF5968; background: #FF5968;'><code><strong><h3 style='color: #fff;'>Error: ".$f_error['message']."</code></strong></h3></div>
           <div style='padding:10px 20px; max-width: 900px; margin: 3px auto; color: #fff; font-size: 14px; line-height: 1.7; border: 1px solid #666EE8; background:#666EE8;'><code>File: ".$f_error['file']." : ".$f_error['line']."</code></div>";
 
-          http_response_code(500);
           echo $fatal_error;
         }
       });
@@ -58,62 +67,75 @@ class ExceptionHandler {
   }
 
   /**
+   * Helper to check if request expects JSON
+   */
+  private static function hasJsonHeader() {
+    $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+    $requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+
+    return (
+      str_contains($accept, 'application/json') || 
+      strtolower($requestedWith) === 'xmlhttprequest'
+    );
+  }
+
+  /**
    * Default Ozz exception handler
    */
-  public static function handler($exception) {
-    // Print the context to the screen
+  public static function handler($exception, $debug = true) {
+    http_response_code(500);
+
+    if (self::hasJsonHeader()) {
+      header('Content-Type: application/json; charset=utf-8');
+
+      if ($debug) {
+        $response = [
+          'message'   => $exception->getMessage(),
+          'exception' => get_class($exception),
+          'file'      => $exception->getFile(),
+          'line'      => $exception->getLine(),
+          'trace'     => array_map(function($trace) {
+              return [
+                'file'     => $trace['file'] ?? null,
+                'line'     => $trace['line'] ?? null,
+                'function' => $trace['function'] ?? null,
+                'class'    => $trace['class'] ?? null,
+              ];
+          }, $exception->getTrace())
+        ];
+      } else {
+        $response = [
+          'message' => 'Server Error'
+        ];
+      }
+
+      echo json_encode($response);
+      exit;
+    }
+
+    // HTML/CSS Debug UI Strategy
     $style = '<style nonce="'.csp_nonce().'">'.Help::minifyCSS(file_get_contents(__DIR__.'/system/assets/css/exceptions.css')).'</style>';
     $script_content = file_get_contents(__DIR__.'/system/assets/js/exceptions.js');
     $modified_exception = '<div class="ozz-exceptions"><div class="ozz-exceptions-container">';
 
-    // Exception Heading
     if(method_exists($exception, 'getSeverity')){
       $errType = $exception->getSeverity();
       switch ($errType) {
-        case E_ERROR:
-          $severity = 'Fatal Error';
-          break;
-        case E_WARNING:
-          $severity = 'Warning';
-          break;
-        case E_PARSE:
-          $severity = 'Parse Error';
-          break;
-        case E_NOTICE:
-          $severity = 'Notice';
-          break;
-        case E_CORE_ERROR:
-          $severity = 'Core Error';
-          break;
-        case E_CORE_WARNING:
-          $severity = 'Core Warning';
-          break;
-        case E_COMPILE_ERROR:
-          $severity = 'Compile Error';
-          break;
-        case E_COMPILE_WARNING:
-          $severity = 'Compile Warning';
-          break;
-        case E_USER_ERROR:
-          $severity = 'User Error';
-          break;
-        case E_USER_WARNING:
-          $severity = 'User Warning';
-          break;
-        case E_USER_NOTICE:
-          $severity = 'User Notice';
-          break;
-        case E_RECOVERABLE_ERROR:
-          $severity = 'Recoverable Fatal Error';
-          break;
-        case E_DEPRECATED:
-          $severity = 'Deprecated';
-          break;
-        case E_USER_DEPRECATED:
-          $severity = 'User Deprecated';
-          break;
-        default:
-          $severity = 'Unknown Error Type';
+        case E_ERROR: $severity = 'Fatal Error'; break;
+        case E_WARNING: $severity = 'Warning'; break;
+        case E_PARSE: $severity = 'Parse Error'; break;
+        case E_NOTICE: $severity = 'Notice'; break;
+        case E_CORE_ERROR: $severity = 'Core Error'; break;
+        case E_CORE_WARNING: $severity = 'Core Warning'; break;
+        case E_COMPILE_ERROR: $severity = 'Compile Error'; break;
+        case E_COMPILE_WARNING: $severity = 'Compile Warning'; break;
+        case E_USER_ERROR: $severity = 'User Error'; break;
+        case E_USER_WARNING: $severity = 'User Warning'; break;
+        case E_USER_NOTICE: $severity = 'User Notice'; break;
+        case E_RECOVERABLE_ERROR: $severity = 'Recoverable Fatal Error'; break;
+        case E_DEPRECATED: $severity = 'Deprecated'; break;
+        case E_USER_DEPRECATED: $severity = 'User Deprecated'; break;
+        default: $severity = 'Unknown Error Type';
       }
     } else {
       $severity = 'Exception';
@@ -124,16 +146,9 @@ class ExceptionHandler {
     $modified_exception .= '<pre class="title">'.$exception->getMessage().'</pre>';
     $modified_exception .= '<pre class="file">File: '.$exception->getFile().' : '.$exception->getLine().'</pre>';
     $modified_exception .= '</pre></div>';
-
-    $modified_exception .= '<div class="trace-code-wrapper">';
-
-    // Trace
-    $modified_exception .= '<div class="trace-menu">';
-
-    // Primary exception link
+    $modified_exception .= '<div class="trace-code-wrapper"><div class="trace-menu">';
     $modified_exception .= '<div class="single-trace primary-exception active" data-menu-key="0">';
-    $modified_exception .= '<div><strong>'.$exception->getFile().'</strong> : '.$exception->getLine().'</div>';
-    $modified_exception .= '</div>';
+    $modified_exception .= '<div><strong>'.$exception->getFile().'</strong> : '.$exception->getLine().'</div></div>';
 
     if(method_exists($exception, 'getTrace')){
       foreach ($exception->getTrace() as $key => $value) {
@@ -146,34 +161,28 @@ class ExceptionHandler {
       }
     }
     $modified_exception .= '</div>';
-
-    // Code Highlights
     $modified_exception .= '<div class="code-highlight"><pre>';
 
-    // Primary exception code highlight
     $primary_line = $exception->getLine();
     $lines = file($exception->getFile());
     $start = max($primary_line - 15, 0);
     $end = min($primary_line + 15, count($lines) - 1);
     $context = array_slice($lines, $start, $end - $start + 1);
 
-    $modified_exception .= '<div class="single-code-snippet active code-snippet-0">'; // Code highlight class end
+    $modified_exception .= '<div class="single-code-snippet active code-snippet-0">';
     foreach($context as $i => $text){
       $ln = $start + $i + 1;
       if($ln == $primary_line){
         $modified_exception .= '<div class="code-highlight__line code-highlight__line--active"><span class="line-no">'.$ln.' </span>';
-        $modified_exception .= '<code>'.SubHelp::phpHighlight($text).'</code>';
-        $modified_exception .= '</div>';
+        $modified_exception .= '<code>'.SubHelp::phpHighlight($text).'</code></div>';
       } else {
         $modified_exception .= '<div class="code-highlight__line"><span class="line-no">'.$ln.' </span>';
-        $modified_exception .= '<code>'.SubHelp::phpHighlight($text).'</code>';
-        $modified_exception .= '</div>';
+        $modified_exception .= '<code>'.SubHelp::phpHighlight($text).'</code></div>';
       }
     }
-    $modified_exception .= '</div>'; // Primary Code highlight class end
+    $modified_exception .= '</div>';
 
-    // Trace code highlight
-    $modified_exception .= '<div class="trace-highlight">'; // Trace code highlight wrapper start
+    $modified_exception .= '<div class="trace-highlight">';
     if(method_exists($exception, 'getTrace')){
       foreach ($exception->getTrace() as $key => $value) {
         $t_file = isset($value['file']) ? $value['file'] : false;
@@ -185,40 +194,33 @@ class ExceptionHandler {
           $end = min($t_line + 15, count($t_lines) - 1);
           $t_context = array_slice($t_lines, $start, $end - $start + 1);
 
-          $modified_exception .= '<div class="single-code-snippet trace-single-highlight code-snippet-'.($key+1).'">'; // Trace single code highlight start
-          $modified_exception .= '<div class="trace-snippet-head"><em>File: '.$t_file.' : '.$t_line.'</em></div>'; // Single trace header start
+          $modified_exception .= '<div class="single-code-snippet trace-single-highlight code-snippet-'.($key+1).'">';
+          $modified_exception .= '<div class="trace-snippet-head"><em>File: '.$t_file.' : '.$t_line.'</em></div>';
 
           foreach($t_context as $i => $text){
             $ln = $start + $i + 1;
             if($ln == $t_line){
               $modified_exception .= '<div class="code-highlight__line code-highlight__line--active"><span class="line-no">'.$ln.' </span>';
-              $modified_exception .= '<code><strong>'.SubHelp::phpHighlight($text).'</strong></code>';
-              $modified_exception .= '</div>';
+              $modified_exception .= '<code><strong>'.SubHelp::phpHighlight($text).'</strong></code></div>';
             } else {
               $modified_exception .= '<div class="code-highlight__line"><span class="line-no">'.$ln.' </span>';
-              $modified_exception .= '<code>'.SubHelp::phpHighlight($text).'</code>';
-              $modified_exception .= '</div>';
+              $modified_exception .= '<code>'.SubHelp::phpHighlight($text).'</code></div>';
             }
           }
-          $modified_exception .= '</div>'; // Trace single code highlight end
+          $modified_exception .= '</div>';
         }
       }
     }
-    $modified_exception .= '</div>'; // Trace Code wrapper class end
-    $modified_exception .= '</pre></div>'; // Code highlight class end
-    $modified_exception .= '</div>'; // Trace code highlight wrapper end
-    $modified_exception .= '</div></div>'; // Parent and container classed end
+    $modified_exception .= '</div>';
+    $modified_exception .= '</pre></div></div></div></div>';
 
     $shadow_wrapper_id = 'ozz-exception-shadow-host';
-
-    http_response_code(500);
 
     echo '<div id="' . $shadow_wrapper_id . '"></div>';
     echo '<script type="text/javascript" nonce="'.csp_nonce().'">
       (function() {
         const host = document.getElementById("' . $shadow_wrapper_id . '");
         if (!host) return;
-
         const shadow = host.attachShadow({ mode: "open" });
         shadow.innerHTML = ' . json_encode($style . $modified_exception) . ';
         (function(shadowRoot) { ' . $script_content . ' })(shadow);
@@ -236,9 +238,15 @@ class ExceptionHandler {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $postMaxSize = convert_php_size_to_bytes(ini_get('post_max_size'));
 
-      // Check if Content-Length is set and if it exceeds post_max_size
       if (isset($_SERVER['CONTENT_LENGTH']) && $_SERVER['CONTENT_LENGTH'] > $postMaxSize) {
         if(!$this->config['app']['DEBUG']){
+          // Check for JSON payload size exception
+          if (self::hasJsonHeader()) {
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(413);
+            echo json_encode(['message' => 'Payload too large error']);
+            exit;
+          }
           return render_error_page(413, 'Payload too large error');
         }
         throw new \Exception('The POST data exceeds the maximum size allowed by the server.');
