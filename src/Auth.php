@@ -209,24 +209,23 @@ class Auth extends Model {
    * @param boolean $return_status Return a meaningful error text if true / return true or false if this is false
    * @param array $args Additional arguments
    */
-  public static function login(string $email, string $password, $return_status=true, $args=[]){
+  public static function login(string $email, string $password, $return_status = true, $args = []) {
     // Redirect to landing page if already logged in
-    if(self::isLoggedIn()){
+    if (self::isLoggedIn()) {
       return Router::redirect(AUTH_USER_ROLES[$_SESSION['logged_user_role']]['landing_page']);
     }
 
     self::init();
 
-    // Optional Arguments
-    list($redirect_path, $query) = [null, null];
-    if(!empty($args)){
-      extract($args, EXTR_IF_EXISTS);
-    }
+    // Safe, explicit alternative to extract()
+    $redirect_path = $args['redirect_path'] ?? null;
+    $query         = $args['query'] ?? null;
+    $callback      = $args['callback'] ?? null; // Can be a function, closure, or [Class, 'method']
 
     $main_query = [
       'OR' => [
         self::$username_field => $email,
-        self::$email_field => $email,
+        self::$email_field    => $email,
       ],
       self::$status_field => 'active'
     ];
@@ -234,89 +233,100 @@ class Auth extends Model {
     $main_query = $query ? array_merge($main_query, $query) : $main_query;
     $user = self::$db->select(CONFIG['AUTH_USERS_TABLE'], CONFIG['AUTH_ALLOWED_FIELDS'], $main_query);
 
-    if(count($user) === 1){
+    if (count($user) === 1) {
       $user = $user[0];
-      $throttle_data['user_id'] = $user[self::$id_field]; // User ID for Throttle log
+      $throttle_data['user_id'] = $user[self::$id_field]; 
       $throttle_data['type']    = 'login';
 
       // Check if Max attempts exceeded (Throttle)
-      if(self::isLoginAttemptsExceeded($user[self::$id_field])){
+      if (self::isLoginAttemptsExceeded($user[self::$id_field])) {
         $wait_time = (AUTH_LOGIN_THROTTLE['DELAY_TIME'] <= 60) 
-          ? AUTH_LOGIN_THROTTLE['DELAY_TIME'].' seconds' 
-          : (AUTH_LOGIN_THROTTLE['DELAY_TIME'] / 60).' minutes';
+          ? AUTH_LOGIN_THROTTLE['DELAY_TIME'] . ' seconds' 
+          : (AUTH_LOGIN_THROTTLE['DELAY_TIME'] / 60) . ' minutes';
 
         set_error('error', trans_e('account_locked_throttle', ['time' => $wait_time]));
         self::loginThrottleAction($user[self::$id_field]);
 
         return $return_status ? self::$auth_errors['throttle_error'] : false;
-      } else {
-        if(password_verify($password, $user[self::$password_field])){
-          // User logged in
-          session_regenerate_id();
-          Csrf::refreshToken();
-          $redirect_to = (isset($redirect_path) && $redirect_path !== '') ? $redirect_path : AUTH_USER_ROLES[$user[self::$role_field]]['landing_page'];
-          $_SESSION['logged_user_id']         = $user[self::$id_field];
-          $_SESSION['logged_username']        = $user[self::$username_field];
-          $_SESSION['logged_user_email']      = $user[self::$email_field];
-          $_SESSION['logged_user_first_name'] = $user[self::$first_name_field];
-          $_SESSION['logged_user_last_name']  = $user[self::$last_name_field];
-          $_SESSION['logged_user_status']     = $user[self::$status_field];
-          $_SESSION['logged_user_role']       = $user[self::$role_field];
-          $_SESSION['logged_user_avatar']     = $user[self::$avatar_field];
+      } 
+      if (password_verify($password, $user[self::$password_field])) {
+        // User logged in
+        session_regenerate_id();
+        Csrf::refreshToken();
 
-          set_error('success', trans('login_success'));
+        $redirect_to = (!empty($redirect_path)) 
+          ? $redirect_path 
+          : AUTH_USER_ROLES[$user[self::$role_field]]['landing_page'];
 
-          // Send New Login alert (IP/Device/OS/Browser) if changed
-          if(CONFIG['AUTH_NEW_LOGIN_ALERT'] === true && self::isNewLogin()){
-            $info = self::isNewLogin();
-            $changed = $info['info'];
+        $_SESSION['logged_user_id']         = $user[self::$id_field];
+        $_SESSION['logged_username']        = $user[self::$username_field];
+        $_SESSION['logged_user_email']      = $user[self::$email_field];
+        $_SESSION['logged_user_first_name'] = $user[self::$first_name_field];
+        $_SESSION['logged_user_last_name']  = $user[self::$last_name_field];
+        $_SESSION['logged_user_status']     = $user[self::$status_field];
+        $_SESSION['logged_user_role']       = $user[self::$role_field];
+        $_SESSION['logged_user_avatar']     = $user[self::$avatar_field];
 
-            if(in_array('device', $changed) || in_array('os', $changed) || in_array('os_version', $changed)){
-              $what = 'Device';
-            } elseif(in_array('ip', $changed)){
-              $what = 'IP Address';
-            } elseif(in_array('browser', $changed)){
-              $what = 'Browser';
-            }
+        set_error('success', trans('login_success'));
 
-            $info_dom = '<p><strong>IP Address: </strong>'.$info['ip'].'</p>';
-            $info_dom .= '<p><strong>Device: </strong>'.$info['device'].'</p>';
-            $info_dom .= '<p><strong>os: </strong>'.$info['os'].' | '.$info['os_version'].'</p>';
-            $info_dom .= '<p><strong>Browser: </strong>'.$info['browser'].'</p>';
-            $info_dom .= '<p><strong>Time: </strong>'.$info['date_time'].'</p>';
+        // Send New Login alert (IP/Device/OS/Browser) if changed
+        if (CONFIG['AUTH_NEW_LOGIN_ALERT'] === true && self::isNewLogin()) {
+          $info = self::isNewLogin();
+          $changed = $info['info'];
 
-            $full_name = !empty($user[self::$first_name_field]) 
-              ? $user[self::$first_name_field].' '.$user[self::$last_name_field] 
-              : $user[self::$username_field];
-
-            $new_login_alert_args = [
-              'name' => $full_name,
-              'what' => $what,
-              'info_dom' => $info_dom,
-              'info' => $info,
-            ];
+          if (in_array('device', $changed) || in_array('os', $changed) || in_array('os_version', $changed)) {
+            $what = 'Device';
+          } elseif (in_array('ip', $changed)) {
+            $what = 'IP Address';
+          } elseif (in_array('browser', $changed)) {
+            $what = 'Browser';
           }
 
-          // Log throttle as success login
-          $throttle_data['status'] = 'success';
-          self::addUserLog($throttle_data);
+          $info_dom = '<p><strong>IP Address: </strong>' . $info['ip'] . '</p>';
+          $info_dom .= '<p><strong>Device: </strong>' . $info['device'] . '</p>';
+          $info_dom .= '<p><strong>os: </strong>' . $info['os'] . ' | ' . $info['os_version'] . '</p>';
+          $info_dom .= '<p><strong>Browser: </strong>' . $info['browser'] . '</p>';
+          $info_dom .= '<p><strong>Time: </strong>' . $info['date_time'] . '</p>';
 
-          // Disable failed login attempts
-          self::disableFailedAttempts($user[self::$id_field]);
+          $full_name = !empty($user[self::$first_name_field]) 
+            ? $user[self::$first_name_field] . ' ' . $user[self::$last_name_field] 
+            : $user[self::$username_field];
 
-          // Email Notification if new login
-          isset($new_login_alert_args) ?  self::notify('new-login-alert', $user[self::$email_field], $new_login_alert_args) : false;
-
-          return $return_status ? self::$auth_errors['success'] : Router::redirect($redirect_to);
-        } else {
-          set_error('error', trans_e('invalid_password'));
-          $throttle_data['status'] = 'failed';
-          $throttle_data['is_active'] = 1;
-          self::addUserLog($throttle_data);
-
-          return $return_status ? self::$auth_errors['invalid_password'] : false;
+          $new_login_alert_args = [
+            'name'     => $full_name,
+            'what'     => $what,
+            'info_dom' => $info_dom,
+            'info'     => $info,
+          ];
         }
+
+        // Log throttle as success login
+        $throttle_data['status'] = 'success';
+        self::addUserLog($throttle_data);
+
+        // Disable failed login attempts
+        self::disableFailedAttempts($user[self::$id_field]);
+
+        // Email Notification if new login
+        if (isset($new_login_alert_args)) {
+          self::notify('new-login-alert', $user[self::$email_field], $new_login_alert_args);
+        }
+
+        // Custom callback
+        if ($callback && is_callable($callback)) {
+          call_user_func($callback, $user);
+        }
+
+        return $return_status ? self::$auth_errors['success'] : Router::redirect($redirect_to);
       }
+
+      // Invalid password flow
+      set_error('error', trans_e('invalid_password'));
+      $throttle_data['status'] = 'failed';
+      $throttle_data['is_active'] = 1;
+      self::addUserLog($throttle_data);
+
+      return $return_status ? self::$auth_errors['invalid_password'] : false;
     } else {
       // Check if user locked
       $locked_user = self::$db->select(CONFIG['AUTH_USERS_TABLE'], self::$id_field, [
@@ -327,7 +337,7 @@ class Auth extends Model {
         self::$status_field => 'locked'
       ]);
 
-      if(count($locked_user) === 1){
+      if (count($locked_user) === 1) {
         // Check if temporary locked (Throttle)
         $is_temp_lock = self::$db->get(CONFIG['AUTH_LOG_TABLE'], ['id', 'user_id', 'timestamp'], [
           'user_id'   => $locked_user[0],
@@ -337,12 +347,10 @@ class Auth extends Model {
           'ORDER'     => ['id' => 'DESC']
         ]);
 
-        if(!is_null($is_temp_lock)){
-          // Locked (Throttling)
+        if (!is_null($is_temp_lock)) {
           $unlock_time = $is_temp_lock['timestamp'] + AUTH_LOGIN_THROTTLE['DELAY_TIME'];
 
-          if($unlock_time <= time()){
-            // Disable lock on users_log and Unlock account
+          if ($unlock_time <= time()) {
             self::$db->update(CONFIG['AUTH_LOG_TABLE'], ['is_active' => false], ['id' => $is_temp_lock['id']]);
             self::activateAccount($is_temp_lock['user_id']);
             self::disableFailedAttempts($is_temp_lock['user_id']);
@@ -351,17 +359,16 @@ class Auth extends Model {
           } else {
             $remaining_time = $unlock_time - time();
             $remaining_time_string = (AUTH_LOGIN_THROTTLE['DELAY_TIME'] <= 60 || $remaining_time <= 60)
-              ? round($remaining_time).' seconds' 
-              : round($remaining_time / 60).' minutes';
+              ? round($remaining_time) . ' seconds' 
+              : round($remaining_time / 60) . ' minutes';
 
             set_error('error', trans_e('account_locked_throttle', ['time' => $remaining_time_string]));
 
             return $return_status ? self::$auth_errors['account_locked_throttle'] : false;
           }
         } else {
-          // Locked (Other reasons)
-          set_error('error', trans_e('account_locked'));
-          return $return_status ? self::$auth_errors['account_locked'] : false;
+            set_error('error', trans_e('account_locked'));
+            return $return_status ? self::$auth_errors['account_locked'] : false;
         }
       } else {
         // Check if email not verified
@@ -373,7 +380,7 @@ class Auth extends Model {
           self::$status_field => 'pending'
         ]);
 
-        if($unverified_user === 1){
+        if ($unverified_user === 1) {
           set_error('error', trans_e('unverified_account'));
           return $return_status ? self::$auth_errors['unverified_account'] : false;
         } else {

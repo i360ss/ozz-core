@@ -17,13 +17,19 @@ class Validate {
   private static $lang;
   private static $current_input;
 
+  private static function init() {
+    if (!isset(self::$lang)) {
+      self::$lang = new Lang;
+    }
+  }
+
   /**
    * Validate multiple items with rules
    * @param array|string $input The values to be validated
    * @param array|string $checkup $input[key] as key and rules as value (Rules separated by "|" )
    */
   public static function check($input, $checkup){
-    self::$lang = new Lang;
+    self::init();
     self::$current_input = $input;
     $validity = [];
     $validatedData = [];
@@ -328,6 +334,7 @@ class Validate {
   }
 
   public static function number($v, $key=''){
+    self::$lang = new Lang;
     return $v!==''
       ? self::response(is_numeric($v), $key, self::$lang->error('number', ['field' => $key, 'value' => $v]))
       : true;
