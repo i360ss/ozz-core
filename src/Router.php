@@ -7,8 +7,8 @@
 
 namespace Ozz\Core;
 
+use Closure;
 use Ozz\Core\Request;
-use Ozz\Core\Sanitize;
 use Ozz\Core\Validate;
 
 if(defined('OZZ_FUNC') === false){
@@ -23,11 +23,11 @@ class Router extends AppInit {
 
   /**
    * GET Route Group
-   * @param array|string $middleware
+   * @param mixed $middleware
    * @param string $template Base layout template
-   * @param array $callback route paths as keys, objects or strings as values 
+   * @param mixed $callback route paths as keys, objects or strings as values 
    */
-  public static function getGroup($middleware, $template, $callback){
+  public static function getGroup(mixed $middleware, $template, $callback){
     foreach ($callback as $k => $v) {
       self::get($k, $v, $template, $middleware);
     }
@@ -36,7 +36,7 @@ class Router extends AppInit {
   /**
    * POST Route Group
    * @param array|string $middleware
-   * @param array $callback route paths as keys, objects or strings as values 
+   * @param mixed $callback route paths as keys, objects or strings as values 
    * @param string $template Base layout template (optional)
    */
   public static function postGroup($middleware, $callback, $template=null){
@@ -48,11 +48,11 @@ class Router extends AppInit {
   /**
    * GET Method Route
    * @param string $route
-   * @param array|string|function $callBack
+   * @param array|string|Closure $callback
    * @param string $baseTemplate Base layout template
-   * @param array|string $middleware
+   * @param array|string $middlewares
    */
-  public static function get($route, $callBack, $baseTemplate=null, $middlewares=null){
+  public static function get(string $route, array|string|Closure $callback, $baseTemplate=null, $middlewares=null){
     if(str_contains($route, '::')){
       $dom_route = explode('::', $route);
       $domain = trim($dom_route[0]);
@@ -68,7 +68,7 @@ class Router extends AppInit {
       'urlParam' => $finalPath['data'],
       'middlewares' => $middlewares,
       'temp' => $baseTemplate,
-      'callback' => $callBack,
+      'callback' => $callback,
     ];
   }
 
@@ -76,11 +76,11 @@ class Router extends AppInit {
    * Initial route method
    * @param string $method (get, post, put, patch, delete)
    * @param string $route
-   * @param array|string|function $callBack
+   * @param array|string|Closure $callback
    * @param array|string $middlewares
    * @param string $baseTemplate Base layout template (optional)
    */
-  protected static function initialRoute($method, $route, $callBack, $middlewares, $baseTemplate){
+  protected static function initialRoute(string $method, string $route, mixed $callback, $middlewares, $baseTemplate){
     if(str_contains($route, '::')){
       $dom_route = explode('::', $route);
       $domain = $dom_route[0];
@@ -94,7 +94,7 @@ class Router extends AppInit {
     self::$ValidRoutes[$method][$finalRoute] = [
       'domain' => $domain,
       'urlParam' => $finalPath['data'],
-      'callback' => $callBack,
+      'callback' => $callback,
       'middlewares' => $middlewares,
       'temp' => $baseTemplate,
     ];
@@ -103,45 +103,45 @@ class Router extends AppInit {
   /**
    * POST Method Route
    * @param string $route
-   * @param array|string|function $callBack
-   * @param array|string $middleware
+   * @param array|string|Closure $callback
+   * @param array|string $middlewares
    * @param string $baseTemplate Base layout template (optional)
    */
-  public static function post($route, $callBack, $middlewares=null, $baseTemplate=null){
-    return self::initialRoute('post', $route, $callBack, $middlewares, $baseTemplate);
+  public static function post($route, $callback, $middlewares=null, $baseTemplate=null){
+    return self::initialRoute('post', $route, $callback, $middlewares, $baseTemplate);
   }
 
   /**
    * DELETE Method Route
    * @param string $route
-   * @param array|string|function $callBack
-   * @param array|string $middleware
+   * @param array|string|Closure $callback
+   * @param array|string $middlewares
    * @param string $baseTemplate Base layout template (optional)
    */
-  public static function delete($route, $callBack, $middlewares=null, $baseTemplate=null){
-    return self::initialRoute('delete', $route, $callBack, $middlewares, $baseTemplate);
+  public static function delete($route, $callback, $middlewares=null, $baseTemplate=null){
+    return self::initialRoute('delete', $route, $callback, $middlewares, $baseTemplate);
   }
 
   /**
    * PATCH Method Route
    * @param string $route
-   * @param array|string|function $callBack
-   * @param array|string $middleware
+   * @param array|string|Closure $callback
+   * @param array|string $middlewares
    * @param string $baseTemplate Base layout template (optional)
    */
-  public static function patch($route, $callBack, $middlewares=null, $baseTemplate=null){
-    return self::initialRoute('patch', $route, $callBack, $middlewares, $baseTemplate);
+  public static function patch($route, $callback, $middlewares=null, $baseTemplate=null){
+    return self::initialRoute('patch', $route, $callback, $middlewares, $baseTemplate);
   }
 
   /**
    * PUT Method Route
    * @param string $route
-   * @param array|string|function $callBack
-   * @param array|string $middleware
+   * @param array|string|Closure $callback
+   * @param array|string $middlewares
    * @param string $baseTemplate Base layout template (optional)
    */
-  public static function put($route, $callBack, $middlewares=null, $baseTemplate=null){
-    return self::initialRoute('put', $route, $callBack, $middlewares, $baseTemplate);
+  public static function put($route, $callback, $middlewares=null, $baseTemplate=null){
+    return self::initialRoute('put', $route, $callback, $middlewares, $baseTemplate);
   }
 
   /**
@@ -312,7 +312,6 @@ class Router extends AppInit {
    * @param string $vv The viw file (without extension)
    * @param array $data Data to be passed to view
    * @param string $template Base layout template
-   * @param int $status_code HTTP Status code
    */
   public static function view($vv, $data=[], $template=false){
     // new Request;

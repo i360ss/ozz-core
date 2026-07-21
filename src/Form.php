@@ -234,7 +234,8 @@ class Form {
 
         // Show/Embed file after the field (Image, video, audio, doc, ect)
         if(isset($field['view_file']) && $field['view_file'] === true){
-          $uploaded_file_DOM = embed_files_to_dom($values[$name], $field['name']);
+          $byExt = isset($field['view_file_ext']) ? $field['view_file_ext'] : false;
+          $uploaded_file_DOM = embed_files_to_dom($values[$name], $field['name'], $byExt);
 
           if(isset($field['after'])){
             $field['after'] .= $uploaded_file_DOM;

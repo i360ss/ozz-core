@@ -6,9 +6,10 @@
 * Embed Uploaded file to view under the field
 * @param mixed $value The file path/URL or multiple file paths/URLs as array
 * @param string $fieldName Actual field name
-* @return html $viewDOM HTML DOM to render after the file field
+* @param bool $useExtentionOnly If true, file embed will work even if file extention match
+* @return string $viewDOM HTML DOM to render after the file field
 */
-function embed_files_to_dom($value, $fieldName) {
+function embed_files_to_dom($value, $fieldName, $useExtentionOnly=false) {
   $viewDOM = '';
 
   if(is_string($value)){
@@ -19,7 +20,7 @@ function embed_files_to_dom($value, $fieldName) {
 
   $viewDOM .= '<div class="ozz-embed-file" data-ozz-embed="'.$fieldName.'">';
   foreach ($paths as $k => $path) {
-    $file_type = get_file_type_by_url($path);
+    $file_type = get_file_type_by_url($path, $useExtentionOnly);
 
     $viewDOM .= '<div class="ozz-embed-file__single '.$file_type.'">';
     if($file_type == 'image') {

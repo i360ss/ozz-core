@@ -22,7 +22,7 @@ class Templating extends AppInit {
   /**
    * Render Template
    * @param string  $vv                         View file (phtml/html)
-   * @param mixed   $data                       Data from controller/router to load into view
+   * @param mixed   $customData                 Data from controller/router to load into view
    * @param array   $context                    Basic Data to load into view (by default)
    * @param string  $base_template              Base template defined on Router::render() method or view function
    * @param string  $base_template_from_router  Base template defined on router
@@ -31,7 +31,7 @@ class Templating extends AppInit {
    * 
    * $base_template will be used over $base_template_from_router if it is not empty
    */
-  public static function render($vv, $customData, $base_template, $base_template_from_router, $context){
+  public static function render(string $vv, $customData, $base_template, $base_template_from_router, $context){
     global $DEBUG_BAR;
 
     // Find current view file

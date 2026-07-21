@@ -20,16 +20,13 @@ function is_absolute_url($url) {
 /**
  * Detect the File type by URL
  * @param string $url The URL to detect
+ * @param bool $byExtention check only extention if this is true
  */
-function get_file_type_by_url($url) {
+function get_file_type_by_url(string $url, $byExtention = false) {
   $type = 'unknown';
 
   if (empty($url)) {
     return $type;
-  }
-
-  if (strpos($url, base_url()) !== false) {
-    $url = str_replace(base_url(), '', $url);
   }
 
   if (strpos($url, 'youtube.com') !== false || strpos($url, 'youtu.be') !== false) {
@@ -38,51 +35,131 @@ function get_file_type_by_url($url) {
     return 'vimeo';
   }
 
-  $url = file_exists($url) ? $url : ltrim($url, '/');
+  if (function_exists('base_url') && strpos($url, base_url()) !== false) {
+    $url = str_replace(base_url(), '', $url);
+  }
 
-  if (file_exists($url)) {
+  $filePath = file_exists($url) ? $url : ltrim($url, '/');
+  $contentType = false;
+
+  if (file_exists($filePath)) {
+    // Local File exists: read actual MIME type from disk safely
     $fileInfo = new finfo(FILEINFO_MIME_TYPE);
-    $contentType = $fileInfo->buffer(file_get_contents($url));
+    $contentType = $fileInfo->file($filePath);
+  } elseif ($byExtention) {
+    // Local File does NOT exist: extract extension from URL path and map to MIME type
+    $path = parse_url($url, PHP_URL_PATH);
+    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
 
-    if ($contentType) {
-      $type = match (true) {
-        (strpos($contentType, 'image/svg+xml') === 0) => 'svg',
-        (strpos($contentType, 'image/') === 0) => 'image',
-        (strpos($contentType, 'video/') === 0) => 'video',
-        (strpos($contentType, 'audio/') === 0) => 'audio',
-        (strpos($contentType, 'application/pdf') === 0) => 'pdf',
-        (strpos($contentType, 'application/x-empty') === 0) => 'empty',
-        (strpos($contentType, 'application/msword') === 0 || strpos($contentType, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') === 0) => 'word',
-        (strpos($contentType, 'application/vnd.ms-excel') === 0 || strpos($contentType, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') === 0) => 'excel',
-        (strpos($contentType, 'application/vnd.ms-powerpoint') === 0 || strpos($contentType, 'application/vnd.openxmlformats-officedocument.presentationml.presentation') === 0) => 'powerpoint',
-        (strpos($contentType, 'application/zip') === 0) => 'zip',
-        (strpos($contentType, 'application/json') === 0) => 'json',
-        (strpos($contentType, 'text/plain') === 0) => 'text',
-        (strpos($contentType, 'application/xml') === 0 || strpos($contentType, 'text/xml') === 0) => 'xml',
-        (strpos($contentType, 'application/octet-stream') === 0) => 'binary',
-        (strpos($contentType, 'application/x-gzip') === 0) => 'gzip',
-        (strpos($contentType, 'application/x-tar') === 0) => 'tar',
-        (strpos($contentType, 'audio/mpeg') === 0) => 'mp3',
-        (strpos($contentType, 'application/vnd.oasis.opendocument.text') === 0) => 'odt',
-        (strpos($contentType, 'application/vnd.oasis.opendocument.spreadsheet') === 0) => 'ods',
-        (strpos($contentType, 'application/vnd.openxmlformats-officedocument.presentationml.slideshow') === 0) => 'pptx',
-        (strpos($contentType, 'application/vnd.adobe.flash-movie') === 0) => 'swf',
-        (strpos($contentType, 'text/html') === 0 || strpos($contentType, 'application/xhtml+xml') === 0) => 'html',
-        (strpos($contentType, 'application/x-php') === 0 || strpos($contentType, 'text/x-php') === 0) => 'php',
-        (strpos($contentType, 'application/javascript') === 0 || strpos($contentType, 'text/javascript') === 0 || strpos($contentType, 'application/x-javascript') === 0) => 'js',
-        (strpos($contentType, 'text/css') === 0) => 'css',
-        (strpos($contentType, 'application/vnd.openxmlformats-officedocument.spreadsheetml.template') === 0) => 'xltx',
-        (strpos($contentType, 'application/vnd.openxmlformats-officedocument.wordprocessingml.template') === 0) => 'dotx',
-        (strpos($contentType, 'application/vnd.openxmlformats-officedocument.presentationml.template') === 0) => 'potx',
-        (strpos($contentType, 'application/vnd.ms-excel.sheet.macroEnabled.12') === 0) => 'xlsm',
-        (strpos($contentType, 'application/vnd.ms-word.document.macroEnabled.12') === 0) => 'docm',
-        (strpos($contentType, 'application/vnd.ms-powerpoint.presentation.macroEnabled.12') === 0) => 'pptm',
-        default => 'unknown',
-      };
-    }
+    $contentType = get_mime_by_extension($ext);
+  }
+
+  if ($contentType) {
+    $type = match (true) {
+      (strpos($contentType, 'image/svg+xml') === 0) => 'svg',
+      (strpos($contentType, 'image/') === 0) => 'image',
+      (strpos($contentType, 'video/') === 0) => 'video',
+      (strpos($contentType, 'audio/') === 0) => 'audio',
+      (strpos($contentType, 'application/pdf') === 0) => 'pdf',
+      (strpos($contentType, 'application/x-empty') === 0) => 'empty',
+      (strpos($contentType, 'application/msword') === 0 || strpos($contentType, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') === 0) => 'word',
+      (strpos($contentType, 'application/vnd.ms-excel') === 0 || strpos($contentType, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') === 0) => 'excel',
+      (strpos($contentType, 'application/vnd.ms-powerpoint') === 0 || strpos($contentType, 'application/vnd.openxmlformats-officedocument.presentationml.presentation') === 0) => 'powerpoint',
+      (strpos($contentType, 'application/zip') === 0) => 'zip',
+      (strpos($contentType, 'application/json') === 0) => 'json',
+      (strpos($contentType, 'text/plain') === 0) => 'text',
+      (strpos($contentType, 'application/xml') === 0 || strpos($contentType, 'text/xml') === 0) => 'xml',
+      (strpos($contentType, 'application/octet-stream') === 0) => 'binary',
+      (strpos($contentType, 'application/x-gzip') === 0) => 'gzip',
+      (strpos($contentType, 'application/x-tar') === 0) => 'tar',
+      (strpos($contentType, 'audio/mpeg') === 0) => 'mp3',
+      (strpos($contentType, 'application/vnd.oasis.opendocument.text') === 0) => 'odt',
+      (strpos($contentType, 'application/vnd.oasis.opendocument.spreadsheet') === 0) => 'ods',
+      (strpos($contentType, 'application/vnd.openxmlformats-officedocument.presentationml.slideshow') === 0) => 'pptx',
+      (strpos($contentType, 'application/vnd.adobe.flash-movie') === 0) => 'swf',
+      (strpos($contentType, 'text/html') === 0 || strpos($contentType, 'application/xhtml+xml') === 0) => 'html',
+      (strpos($contentType, 'application/x-php') === 0 || strpos($contentType, 'text/x-php') === 0) => 'php',
+      (strpos($contentType, 'application/javascript') === 0 || strpos($contentType, 'text/javascript') === 0 || strpos($contentType, 'application/x-javascript') === 0) => 'js',
+      (strpos($contentType, 'text/css') === 0) => 'css',
+      (strpos($contentType, 'application/vnd.openxmlformats-officedocument.spreadsheetml.template') === 0) => 'xltx',
+      (strpos($contentType, 'application/vnd.openxmlformats-officedocument.wordprocessingml.template') === 0) => 'dotx',
+      (strpos($contentType, 'application/vnd.openxmlformats-officedocument.presentationml.template') === 0) => 'potx',
+      (strpos($contentType, 'application/vnd.ms-excel.sheet.macroEnabled.12') === 0) => 'xlsm',
+      (strpos($contentType, 'application/vnd.ms-word.document.macroEnabled.12') === 0) => 'docm',
+      (strpos($contentType, 'application/vnd.ms-powerpoint.presentation.macroEnabled.12') === 0) => 'pptm',
+      default => 'unknown',
+    };
   }
 
   return $type;
+}
+
+/**
+ * Maps a file extension to its corresponding MIME type
+ */
+function get_mime_by_extension(string $ext): string|false {
+  $mimes = [
+    // Images
+    'svg'  => 'image/svg+xml',
+    'png'  => 'image/png',
+    'jpg'  => 'image/jpeg',
+    'jpeg' => 'image/jpeg',
+    'gif'  => 'image/gif',
+    'webp' => 'image/webp',
+
+    // Video & Audio
+    'mp4'  => 'video/mp4',
+    'webm' => 'video/webm',
+    'ogg'  => 'video/ogg',
+    'mp3'  => 'audio/mpeg',
+    'wav'  => 'audio/wav',
+
+    // Documents (PDF & Plain Text)
+    'pdf'  => 'application/pdf',
+    'txt'  => 'text/plain',
+    'html' => 'text/html',
+    'htm'  => 'text/html',
+    'json' => 'application/json',
+    'xml'  => 'text/xml',
+    'js'   => 'application/javascript',
+    'css'  => 'text/css',
+    'php'  => 'application/x-php',
+
+    // MS Office - Standard
+    'doc'  => 'application/msword',
+    'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'xls'  => 'application/vnd.ms-excel',
+    'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'ppt'  => 'application/vnd.ms-powerpoint',
+    'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'ppsx' => 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+
+    // MS Office - Templates
+    'dotx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
+    'xltx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
+    'potx' => 'application/vnd.openxmlformats-officedocument.presentationml.template',
+
+    // MS Office - Macro Enabled
+    'docm' => 'application/vnd.ms-word.document.macroEnabled.12',
+    'xlsm' => 'application/vnd.ms-excel.sheet.macroEnabled.12',
+    'pptm' => 'application/vnd.ms-powerpoint.presentation.macroEnabled.12',
+
+    // OpenDocument
+    'odt'  => 'application/vnd.oasis.opendocument.text',
+    'ods'  => 'application/vnd.oasis.opendocument.spreadsheet',
+
+    // Archives & Compressed
+    'zip'  => 'application/zip',
+    'gz'   => 'application/x-gzip',
+    'gzip' => 'application/x-gzip',
+    'tar'  => 'application/x-tar',
+
+    // Binaries & Legacy
+    'bin'  => 'application/octet-stream',
+    'swf'  => 'application/vnd.adobe.flash-movie',
+  ];
+
+  return $mimes[strtolower($ext)] ?? false;
 }
 
 /**
