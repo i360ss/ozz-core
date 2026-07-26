@@ -5,7 +5,7 @@
  * Convert Block input into structured array
  * @param array $arr
  */
-function ozz_i_convert_str_to_array_1($arr) {
+function ozz_i_convert_str_to_array_1(array $arr) {
   $output = [];
   foreach ($arr as $key => $values) {
     $keys = explode('__', $key);

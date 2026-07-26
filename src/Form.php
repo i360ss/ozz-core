@@ -63,9 +63,9 @@ class Form {
   /**
    * Start a form
    * @param array $args for arguments
-   * @return HTML form Starting DOM
+   * @return string form Starting DOM
    */
-  public static function start($args=[]){
+  public static function start(array $args=[]){
     // Set up form attributes
     $action     = isset($args['action']) ? $args['action'] : '/';
     $method     = isset($args['method']) ? $args['method'] : 'get';
@@ -121,7 +121,7 @@ class Form {
    * @param array $args
    * @param array $values Assign values to fields (field_name as key and value as value)
    */
-  public static function create($args, $values=[]){
+  public static function create(array $args, array $values=[]){
     $request = Request::getInstance();
     self::$initial_form = $args;
 
@@ -146,10 +146,10 @@ class Form {
 
   /**
    * Generate Form Fields
-   * @param array $fields
+   * @param array $base_fields
    * @param array $values
    */
-  public static function generateFields($base_fields, $values=[], $prefix='') {
+  public static function generateFields(array $base_fields, array $values=[], $prefix='') {
     $html = '';
     $fields = isset($base_fields['fields']) ? $base_fields['fields'] : $base_fields;
     $is_cms = env('app', 'ENABLE_CMS');
@@ -164,7 +164,7 @@ class Form {
       $is_single_repeatable = isset($field['repeat']) && $field['repeat'] === true;
 
       // Update name if single repeatable field, radio or checkbox
-      if($is_single_repeatable || (in_array($type, ['checkbox', 'radio']) && isset($field['options']))){
+      if($is_single_repeatable || (\in_array($type, ['checkbox', 'radio']) && isset($field['options']))){
         $f_name .= '[]';
       }
 
@@ -210,7 +210,7 @@ class Form {
       if($f_value !== ''){
         if(in_array($type, ['radio', 'checkbox'])){
           // Assign value for checkbox and radio (Single value)
-          if(isset($field['value']) && is_string($f_value)){
+          if(isset($field['value'])){
             ($field['value'] == $f_value) ? $field['checked'] = 'true' : false;
           }
 
@@ -246,7 +246,7 @@ class Form {
       }
 
       // Show empty file embed div
-      if(isset($field['view_file']) && $field['view_file'] === true){
+      if(isset($field['view_file']) && $field['view_file'] === true && $f_value == ''){
         if(isset($field['after'])){
           $field['after'] .= '<div class="ozz-embed-file" data-ozz-embed="'.$field['name'].'"></div>';
         } else {
@@ -267,9 +267,10 @@ class Form {
         $max_repeat = isset($field['max_repeat']) ? 'data-ozz-repeat-max="'.$field['max_repeat'].'"' : '';
         $repeaterID = random_str(12);
 
+        $class = isset($field['class']) ? ' '.$field['class'] : '';
         $wrapper_class = isset($field['wrapper_class']) ? ' '.$field['wrapper_class'] : ''; // Repeater wrapper class
         $html .= '
-        <fieldset id="rpt-'.$repeaterID.'" class="ozz-fm__repeat'.$wrapper_class.'" data-ozz-repeat="true" '.$max_repeat.' data-rpt="'.$field['name'].'">
+        <fieldset id="rpt-'.$repeaterID.'" class="ozz-fm__repeat'.$wrapper_class.' '.$class.'" data-ozz-repeat="true" '.$max_repeat.' data-rpt="'.$field['name'].'">
           <div class="ozz-fm__repeat-top">
             <legend class="ozz-fm__repeat-label">'.(isset($field['label']) ? $field['label'] : 'Untitled').'</legend>
             <span class="field_note">'.(isset($field['note']) ? $field['note'] : '').'</span>
@@ -282,17 +283,27 @@ class Form {
 
         // Common code for creating a repeated field block
         $createRepeatedFieldBlock = function ($i, $repeaterValue, $prefix) use ($repeaterFields, &$html) {
-          $first_title = current(array_filter($repeaterValue, function ($value) {
-            return is_string($value) && !empty($value);
-          }));
+          $first_title = '';
+          if ( !empty($repeaterValue) ) {
+            $first_title = current(array_filter($repeaterValue, function ($value) {
+              return is_string($value) && !empty($value);
+            }));
+          }
 
           $html .= '<div id="rptf-' . random_str(18) . '" class="ozz-fm__repeat-fields">';
-          $html .= '<div class="ozz-fm__repeat-head '.(isset($repeaterFields['expand']) && $repeaterFields['expand'] === true ? '' : 'close').'">';
+          $html .= '<div class="ozz-fm__repeat-head '
+            .(isset($repeaterFields['expand']) && $repeaterFields['expand'] === true ? '' : 'close')
+            .' '.(isset($repeaterFields['repeater_head_class']) ? $repeaterFields['repeater_head_class'] : '')
+            .'">';
           $html .= '<span class="ozz-fm__repeat-title">' . esc(html_decode($first_title)) . '</span>';
           $html .= '<span class="ozz-fm__repeat-number">' . ((int)$i + 1) . '</span>';
           $html .= '<span class="ozz-fm__repeat-remove button micro danger">Delete</span>';
           $html .= '</div>';
-          $html .= '<div class="ozz-fm__repeat-body '.(isset($repeaterFields['expand']) && $repeaterFields['expand'] === true ? '' : 'close').'">';
+          $html .= '<div class="ozz-fm__repeat-body '
+            .(isset($repeaterFields['expand']) && $repeaterFields['expand'] === true ? '' : 'close')
+            .' '.(isset($repeaterFields['repeater_body_class']) ? $repeaterFields['repeater_body_class'] : '')
+            .'">';
+
           $html .= self::generateFields($repeaterFields, $repeaterValue, $prefix . $i . '__');
           $html .= '</div></div>';
         };
@@ -311,7 +322,7 @@ class Form {
         }
         // Default
         else {
-          $createRepeatedFieldBlock(0, $values, $f_name . '__');
+          $createRepeatedFieldBlock(0, [], $f_name . '__');
         }
 
         $html .= '</div>
@@ -471,6 +482,8 @@ class Form {
       $attrs_only['optgroup'],
       $attrs_only['wrapper'],
       $attrs_only['wrapper_class'],
+      $attrs_only['repeater_head_class'],
+      $attrs_only['repeater_body_class'],
       $attrs_only['input_wrapper'],
       $attrs_only['note'],
       $attrs_only['note_class'],

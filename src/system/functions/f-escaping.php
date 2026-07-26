@@ -86,11 +86,10 @@ function esc_svg($svg, $allowed_elms=[]) {
 /**
  * Decode encoded HTML
  * @param string $str encoded HTML
- * 
- * @return HTML
+ * @return string
  */
-function html_decode($str, $flag=false){
-  return htmlspecialchars_decode( $str, ENT_QUOTES );
+function html_decode(string $str, $flag=ENT_QUOTES){
+  return htmlspecialchars_decode( $str, $flag );
 }
 
 /**

@@ -166,10 +166,10 @@ function get_mime_by_extension(string $ext): string|false {
  * Get All Items paths inside a directory as array
  * @param string $dir Directory to scan
  */
-function get_directory_content($dir, $nested=false) {
+function get_directory_content(string $dir, $nested=false) {
   $result = [];
   $contents = scandir($dir);
-  $contents = array_diff($contents, array('.', '..', '.gitkeep', '.gitignore', '.htaccess'));
+  $contents = array_diff($contents, ['.', '..', '.gitkeep', '.gitignore', '.htaccess']);
   foreach ($contents as $item) {
     $path = $dir . DIRECTORY_SEPARATOR . $item;
     if(is_dir($path)){
@@ -194,9 +194,9 @@ function format_size_units($bytes) {
 
 /**
  * Convert youtube URL to embed URL
- * @param string $url
+ * @param string $inputURL
  */
-function youtube_embed_url($inputURL) {
+function youtube_embed_url(string $inputURL) {
   if (strpos($inputURL, 'youtube.com') !== false) {
     $query = parse_url($inputURL, PHP_URL_QUERY);
     parse_str($query, $params);
@@ -262,8 +262,8 @@ function array_pagination($data, $items_per_page, $current_index) {
  * Pagination DOM
  * @param int $num_pages Number of total pages
  * @param int $current_page Current page ID
- * @param string $url URL to the links
  * @param int $pages_to_show Page links to show in DOM
+ * @param string $link_url URL to the links
  */
 function pagination_dom($num_pages, $current_page, $pages_to_show=5, $link_url=false) {
   $dom = '<div class="pagination">';
@@ -333,7 +333,7 @@ function url_add_query($url, $params) {
  * @param array $args
  * @param array $values
  */
-function create_form($args, $values=[]) {
+function create_form(array $args, array $values=[]) {
   return Form::create($args, $values);
 }
 function _create_form($args, $values=[]) {
@@ -344,7 +344,7 @@ function _create_form($args, $values=[]) {
  * Start Form
  * @param array $args
  */
-function start_form($args) {
+function start_form(array $args) {
   return Form::start($args);
 }
 
@@ -359,8 +359,18 @@ function end_form($args=false) {
  * Generate form fields
  * @param array $args
  */
-function form_create_fields($args) {
-  return Form::generateFields($args);
+function form_create_fields(array $args, $values=[], $prefix='') {
+  return Form::generateFields($args, $values, $prefix);
+}
+
+/**
+ * Convert raw form data to proper array
+ * eg: repeater__0__name => repeater[0][name]
+ * @param mixed $data
+ * @return array
+ */
+function normalize_form_data($data) {
+  return ozz_i_convert_str_to_array_1($data);
 }
 
 /**

@@ -425,7 +425,7 @@ class Validate {
    * @param array $file The file to be validated
    * @param string $rule Each (file Validation rule)
    * @param string $v Rule argument
-   * @param string $input key
+   * @param string $key key
    */
   public static function file($file, $rule, $v, $key){
     if(isset($file['tmp_name'])) {

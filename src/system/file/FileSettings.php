@@ -92,9 +92,17 @@ trait FileSettings {
       'jpeg'        => @imagejpeg($image, $path, $quality),
       'png'         => @imagepng($image, $path),
       'bmp'         => @imagebmp($image, $path, $quality),
-      'webp'        => @imagewebp($image, $path, $quality),
+      'webp'        => self::saveAsWebp($image, $path, $quality),
       default       => false,
     };
+  }
+
+  private static function saveAsWebp($image, $path, $quality) {
+    if (!imageistruecolor($image)) {
+      imagepalettetotruecolor($image);
+    }
+
+    return @imagewebp($image, $path, $quality);
   }
 
   /**
@@ -235,7 +243,7 @@ trait FileSettings {
 
         // Make Copy
         if($gdImage){
-          $newCopy = imagecreatetruecolor(intval($newWidth), intval($newHeight));
+          $newCopy = imagecreatetruecolor(\intval($newWidth), \intval($newHeight));
 
           if ($ext === 'png' || $ext === 'webp') {
             imagealphablending($newCopy, false); // Turn off alpha blending
@@ -243,16 +251,16 @@ trait FileSettings {
             imagefill($newCopy, 0, 0, imagecolorallocatealpha($newCopy, 0, 0, 0, 127));
           }
 
-          imagecopyresampled($newCopy, $gdImage, $dstX, $dstY, $srcX, $srcY, intval($newWidth), intval($newHeight), $origWidth, $origHeight);
+          imagecopyresampled($newCopy, $gdImage, $dstX, $dstY, $srcX, $srcY, \intval($newWidth), \intval($newHeight), $origWidth, $origHeight);
           $qlt = $copy['quality'] ?? 100;
 
           !is_dir($copyDir) ? mkdir($copyDir, 0777, true) : false; // Make directory if not exist
 
-          if(($ext === 'png' || $ext === 'webp') && in_array($copyFormat, ['jpg','jpeg'])){
-            $bg = imagecreatetruecolor( intval($newWidth), intval($newHeight) );
+          if(($ext === 'png' || $ext === 'webp') && \in_array($copyFormat, ['jpg','jpeg'])){
+            $bg = imagecreatetruecolor( \intval($newWidth), \intval($newHeight) );
             $white = imagecolorallocate( $bg, 255, 255, 255 );
             imagefill($bg, 0, 0, $white);
-            imagecopy( $bg, $newCopy, 0, 0, 0, 0, intval($newWidth), intval($newHeight) );
+            imagecopy( $bg, $newCopy, 0, 0, 0, 0, \intval($newWidth), \intval($newHeight) );
             imagedestroy($newCopy);
             $newCopy = $bg;
           }
@@ -277,7 +285,7 @@ trait FileSettings {
     }
 
     // Free up parent image memory
-    if (isset($gdImage) && ($gdImage instanceof \GdImage || is_resource($gdImage))) {
+    if (isset($gdImage) && ($gdImage instanceof \GdImage || \is_resource($gdImage))) {
       imagedestroy($gdImage);
     }
 
