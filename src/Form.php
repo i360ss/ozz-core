@@ -231,17 +231,21 @@ class Form {
             $field['value'] = $values[$name];
           }
         }
+      }
 
-        // Show/Embed file after the field (Image, video, audio, doc, ect)
-        if(isset($field['view_file']) && $field['view_file'] === true){
-          $byExt = isset($field['view_file_ext']) ? $field['view_file_ext'] : false;
-          $uploaded_file_DOM = embed_files_to_dom($values[$name], $field['name'], $byExt);
+      // Show/Embed file after the field (Image, video, audio, doc, ect)
+      if(isset($field['view_file']) && $field['view_file'] === true){
+        $fileValue = !empty($f_value) ? $f_value : ($field['value'] ?? '');
+        if (!empty($fileValue)) {
+          $field['data-file-value'] = json_encode(is_array($fileValue) ? $fileValue : [$fileValue], true);
+        }
+        $byExt = isset($field['view_file_ext']) ? $field['view_file_ext'] : false;
+        $uploaded_file_DOM = embed_files_to_dom($fileValue, $field['name'], $byExt);
 
-          if(isset($field['after'])){
-            $field['after'] .= $uploaded_file_DOM;
-          } else {
-            $field['after'] = $uploaded_file_DOM;
-          }
+        if(isset($field['after'])){
+          $field['after'] .= $uploaded_file_DOM;
+        } else {
+          $field['after'] = $uploaded_file_DOM;
         }
       }
 

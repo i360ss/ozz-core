@@ -58,7 +58,7 @@ trait FileSettings {
     if (isset($copies) && $copies === true) {
       return isset($im) ? $im : false;
     } else {
-      return isset($image) ? true : false; // imagedestroy($im);
+      return isset($image) ? true : false;
     }
   }
 
@@ -261,16 +261,10 @@ trait FileSettings {
             $white = imagecolorallocate( $bg, 255, 255, 255 );
             imagefill($bg, 0, 0, $white);
             imagecopy( $bg, $newCopy, 0, 0, 0, 0, \intval($newWidth), \intval($newHeight) );
-            imagedestroy($newCopy);
             $newCopy = $bg;
           }
 
           $finalCopy = self::saveImageResource( $newCopy, $copyDirWithName, $copyFormat, $qlt );
-
-          // Free up memory for this specific copy canvas
-          if (is_resource($newCopy) || $newCopy instanceof \GdImage) {
-            imagedestroy($newCopy);
-          }
         }
 
         // Copies Response
@@ -282,11 +276,6 @@ trait FileSettings {
           $finalOut['copies']['error'] = true;
         }
       }
-    }
-
-    // Free up parent image memory
-    if (isset($gdImage) && ($gdImage instanceof \GdImage || \is_resource($gdImage))) {
-      imagedestroy($gdImage);
     }
 
     // dd($finalOut);
