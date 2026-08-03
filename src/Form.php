@@ -149,7 +149,7 @@ class Form {
    * @param array $base_fields
    * @param array $values
    */
-  public static function generateFields(array $base_fields, array $values=[], $prefix='') {
+  public static function generateFields(array $base_fields, array $values=[], $prefix='', $index=false) {
     $html = '';
     $fields = isset($base_fields['fields']) ? $base_fields['fields'] : $base_fields;
     $is_cms = env('app', 'ENABLE_CMS');
@@ -249,15 +249,6 @@ class Form {
         }
       }
 
-      // Show empty file embed div
-      if(isset($field['view_file']) && $field['view_file'] === true && $f_value == ''){
-        if(isset($field['after'])){
-          $field['after'] .= '<div class="ozz-embed-file" data-ozz-embed="'.$field['name'].'"></div>';
-        } else {
-          $field['after'] = '<div class="ozz-embed-file" data-ozz-embed="'.$field['name'].'"></div>';
-        }
-      }
-
       // Generate Repeatable fields
       if(in_array($type, ['repeat', 'repeater', 'repeatable'])){
         if(env('app', 'ENABLE_CMS')) {
@@ -308,7 +299,7 @@ class Form {
             .' '.(isset($repeaterFields['repeater_body_class']) ? $repeaterFields['repeater_body_class'] : '')
             .'">';
 
-          $html .= self::generateFields($repeaterFields, $repeaterValue, $prefix . $i . '__');
+          $html .= self::generateFields($repeaterFields, $repeaterValue, $prefix . $i . '__', $i + 1);
           $html .= '</div></div>';
         };
 
@@ -335,7 +326,7 @@ class Form {
 
       } else {
         // Generate Field HTML output
-        $eachInputDOM = self::input($type, $field, true);
+        $eachInputDOM = self::input($type, $field, true, $index);
         $thisField = $eachInputDOM['field'];
         $thisLabel = $eachInputDOM['label'];
         $thisNote = $eachInputDOM['note'];
@@ -385,7 +376,7 @@ class Form {
 
             foreach ($field['value'] as $i => $r_value) {
               $field['value'] = $r_value;
-              $input = self::input($field['type'], $field, true);
+              $input = self::input($field['type'], $field, true, $i + 1);
               $thisField .= '
               <div id="rptf-'.random_str(18).'" class="ozz-fm__repeat-fields">
                 <span class="ozz-fm__repeat-number">'.((int) $i + 1).'</span>
@@ -465,10 +456,17 @@ class Form {
    * @param string $type
    * @param array $args Field settings
    * @param boolean $field_label_spr Separate field and label and return as array if true
+   * @param bool|int|string $index Field index (for IDs of fields inside repeaters)
    */
-  public static function input($type, $args, $field_label_spr=false){
+  public static function input($type, $args, $field_label_spr=false, $index=false){
     // Set input field
     $thisField = '';
+
+    // Make IDs unique with index (Works on Repeaters)
+    if(!empty($args['id']) && !empty($index)) {
+      $args['id'] = $args['id'].'_'.$index;
+    }
+
     $attrs_only = $args;
     $is_single_repeatable = (isset($args['repeat']) && $args['repeat'] === true) ? true : false;
 
