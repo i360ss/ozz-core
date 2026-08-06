@@ -103,7 +103,7 @@ class Form {
   /**
    * End Form
    */
-  public static function end($args = false){
+  public static function end(mixed $args = false){
     if (!self::$assetsLoaded && !empty($args['load_js']) && $args['load_js'] === true) {
       self::$assetsLoaded = true;
       if (file_exists(ASSETS_DIR.'js/ozz-form.js')) {
