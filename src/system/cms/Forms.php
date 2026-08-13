@@ -22,11 +22,11 @@ trait Forms {
    * @param object $request Request object
    */
   protected function create_form_entry($form, $request) {
-    $this->tracking_validation($form, $request->input()); // Validate form
+    $entry = array_merge($request->input(), $request->files());
+    $this->tracking_validation($form, $entry); // Validate form
     $userAgent = new UserAgent;
 
     // Get form and client info
-    $entry = $request->input();
     $entry['__user_info'] = [
       'ip' => $request->ip(),
       'agent' => json_encode( $userAgent->parse() ),
@@ -129,15 +129,15 @@ trait Forms {
    * Update Form entry
    * @param string $form Form name
    * @param int $id Entry ID
-   * @param array $request Request object
+   * @param object $request Request object
    * @param boolean $check_user Check entry owner and current user ID
    */
   protected function update_form_entry($form, $id, $request, $check_user=true) {
-    $this->tracking_validation($form, $request->input()); // Validate form
+    $entry = array_merge($request->input(), $request->files());
+    $this->tracking_validation($form, $entry); // Validate form
     $userAgent = new UserAgent;
 
     $current_entry = get_entry($id);
-    $entry = $request->input();
     $entry['id'] = !is_numeric($entry['id']) ? dec_base64($entry['id']) : $entry['id'];
     unset($entry['f'], $entry['csrf_token'], $entry['submit']);
 
