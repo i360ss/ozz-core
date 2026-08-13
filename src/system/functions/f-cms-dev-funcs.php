@@ -1,6 +1,5 @@
 <?php
 use Ozz\Core\CMS;
-use Ozz\Core\Request;
 use Ozz\Core\Cache;
 
 # ----------------------------------------------------
@@ -16,6 +15,10 @@ class CMSFuncs {
   use \Ozz\Core\system\cms\Forms;
 
   protected $cms_forms;
+
+  public function __construct() {
+    $this->cms_forms = CMS::getInstance()->cms_forms;
+  }
 
   /**
    * Convert prepared SQL query with parameters to raw SQL for debugging purposes
