@@ -58,7 +58,7 @@ class Templating extends AppInit {
     $regComps = [];
     $data = Sanitize::templateContext($customData);
     $context['view'] = $vv;
-    $context['query'] = $context['request']['query'];
+    $context['query'] = $context['request']['query'] ?? [];
     $context['layout'] = (isset($base_template) && $base_template !== '')
       ? $base_template
       : ($base_template_from_router ? $base_template_from_router : 'layout');

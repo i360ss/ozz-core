@@ -314,8 +314,6 @@ class Router extends AppInit {
    * @param string $template Base layout template
    */
   public static function view($vv, $data=[], $template=false){
-    // new Request;
-    $request = Request::getInstance();
     return Templating::render($vv, $data, $template, self::$template, self::$context);
   }
 
