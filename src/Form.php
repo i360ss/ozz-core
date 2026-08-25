@@ -277,7 +277,7 @@ class Form {
         $parent_repeater = ozz_i_convert_str_to_array_1(array_intersect_key($values, $ptn));
 
         // Common code for creating a repeated field block
-        $createRepeatedFieldBlock = function ($i, $repeaterValue, $prefix) use ($repeaterFields, &$html) {
+        $createRepeatedFieldBlock = function ($i, $repeaterValue, $prefix, $temp=false) use ($repeaterFields, &$html) {
           $first_title = '';
           if ( !empty($repeaterValue) ) {
             $first_title = current(array_filter($repeaterValue, function ($value) {
@@ -285,6 +285,7 @@ class Form {
             }));
           }
 
+          $html .= $temp === true ? '<template class="repeat-template">' : '';
           $html .= '<div id="rptf-' . random_str(18) . '" class="ozz-fm__repeat-fields">';
           $html .= '<div class="ozz-fm__repeat-head '
             .(isset($repeaterFields['expand']) && $repeaterFields['expand'] === true ? '' : 'close')
@@ -301,6 +302,7 @@ class Form {
 
           $html .= self::generateFields($repeaterFields, $repeaterValue, $prefix . $i . '__', $i + 1);
           $html .= '</div></div>';
+          $html .= $temp === true ? '</template>' : '';
         };
 
         // Parent/Post level repeater
@@ -315,10 +317,9 @@ class Form {
             $createRepeatedFieldBlock($i, $repeaterValue, $f_name . '__');
           }
         }
-        // Default
-        else {
-          $createRepeatedFieldBlock(0, [], $f_name . '__');
-        }
+
+        // Default template
+        $createRepeatedFieldBlock(0, [], $f_name . '__', true);
 
         $html .= '</div>
           <span class="ozz-fm__repeat-add button mini">'.$repeater_label.'</span>
