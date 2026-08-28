@@ -149,7 +149,7 @@ class Form {
    * @param array $base_fields
    * @param array $values
    */
-  public static function generateFields(array $base_fields, array $values=[], $prefix='', $index=false) {
+  public static function generateFields(array $base_fields, array $values=[], $prefix='', $index=false, $field_options=null) {
     $html = '';
     $fields = isset($base_fields['fields']) ? $base_fields['fields'] : $base_fields;
     $is_cms = env('app', 'ENABLE_CMS');
@@ -170,16 +170,24 @@ class Form {
 
       $field['name'] = $f_name;
 
+      // Add global options for fields
+      $global_options = $field_options !== null
+        ? $field_options
+        : (
+          isset($base_fields['field_options'])
+            ? $base_fields['field_options']
+            : (
+                isset(self::$initial_form['field_options'])
+                  ? self::$initial_form['field_options']
+                  : false
+              )
+        );
+
       // Get the value for the current field
       $f_value = (!empty($values) && isset($values[$name])) ? $values[$name] : '';
 
       // Check and add field errors
       $has_error = isset($field['name']) && has_error( rtrim($field['name'], '[]') );
-
-      // Add global options for fields
-      $global_options = isset($base_fields['field_options'])
-        ? $base_fields['field_options']
-        : (isset(self::$initial_form['field_options']) ? self::$initial_form['field_options'] : false);
 
       if($global_options){
         // Global field classes
@@ -277,7 +285,7 @@ class Form {
         $parent_repeater = ozz_i_convert_str_to_array_1(array_intersect_key($values, $ptn));
 
         // Common code for creating a repeated field block
-        $createRepeatedFieldBlock = function ($i, $repeaterValue, $prefix, $temp=false) use ($repeaterFields, &$html) {
+        $createRepeatedFieldBlock = function ($i, $repeaterValue, $prefix, $temp=false) use ($repeaterFields, $global_options, &$html) {
           $first_title = '';
           if ( !empty($repeaterValue) ) {
             $first_title = current(array_filter($repeaterValue, function ($value) {
@@ -300,7 +308,7 @@ class Form {
             .' '.(isset($repeaterFields['repeater_body_class']) ? $repeaterFields['repeater_body_class'] : '')
             .'">';
 
-          $html .= self::generateFields($repeaterFields, $repeaterValue, $prefix . $i . '__', $i + 1);
+          $html .= self::generateFields($repeaterFields, $repeaterValue, $prefix . $i . '__', $i + 1, $global_options);
           $html .= '</div></div>';
           $html .= $temp === true ? '</template>' : '';
         };
@@ -373,7 +381,16 @@ class Form {
             // Single repeater with values
             $thisField = '
             <div id="rpt-'.$s_repeaterID.'" class="ozz-fm__repeat single" data-ozz-repeat="true" '.$max_repeat.' data-rpt="'.$field['name'].'">
-            <div id="rptw-'.$s_repeaterID.'" class="ozz-fm__repeat-wrapper">';
+            <div id="rptw-'.$s_repeaterID.'" class="ozz-fm__repeat-wrapper">
+            
+              <template class="repeat-template">
+                <div id="rptf-'.random_str(18).'" class="ozz-fm__repeat-fields">
+                  <span class="ozz-fm__repeat-number">1</span>
+                  <div class="ozz-fm__repeat-fields-field">'.$thisField.'</div>
+                  <span class="ozz-fm__repeat-remove button micro danger">Delete</span>
+                </div>
+              </template>
+            ';
 
             foreach ($field['value'] as $i => $r_value) {
               $field['value'] = $r_value;
@@ -390,15 +407,17 @@ class Form {
 
             $thisField .= '</div><span class="ozz-fm__repeat-add button mini">'.$repeater_label.'</span></div>';
           } else {
-            // Single repeater without values
+            // Single repeater default template values
             $thisField = '
             <div id="rpt-'.$s_repeaterID.'" class="ozz-fm__repeat single" data-ozz-repeat="true" '.$max_repeat.' data-rpt="'.$f_name.'">
               <div id="rptw-'.$s_repeaterID.'" class="ozz-fm__repeat-wrapper">
-                <div id="rptf-'.random_str(18).'" class="ozz-fm__repeat-fields">
-                  <span class="ozz-fm__repeat-number">1</span>
-                  <div class="ozz-fm__repeat-fields-field">'.$thisField.'</div>
-                  <span class="ozz-fm__repeat-remove button micro danger">Delete</span>
-                </div>
+                <template class="repeat-template">
+                  <div id="rptf-'.random_str(18).'" class="ozz-fm__repeat-fields">
+                    <span class="ozz-fm__repeat-number">1</span>
+                    <div class="ozz-fm__repeat-fields-field">'.$thisField.'</div>
+                    <span class="ozz-fm__repeat-remove button micro danger">Delete</span>
+                  </div>
+                </template>
               </div>
               <span class="ozz-fm__repeat-add button mini">'.$repeater_label.'</span>
             </div>';
@@ -426,22 +445,52 @@ class Form {
 
         // Global each element wrapper
         if($global_options !== false){
-          // Wrapper Class
-          if (isset($global_options['wrapper']) && (!isset($field['wrapper']) || $field['wrapper'] !== false)) {
+          if( isset($global_options['wrapper']) && (!isset($field['wrapper']) || $field['wrapper'] !== false) ){
+            $fieldWrapper = $global_options['wrapper'];
+
+            // Developer-defined wrapper class
             if(isset($field['wrapper_class'])){
-              if (strpos($global_options['wrapper'], 'class=') !== false) {
-                $global_options['wrapper'] = preg_replace('/class="/', 'class="' . $field['wrapper_class'] . ' ', $global_options['wrapper'], 1);
+              if(strpos($fieldWrapper, 'class=') !== false){
+                $fieldWrapper = preg_replace(
+                  '/class="/',
+                  'class="'.$field['wrapper_class'].' ',
+                  $fieldWrapper,
+                  1
+                );
               } else {
-                $global_options['wrapper'] = preg_replace('/<div/', '<div class="'.$field['wrapper_class'].'"', $global_options['wrapper'], 1);
+                $fieldWrapper = preg_replace(
+                  '/<div/',
+                  '<div class="'.$field['wrapper_class'].'"',
+                  $fieldWrapper,
+                  1
+                );
               }
             }
 
-            // Add field type to wrapper class
-            if ($type) {
-              $global_options['wrapper'] = preg_replace('/class="/', 'class="ozz-fm__'.$type.'-wrap ', $global_options['wrapper'], 1);
+            // Automatically add field type wrapper class
+            if($type){
+              if(strpos($fieldWrapper, 'class=') !== false){
+                $fieldWrapper = preg_replace(
+                  '/class="/',
+                  'class="ozz-fm__'.$type.'-wrap ',
+                  $fieldWrapper,
+                  1
+                );
+              } else {
+                $fieldWrapper = preg_replace(
+                  '/<div/',
+                  '<div class="ozz-fm__'.$type.'-wrap"',
+                  $fieldWrapper,
+                  1
+                );
+              }
             }
 
-            $formInnerDOM = str_replace('##', "\n".$formInnerDOM."\n", $global_options['wrapper'])."\n";
+            $formInnerDOM = str_replace(
+              '##',
+              "\n".$formInnerDOM."\n",
+              $fieldWrapper
+            )."\n";
           }
         }
 
