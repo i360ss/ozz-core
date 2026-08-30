@@ -85,6 +85,11 @@ class ExceptionHandler {
   public static function handler($exception, $debug = true) {
     http_response_code(500);
 
+    // Clear output to show only exception
+    while (ob_get_level() > 0) {
+      ob_end_clean();
+    }
+
     if (self::hasJsonHeader()) {
       header('Content-Type: application/json; charset=utf-8');
 
