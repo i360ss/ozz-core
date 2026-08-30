@@ -738,8 +738,7 @@ class Form {
           data-ozz-filter-multiple="'.$multiple.'"
           class="filter-field '.$filter_classes.'"
           >
-          '.self::text($args) . self::hidden($hiddenArgs) .'
-          <ul class="hidden" data-ozz-filter-dropdown tabindex="-1">'.$dropdown.'</ul>
+          '.self::text($args) . '<ul class="hidden" data-ozz-filter-dropdown tabindex="-1">'.$dropdown.'</ul>' . self::hidden($hiddenArgs) .'
         </div>';
       }
     }
