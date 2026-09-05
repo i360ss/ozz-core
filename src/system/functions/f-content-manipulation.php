@@ -57,7 +57,9 @@ function _str_between_all($str, $start, $end) {
  * @param string $str string to convert
  */
 function to_snakecase($str) {
-  return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $str));
+  $str = preg_replace('/(?<!^)[A-Z]/', '_$0', $str);
+  $str = preg_replace('/[\s-]+/', '_', $str);
+  return strtolower(preg_replace('/_+/', '_', $str));
 }
 
 /**
@@ -122,7 +124,6 @@ function find_in_array_by_key_tree($keys, $value) {
 
 /**
  * Get sub-classes of a class
- * @param object $parent
  */
 function get_sub_classes($parent) {
   $result = array();
