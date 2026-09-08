@@ -98,6 +98,10 @@ trait FileSettings {
   }
 
   private static function saveAsWebp($image, $path, $quality) {
+    if (!$image instanceof \GdImage) {
+      return false;
+    }
+
     if (!imageistruecolor($image)) {
       imagepalettetotruecolor($image);
     }
@@ -147,7 +151,7 @@ trait FileSettings {
         DEBUG ? Err::paramsRequiredForUploadSettings('File::upload() settings') : false;
       }
     } else {
-      $targetFormat = self::$settings['convert_to'] ?? strtolower(pathinfo($imgName, PATHINFO_EXTENSION));
+      $targetFormat = $ext === 'svg' ? 'svg' : (self::$settings['convert_to'] ?? $ext);
       $name = self::setName(self::$settings, $imgName, $targetFormat);
 
       if(isset(self::$settings['mkdir']) && self::$settings['mkdir'] === true){
@@ -189,24 +193,43 @@ trait FileSettings {
         $finalOut['copies']['error'] = false;
 
         // Manipulate image
-        $gdImage = self::uploadEachImage($imgName, $imgTmp, null, null, true); // GDimage
-        list($origWidth, $origHeight, $type) = getimagesize($imgTmp);
+        if ($ext === 'svg') {
+          $gdImage = false; // SVG does not use GD
+        } else {
+          $gdImage = self::uploadEachImage($imgName, $imgTmp, null, null, true); // GDimage
 
-        // Image Resizing
-        $newWidth = $origWidth;
-        $newHeight = $origHeight;
+          if (!$gdImage) {
+            $finalOut['copies']['error'] = true;
+            continue;
+          }
 
-        if(isset($copy['width']) && $copy['width'] !== ''){
-          $ratio = $copy['width'] / $origWidth;
-          $newWidth = $copy['width'];
-          $newHeight = $origHeight * $ratio;
+          $imageInfo = getimagesize($imgTmp);
+
+          if (!$imageInfo) {
+            $finalOut['copies']['error'] = true;
+            continue;
+          }
+
+          [$origWidth, $origHeight] = $imageInfo;
         }
 
-        if(isset($copy['height']) && $copy['height'] !== ''){
-          if($newHeight > $copy['height']){
-            $ratio = $copy['height'] / $origHeight;
-            $newHeight = $copy['height'];
-            $newWidth = $origWidth * $ratio;
+        // Image Resizing
+        if ($ext !== 'svg') {
+          $newWidth = $origWidth;
+          $newHeight = $origHeight;
+
+          if(isset($copy['width']) && $copy['width'] !== ''){
+            $ratio = $copy['width'] / $origWidth;
+            $newWidth = $copy['width'];
+            $newHeight = $origHeight * $ratio;
+          }
+
+          if(isset($copy['height']) && $copy['height'] !== ''){
+            if($newHeight > $copy['height']){
+              $ratio = $copy['height'] / $origHeight;
+              $newHeight = $copy['height'];
+              $newWidth = $origWidth * $ratio;
+            }
           }
         }
 
@@ -224,8 +247,13 @@ trait FileSettings {
         }
 
         // Rename the Copy (with prefix)
-        $nameSize = '-'.round($newWidth).'x'.round($newHeight).'.';
-        $copyFormat = $copy['convert_to'] ?? $targetFormat;
+        if ($ext === 'svg') {
+          $nameSize = '.';
+        } else {
+          $nameSize = '-'.round($newWidth).'x'.round($newHeight).'.';
+        }
+
+        $copyFormat = $ext === 'svg' ? 'svg' : ($copy['convert_to'] ?? $targetFormat);
         $prifix = isset(self::$settings['prefix']) ? self::$settings['prefix'] : '';
 
         if((isset($copy['rename']) &&  $copy['rename'] !== '')){
@@ -240,6 +268,46 @@ trait FileSettings {
         // Final Copy DIR + NAME
         $copyDir = isset($copy['dir']) ? UPLOAD_DIR.$copy['dir'] : UPLOAD_DIR;
         $copyDirWithName = $copyDir.$fileName;
+
+        // SVG copy
+        if ($ext === 'svg') {
+          $svgContent = file_get_contents($imgTmp);
+
+          $sanitizedSVG = false;
+          $conf = CMS_CONFIG ? CMS_CONFIG : CONFIG;
+
+          if ($conf['SANITIZE_SVG'] === true) {
+            $wildcard = $conf['SANITIZE_SVG_ALLOWED_ELEMENTS']
+              ? $conf['SANITIZE_SVG_ALLOWED_ELEMENTS']
+              : [];
+
+            $sanitizedSVG = esc_svg($svgContent, $wildcard);
+          }
+
+          $svgContent = $sanitizedSVG ?: $svgContent;
+
+          $copyDir = isset($copy['dir'])
+              ? UPLOAD_DIR.$copy['dir']
+              : UPLOAD_DIR;
+
+          !is_dir($copyDir)
+              ? mkdir($copyDir, 0777, true)
+              : false;
+
+          $copyDirWithName = $copyDir.$fileName;
+
+          if (file_put_contents($copyDirWithName, $svgContent) !== false) {
+            $imgurl = isset($copy['dir'])
+              ? $copy['dir'].$fileName
+              : $fileName;
+
+            $finalOut['copies']['url'][$key] = $imgurl;
+          } else {
+            $finalOut['copies']['error'] = true;
+          }
+
+          continue;
+        }
 
         // Make Copy
         if($gdImage){
