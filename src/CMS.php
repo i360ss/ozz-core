@@ -217,6 +217,16 @@ class CMS {
 
       $block_prefix = 'block__'.$block['name'].'__';
 
+      // Inject internal title field
+      $internalField = [
+        'name' => '_internal_title',
+        'type' => 'text',
+        'label' => 'Internal Title',
+        'validate' => 'req | safe',
+        'data-inner-title-field' => true
+      ];
+      $block['form']['fields'] = [$internalField, ...$block['form']['fields']];
+
       // Update field names
       $block['form']['fields'] = ozz_i_modify_field_names($block['form']['fields']); 
       foreach ($block['form']['fields'] as $ky => $field) {

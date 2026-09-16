@@ -8,8 +8,6 @@
 namespace Ozz\Core\system\cms;
 
 use Ozz\Core\Form;
-use Ozz\Core\Validate;
-use Ozz\Core\Auth;
 
 trait Blocks {
 
@@ -75,13 +73,20 @@ trait Blocks {
           $is_expand = isset($b['expand']) && $b['expand'] === true;
           $expanded = $is_expand ? ' active' : '';
 
+          // Internal block title
+          $internal_title = !empty($block['f']['_internal_title']) ? $block['f']['_internal_title'] : '';
+
           // Append each single block
           $note = (isset($b['note']) && $b['note'] !== '') ? "<p class=\"light-text\">{$b['note']}</p>" : '';
           $block_dom .= '<li class="pick-block '.$b['name'].' ozz-used-block" data-blockname="'.$b['name'].'" 
           data-expand="'.($is_expand ? 'true' : 'false').'">
             <div class="ozz-block-accordion-bar'.$expanded.'">
               <span class="ozz-handle"></span>
-              <div><h4>'.$b['label'].'</h4>'.$note.'</div>
+              <div>
+                <h4 class="ozz-block-accordion-bar__internal-title">'.esc($internal_title).'</h4>
+                <span class="ozz-block-accordion-bar__block-name">'.$b['label'].'</span>
+                <span class="ozz-block-accordion-bar__note">'.$note.'</span>
+              </div>
               <div class="ozz-block-actions">
                 <span class="ozz-block-duplicate-trigger"></span>
                 <span class="ozz-block-delete-trigger"></span>
