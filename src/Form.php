@@ -299,7 +299,7 @@ class Form {
             .(isset($repeaterFields['expand']) && $repeaterFields['expand'] === true ? '' : 'close')
             .' '.(isset($repeaterFields['repeater_head_class']) ? $repeaterFields['repeater_head_class'] : '')
             .'">';
-          $html .= '<span class="ozz-fm__repeat-title">' . esc(html_decode($first_title)) . '</span>';
+          $html .= '<span class="ozz-fm__repeat-title">' . esc( strip_tags( html_decode($first_title))) . '</span>';
           $html .= '<span class="ozz-fm__repeat-number">' . ((int)$i + 1) . '</span>';
           $html .= '<span class="ozz-fm__repeat-remove button micro danger">Delete</span>';
           $html .= '</div>';

@@ -83,7 +83,7 @@ trait Blocks {
             <div class="ozz-block-accordion-bar'.$expanded.'">
               <span class="ozz-handle"></span>
               <div>
-                <h4 class="ozz-block-accordion-bar__internal-title">'.esc($internal_title).'</h4>
+                <h4 class="ozz-block-accordion-bar__internal-title">'.esc( strip_tags($internal_title) ).'</h4>
                 <span class="ozz-block-accordion-bar__block-name">'.$b['label'].'</span>
                 <span class="ozz-block-accordion-bar__note">'.$note.'</span>
               </div>
