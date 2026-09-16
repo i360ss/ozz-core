@@ -289,7 +289,7 @@ class Form {
           $first_title = '';
           if ( !empty($repeaterValue) ) {
             $first_title = current(array_filter($repeaterValue, function ($value) {
-              return is_string($value) && !empty($value);
+              return is_string($value) && !empty($value) && !is_json($value);
             }));
           }
 
@@ -308,7 +308,7 @@ class Form {
             .' '.(isset($repeaterFields['repeater_body_class']) ? $repeaterFields['repeater_body_class'] : '')
             .'">';
 
-          $html .= self::generateFields($repeaterFields, $repeaterValue, $prefix . $i . '__', $i + 1, $global_options);
+          $html .= self::generateFields($repeaterFields, ($temp !== true ? $repeaterValue : []), $prefix . $i . '__', $i + 1, $global_options);
           $html .= '</div></div>';
           $html .= $temp === true ? '</template>' : '';
         };
@@ -378,6 +378,11 @@ class Form {
           isset($field['selected']) ? $field['value'] = $field['selected'] : false;
 
           if (isset($field['value']) && is_array($field['value'])) {
+            $emptyField = $field;
+            unset($emptyField['value'], $emptyField['selected']);
+            $emptyInput = self::input($field['type'], $emptyField, true);
+            $emptyFieldHtml = $emptyInput['field'];
+
             // Single repeater with values
             $thisField = '
             <div id="rpt-'.$s_repeaterID.'" class="ozz-fm__repeat single" data-ozz-repeat="true" '.$max_repeat.' data-rpt="'.$field['name'].'">
@@ -386,7 +391,7 @@ class Form {
               <template class="repeat-template">
                 <div id="rptf-'.random_str(18).'" class="ozz-fm__repeat-fields">
                   <span class="ozz-fm__repeat-number">1</span>
-                  <div class="ozz-fm__repeat-fields-field">'.$thisField.'</div>
+                  <div class="ozz-fm__repeat-fields-field">'.$emptyFieldHtml.'</div>
                   <span class="ozz-fm__repeat-remove button micro danger">Delete</span>
                 </div>
               </template>
