@@ -20,6 +20,7 @@ trait DB {
   private $db_user;
   private $db_pass;
   private $db_prefix;
+  private $db_options;
   private $connect = null;
   private $current_connection;
 
@@ -27,23 +28,27 @@ trait DB {
    * Make MySQL Connection
    */
   protected function mysql() : void {
-    if($this->db_host !=="" && $this->db_user !=="" && $this->db_name !==""){
-      $this->connect = new Medoo([
-        'database_type' => 'mysql',
-        'database_name' => $this->db_name,
-        'server' => $this->db_host,
-        'username' => $this->db_user,
-        'password' => $this->db_pass,
-        'port' => $this->db_port ? $this->db_port : 3306,
-        'option' => [
-          PDO::ATTR_CASE => PDO::CASE_NATURAL
-        ],
-        'command' => [
-          'SET SQL_MODE=ANSI_QUOTES'
-        ],
-        'logging' => DEBUG,
-        'prefix' => isset($this->db_prefix) ? $this->db_prefix : false,
-      ]);
+    if ($this->db_host !== "" && $this->db_user !== "" && $this->db_name !== "") {
+      $rawOptions  = $this->db_options['DB_OPTIONS']  ?? ['ATTR_CASE' => 'CASE_NATURAL'];
+      $rawCommands = $this->db_options['DB_COMMANDS'] ?? ['SET SQL_MODE=ANSI_QUOTES'];
+      try {
+        $this->connect = new Medoo([
+          'database_type' => 'mysql',
+          'database_name' => $this->db_name,
+          'server'        => $this->db_host,
+          'username'      => $this->db_user,
+          'password'      => $this->db_pass,
+          'port'          => $this->db_port ?: 3306,
+          'charset'       => $this->db_options['DB_CHARSET'] ?? 'utf8mb4',
+          'collation'     => $this->db_options['DB_COLLATION'] ?? 'utf8mb4_unicode_ci',
+          'option'        => $this->resolvePdoOptions($rawOptions),
+          'command'       => $rawCommands,
+          'logging'       => DEBUG,
+          'prefix'        => $this->db_prefix ?? false,
+        ]);
+      } catch (\PDOException $e) {
+        $this->handleConnectionError($e, 'MySQL');
+      }
     }
   }
 
@@ -51,12 +56,16 @@ trait DB {
    * Make SqLite Connection
    */
   protected function sqlite() : void {
-    $this->connect = new Medoo([
-      'type' => 'sqlite',
-      'database' => BASE_DIR . ltrim($this->db_name, '/'),
-      'logging' => DEBUG,
-      'prefix' => isset($this->db_prefix) ? $this->db_prefix : false,
-    ]);
+    try {
+      $this->connect = new Medoo([
+        'type' => 'sqlite',
+        'database' => BASE_DIR . ltrim($this->db_name, '/'),
+        'logging' => DEBUG,
+        'prefix' => $this->db_prefix ?? false,
+      ]);
+    } catch (\PDOException $e) {
+      $this->handleConnectionError($e, 'SQLite');
+    }
   }
 
     /**
@@ -86,6 +95,7 @@ trait DB {
       $this->db_user = $this->DBconfig[$connection]['DB_USERNAME'];
       $this->db_pass = $this->DBconfig[$connection]['DB_PASSWORD'];
       $this->db_port = $this->DBconfig[$connection]['DB_PORT'];
+      $this->db_options = $this->DBconfig[$connection];
 
       $temp_conn = $this->db_type.$this->db_name.$this->db_host.$this->db_user.$this->db_pass.$this->db_port.$this->db_prefix;
     } else {
@@ -113,6 +123,36 @@ trait DB {
 
       return $this->connect;
     }
+  }
+
+  private function resolvePdoOptions(array $rawOptions): array {
+    $resolved = [];
+    foreach ($rawOptions as $key => $value) {
+      $constKey = defined("PDO::{$key}") ? constant("PDO::{$key}") : null;
+      if ($constKey === null) continue;
+
+      if (is_string($value) && defined("PDO::{$value}")) {
+        $resolved[$constKey] = constant("PDO::{$value}");
+      } else {
+        $resolved[$constKey] = $value;
+      }
+    }
+    return $resolved;
+  }
+
+  private function handleConnectionError(\PDOException $e, string $context): void {
+    // Always log the real error server-side, regardless of DEBUG
+    error_log("[{$context}] DB connection failed: " . $e->getMessage());
+
+    if (defined('DEBUG') && DEBUG) {
+      throw new \RuntimeException(
+        "{$context} connection failed: " . $e->getMessage(),
+        (int) $e->getCode(),
+        $e
+      );
+    }
+
+    throw new \RuntimeException('Something went wrong. Please try again later.', 0);
   }
 
 }

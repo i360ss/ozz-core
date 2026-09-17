@@ -5,7 +5,7 @@ if(APP_ENV !== 'local'){
   exit('Unauthorized');
 }
 
-$env = parse_ini_file(ENV_FILE, true);
+$env = parse_ini_file(ENV_FILE, true, INI_SCANNER_TYPED);
 $devConfig = include CONFIG_FILE;
 $defConfig = require __DIR__.'/default-config.php';
 defined('CONFIG') || define('CONFIG', array_replace_recursive($defConfig, $devConfig));

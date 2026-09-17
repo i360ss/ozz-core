@@ -13,12 +13,21 @@ if(!function_exists('ozz_func_loaded')) {
    * Get .env values
    * @param string $key the key of .env value
    */
-  function env($key=null, $key2=null){
+  function env($key = null, $key2 = null) {
     static $env = null;
-    $env ??= parse_ini_file(ENV_FILE, true);
 
-    if($key !== null && $key2 !== null) return $env[$key][$key2] ?? null;
-    if($key !== null) return $env[$key] ?? null;
+    if ($env === null) {
+      if (!is_file(ENV_FILE)) {
+        throw new \RuntimeException("Env file not found: " . ENV_FILE);
+      }
+      $env = parse_ini_file(ENV_FILE, true, INI_SCANNER_TYPED);
+      if ($env === false) {
+        throw new \RuntimeException("Failed to parse env file: " . ENV_FILE);
+      }
+    }
+
+    if ($key !== null && $key2 !== null) return $env[$key][$key2] ?? null;
+    if ($key !== null) return $env[$key] ?? null;
     return $env;
   }
 

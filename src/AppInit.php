@@ -25,7 +25,7 @@ class AppInit {
 
     $this->dependencyCheck();
 
-    $this->env = parse_ini_file(ENV_FILE, true);
+    $this->env = parse_ini_file(ENV_FILE, true, INI_SCANNER_TYPED);
 
     // Auth paths
     defined('AUTH_PATHS') || define('AUTH_PATHS', CONFIG['AUTH_PATHS']);

@@ -19,7 +19,7 @@ class ExceptionHandler {
       return false;
     }
 
-    $this->config = parse_ini_file(ENV_FILE, true);
+    $this->config = parse_ini_file(ENV_FILE, true, INI_SCANNER_TYPED);
 
     if($this->config['app']['DEBUG']){
       error_reporting(E_ALL | E_DEPRECATED);
