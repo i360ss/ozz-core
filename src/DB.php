@@ -12,6 +12,7 @@ use Ozz\Core\Medoo;
 
 trait DB {
 
+  private static array $sharedConnections = [];
   private $DBconfig;
   private $db_type;
   private $db_name;
@@ -74,21 +75,21 @@ trait DB {
    * @param string $db Database key to DB credentials (provided on env.ini) or Database name on same connection
    * @return object Database connection
    */
-  public function DB($db=null) {
+  public function DB($db = null) {
     $this->DBconfig = env();
 
     $connection = $this->DBconfig['app']['PRIMARY_DB'];
     $dbName = false;
 
     if ($db !== null && isset($this->DBconfig[$db])) {
-      $connection = $db; // New connection
+      $connection = $db;
     } elseif (null !== $db) {
-      $dbName = $db; // New Database on same connection
+      $dbName = $db;
     }
 
-    $this->db_name = $dbName ? $dbName : $this->DBconfig[$connection]['DB_NAME'];
-    $this->db_type = isset($this->DBconfig[$connection]['DB_TYPE']) ? $this->DBconfig[$connection]['DB_TYPE'] : 'mysql';
-    $this->db_prefix = $this->DBconfig[$connection]['DB_PREFIX'] ? $this->DBconfig[$connection]['DB_PREFIX'] : false;
+    $this->db_name = $dbName ?: $this->DBconfig[$connection]['DB_NAME'];
+    $this->db_type = $this->DBconfig[$connection]['DB_TYPE'] ?? 'mysql';
+    $this->db_prefix = $this->DBconfig[$connection]['DB_PREFIX'] ?: false;
 
     if ($this->db_type !== 'sqlite') {
       $this->db_host = $this->DBconfig[$connection]['DB_HOST'];
@@ -97,32 +98,24 @@ trait DB {
       $this->db_port = $this->DBconfig[$connection]['DB_PORT'];
       $this->db_options = $this->DBconfig[$connection];
 
-      $temp_conn = $this->db_type.$this->db_name.$this->db_host.$this->db_user.$this->db_pass.$this->db_port.$this->db_prefix;
+      $signature = $this->db_type.$this->db_name.$this->db_host.$this->db_user.$this->db_pass.$this->db_port.$this->db_prefix;
     } else {
-      $temp_conn = $this->db_type.$this->db_name.$this->db_prefix;
+      $signature = $this->db_type.$this->db_name.$this->db_prefix;
     }
 
-    if ($this->current_connection == $temp_conn && $this->connect !== null) {
-      return $this->connect;
-    } else {
-      $this->current_connection = $temp_conn;
-
-      switch ($this->db_type) {
-        case 'mysql':
-          $this->mysql();
-          break;
-
-        case 'sqlite':
-          $this->sqlite();
-          break;
-
-        default:
-          $this->mysql();
-          break;
-      }
-
+    if (isset(self::$sharedConnections[$signature])) {
+      $this->connect = self::$sharedConnections[$signature];
       return $this->connect;
     }
+
+    switch ($this->db_type) {
+      case 'mysql':   $this->mysql();  break;
+      case 'sqlite':  $this->sqlite(); break;
+      default:        $this->mysql();  break;
+    }
+
+    self::$sharedConnections[$signature] = $this->connect;
+    return $this->connect;
   }
 
   private function resolvePdoOptions(array $rawOptions): array {
