@@ -286,12 +286,7 @@ class Form {
 
         // Common code for creating a repeated field block
         $createRepeatedFieldBlock = function ($i, $repeaterValue, $prefix, $temp=false) use ($repeaterFields, $global_options, &$html) {
-          $first_title = '';
-          if ( !empty($repeaterValue) ) {
-            $first_title = current(array_filter($repeaterValue, function ($value) {
-              return is_string($value) && !empty($value) && !is_json($value);
-            }));
-          }
+          $first_title = self::ectractFirstClearText($repeaterValue);
 
           $html .= $temp === true ? '<template class="repeat-template">' : '';
           $html .= '<div id="rptf-' . random_str(18) . '" class="ozz-fm__repeat-fields">';
@@ -505,6 +500,41 @@ class Form {
 
     return $html;
   }
+
+
+  /**
+   * Get text from first input field of a repeater
+   * If first value is a JSON, ectract a meaningful name from it
+   */
+  private static function ectractFirstClearText($value) {
+    if (!empty($value) && is_array($value)) {
+      $processed = array_map(function ($value) {
+        if (!is_string($value) || empty($value)) {
+          return false;
+        }
+
+        if (is_json($value)) {
+          $data = json_decode($value, true);
+          if (is_array($data)) {
+            foreach (['title', 'name', 'text', 'label', 'url'] as $key) {
+              if (!empty($data[$key]) && is_string($data[$key])) {
+                return $data[$key];
+              }
+            }
+          }
+          return false; // Skip JSON if none of the target keys exist
+        }
+
+        return $value;
+      }, $value);
+
+      $filtered = array_filter($processed);
+      return reset($filtered) ?: '';
+    } else {
+      return '';
+    }
+  }
+
 
   /**
    * Default input field generator
