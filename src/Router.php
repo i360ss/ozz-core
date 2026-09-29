@@ -10,6 +10,7 @@ namespace Ozz\Core;
 use Closure;
 use Ozz\Core\Request;
 use Ozz\Core\Validate;
+use Ozz\Core\Response;
 
 if(defined('OZZ_FUNC') === false){
   require 'system/ozz-func.php';
@@ -220,12 +221,12 @@ class Router extends AppInit {
     if($path && $path !== '/'){
       if(substr($path, -1) == '/'){
         $path = preg_replace('/(\/+)/','/', substr($path, 0, -1));
-        return Router::redirect($path);
+        return $response->redirect($path);
       }
 
       if(preg_match('/(\/\/+)/', $path) > 0){
         $path = preg_replace('/(\/+)/','/',$path);
-        return Router::redirect($path);
+        return $response->redirect($path);
       }
     }
 
@@ -315,29 +316,6 @@ class Router extends AppInit {
    */
   public static function view($vv, $data=[], $template=false){
     return Templating::render($vv, $data, $template, self::$template, self::$context);
-  }
-
-  /**
-   * Header Redirect
-   * @param string $to Path/URL to redirect
-   * @param int $status Redirect status code
-   */
-  public static function redirect($to, $status=302){
-    header("Location: $to", true, $status);
-    exit;
-  }
-
-  /**
-   * Go Back (Redirect to previous URL)
-   * @param string $add Concat string after URL
-   * @param int $status Redirect status code
-   */
-  public static function back($add='', $status=301){
-    if(isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] !== ''){
-      $to = $_SERVER['HTTP_REFERER'].$add;
-      header("Location: $to", true, $status);
-      exit;
-    }
   }
 
 }

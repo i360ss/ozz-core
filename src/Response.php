@@ -97,6 +97,51 @@ class Response {
   }
 
   /**
+   * Redirect to a URL
+   *
+   * @param string $to
+   * @param int $status
+   */
+  public function redirect(string $to, int $status = 302, array $headers = []): void {
+    if (!empty($headers) ) {
+      foreach ($headers as $key => $value) {
+        $this->setHeader($key, $value);
+      }
+    }
+    $this->setHeader('Location', $to);
+    $this->setStatusCode($status);
+    $this->sendHeaders();
+    exit;
+  }
+
+  /**
+   * Redirect to the previous URL
+   *
+   * @param string $add
+   * @param int $status
+   */
+  public function back(string $add = '', int $status = 302, array $headers = []): void {
+    if (empty($_SERVER['HTTP_REFERER'])) {
+      exit;
+    }
+
+    $to = $_SERVER['HTTP_REFERER'] . $add;
+
+    foreach ($headers as $key => $value) {
+      $this->setHeader($key, $value);
+    }
+
+    if (!$this->hasHeader('HX-Redirect') && !$this->hasHeader('HX-Location')) {
+      $this->setHeader('Location', $to);
+    }
+
+    $this->setStatusCode($status);
+    $this->sendHeaders();
+
+    exit;
+  }
+
+  /**
    * Send only the HTTP status code and response headers to the client
    */
   public function sendHeaders() {
@@ -143,6 +188,12 @@ class Response {
 
     $this->sendHeaders();
 
+    // Redirect response
+    if ($this->hasHeader('Location')) {
+      $this->reset();
+      return;
+    }
+
     // Check if it's a page view for debug bar / cache logic
     if (isset($this->headers) && !empty($this->headers)) {
       foreach ($this->headers as $key => $values) {
@@ -187,13 +238,21 @@ class Response {
     }
 
     // Reset Response properties
+    $this->reset();
+
+    (new AfterRequest)->run();
+  }
+
+  /**
+   * Reset response props
+   */
+  private function reset(): void {
     $this->headers = [];
     $this->content = null;
     $this->status_code = null;
+    $this->csp_nonce = null;
 
     self::$instance = null;
-
-    (new AfterRequest)->run();
   }
 
 }

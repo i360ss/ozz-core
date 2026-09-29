@@ -21,8 +21,8 @@ function view($view, $data=[], $template='') {
  * @param string $add Concat string after URL
  * @param int $status HTTP Status Code
  */
-function back($add='', $status=301) {
-  return Router::back($add, $status);
+function back($add='', $status=301, $headers=[]) {
+  return Response::getInstance()->back($add, $status, $headers);
 }
 
 /**
@@ -30,8 +30,8 @@ function back($add='', $status=301) {
  * @param string $to Path to redirect
  * @param int $status HTTP status code
  */
-function redirect($to, $status=301) {
-  return Router::redirect($to, $status);
+function redirect($to, $status=301, $headers=[]) {
+  return Response::getInstance()->redirect($to, $status, $headers);
 }
 
 /**

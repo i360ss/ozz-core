@@ -8,7 +8,6 @@ namespace App\middleware;
 
 use Ozz\Core\Request;
 use Ozz\Core\Response;
-use Ozz\Core\Router;
 use Ozz\Core\Auth;
 
 class ".ucfirst($middlewareName)." {
@@ -26,9 +25,9 @@ class ".ucfirst($middlewareName)." {
     \$isDeniedPage = in_array(\$request->path(), \$deniedPages);
 
     if(\$loggedIn && \$isDeniedPage){
-      return Router::redirect(Auth::getLandingPage());
+      return \$response->redirect(Auth::getLandingPage());
     } elseif(!\$loggedIn && !\$isDeniedPage){
-      return Router::redirect('/login?redirect='.\$request->path());
+      return \$response->redirect('/login?redirect='.\$request->path());
     }
   }
 

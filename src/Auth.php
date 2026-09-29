@@ -151,7 +151,7 @@ class Auth extends Model {
           self::activateAccount($user_data[self::$email_field]);
           self::login($user_data[self::$email_field], $temp_password);
 
-          return Router::redirect(AUTH_USER_ROLES[$_SESSION['logged_user_role']]['landing_page']);
+          return Response::getInstance()->redirect(AUTH_USER_ROLES[$_SESSION['logged_user_role']]['landing_page']);
         }
 
         return $return_status ? self::$auth_errors['success'] : true;
@@ -210,9 +210,10 @@ class Auth extends Model {
    * @param array $args Additional arguments
    */
   public static function login(string $email, string $password, $return_status = true, $args = []) {
+    $response = Response::getInstance();
     // Redirect to landing page if already logged in
     if (self::isLoggedIn()) {
-      return Router::redirect(AUTH_USER_ROLES[$_SESSION['logged_user_role']]['landing_page']);
+      return $response->redirect(AUTH_USER_ROLES[$_SESSION['logged_user_role']]['landing_page']);
     }
 
     self::init();
@@ -317,7 +318,7 @@ class Auth extends Model {
           call_user_func($callback, $user);
         }
 
-        return $return_status ? self::$auth_errors['success'] : Router::redirect($redirect_to);
+        return $return_status ? self::$auth_errors['success'] : $response->redirect($redirect_to);
       }
 
       // Invalid password flow
@@ -485,7 +486,7 @@ class Auth extends Model {
     $to = $redirect ? $redirect : AUTH_PATHS['login'];
     clear_error();
 
-    return Router::redirect($to);
+    return Response::getInstance()->redirect($to);
   }
 
   /**
