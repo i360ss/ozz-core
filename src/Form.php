@@ -257,8 +257,56 @@ class Form {
         }
       }
 
+      // Generate Group fields
+      if ($type === 'group') {
+        if (env('app', 'ENABLE_CMS')) {
+          $cms = CMS::getInstance();
+          $groupFields = $cms->cms_related_form_modifies($field);
+        } else {
+          $groupFields = $field['fields'];
+        }
+
+        $ptn = array_flip(preg_grep('/^' . preg_quote($name, '/') . '__/', array_keys($values)));
+        $parent_group = ozz_i_convert_str_to_array_1( array_intersect_key($values, $ptn) );
+
+        if (!empty($parent_group[$name])) {
+          $groupValue = $parent_group[$name];
+        } elseif (!empty($values) && isset($values[$name]) && is_array($values[$name])) {
+          $groupValue = $values[$name];
+        } else {
+          $groupValue = [];
+        }
+
+        $groupID = random_str(12);
+        $class = isset($field['class']) ? ' ' . $field['class'] : '';
+        $wrapper_class = isset($field['wrapper_class']) ? ' ' . $field['wrapper_class'] : '';
+        $html .= '
+          <fieldset
+            id="grp-' . $groupID . '"
+            class="ozz-fm__group' . $wrapper_class . $class . '"
+            data-ozz-group="true"
+          >
+            <div class="ozz-fm__group-top">
+              <legend class="ozz-fm__group-label">'
+                . (isset($field['label']) ? $field['label'] : 'Untitled') .
+              '</legend>
+              ' . (
+                isset($field['note']) && $field['note'] !== ''
+                  ? '<span class="field_note">' . $field['note'] . '</span>'
+                  : ''
+              ) . '
+            </div>
+            <div class="ozz-fm__group-body">
+        ';
+
+        $html .= self::generateFields($groupFields, $groupValue, $name . '__', $index, $global_options);
+        $html .= '</div></fieldset>';
+
+        continue;
+      }
+
       // Generate Repeatable fields
-      if(in_array($type, ['repeat', 'repeater', 'repeatable'])){
+      elseif(in_array($type, ['repeat', 'repeater', 'repeatable'])){
         if(env('app', 'ENABLE_CMS')) {
           $cms = CMS::getInstance();
           $repeaterFields = $cms->cms_related_form_modifies($field);

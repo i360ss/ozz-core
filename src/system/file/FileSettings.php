@@ -39,7 +39,7 @@ trait FileSettings {
 
       // SVG Sanitization - Set allowed element
       $sanitizedSVG = false;
-      $conf = CMS_CONFIG ? CMS_CONFIG : CONFIG;
+      $conf = defined('CMS_CONFIG') ? CMS_CONFIG : CONFIG;
       if($conf['SANITIZE_SVG'] === true) {
         $wildcard = $conf['SANITIZE_SVG_ALLOWED_ELEMENTS'] ? $conf['SANITIZE_SVG_ALLOWED_ELEMENTS'] : [];
         $sanitizedSVG = esc_svg($svgContent, $wildcard);
@@ -274,7 +274,7 @@ trait FileSettings {
           $svgContent = file_get_contents($imgTmp);
 
           $sanitizedSVG = false;
-          $conf = CMS_CONFIG ? CMS_CONFIG : CONFIG;
+          $conf = defined('CMS_CONFIG') ? CMS_CONFIG : CONFIG;
 
           if ($conf['SANITIZE_SVG'] === true) {
             $wildcard = $conf['SANITIZE_SVG_ALLOWED_ELEMENTS']
