@@ -375,7 +375,7 @@ class GenerateSql {
             $cm = $key == $addLast ? '' : ', ';
             $addColumns .= 'ADD COLUMN '.$key .' '. implode(' ', $val).$cm;
           }
-          $allSQL['addColumns'] = 'SET sql_notes = 0; ALTER TABLE '.$table.' '.$addColumns;
+          $allSQL['addColumns'] = 'ALTER TABLE '.$table.' '.$addColumns.';';
         }
 
         // Edit Existing Columns
@@ -393,7 +393,7 @@ class GenerateSql {
               $editCols .= 'MODIFY COLUMN '.$key .' '. implode(' ', $val).$cm;
             }
           }
-          $allSQL['updateColumns'] = 'SET sql_notes = 0;  ALTER TABLE '.$table.' '.$editCols;
+          $allSQL['updateColumns'] = 'ALTER TABLE '.$table.' '.$editCols.';';
         }
 
         // Drop Columns
@@ -404,7 +404,7 @@ class GenerateSql {
             $cm = $key == $dropLast ? '' : ', ';
             $dropCols .= 'DROP COLUMN '.$val.$cm;
           }
-          $allSQL['dropColumns'] = 'SET sql_notes = 0;  ALTER TABLE '.$table.' '.$dropCols;
+          $allSQL['dropColumns'] = 'ALTER TABLE '.$table.' '.$dropCols.';';
         }
 
         // Const Table
