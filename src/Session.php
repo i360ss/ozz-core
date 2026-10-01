@@ -40,6 +40,8 @@ class Session {
         session_name(CONFIG['SESSION_COOKIE_NAME']);
       }
 
+      ini_set('session.gc_maxlifetime', CONFIG['SESSION_LIFETIME']);
+
       // Apply cookie params with SameSite support
       $cookieParams = [
         'lifetime' => CONFIG['COOKIE_LIFETIME'],
@@ -49,6 +51,7 @@ class Session {
         'httponly' => CONFIG['COOKIE_HTTP_ONLY'],
         'samesite' => CONFIG['COOKIE_SAMESITE'],
       ];
+
       session_set_cookie_params($cookieParams);
       session_start(); // Start session
     }
