@@ -465,26 +465,16 @@ class Auth extends Model {
    * Logout User
    * @param string $redirect path to redirect after Logout
    */
-  public static function logout($redirect=false){
+  public static function logout($redirect = false){
     self::init();
 
-    unset($_SESSION['logged_user_id']);
-    unset($_SESSION['logged_username']);
-    unset($_SESSION['logged_user_email']);
-    unset($_SESSION['logged_user_status']);
-    unset($_SESSION['logged_user_role']);
-    unset($_SESSION['logged_user_avatar']);
-    unset($_SESSION['logged_user_first_name']);
-    unset($_SESSION['logged_user_last_name']);
+    Session::clear();
+    session_regenerate_id(true);
 
-    // Re generate session ID
-    session_regenerate_id();
-
-    // Re generate csrf token
+    $_SESSION['SESSION_INIT_TIME'] = time();
     Csrf::refreshToken();
 
-    $to = $redirect ? $redirect : AUTH_PATHS['login'];
-    clear_error();
+    $to = $redirect ?: AUTH_PATHS['login'];
 
     return Response::getInstance()->redirect($to);
   }

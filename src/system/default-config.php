@@ -15,7 +15,7 @@ return [
   'DEFAULT_TIME_ZONE' => 'UTC',
 
   // Session
-  'SESSION_DRIVER' => 'memory',
+  'SESSION_DRIVER' => 'native',
   'SESSION_COOKIE_NAME' => 'ozz_ses_id',
   'SESSION_LIFETIME' => 18000,
   'SESSION_PREFIX' => 'ozz_ses_',

@@ -14,46 +14,52 @@ if(defined('OZZ_FUNC') === false){
 use Ozz\Core\system\session\FileBasedSessionHandler;
 
 class Session {
+  // Is a session currently active?
+  private static function active(): bool {
+    return session_status() === PHP_SESSION_ACTIVE;
+  }
 
   /**
    * Initialize Application Session
    */
   public static function init() {
-    // Initialize session driver
-    if(session_status() == PHP_SESSION_NONE){
+    if(session_status() === PHP_SESSION_NONE){
       if(strtolower(CONFIG['SESSION_DRIVER']) == 'file'){
-        // File based session
-        $sessionHandler = new FileBasedSessionHandler(SESSION_DIR, CONFIG['SESSION_SECRET_KEY']);
-
-        // Configure session options as needed
-        session_set_save_handler(
-          [$sessionHandler, 'open'],
-          [$sessionHandler, 'close'],
-          [$sessionHandler, 'read'],
-          [$sessionHandler, 'write'],
-          [$sessionHandler, 'destroy'],
-          [$sessionHandler, 'gc']
+        // File based session (encrypted + locked)
+        $session_path = rtrim(BASE_DIR, '/') . '/' . ltrim(CONFIG['APP_PATHS']['session'], '/');
+        $sessionHandler = new FileBasedSessionHandler(
+          $session_path,
+          self::resolveSessionKey($session_path)
         );
+
+        // true = write and close the session on shutdown
+        session_set_save_handler($sessionHandler, true);
       }
 
       if(CONFIG['SESSION_COOKIE_NAME'] !== ''){
         session_name(CONFIG['SESSION_COOKIE_NAME']);
       }
 
-      ini_set('session.gc_maxlifetime', CONFIG['SESSION_LIFETIME']);
+      ini_set('session.use_strict_mode', '1');   // reject unknown session ids (anti fixation)
+      ini_set('session.use_only_cookies', '1');  // never accept ids from URL
+      ini_set('session.use_trans_sid', '0');     // never put ids in URLs
+
+      // Make sure expired sessions actually get cleaned up
+      ini_set('session.gc_maxlifetime', (string) CONFIG['SESSION_LIFETIME']);
+      ini_set('session.gc_probability', '1');
+      ini_set('session.gc_divisor', '100');
 
       // Apply cookie params with SameSite support
-      $cookieParams = [
+      session_set_cookie_params([
         'lifetime' => CONFIG['COOKIE_LIFETIME'],
         'path' => CONFIG['COOKIE_PATH'],
         'domain' => CONFIG['COOKIE_DOMAIN'],
         'secure' => CONFIG['COOKIE_SECURE'],
         'httponly' => CONFIG['COOKIE_HTTP_ONLY'],
         'samesite' => CONFIG['COOKIE_SAMESITE'],
-      ];
+      ]);
 
-      session_set_cookie_params($cookieParams);
-      session_start(); // Start session
+      session_start();
     }
 
     if(!isset($_SESSION['SESSION_INIT_TIME'])){
@@ -66,21 +72,60 @@ class Session {
   }
 
   /**
+   * Use the configured key, or auto-generate and persist one per install
+   */
+  private static function resolveSessionKey(string $dir): string {
+    $key = CONFIG['SESSION_SECRET_KEY'] ?? '';
+    if (strlen($key) >= 32) {
+      return $key;
+    }
+
+    if (!is_dir($dir)) {
+      @mkdir($dir, 0700, true);
+    }
+
+    $keyFile = rtrim($dir, '/\\') . '/.session_key';
+    $fp = @fopen($keyFile, 'c+');
+    if ($fp === false) {
+      throw new \RuntimeException('Cannot read or create the session key file: ' . $keyFile);
+    }
+
+    // The lock stops two simultaneous first requests from generating different keys
+    flock($fp, LOCK_EX);
+    $stored = trim((string) stream_get_contents($fp));
+
+    if (strlen($stored) < 32) {
+      $stored = bin2hex(random_bytes(32));
+      ftruncate($fp, 0);
+      rewind($fp);
+      fwrite($fp, $stored);
+      fflush($fp);
+      @chmod($keyFile, 0600);
+    }
+
+    flock($fp, LOCK_UN);
+    fclose($fp);
+
+    return $stored;
+  }
+
+  /**
    * Set New session value
    * @param string $k Key of the session
    * @param string|array $v session value to store
    * @param bool $force overwrite existing value (default: true)
+   * @return bool
    */
   public static function set($k, $v, $force=true) {
-    if(!isset($_SESSION)){
+    if(!self::active()){
       return false;
     }
 
-    if ($force) {
+    if ($force || !array_key_exists($k, $_SESSION)) {
       $_SESSION[$k] = $v;
-    } else {
-      !array_key_exists($k, $_SESSION) ? $_SESSION[$k] = $v : false;
     }
+
+    return true;
   }
 
   /**
@@ -89,7 +134,7 @@ class Session {
    * @param string $k session key
    */
   public static function get($k=null) {
-    if(!isset($_SESSION)){
+    if(!self::active()){
       return false;
     }
 
@@ -115,22 +160,20 @@ class Session {
    * @param string|array $k session key/keys
    */
   public static function remove($k=null) {
-    if(!isset($_SESSION)){
+    if(!self::active()){
       return false;
     }
 
     if (isset($k)) {
       if (is_array($k)) {
         foreach ($k as $key) {
-          if (array_key_exists($key, $_SESSION)) {
-            unset($_SESSION[$key]);
-          }
+          unset($_SESSION[$key]);
         }
+        return true;
       }
-      elseif (isset($_SESSION[$k])) {
-        if (array_key_exists($k, $_SESSION)) {
-          unset($_SESSION[$k]);
-        }
+      elseif (array_key_exists($k, $_SESSION)) {
+        unset($_SESSION[$k]);
+        return true;
       } else {
         return DEBUG 
         ? Err::custom([
@@ -158,7 +201,7 @@ class Session {
    * @param bool $force overwrite existing value (default: true)
    */
   public static function setIfNot($k, $v, $force=true) {
-    !self::has($k) ? self::set($k, $v, $force) : true;
+    return !self::has($k) ? self::set($k, $v, $force) : true;
   }
 
   /**
@@ -167,12 +210,12 @@ class Session {
    * @return bool
    */
   public static function has($k=null) {
-    if(!isset($_SESSION)){
+    if(!self::active()){
       return false;
     }
 
     if (isset($k)) {
-      return array_key_exists($k, $_SESSION) ? true : false;
+      return array_key_exists($k, $_SESSION);
     } else {
       return DEBUG 
         ? Err::custom([
@@ -189,10 +232,10 @@ class Session {
    * Store session for only one request and unset
    * @param string $k Session key
    * @param string|array|object|int $v Session value
-   * @param bool $force overwrite existing value (default: true)
+   * @param bool $is_error store in the error bag instead of the flash bag
    */
   public static function flash(string $k, $v, $is_error=false) {
-    if(!isset($_SESSION)){
+    if(!self::active()){
       return false;
     }
 
@@ -201,23 +244,48 @@ class Session {
     } else {
       $_SESSION['__flash'][$k] = $v;
     }
+
+    return true;
   }
 
   /**
-   * Clear Session variable
+   * Clear Session variables (session itself stays alive)
    */
   public static function clear() {
-    $_SESSION = false;
+    if(!self::active()){
+      return false;
+    }
+
+    $_SESSION = [];
     session_unset();
+    return true;
   }
 
   /**
-   * Destroy Session variable
+   * Destroy the session completely (data, server file and cookie)
    */
   public static function destroy() {
-    $_SESSION = false;
+    if(!self::active()){
+      return false;
+    }
+
+    $_SESSION = [];
     session_unset();
-    session_destroy();
+
+    // Expire the session cookie in the browser too
+    if(ini_get('session.use_cookies') && !headers_sent()){
+      $p = session_get_cookie_params();
+      setcookie(session_name(), '', [
+        'expires' => time() - 42000,
+        'path' => $p['path'],
+        'domain' => $p['domain'],
+        'secure' => $p['secure'],
+        'httponly' => $p['httponly'],
+        'samesite' => $p['samesite'] ?: 'Lax',
+      ]);
+    }
+
+    return session_destroy();
   }
 
 }
