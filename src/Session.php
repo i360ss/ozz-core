@@ -11,6 +11,7 @@ if(defined('OZZ_FUNC') === false){
   require 'system/ozz-func.php';
 }
 
+use Ozz\Core\system\session\SessionDriver;
 use Ozz\Core\system\session\FileBasedSessionHandler;
 
 class Session {
@@ -24,9 +25,10 @@ class Session {
    */
   public static function init() {
     if(session_status() === PHP_SESSION_NONE){
-      if(strtolower(CONFIG['SESSION_DRIVER']) == 'file'){
+      $driver = strtolower(CONFIG['SESSION_DRIVER']);
+      if($driver === 'file'){
         // File based session (encrypted + locked)
-        $session_path = rtrim(BASE_DIR, '/') . '/' . ltrim(CONFIG['APP_PATHS']['session'], '/');
+        $session_path = BASE_DIR . ltrim(CONFIG['APP_PATHS']['session'], '/');
         $sessionHandler = new FileBasedSessionHandler(
           $session_path,
           self::resolveSessionKey($session_path)
@@ -34,6 +36,10 @@ class Session {
 
         // true = write and close the session on shutdown
         session_set_save_handler($sessionHandler, true);
+      } else {
+        // 'redis' or 'memcached' configure PHP's native handler;
+        // anything else uses PHP's default
+        SessionDriver::register($driver);
       }
 
       if(CONFIG['SESSION_COOKIE_NAME'] !== ''){

@@ -21,6 +21,19 @@ return [
   'SESSION_PREFIX' => 'ozz_ses_',
   'SESSION_SECRET_KEY' => '',
 
+  // Redis Session Driver (requires phpredis extension)
+  // 'SESSION_DRIVER' => 'redis',
+  // 'SESSION_REDIS_HOST' => '127.0.0.1',
+  // 'SESSION_REDIS_PORT' => 6379,
+  // 'SESSION_REDIS_PASSWORD' => 'a-long-random-password',
+  // 'SESSION_REDIS_DB' => 0,
+  // 'SESSION_REDIS_PREFIX' => 'myapp_sess_',
+
+  // Memcached Session Driver (requires memcached extension)
+  // 'SESSION_DRIVER' => 'memcached',
+  // 'SESSION_MEMCACHED_SERVERS' => '127.0.0.1:11211',
+  // 'SESSION_MEMCACHED_PREFIX' => 'ozz_sess_',
+
   // Cookie
   'COOKIE_LIFETIME' => 18000,
   'COOKIE_PATH' => '/',
