@@ -26,9 +26,16 @@ class Session {
   public static function init() {
     if(session_status() === PHP_SESSION_NONE){
       $driver = strtolower(CONFIG['SESSION_DRIVER']);
+      $session_path = BASE_DIR . ltrim(CONFIG['APP_PATHS']['session'], '/');
+
+      // Config custom session directory
+      if (!is_dir($session_path)) {
+        @mkdir($session_path, 0700, true);
+      }
+      ini_set('session.save_path', $session_path);
+
       if($driver === 'file'){
         // File based session (encrypted + locked)
-        $session_path = BASE_DIR . ltrim(CONFIG['APP_PATHS']['session'], '/');
         $sessionHandler = new FileBasedSessionHandler(
           $session_path,
           self::resolveSessionKey($session_path)
