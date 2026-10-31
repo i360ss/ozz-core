@@ -40,8 +40,14 @@ class Serve {
     );
     @pclose(@popen($cmd1, "r"));
 
-    // Build PHP dev server command
-    $php_cmd = 'php -S ' . $url . ' -t ' . trim(CONFIG['APP_PATHS']['public'], '/');
+    // Check if a custom php.ini exists in the project root
+    $phpIniFlag = '';
+    if (file_exists('php.ini')) {
+      $phpIniFlag = '-c php.ini ';
+    }
+
+    // Build PHP dev server command with optional php.ini flag
+    $php_cmd = 'php ' . $phpIniFlag . '-S ' . $url . ' -t ' . trim(CONFIG['APP_PATHS']['public'], '/');
 
     // Run server depending on OS
     if ($os === 'win32') {
